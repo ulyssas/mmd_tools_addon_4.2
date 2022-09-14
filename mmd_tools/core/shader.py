@@ -74,17 +74,17 @@ class _NodeGroupUtils(_NodeTreeUtils):
                 for s in n.outputs:
                     s.hide = not s.is_linked
 
-    def new_input_socket(self, io_name, socket, default_val=None, min_max=None):
-        self.__new_io(self.shader.inputs, self.node_input.outputs, io_name, socket, default_val, min_max)
+    def new_input_socket(self, io_name, socket, default_val=None, min_max=None, socket_type=None):
+        self.__new_io(self.shader.inputs, self.node_input.outputs, io_name, socket, default_val, min_max, socket_type)
 
-    def new_output_socket(self, io_name, socket, default_val=None, min_max=None):
-        self.__new_io(self.shader.outputs, self.node_output.inputs, io_name, socket, default_val, min_max)
+    def new_output_socket(self, io_name, socket, default_val=None, min_max=None, socket_type=None):
+        self.__new_io(self.shader.outputs, self.node_output.inputs, io_name, socket, default_val, min_max, socket_type)
 
-    def __new_io(self, shader_io, io_sockets, io_name, socket, default_val=None, min_max=None):
+    def __new_io(self, shader_io, io_sockets, io_name, socket, default_val=None, min_max=None, socket_type=None):
         if io_name not in io_sockets:
-            shader_io.new(type=socket.bl_idname, name=io_name)
+            idname = socket_type or socket.bl_idname
+            shader_io.new(type=idname, name=io_name)
             if not min_max:
-                idname = socket.bl_idname
                 if idname.endswith('Factor') or io_name.endswith('Alpha'):
                     shader_io[io_name].min_value, shader_io[io_name].max_value = 0, 1
                 elif idname.endswith('Float') or idname.endswith('Vector'):
@@ -274,45 +274,46 @@ class _MaterialMorph:
         def __blend_color_add(id_name, pos, tag=''):
             # ColorMul = Color1 * (Fac * Color2 + (1 - Fac))
             # ColorAdd = Color1 + Fac * Color2
-            if use_mul:
-                node_mul = ng.new_mix_node('MULTIPLY', (pos[0]+1, pos[1]), fac=1.0)
-                node_blend = ng.new_mix_node('ADD', (pos[0]+2, pos[1]), fac=1.0)
-                links.new(out_color_inv, node_blend.inputs['Color1'])
-                links.new(node_mul.outputs['Color'], node_blend.inputs['Color2'])
-            else:
-                node_mul = node_blend = ng.new_mix_node('MULTIPLY', (pos[0]+1, pos[1]), fac=1.0)
-
-            node_final = ng.new_mix_node('MULTIPLY' if use_mul else 'ADD', (pos[0]+2+use_mul, pos[1]), fac=1.0)
 
             out_vector1 = __new_io_vector_wrap('%s1'%id_name+tag, (pos[0]+1.5+use_mul, pos[1]+0.1))
             out_vector2 = __new_io_vector_wrap('%s2'%id_name+tag, (pos[0]+0.5, pos[1]-0.1))
-            links.new(out_vector1, node_final.inputs['Color1'])
-            links.new(out_vector2, node_mul.inputs['Color2'])
-            links.new(out_color, node_mul.inputs['Color1'])
-            links.new(node_blend.outputs['Color'], node_final.inputs['Color2'])
 
-            ng.new_output_socket(id_name+tag, node_final.outputs['Color'])
+            if use_mul:
+                node_mul_add = ng.new_vector_math_node('MULTIPLY_ADD', (pos[0]+1, pos[1]))
+                links.new(out_color, node_mul_add.inputs[0])
+                links.new(out_vector2, node_mul_add.inputs[1])
+                links.new(out_color_inv, node_mul_add.inputs[2])
+                node_final = ng.new_vector_math_node('MULTIPLY', (pos[0]+3, pos[1]))
+                links.new(out_vector1, node_final.inputs[0])
+                links.new(node_mul_add.outputs[0], node_final.inputs[1])
+            else:
+                node_final = node_mul_add = ng.new_vector_math_node('MULTIPLY_ADD', (pos[0]+1, pos[1]))
+                links.new(out_color, node_mul_add.inputs[0])
+                links.new(out_vector2, node_mul_add.inputs[1])
+                links.new(out_vector1, node_mul_add.inputs[2])
+
+            ng.new_output_socket(id_name+tag, node_final.outputs[0], socket_type='NodeSocketColor')
             return node_final
 
         def __blend_value_add(id_name, pos, tag=''):
             # ValueMul = Value1 * (Fac * Value2 + (1 - Fac))
             # ValueAdd = Value1 + Fac * Value2
             if use_mul:
-                node_mul = ng.new_math_node('MULTIPLY', (pos[0]+1, pos[1]))
-                node_blend = ng.new_math_node('ADD', (pos[0]+2, pos[1]))
-                links.new(node_invert.outputs['Value'], node_blend.inputs[0])
-                links.new(node_mul.outputs['Value'], node_blend.inputs[1])
+                node_mul_add = ng.new_math_node('MULTIPLY_ADD', (pos[0]+1, pos[1]))
+                links.new(node_input.outputs['Fac'], node_mul_add.inputs[0])
+                ng.new_input_socket('%s2'%id_name+tag, node_mul_add.inputs[1], use_mul)
+                links.new(node_invert.outputs['Value'], node_mul_add.inputs[2])
+                node_final = ng.new_math_node('MULTIPLY', (pos[0]+3, pos[1]))
+                ng.new_input_socket('%s1'%id_name+tag, node_final.inputs[0], use_mul)
+                links.new(node_mul_add.outputs['Value'], node_final.inputs[1])
             else:
-                node_mul = node_blend = ng.new_math_node('MULTIPLY', (pos[0]+1, pos[1]))
+                node_final = node_mul_add = ng.new_math_node('MULTIPLY_ADD', (pos[0]+1, pos[1]))
+                links.new(node_input.outputs['Fac'], node_mul_add.inputs[0])
+                ng.new_input_socket('%s2'%id_name+tag, node_mul_add.inputs[1], use_mul)
+                ng.new_input_socket('%s1'%id_name+tag, node_mul_add.inputs[2], use_mul)
 
-            node_final = ng.new_math_node('MULTIPLY' if use_mul else 'ADD', (pos[0]+2+use_mul, pos[1]))
-
-            ng.new_input_socket('%s1'%id_name+tag, node_final.inputs[0], use_mul)
-            ng.new_input_socket('%s2'%id_name+tag, node_mul.inputs[1], use_mul)
             ng.new_output_socket(id_name+tag, node_final.outputs['Value'])
 
-            links.new(node_input.outputs['Fac'], node_mul.inputs[0])
-            links.new(node_blend.outputs['Value'], node_final.inputs[1])
             return node_final
 
         def __blend_tex_color(id_name, pos, node_tex_rgb, node_tex_a):
@@ -320,21 +321,26 @@ class _MaterialMorph:
             # : tex_rgb = TexRGB * ColorMul + ColorAdd
             # : tex_a = TexA * ValueMul + ValueAdd
             node_inv = ng.new_math_node('SUBTRACT', (pos[0], pos[1]-0.5), value1=1.0)
-            node_mul = ng.new_mix_node('MULTIPLY', (pos[0], pos[1]), fac=1.0)
-            node_blend = ng.new_mix_node('ADD', (pos[0]+1, pos[1]), fac=1.0)
-
+            links.new(node_tex_a.outputs['Value'], node_inv.inputs[1])
+ 
             out_tex_a = __value_to_color_wrap(node_tex_a.outputs[0], (pos[0]-0.5, pos[1]-0.1))
             out_tex_a_inv = __value_to_color_wrap(node_inv.outputs[0], (pos[0]+0.5, pos[1]-0.1))
 
-            links.new(node_tex_a.outputs['Value'], node_inv.inputs[1])
-            links.new(node_tex_rgb.outputs['Color'], node_mul.inputs['Color1'])
-            links.new(out_tex_a, node_mul.inputs['Color2'])
-            links.new(node_mul.outputs['Color'], node_blend.inputs['Color1'])
-            links.new(out_tex_a_inv, node_blend.inputs['Color2'])
-
-            ng.new_output_socket(id_name+' Tex', node_blend.outputs['Color'])
             if id_name == 'Sphere':
-                ng.new_output_socket(id_name+' Tex Add', node_mul.outputs['Color'])
+                node_mul = ng.new_mix_node('MULTIPLY', (pos[0], pos[1]), fac=1.0)
+                node_blend = ng.new_mix_node('ADD', (pos[0]+1, pos[1]), fac=1.0)
+                links.new(node_tex_rgb.outputs[0], node_mul.inputs[0])
+                links.new(out_tex_a, node_mul.inputs[1])
+                links.new(node_mul.outputs[0], node_blend.inputs[0])
+                links.new(out_tex_a_inv, node_blend.inputs[1])
+                ng.new_output_socket(id_name+' Tex', node_blend.outputs[0])
+                ng.new_output_socket(id_name+' Tex Add', node_mul.outputs[0])
+            else:
+                node_mul_add = ng.new_vector_math_node('MULTIPLY_ADD', (pos[0]+1, pos[1]))
+                links.new(node_tex_rgb.outputs[0], node_mul_add.inputs[0])
+                links.new(out_tex_a, node_mul_add.inputs[1])
+                links.new(out_tex_a_inv, node_mul_add.inputs[2])
+                ng.new_output_socket(id_name+' Tex', node_mul_add.outputs[0], socket_type='NodeSocketColor')
 
         pos_x = -2
         __blend_color_add('Ambient', (pos_x, 1.5))
