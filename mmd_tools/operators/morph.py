@@ -739,11 +739,7 @@ class RemoveDuplicatedMaterialMorphs(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        root = mmd_model.Model.findRoot(context.active_object)
-        if root is None:
-            return False
-
-        return root.mmd_root.active_morph_type == 'material_morphs'
+        return mmd_model.Model.findRoot(context.active_object) is not None
 
     def execute(self, context: bpy.types.Context):
         mmd_root_object = mmd_model.FnModel.find_root(context.active_object)
