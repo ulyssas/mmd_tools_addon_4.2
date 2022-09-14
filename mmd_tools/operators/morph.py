@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import bpy
+import mmd_tools.core.model as mmd_model
 from bpy.types import Operator
-from mathutils import Vector, Quaternion
-
-from mmd_tools import bpyutils
-from mmd_tools import utils
-from mmd_tools.utils import ItemOp, ItemMoveOp
+from mathutils import Quaternion, Vector
+from mmd_tools import bpyutils, utils
+from mmd_tools.core.exceptions import DivisionError, MaterialNotFoundError
 from mmd_tools.core.material import FnMaterial
 from mmd_tools.core.morph import FnMorph
-from mmd_tools.core.exceptions import MaterialNotFoundError, DivisionError
-import mmd_tools.core.model as mmd_model
+from mmd_tools.utils import ItemMoveOp, ItemOp
+
 
 #Util functions
 def divide_vector_components(vec1, vec2):
@@ -731,3 +730,23 @@ class ApplyUVMorph(Operator):
         meshObj.select = selected
         return { 'FINISHED' }
 
+
+class RemoveDuplicatedMaterialMorphs(bpy.types.Operator):
+    bl_idname = 'mmd_tools.remove_duplicated_material_morphs'
+    bl_label = 'Remove Duplicated Material Morphs'
+    bl_description = 'Remove duplicated material morphs'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        root = mmd_model.Model.findRoot(context.active_object)
+        if root is None:
+            return False
+
+        return root.mmd_root.active_morph_type == 'material_morphs'
+
+    def execute(self, context: bpy.types.Context):
+        mmd_root_object = mmd_model.FnModel.find_root(context.active_object)
+        FnMorph.remove_duplicated_material_morphs(mmd_root_object)
+
+        return { 'FINISHED' }

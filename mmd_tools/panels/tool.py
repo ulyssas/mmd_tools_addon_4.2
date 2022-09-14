@@ -272,6 +272,7 @@ class MMDDisplayItemsPanel(_PanelBase, Panel):
         r.operator('mmd_tools.display_item_find', text='Morph', icon='VIEWZOOM').type = 'MORPH'
         row.operator('mmd_tools.display_item_select_current', text='Select')
 
+from mmd_tools.properties.morph import MaterialMorph
 
 class MMD_TOOLS_UL_Morphs(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
@@ -289,6 +290,10 @@ class MMD_TOOLS_UL_Morphs(UIList):
                 row.label(icon='INFO')
             elif morph_item.morph_type != mmd_root.active_morph_type:
                 row.label(icon='SHAPEKEY_DATA')
+            else:
+                row.label(icon='BLANK1')
+            if isinstance(item, MaterialMorph) and any(not d.material for d in item.data):
+                row.label(icon='TEMP')
         elif self.layout_type in {'COMPACT'}:
             pass
         elif self.layout_type in {'GRID'}:
@@ -358,6 +363,7 @@ class MMDMorphMenu(Menu):
         layout.separator()
         layout.operator('mmd_tools.morph_copy', icon='COPY_ID')
         layout.operator('mmd_tools.morph_overwrite_from_active_pose_library', icon='PRESET_NEW')
+        layout.operator('mmd_tools.remove_duplicated_material_morphs', icon='TRASH')
         layout.separator()
         layout.operator('mmd_tools.morph_move', icon=TRIA_UP_BAR, text='Move To Top').type = 'TOP'
         layout.operator('mmd_tools.morph_move', icon=TRIA_DOWN_BAR, text='Move To Bottom').type = 'BOTTOM'

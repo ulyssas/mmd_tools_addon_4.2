@@ -248,6 +248,56 @@ class FnMorph(object):
             if meshObj is not None:
                 offset.related_mesh = meshObj.data.name
 
+    @staticmethod
+    def remove_duplicated_material_morphs(mmd_root_object: bpy.types.Object):
+        """Remove duplicated material_morphs and data from mmd_root_object.mmd_root.material_morphs[].data[]
+        """
+        mmd_root = mmd_root_object.mmd_root
+
+        def morph_data_equals(l, r) -> bool:
+            return (l.related_mesh_data == r.related_mesh_data
+                and l.offset_type == r.offset_type
+                and l.material == r.material
+                and all(a == b for a, b in zip(l.diffuse_color, r.diffuse_color))
+                and all(a == b for a, b in zip(l.specular_color, r.specular_color))
+                and l.shininess == r.shininess
+                and all(a == b for a, b in zip(l.ambient_color, r.ambient_color))
+                and all(a == b for a, b in zip(l.edge_color, r.edge_color))
+                and l.edge_weight == r.edge_weight
+                and all(a == b for a, b in zip(l.texture_factor, r.texture_factor))
+                and all(a == b for a, b in zip(l.sphere_texture_factor, r.sphere_texture_factor))
+                and all(a == b for a, b in zip(l.toon_texture_factor, r.toon_texture_factor))
+            )
+
+        def morph_equals(l, r) -> bool:
+            return len(l.data) == len(r.data) and all(morph_data_equals(a, b) for a, b in zip(l.data, r.data))
+
+        # Remove duplicated mmd_root.material_morphs.data[]
+        for material_morph in mmd_root.material_morphs:
+            save_materil_morph_datas = []
+            remove_material_morph_data_indices = []
+            for index, material_morph_data in enumerate(material_morph.data):
+                if any(morph_data_equals(material_morph_data, saved_material_morph_data) for saved_material_morph_data in save_materil_morph_datas):
+                    remove_material_morph_data_indices.append(index)
+                    continue
+                save_materil_morph_datas.append(material_morph_data)
+
+            for index in reversed(remove_material_morph_data_indices):
+                material_morph.data.remove(index)
+
+        # Mark duplicated mmd_root.material_morphs[]
+        save_material_morphs = []
+        remove_material_morph_names = []
+        for material_morph in sorted(mmd_root.material_morphs, key=lambda m: m.name):
+            if any(morph_equals(material_morph, saved_material_morph) for saved_material_morph in save_material_morphs):
+                remove_material_morph_names.append(material_morph.name)
+                continue
+
+            save_material_morphs.append(material_morph)
+
+        # Remove marked mmd_root.material_morphs[]
+        for material_morph_name in remove_material_morph_names:
+            mmd_root.material_morphs.remove(mmd_root.material_morphs.find(material_morph_name))
 
 class _MorphSlider:
 
