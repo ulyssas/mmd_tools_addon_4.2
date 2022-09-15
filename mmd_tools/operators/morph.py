@@ -731,10 +731,10 @@ class ApplyUVMorph(Operator):
         return { 'FINISHED' }
 
 
-class RemoveDuplicatedMaterialMorphs(bpy.types.Operator):
-    bl_idname = 'mmd_tools.remove_duplicated_material_morphs'
-    bl_label = 'Remove Duplicated Material Morphs'
-    bl_description = 'Remove duplicated material morphs'
+class CleanDuplicatedMaterialMorphs(bpy.types.Operator):
+    bl_idname = 'mmd_tools.clean_duplicated_material_morphs'
+    bl_label = 'Clean Duplicated Material Morphs'
+    bl_description = 'Clean duplicated material morphs'
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -743,6 +743,6 @@ class RemoveDuplicatedMaterialMorphs(bpy.types.Operator):
 
     def execute(self, context: bpy.types.Context):
         mmd_root_object = mmd_model.FnModel.find_root(context.active_object)
-        FnMorph.remove_duplicated_material_morphs(mmd_root_object)
+        FnMorph.clean_duplicated_material_morphs(mmd_root_object)
 
         return { 'FINISHED' }

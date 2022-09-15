@@ -311,16 +311,16 @@ class _MaterialMorph:
         links.new(node_mix.outputs[0], separate_basea_toona_spherea.inputs[0])
 
         base_rgb = __blend_color_add('Base', (pos_x, -2.5), ' RGB')
-        __blend_tex_color('Base', (pos_x+3, -2.5), base_rgb, separate_basea_toona_spherea.outputs[0])
         __add_sockets('Base', combine_base1a_toon1a_sphere1a.inputs[0], combine_base2a_toon2a_sphere2a.inputs[0], separate_basea_toona_spherea.outputs[0], tag=' A')
+        __blend_tex_color('Base', (pos_x+3, -2.5), base_rgb, separate_basea_toona_spherea.outputs[0])
 
         toon_rgb = __blend_color_add('Toon', (pos_x, -3.0), ' RGB')
-        __blend_tex_color('Toon', (pos_x+3, -3.0), toon_rgb, separate_basea_toona_spherea.outputs[1])
         __add_sockets('Toon', combine_base1a_toon1a_sphere1a.inputs[1], combine_base2a_toon2a_sphere2a.inputs[1], separate_basea_toona_spherea.outputs[1], tag=' A')
+        __blend_tex_color('Toon', (pos_x+3, -3.0), toon_rgb, separate_basea_toona_spherea.outputs[1])
 
         sphere_rgb = __blend_color_add('Sphere', (pos_x, -3.5), ' RGB')
-        __blend_tex_color('Sphere', (pos_x+3, -3.5), sphere_rgb, separate_basea_toona_spherea.outputs[2])
         __add_sockets('Sphere', combine_base1a_toon1a_sphere1a.inputs[2], combine_base2a_toon2a_sphere2a.inputs[2], separate_basea_toona_spherea.outputs[2], tag=' A')
+        __blend_tex_color('Sphere', (pos_x+3, -3.5), sphere_rgb, separate_basea_toona_spherea.outputs[2])
 
         ng.hide_nodes()
         return ng.shader

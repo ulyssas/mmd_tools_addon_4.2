@@ -249,8 +249,8 @@ class FnMorph(object):
                 offset.related_mesh = meshObj.data.name
 
     @staticmethod
-    def remove_duplicated_material_morphs(mmd_root_object: bpy.types.Object):
-        """Remove duplicated material_morphs and data from mmd_root_object.mmd_root.material_morphs[].data[]
+    def clean_duplicated_material_morphs(mmd_root_object: bpy.types.Object):
+        """Clean duplicated material_morphs and data from mmd_root_object.mmd_root.material_morphs[].data[]
         """
         mmd_root = mmd_root_object.mmd_root
 
