@@ -3,7 +3,7 @@
 bl_info = {
     "name": "mmd_tools",
     "author": "sugiany",
-    "version": (2, 6, 1),
+    "version": (2, 7, 0),
     "blender": (2, 93, 0),
     "location": "View3D > Sidebar > MMD Tools Panel",
     "description": "Utility tools for MMD model editing. (UuuNyaa's forked version)",
@@ -69,9 +69,12 @@ def load_handler(_dummy):
 
     from mmd_tools.core.material import MigrationFnMaterial
     MigrationFnMaterial.update_mmd_shader()
-    
+
     from mmd_tools.core.morph import MigrationFnMorph
     MigrationFnMorph.update_mmd_morph()
+
+    from mmd_tools.core.camera import MigrationFnCamera
+    MigrationFnCamera.update_mmd_camera()
 
 @bpy.app.handlers.persistent
 def save_pre_handler(_dummy):
