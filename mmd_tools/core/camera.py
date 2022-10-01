@@ -30,22 +30,14 @@ class FnCamera:
         def __add_driver(id_data: bpy.types.ID, data_path: str, expression: str, index:int = -1):
             d = id_data.driver_add(data_path, index).driver
             d.type = 'SCRIPTED'
-            if '$dis' in expression:
+            if '$empty_distance' in expression:
                 v = d.variables.new()
-                v.name = 'camera_dis'
+                v.name = 'empty_distance'
                 v.type = 'TRANSFORMS'
                 v.targets[0].id = camera_object
                 v.targets[0].transform_type = 'LOC_Y'
                 v.targets[0].transform_space = 'LOCAL_SPACE'
-                expression = expression.replace('$dis', v.name)
-            if '$type' in expression:
-                v = d.variables.new()
-                v.name = 'camera_type'
-                v.type = 'SINGLE_PROP'
-                v.targets[0].id_type = 'OBJECT'
-                v.targets[0].id = camera_object
-                v.targets[0].data_path = 'data.type'
-                expression = expression.replace('$type', v.name)
+                expression = expression.replace('$empty_distance', v.name)
             if '$is_perspective' in expression:
                 v = d.variables.new()
                 v.name = 'is_perspective'
@@ -67,14 +59,14 @@ class FnCamera:
                 v.name = 'sensor_height'
                 v.type = 'SINGLE_PROP'
                 v.targets[0].id_type = 'CAMERA'
-                v.targets[0].id = id_data
+                v.targets[0].id = camera_object.data
                 v.targets[0].data_path = 'sensor_height'
                 expression = expression.replace('$sensor_height', v.name)
 
             d.expression = expression
 
-        __add_driver(camera_object.data, 'ortho_scale', '25*abs($dis)/45')
-        __add_driver(camera_object, 'rotation_euler', 'pi if $type == 1 and $dis > 1e-5 else 0', index=1)
+        __add_driver(camera_object.data, 'ortho_scale', '25*abs($empty_distance)/45')
+        __add_driver(camera_object, 'rotation_euler', 'pi if $is_perspective == False and $empty_distance > 1e-5 else 0', index=1)
         __add_driver(camera_object.data, 'type', 'not $is_perspective')
         __add_driver(camera_object.data, 'lens', '$sensor_height/tan($angle/2)/2')
 
