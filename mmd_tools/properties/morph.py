@@ -102,6 +102,8 @@ def _get_bone(prop):
     root = prop.id_data
     fnModel = FnModel(root)
     arm = fnModel.armature()
+    if arm is None:
+        return ''
     fnBone = FnBone.from_bone_id(arm, bone_id)
     if not fnBone:
         return ''
@@ -111,7 +113,19 @@ def _get_bone(prop):
 def _set_bone(prop, value):
     root = prop.id_data
     fnModel = FnModel(root)
+    # print(repr(root))
+    # for c in root.children:
+    #     print(repr(c))
+
     arm = fnModel.armature()
+    # print(repr(arm))
+    # print(root.library, root.override_library)
+
+    # Load the library_override file. This function is triggered when loading, but the arm obj cannot be found.
+    # The arm obj is exist, but the relative relationship has not yet been established.
+    if arm is None:
+        return
+
     if value not in arm.pose.bones.keys():
         prop['bone_id'] = -1
         return

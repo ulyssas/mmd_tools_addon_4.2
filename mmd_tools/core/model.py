@@ -936,6 +936,15 @@ class Model:
 
         no_parents = []
         for i in self.rigidBodies():
+            # Build the rigid environment, and then remove the rigid environment. The rigidbody of object will be lost.
+            # The following code regenerates the rigid body with the default values.
+            # TODO Modify mmd_rigid to allow recovery of the remaining rigidbody parameters.
+            if i.rigid_body is None:
+                ori_active_obj = SceneOp(bpy.context).active_object
+                SceneOp(bpy.context).active_object = i
+                bpy.ops.rigidbody.object_add(type='ACTIVE')
+                SceneOp(bpy.context).active_object = ori_active_obj
+                
             self.__backupTransforms(i)
             # mute relation
             relation = i.constraints['mmd_tools_rigid_parent']
