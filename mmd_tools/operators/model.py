@@ -419,7 +419,7 @@ class AssembleAll(Operator):
             rig = mmd_model.Model(root_object)
 
             rig.applyAdditionalTransformConstraints()
-            rig.build(1.5, 1e-06)
+            rig.build()
             rig.morph_slider.bind()
 
             bpy.ops.mmd_tools.sdef_bind({'selected_objects': [active_object]})

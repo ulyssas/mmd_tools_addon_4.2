@@ -5,13 +5,12 @@ from typing import Dict
 
 import bpy
 import mmd_tools.core.model as mmd_model
-from bpy.types import Operator
 from mmd_tools import utils
-from mmd_tools.bpyutils import Props
+from mmd_tools.bpyutils import Props, activate_layer_collection
 from mmd_tools.core import rigid_body
 
 
-class SelectRigidBody(Operator):
+class SelectRigidBody(bpy.types.Operator):
     bl_idname = 'mmd_tools.rigid_body_select'
     bl_label = 'Select Rigid Body'
     bl_description = 'Select similar rigidbody objects which have the same property values with active rigidbody object'
@@ -78,7 +77,7 @@ class SelectRigidBody(Operator):
 
         return { 'FINISHED' }
 
-class AddRigidBody(Operator):
+class AddRigidBody(bpy.types.Operator):
     bl_idname = 'mmd_tools.rigid_body_add'
     bl_label = 'Add Rigid Body'
     bl_description = 'Add Rigid Bodies to selected bones'
@@ -263,7 +262,7 @@ class AddRigidBody(Operator):
         vm = context.window_manager
         return vm.invoke_props_dialog(self)
 
-class RemoveRigidBody(Operator):
+class RemoveRigidBody(bpy.types.Operator):
     bl_idname = 'mmd_tools.rigid_body_remove'
     bl_label = 'Remove Rigid Body'
     bl_description = 'Deletes the currently selected Rigid Body'
@@ -312,7 +311,7 @@ class RigidBodyDeleteBake(bpy.types.Operator):
 
         return {'FINISHED'}
 
-class AddJoint(Operator): 
+class AddJoint(bpy.types.Operator): 
     bl_idname = 'mmd_tools.joint_add'
     bl_label = 'Add Joint'
     bl_description = 'Add Joint(s) to selected rigidbody objects'
@@ -445,7 +444,7 @@ class AddJoint(Operator):
         vm = context.window_manager
         return vm.invoke_props_dialog(self)
 
-class RemoveJoint(Operator):
+class RemoveJoint(bpy.types.Operator):
     bl_idname = 'mmd_tools.joint_remove'
     bl_label = 'Remove Joint'
     bl_description = 'Deletes the currently selected Joint'
@@ -464,7 +463,7 @@ class RemoveJoint(Operator):
             utils.selectAObject(root)
         return { 'FINISHED' }
 
-class UpdateRigidBodyWorld(Operator):
+class UpdateRigidBodyWorld(bpy.types.Operator):
     bl_idname = 'mmd_tools.rigid_body_world_update'
     bl_label = 'Update Rigid Body World'
     bl_description = 'Update rigid body world and references of rigid body constraint according to current scene objects (experimental)'
@@ -474,15 +473,6 @@ class UpdateRigidBodyWorld(Operator):
     def __get_rigid_body_world_objects():
         rigid_body.setRigidBodyWorldEnabled(True)
         rbw = bpy.context.scene.rigidbody_world
-        if bpy.app.version < (2, 80, 0):
-            if not rbw.group:
-                rbw.group = bpy.data.groups.new('RigidBodyWorld')
-                rbw.group.use_fake_user = True
-            if not rbw.constraints:
-                rbw.constraints = bpy.data.groups.new('RigidBodyConstraints')
-                rbw.constraints.use_fake_user = True
-            return rbw.group.objects, rbw.constraints.objects
-
         if not rbw.collection:
             rbw.collection = bpy.data.collections.new('RigidBodyWorld')
             rbw.collection.use_fake_user = True
@@ -497,8 +487,9 @@ class UpdateRigidBodyWorld(Operator):
         return rbw.collection.objects, rbw.constraints.objects
 
     def execute(self, context):
-        scene_objs = set(context.scene.objects)
-        scene_objs.union(o for x in context.scene.objects if x.instance_type == 'COLLECTION' and x.instance_collection for o in x.instance_collection.objects)
+        scene = context.scene
+        scene_objs = set(scene.objects)
+        scene_objs.union(o for x in scene.objects if x.instance_type == 'COLLECTION' and x.instance_collection for o in x.instance_collection.objects)
 
         def _update_group(obj, group):
             if obj in scene_objs:
@@ -517,6 +508,7 @@ class UpdateRigidBodyWorld(Operator):
                 yield from _references(obj.override_library.reference)
 
         _find_root = mmd_model.FnModel.find_root
+        need_rebuild_physics = scene.rigidbody_world is None or scene.rigidbody_world.collection is None or scene.rigidbody_world.constraints is None
         rb_objs, rbc_objs = self.__get_rigid_body_world_objects()
         objects = bpy.data.objects
         table = {}
@@ -548,5 +540,16 @@ class UpdateRigidBodyWorld(Operator):
             rb_map = table.get(root, {})
             rbc.object1 = rb_map.get(rbc.object1, rbc.object1)
             rbc.object2 = rb_map.get(rbc.object2, rbc.object2)
+
+        if need_rebuild_physics:
+            for root in scene.objects:
+                if root.mmd_type != 'ROOT':
+                    continue
+                if not root.mmd_root.is_built:
+                    continue
+                with activate_layer_collection(root):
+                    mmd_model.Model(root).build()
+                    # After rebuild. First play. Will be crash!
+                    # But saved it before. Reload after crash. The play can be work.
 
         return { 'FINISHED' }
