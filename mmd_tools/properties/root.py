@@ -165,7 +165,9 @@ def _getVisibilityOfMMDRigArmature(prop):
     if prop.id_data.mmd_type != 'ROOT':
         return False
     arm = mmd_model.FnModel.find_armature(prop.id_data)
-    return (arm and not arm.hide)
+    r = arm and not arm.hide
+    # Returning the non-BOOL type will raise a exception in the library override mode.
+    return bool(r)
 
 
 def _setActiveRigidbodyObject(prop, v):
