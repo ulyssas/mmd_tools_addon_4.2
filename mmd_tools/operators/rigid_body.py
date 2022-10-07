@@ -497,12 +497,11 @@ class UpdateRigidBodyWorld(Operator):
         return rbw.collection.objects, rbw.constraints.objects
 
     def execute(self, context):
-        scene_objs = (bpy.context.scene.objects,)
-        scene_objs += tuple({x.dupli_group.objects for x in scene_objs[0] if x.dupli_type == 'GROUP' and x.dupli_group}) if bpy.app.version < (2, 80, 0)\
-            else tuple({x.instance_collection.objects for x in scene_objs[0] if x.instance_type == 'COLLECTION' and x.instance_collection})
+        scene_objs = set(context.scene.objects)
+        scene_objs.union(o for x in context.scene.objects if x.instance_type == 'COLLECTION' and x.instance_collection for o in x.instance_collection.objects)
 
         def _update_group(obj, group):
-            if any((obj in x.values()) for x in scene_objs):
+            if obj in scene_objs:
                 if obj not in group.values():
                     group.link(obj)
                 return True
@@ -517,25 +516,37 @@ class UpdateRigidBodyWorld(Operator):
             if getattr(obj, 'override_library', None):
                 yield from _references(obj.override_library.reference)
 
-        _find_root = mmd_model.Model.findRoot
+        _find_root = mmd_model.FnModel.find_root
         rb_objs, rbc_objs = self.__get_rigid_body_world_objects()
         objects = bpy.data.objects
         table = {}
 
-        for i in (x for x in objects if x.rigid_body):
-            if _update_group(i, rb_objs):
-                rb_map = table.setdefault(_find_root(i), {})
-                if i in rb_map: # means rb_map[i] will replace i
-                    rb_objs.unlink(i)
-                    continue
-                for r in _references(i):
-                    rb_map[r] = i
+        # Perhaps due to a bug in Blender,
+        # when bpy.ops.rigidbody.world_remove(),
+        # Object.rigid_body are removed,
+        # but Object.rigid_body_constraint are retained.
+        # Therefore, it must be checked with Object.mmd_type.
+        for i in (x for x in objects if x.mmd_type == 'RIGID_BODY'):
+            if not _update_group(i, rb_objs):
+                continue
+
+            rb_map = table.setdefault(_find_root(i), {})
+            if i in rb_map: # means rb_map[i] will replace i
+                rb_objs.unlink(i)
+                continue
+            for r in _references(i):
+                rb_map[r] = i
+
+            # TODO Modify mmd_rigid to allow recovery of the remaining rigidbody parameters.
+            # mass, friction, restitution, linear_dumping, angular_dumping
 
         for i in (x for x in objects if x.rigid_body_constraint):
-            if _update_group(i, rbc_objs):
-                rbc, root = i.rigid_body_constraint, _find_root(i)
-                rb_map = table.get(root, {})
-                rbc.object1 = rb_map.get(rbc.object1, rbc.object1)
-                rbc.object2 = rb_map.get(rbc.object2, rbc.object2)
+            if not _update_group(i, rbc_objs):
+                continue
+
+            rbc, root = i.rigid_body_constraint, _find_root(i)
+            rb_map = table.get(root, {})
+            rbc.object1 = rb_map.get(rbc.object1, rbc.object1)
+            rbc.object2 = rb_map.get(rbc.object2, rbc.object2)
 
         return { 'FINISHED' }

@@ -997,14 +997,7 @@ class Model:
         assert(rigid_obj.mmd_type == 'RIGID_BODY')
         rb = rigid_obj.rigid_body
         if rb is None:
-            # Build the rigid environment, and then remove the rigid environment. The rigidbody of object will be lost.
-            # The following code regenerates the rigid body with the default values.
-            # TODO Modify mmd_rigid to allow recovery of the remaining rigidbody parameters.
-            bpy.ops.rigidbody.object_add({
-                'active_object': rigid_obj,
-                'object': rigid_obj,
-            }, type='ACTIVE')
-            rb = rigid_obj.rigid_body
+            return
 
         rigid = rigid_obj.mmd_rigid
         rigid_type = int(rigid.type)
