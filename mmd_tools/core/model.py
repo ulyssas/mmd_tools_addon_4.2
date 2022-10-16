@@ -775,11 +775,11 @@ class Model:
         """
         Helper method to list all materials in all meshes
         """
-        materials = set()
+        materials = {} # Use dict instead of set to guarantee preserve order
         for mesh in self.meshes():
-            materials.update(slot.material for slot in mesh.material_slots if slot.material is not None)
-            materials.update(mesh.data.materials)
-        return list(materials)
+            materials.update((slot.material,0) for slot in mesh.material_slots if slot.material is not None)
+            materials.update((material,0) for material in mesh.data.materials)
+        return list(materials.keys())
 
     def renameBone(self, old_bone_name, new_bone_name):
         if old_bone_name == new_bone_name:
