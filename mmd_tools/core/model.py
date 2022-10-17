@@ -354,11 +354,10 @@ class MigrationFnModel:
             if armature_object.type != 'ARMATURE':
                 continue
 
-            root_object = FnModel.find_root(armature_object)
             if 'mmd_ik_loop_factor' not in armature_object:
                 return
 
-            root_object.mmd_root.ik_loop_factor = max(armature_object['mmd_ik_loop_factor'], 1)
+            FnModel.find_root(armature_object).mmd_root.ik_loop_factor = max(armature_object['mmd_ik_loop_factor'], 1)
             del armature_object['mmd_ik_loop_factor']
 
 

@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-import os
 import collections
 import logging
+import os
 import time
 
 import bpy
-from mathutils import Vector, Matrix
-
-import mmd_tools.core.model as mmd_model
-from mmd_tools import utils
-from mmd_tools import bpyutils
+from mathutils import Matrix, Vector
+from mmd_tools import bpyutils, utils
 from mmd_tools.core import pmx
 from mmd_tools.core.bone import FnBone
 from mmd_tools.core.material import FnMaterial
+from mmd_tools.core.model import FnModel, Model
 from mmd_tools.core.morph import FnMorph
 from mmd_tools.core.vmd.importer import BoneConverter
 from mmd_tools.operators.display_item import DisplayItemQuickSetup
@@ -76,7 +74,7 @@ class PMXImporter:
         """
         pmxModel = self.__model
         obj_name = self.__safe_name(bpy.path.display_name(pmxModel.filepath), max_length=54)
-        self.__rig = mmd_model.Model.create(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
+        self.__rig = Model.create(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
         root = self.__rig.rootObject()
         mmd_root = root.mmd_root
         self.__root = root
@@ -890,6 +888,7 @@ class PMXImporter:
         if self.__meshObj:
             self.__addArmatureModifier(self.__meshObj, self.__armObj)
 
+        FnModel.change_mmd_ik_loop_factor(self.__root, args.get('ik_loop_factor', 1))
         #bpy.context.scene.gravity[2] = -9.81 * 10 * self.__scale
         self.__targetScene.active_object = self.__root
 
