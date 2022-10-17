@@ -778,7 +778,7 @@ class Model:
         materials = {} # Use dict instead of set to guarantee preserve order
         for mesh in self.meshes():
             materials.update((slot.material,0) for slot in mesh.material_slots if slot.material is not None)
-            materials.update((material,0) for material in mesh.data.materials)
+            materials.update((material,0) for material in mesh.data.materials if material is not None)
         return list(materials.keys())
 
     def renameBone(self, old_bone_name, new_bone_name):
