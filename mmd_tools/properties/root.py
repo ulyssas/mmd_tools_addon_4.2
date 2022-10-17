@@ -319,6 +319,15 @@ class MMDRoot(bpy.types.PropertyGroup):
         default='',
     )
 
+    ik_loop_factor: bpy.props.IntProperty(
+        name='MMD IK Loop Factor',
+        description='Scaling factor of MMD IK loop',
+        min=1,
+        soft_max=10,
+        max=100,
+        default=1,
+    )
+
     # TODO: Replace to driver for NLA
     show_meshes: bpy.props.BoolProperty(
         name='Show Meshes',

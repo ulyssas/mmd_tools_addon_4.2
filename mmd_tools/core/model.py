@@ -325,6 +325,43 @@ class FnModel:
 
             mesh_object.vertex_groups.new(name=pose_bone_name)
 
+    @staticmethod
+    def change_mmd_ik_loop_factor(root_object: bpy.types.Object, new_ik_loop_factor: int):
+        mmd_root = root_object.mmd_root
+        old_ik_loop_factor = mmd_root.ik_loop_factor
+
+        if new_ik_loop_factor == old_ik_loop_factor:
+            return
+
+        armature_object = FnModel.find_armature(root_object)
+        for pose_bone in armature_object.pose.bones:
+            constraint: bpy.types.KinematicConstraint
+            for constraint in (c for c in pose_bone.constraints if c.type == 'IK'):
+                iterations = int(constraint.iterations * new_ik_loop_factor / old_ik_loop_factor)
+                logging.info('Update %s of %s: %d -> %d', constraint.name, pose_bone.name, constraint.iterations, iterations)
+                constraint.iterations = iterations
+
+        mmd_root.ik_loop_factor = new_ik_loop_factor
+
+        return
+
+class MigrationFnModel:
+    """Migration Functions for old MMD models broken by bugs or issues"""
+
+    @classmethod
+    def update_mmd_ik_loop_factor(cls):
+        for armature_object in bpy.data.objects:
+            if armature_object.type != 'ARMATURE':
+                continue
+
+            root_object = FnModel.find_root(armature_object)
+            if 'mmd_ik_loop_factor' not in armature_object:
+                return
+
+            root_object.mmd_root.ik_loop_factor = max(armature_object['mmd_ik_loop_factor'], 1)
+            del armature_object['mmd_ik_loop_factor']
+
+
 # SUPPORT_UNTIL: 4.3 LTS
 def isRigidBodyObject(obj):
     return FnModel.is_rigid_body_object(obj)
