@@ -144,7 +144,7 @@ class ImportPmx(Operator, ImportHelper):
         name='Log level',
         description='Select log level',
         items=LOG_LEVEL_ITEMS,
-        default='DEBUG',
+        default='INFO',
         )
     save_log: bpy.props.BoolProperty(
         name='Create a log file',
