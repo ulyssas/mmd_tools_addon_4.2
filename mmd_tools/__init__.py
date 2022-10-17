@@ -76,6 +76,9 @@ def load_handler(_dummy):
     from mmd_tools.core.camera import MigrationFnCamera
     MigrationFnCamera.update_mmd_camera()
 
+    from mmd_tools.core.model import MigrationFnModel
+    MigrationFnModel.update_mmd_ik_loop_factor()
+
 @bpy.app.handlers.persistent
 def save_pre_handler(_dummy):
     from mmd_tools.core.morph import MigrationFnMorph

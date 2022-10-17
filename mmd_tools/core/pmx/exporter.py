@@ -316,7 +316,7 @@ class __PmxExporter:
         else:
             return cls.__countBoneDepth(bone.parent) + 1
 
-    def __exportBones(self, meshes):
+    def __exportBones(self, root, meshes):
         """ Export bones.
         Returns:
             A dictionary to map Blender bone names to bone indices of the pmx.model instance.
@@ -427,7 +427,7 @@ class __PmxExporter:
                 pmx_bones.append(pmx_bone)
 
             self.__model.bones = pmx_bones
-        self.__exportIK(r)
+        self.__exportIK(root, r)
         return r
 
     def __exportIKLinks(self, pose_bone, count, bone_map, ik_links, custom_bone):
@@ -473,13 +473,13 @@ class __PmxExporter:
         return self.__exportIKLinks(pose_bone.parent, count - 1, bone_map, ik_links + [ik_link], custom_bone)
 
 
-    def __exportIK(self, bone_map):
+    def __exportIK(self, root, bone_map):
         """ Export IK constraints
          @param bone_map the dictionary to map Blender bone names to bone indices of the pmx.model instance.
         """
         pmx_bones = self.__model.bones
         arm = self.__armature
-        ik_loop_factor = max(arm.get('mmd_ik_loop_factor', 1), 1)
+        ik_loop_factor = root.mmd_root.ik_loop_factor
         pose_bones = arm.pose.bones
 
         ik_target_custom_map = {getattr(b.constraints.get('mmd_ik_target_custom', None), 'subtarget', None):b for b in pose_bones if not b.is_mmd_shadow_bone}
@@ -1268,7 +1268,7 @@ class __PmxExporter:
         if self.__translate_in_presets:
             self.__translate_armature(root)
 
-        nameMap = self.__exportBones(meshes)
+        nameMap = self.__exportBones(root, meshes)
 
         mesh_data = [self.__loadMeshData(i, nameMap) for i in meshes]
         self.__exportMeshes(mesh_data, nameMap)
