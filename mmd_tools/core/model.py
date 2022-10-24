@@ -9,7 +9,7 @@ import bpy
 import idprop
 import mathutils
 import rna_prop_ui
-from mmd_tools import bpyutils
+from mmd_tools import MMD_TOOLS_VERSION, bpyutils
 from mmd_tools.bpyutils import Props, SceneOp, matmul
 from mmd_tools.core import rigid_body
 from mmd_tools.core.bone import FnBone, MigrationFnBone
@@ -97,13 +97,13 @@ class FnModel:
     def copy_mmd_root(destination_root_object: bpy.types.Object, source_root_object: bpy.types.Object, overwrite: bool = True, replace_name2values: Dict[str,Dict[Any,Any]] = dict()):
         _copy_property(destination_root_object.mmd_root, source_root_object.mmd_root, overwrite=overwrite, replace_name2values=replace_name2values)
 
-    @classmethod
-    def find_root(cls, obj: bpy.types.Object) -> Optional[bpy.types.Object]:
+    @staticmethod
+    def find_root(obj: bpy.types.Object) -> Optional[bpy.types.Object]:
         if not obj:
             return None
         if obj.mmd_type == 'ROOT':
             return obj
-        return cls.find_root(obj.parent)
+        return FnModel.find_root(obj.parent)
 
     @staticmethod
     def find_armature(root) -> Optional[bpy.types.Object]:
@@ -149,6 +149,10 @@ class FnModel:
     @classmethod
     def child_meshes(cls, obj: bpy.types.Object) -> Iterable[bpy.types.Object]:
         return cls.filtered_children(lambda x: x.type == 'MESH' and x.mmd_type == 'NONE', obj)
+
+    @staticmethod
+    def is_root_object(obj):
+        return obj and obj.mmd_type == 'ROOT'
 
     @staticmethod
     def is_rigid_body_object(obj):
@@ -360,6 +364,20 @@ class MigrationFnModel:
             FnModel.find_root(armature_object).mmd_root.ik_loop_factor = max(armature_object['mmd_ik_loop_factor'], 1)
             del armature_object['mmd_ik_loop_factor']
 
+    @staticmethod
+    def update_mmd_tools_version():
+        for root_object in bpy.data.objects:
+            if root_object.type != 'EMPTY':
+                continue
+
+            if not FnModel.is_root_object(root_object):
+                continue
+
+            if 'mmd_tools_version' in root_object:
+                continue
+
+            root_object['mmd_tools_version'] = '2.8.0'
+
 
 # SUPPORT_UNTIL: 4.3 LTS
 def isRigidBodyObject(obj):
@@ -398,6 +416,7 @@ class Model:
         root.mmd_type = 'ROOT'
         root.mmd_root.name = name
         root.mmd_root.name_e = name_e
+        root['mmd_tools_version'] = MMD_TOOLS_VERSION
         setattr(root, Props.empty_display_size, scale/0.2)
         scene.link_object(root)
 

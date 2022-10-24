@@ -14,6 +14,8 @@ bl_info = {
     "category": "Object",
 }
 
+MMD_TOOLS_VERSION = '.'.join(map(str,bl_info['version']))
+
 import bpy
 
 from mmd_tools import auto_load
@@ -21,7 +23,6 @@ auto_load.init()
 
 from mmd_tools import operators
 from mmd_tools import properties
-
 
 def menu_func_import(self, _context):
     self.layout.operator(operators.fileio.ImportPmx.bl_idname, text='MikuMikuDance Model (.pmd, .pmx)', icon='OUTLINER_OB_ARMATURE')
@@ -78,6 +79,7 @@ def load_handler(_dummy):
 
     from mmd_tools.core.model import MigrationFnModel
     MigrationFnModel.update_mmd_ik_loop_factor()
+    MigrationFnModel.update_mmd_tools_version()
 
 @bpy.app.handlers.persistent
 def save_pre_handler(_dummy):
