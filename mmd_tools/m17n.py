@@ -406,10 +406,10 @@ translation_dict = {
         # Preferences
         ("*", "View3D > Sidebar > MMD Tools Panel"): "3D视图 > 侧栏 > MMD Tools面板",
         ("*", "Utility tools for MMD model editing. (UuuNyaa's forked version)"): "用于MMD模型编辑的实用工具。(UuuNyaa的分叉版本)",
-        ("*", "Enable MMD Model Production Features"): "开启MMD模型生产功能",
+        ("*", "Enable MMD Model Production Features"): "开启MMD模型制作功能",
         ("*", "Shared Toon Texture Folder"): "共用的卡通纹理文件夹",
         ("*", "Base Texture Folder"): "基线纹理文件夹",
-        ("*", "Dictionary Folder"): "辞書文件夹",
+        ("*", "Dictionary Folder"): "词典文件夹",
         ("*", "Non-Collision Threshold"): "非碰撞阈值",
 
         ("*", "Add-on update"): "插件更新",
@@ -422,13 +422,13 @@ translation_dict = {
         ("*", "Target"): "目标",
         ("Operator", "Update"): "更新",
 
-        ("*", "Failed to check update {}. ({})"): "更新の確認に失敗しました。{} ({})",
-        ("*", "Checked update. ({})"): "更新を確認しました。({})",
-        ("*", "Updated to {}. ({})"): "{}へ更新しました。({})",
-        ("*", "Failed to update {}. ({})"): "更新に失敗しました。{} ({})",
+        ("*", "Failed to check update {}. ({})"): "更新检查失败。{} ({})",
+        ("*", "Checked update. ({})"): "更新检查成功。({})",
+        ("*", "Updated to {}. ({})"): "已更新至 {}。({})",
+        ("*", "Failed to update {}. ({})"): "更新失败。{} ({})",
 
         # 3D Viewport > Sidebar > MMD > Model Production
-        ("*", "Model Production"): "模型生产",
+        ("*", "Model Production"): "模型制作",
         ("Operator", "Create Model"): "创建新的模型",
         ("Operator", "Create a MMD Model Root Object"): "创建一个MMD模型的根物体",
         ("*", "Name(Eng)"): "名称(英文)",
@@ -445,7 +445,7 @@ translation_dict = {
 
         ("Operator", "Translate"): "翻译",
         ("Operator", "Translate a MMD Model"): "翻译一个MMD模型",
-        ("Operator", "(Experimental) Global Translation"): "(实验的) 全球翻译",
+        ("Operator", "(Experimental) Global Translation"): "(实验性) 全局翻译",
         ("*", "Dictionary"): "词典",
         ("*", "Modes"): "模式",
         ("*", "MMD Names"): "MMD名称",
@@ -626,8 +626,8 @@ translation_dict = {
 
         # 3D Viewport > Sidebar > MMD > Bone Order Panel
         ("*", "Bone Order"): "骨骼顺序",
-        ("*", "After Dynamics"): "物理後",
-        ("*", "Transform Order"): "変形階層",
+        ("*", "After Dynamics"): "作用于物理之后",
+        ("*", "Transform Order"): "变形顺序",
         ("Operator", "Add Missing Vertex Groups from Bones"): "从骨骼中添加缺失的顶点组",
         ("*", "Search in all meshes"): "在所有网格中搜索",
 
@@ -740,7 +740,7 @@ translation_dict = {
         ("*", "SubTex UV"): "次纹理UV",
 
         # Operator Popup > Global Translation Popup
-        ("Operator", "Global Translation Popup"): "全球翻译对话框",
+        ("Operator", "Global Translation Popup"): "全局翻译对话框",
         ("*", "is Blank:"): "是空白:",
         ("*", "Japanese"): "日文",
         ("*", "English"): "英文",
