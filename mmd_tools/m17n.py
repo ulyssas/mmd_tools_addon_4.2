@@ -406,10 +406,10 @@ translation_dict = {
         # Preferences
         ("*", "View3D > Sidebar > MMD Tools Panel"): "3D视图 > 侧栏 > MMD Tools面板",
         ("*", "Utility tools for MMD model editing. (UuuNyaa's forked version)"): "用于MMD模型编辑的实用工具。(UuuNyaa的分叉版本)",
-        ("*", "Enable MMD Model Production Features"): "开启MMD模型生产功能",
+        ("*", "Enable MMD Model Production Features"): "开启MMD模型制作功能",
         ("*", "Shared Toon Texture Folder"): "共用的卡通纹理文件夹",
-        ("*", "Base Texture Folder"): "基线纹理文件夹",
-        ("*", "Dictionary Folder"): "辞書文件夹",
+        ("*", "Base Texture Folder"): "基础纹理文件夹",
+        ("*", "Dictionary Folder"): "词典文件夹",
         ("*", "Non-Collision Threshold"): "非碰撞阈值",
 
         ("*", "Add-on update"): "插件更新",
@@ -422,13 +422,13 @@ translation_dict = {
         ("*", "Target"): "目标",
         ("Operator", "Update"): "更新",
 
-        ("*", "Failed to check update {}. ({})"): "更新の確認に失敗しました。{} ({})",
-        ("*", "Checked update. ({})"): "更新を確認しました。({})",
-        ("*", "Updated to {}. ({})"): "{}へ更新しました。({})",
-        ("*", "Failed to update {}. ({})"): "更新に失敗しました。{} ({})",
+        ("*", "Failed to check update {}. ({})"): "更新检查失败。{} ({})",
+        ("*", "Checked update. ({})"): "更新检查成功。({})",
+        ("*", "Updated to {}. ({})"): "已更新至 {}。({})",
+        ("*", "Failed to update {}. ({})"): "更新失败。{} ({})",
 
         # 3D Viewport > Sidebar > MMD > Model Production
-        ("*", "Model Production"): "模型生产",
+        ("*", "Model Production"): "模型制作",
         ("Operator", "Create Model"): "创建新的模型",
         ("Operator", "Create a MMD Model Root Object"): "创建一个MMD模型的根物体",
         ("*", "Name(Eng)"): "名称(英文)",
@@ -445,7 +445,7 @@ translation_dict = {
 
         ("Operator", "Translate"): "翻译",
         ("Operator", "Translate a MMD Model"): "翻译一个MMD模型",
-        ("Operator", "(Experimental) Global Translation"): "(实验的) 全球翻译",
+        ("Operator", "(Experimental) Global Translation"): "(实验性) 全局翻译",
         ("*", "Dictionary"): "词典",
         ("*", "Modes"): "模式",
         ("*", "MMD Names"): "MMD名称",
@@ -604,7 +604,7 @@ translation_dict = {
         ("Operator", "Select Rigid Body"): "选择刚体",
         ("*", "Collision Group"): "碰撞组",
         ("*", "Collision Group Mask"): "碰撞组遮罩",
-        ("*", "Rigid Type"): "刚类型",
+        ("*", "Rigid Type"): "刚体类型",
         ("*", "Hide Others"): "隐藏其他",
 
         # 3D Viewport > Sidebar > MMD > Joints
@@ -626,8 +626,8 @@ translation_dict = {
 
         # 3D Viewport > Sidebar > MMD > Bone Order Panel
         ("*", "Bone Order"): "骨骼顺序",
-        ("*", "After Dynamics"): "物理後",
-        ("*", "Transform Order"): "変形階層",
+        ("*", "After Dynamics"): "作用于物理之后",
+        ("*", "Transform Order"): "变形顺序",
         ("Operator", "Add Missing Vertex Groups from Bones"): "从骨骼中添加缺失的顶点组",
         ("*", "Search in all meshes"): "在所有网格中搜索",
 
@@ -716,7 +716,7 @@ translation_dict = {
         ("*", "Information:"): "信息:",
         ("*", "Controllable"): "可控制的",
         ("*", "Tip Bone"): "尖端骨骼",
-        ("*", "Fixed Axis"): "轴制限",
+        ("*", "Fixed Axis"): "固定轴",
         ("*", "Local Axes"): "局部轴",
         ("*", "Local X-Axis"): "局部X轴",
         ("*", "Local Z-Axis"): "局部Z轴",
@@ -724,10 +724,10 @@ translation_dict = {
         ("*", "Move +"): "移动 +",
 
         # Shader Editor > Shader Nodes
-        ("*", "Base Tex Fac"): "基线纹理系数",
-        ("*", "Base Tex"): "基线纹理",
-        ("*", "Base Alpha"): "基线Alpha",
-        ("*", "Base UV"): "基线UV",
+        ("*", "Base Tex Fac"): "基础纹理系数",
+        ("*", "Base Tex"): "基础纹理",
+        ("*", "Base Alpha"): "基础Alpha",
+        ("*", "Base UV"): "基础UV",
         ("*", "Toon Tex Fac"): "卡通纹理系数",
         ("*", "Toon Tex"): "卡通纹理",
         ("*", "Toon Alpha"): "卡通Alpha",
@@ -740,7 +740,7 @@ translation_dict = {
         ("*", "SubTex UV"): "次纹理UV",
 
         # Operator Popup > Global Translation Popup
-        ("Operator", "Global Translation Popup"): "全球翻译对话框",
+        ("Operator", "Global Translation Popup"): "全局翻译对话框",
         ("*", "is Blank:"): "是空白:",
         ("*", "Japanese"): "日文",
         ("*", "English"): "英文",
@@ -784,13 +784,13 @@ translation_dict = {
         ("*", "Edge A"): "边缘 A",
         ("*", "Edge1 A"): "边缘1 A",
         ("*", "Edge2 A"): "边缘2 A",
-        ("*", "Base RGB"): "基线 RGB",
-        ("*", "Base1 RGB"): "基线1 RGB",
-        ("*", "Base2 RGB"): "基线2 RGB",
-        ("*", "Base A"): "基线 A",
-        ("*", "Base1 A"): "基线1 A",
-        ("*", "Base2 A"): "基线2 A",
-        ("*", "Base Tex"): "基线Tex",
+        ("*", "Base RGB"): "基础 RGB",
+        ("*", "Base1 RGB"): "基础1 RGB",
+        ("*", "Base2 RGB"): "基础2 RGB",
+        ("*", "Base A"): "基础 A",
+        ("*", "Base1 A"): "基础1 A",
+        ("*", "Base2 A"): "基础2 A",
+        ("*", "Base Tex"): "基础Tex",
         ("*", "Toon RGB"): "卡通 RGB",
         ("*", "Toon1 RGB"): "卡通1 RGB",
         ("*", "Toon2 RGB"): "卡通2 RGB",
