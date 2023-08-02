@@ -2,6 +2,7 @@
 import os
 import copy
 import logging
+import math
 import shutil
 import time
 
@@ -381,14 +382,30 @@ class __PmxExporter:
                 boneMap[bone] = pmx_bone
                 r[bone.name] = len(pmx_bones) - 1
 
-                if bone.use_connect and p_bone.parent.mmd_bone.is_tip:
+                if (
+                    (
+                        bone.use_connect
+                        or (
+                            not pmx_bone.isMovable
+                            and math.isclose(0.0, (bone.head - bone.parent.tail).length)
+                        )
+                    )
+                    and p_bone.parent.mmd_bone.is_tip
+                ):
                     logging.debug(' * fix location of bone %s, parent %s is tip', bone.name, bone.parent.name)
                     pmx_bone.location = boneMap[bone.parent].location
 
                 # a connected child bone is preferred
                 pmx_bone.displayConnection = None
                 for child in bone.children:
-                    if child.use_connect or bool(child.get('mmd_bone_use_connect')):
+                    if (
+                        child.use_connect
+                        or bool(child.get('mmd_bone_use_connect'))
+                        or (
+                            all(pose_bones[child.name].lock_location)
+                            and math.isclose(0.0, (child.head - bone.tail).length)
+                        )
+                    ):
                         pmx_bone.displayConnection = child
                         break
                 if not pmx_bone.displayConnection:

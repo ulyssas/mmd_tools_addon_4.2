@@ -266,14 +266,14 @@ class PMXImporter:
                 if isinstance(m_bone.displayConnection, int) and m_bone.displayConnection >= 0:
                     t = editBoneTable[m_bone.displayConnection]
                     if t.parent is None or t.parent != b_bone:
-                        logging.warning(' * disconnected: %s (%d)<> %s', b_bone.name, len(b_bone.children), t.name)
                         continue
                     if pmx_bones[m_bone.displayConnection].isMovable:
-                        logging.warning(' * disconnected: %s (%d)-> %s', b_bone.name, len(b_bone.children), t.name)
                         continue
                     if (b_bone.tail - t.head).length > 1e-4:
-                        logging.warning(' * disconnected: %s (%d)=> %s', b_bone.name, len(b_bone.children), t.name)
                         continue
+                    if not m_bone.isMovable:
+                        continue
+                    logging.warning(' * connected: %s (%d)-> %s', b_bone.name, len(b_bone.children), t.name)
                     t.use_connect = True
 
         return nameTable, specialTipBones
