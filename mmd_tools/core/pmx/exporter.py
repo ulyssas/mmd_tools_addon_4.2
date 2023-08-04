@@ -383,17 +383,18 @@ class __PmxExporter:
                 r[bone.name] = len(pmx_bones) - 1
 
                 if (
-                    (
+                    pmx_bone.parent is not None
+                    and (
                         bone.use_connect
                         or (
                             not pmx_bone.isMovable
-                            and math.isclose(0.0, (bone.head - bone.parent.tail).length)
+                            and math.isclose(0.0, (bone.head - pmx_bone.parent.tail).length)
                         )
                     )
                     and p_bone.parent.mmd_bone.is_tip
                 ):
-                    logging.debug(' * fix location of bone %s, parent %s is tip', bone.name, bone.parent.name)
-                    pmx_bone.location = boneMap[bone.parent].location
+                    logging.debug(' * fix location of bone %s, parent %s is tip', bone.name, pmx_bone.parent.name)
+                    pmx_bone.location = boneMap[pmx_bone.parent].location
 
                 # a connected child bone is preferred
                 pmx_bone.displayConnection = None
