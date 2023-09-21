@@ -18,6 +18,7 @@ from mmd_tools.core.rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STAT
 
 if TYPE_CHECKING:
     from properties.rigid_body import MMDRigidBody
+    from properties.morph import MaterialMorphData
 
 
 class InvalidRigidSettingException(ValueError):
@@ -212,13 +213,26 @@ class FnModel:
                 'selected_editable_objects': [child_armature_object],
             }, location=True, rotation=True, scale=True)
 
-            # replace mesh armature modifier.object
-            mesh: bpy.types.Object
-            for mesh in FnModel.child_meshes(child_armature_object):
-                bpy.ops.object.transform_apply({
-                    'active_object': mesh,
-                    'selected_editable_objects': [mesh],
-                }, location=True, rotation=True, scale=True)
+            # Disconnect mesh dependencies because transform_apply fails when mesh data are multiple used.
+            related_meshes: Dict[MaterialMorphData, bpy.types.Mesh] = {}
+            for material_morph in child_root_object.mmd_root.material_morphs:
+                for material_morph_data in material_morph.data:
+                    if material_morph_data.related_mesh_data is not None:
+                        related_meshes[material_morph_data] = material_morph_data.related_mesh_data
+                        material_morph_data.related_mesh_data = None
+            try:
+                # replace mesh armature modifier.object
+                mesh: bpy.types.Object
+                for mesh in FnModel.child_meshes(child_armature_object):
+                    bpy.ops.object.transform_apply({
+                        'active_object': mesh,
+                        'selected_editable_objects': [mesh],
+                    }, location=True, rotation=True, scale=True)
+            finally:
+                # Restore mesh dependencies
+                for material_morph in child_root_object.mmd_root.material_morphs:
+                    for material_morph_data in material_morph.data:
+                        material_morph_data.related_mesh_data = related_meshes.get(material_morph_data, None)
 
             # join armatures
             bpy.ops.object.join({
