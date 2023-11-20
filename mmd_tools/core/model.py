@@ -12,7 +12,6 @@ import rna_prop_ui
 from mmd_tools import MMD_TOOLS_VERSION, bpyutils
 from mmd_tools.bpyutils import Props, SceneOp, matmul
 from mmd_tools.core import rigid_body
-from mmd_tools.core.bone import FnBone, MigrationFnBone
 from mmd_tools.core.morph import FnMorph
 from mmd_tools.core.rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
 
@@ -1330,18 +1329,6 @@ class Model:
             t, r, s = matmul(m, i.matrix_local).decompose()
             i.location = t
             i.rotation_euler = r.to_euler(i.rotation_mode)
-
-    def cleanAdditionalTransformConstraints(self):
-        arm = self.armature()
-        if arm:
-            FnBone.clean_additional_transformation(arm)
-
-    def applyAdditionalTransformConstraints(self):
-        arm = self.armature()
-        if not arm:
-            return
-        MigrationFnBone.fix_mmd_ik_limit_override(arm)
-        FnBone.apply_additional_transformation(arm)
 
     def __editPhysicsBones(self, editor: Callable[[bpy.types.EditBone], None], target_modes: Set[str]):
         armature_object = self.armature()
