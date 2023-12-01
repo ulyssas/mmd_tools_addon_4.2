@@ -145,7 +145,8 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         if self.include_descendant_bones:
             for edit_bone in root_bones:
-                bpy.ops.armature.select_similar({'active_bone': edit_bone}, type='CHILDREN', threshold=0.1)
+                with bpy.context.temp_override(active_bone=edit_bone):
+                    bpy.ops.armature.select_similar(type='CHILDREN', threshold=0.1)
 
         separate_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in context.selected_bones}
         deform_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in target_armature_object.data.edit_bones if b.use_deform}
@@ -216,16 +217,18 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         separate_model_armature_object = separate_model.armature()
 
         if self.separate_armature:
-            bpy.ops.object.join({
-                'active_object': separate_model_armature_object,
-                'selected_editable_objects': [separate_model_armature_object, separate_armature_object],
-            })
+            with bpy.context.temp_override(
+                active_object=separate_model_armature_object,
+                selected_editable_objects=[separate_model_armature_object, separate_armature_object],
+            ):
+                bpy.ops.object.join()
 
         # add mesh
-        bpy.ops.object.parent_set({
-            'object': separate_model_armature_object,
-            'selected_editable_objects': [separate_model_armature_object, *separate_mesh_objects],
-        }, type='OBJECT', keep_transform=True)
+        with bpy.context.temp_override(
+            object=separate_model_armature_object,
+            selected_editable_objects=[separate_model_armature_object, *separate_mesh_objects],
+        ):
+            bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
         # replace mesh armature modifier.object
         for separate_mesh in separate_mesh_objects:
@@ -235,15 +238,17 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
             armature_modifier.object = separate_model_armature_object
 
-        bpy.ops.object.parent_set({
-            'object': separate_model.rigidGroupObject(),
-            'selected_editable_objects': [separate_model.rigidGroupObject(), *separate_rigid_bodies],
-        }, type='OBJECT', keep_transform=True)
+        with bpy.context.temp_override(
+            object=separate_model.rigidGroupObject(),
+            selected_editable_objects=[separate_model.rigidGroupObject(), *separate_rigid_bodies],
+        ):
+            bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
-        bpy.ops.object.parent_set({
-            'object': separate_model.jointGroupObject(),
-            'selected_editable_objects': [separate_model.jointGroupObject(), *separate_joints],
-        }, type='OBJECT', keep_transform=True)
+        with bpy.context.temp_override(
+            object=separate_model.jointGroupObject(),
+            selected_editable_objects=[separate_model.jointGroupObject(), *separate_joints],
+        ):
+            bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
         # move separate objects to new collection
         mmd_layer_collection = find_user_layer_collection(mmd_root_object)

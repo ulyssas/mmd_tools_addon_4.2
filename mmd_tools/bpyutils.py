@@ -144,6 +144,7 @@ def select_object(obj, objects=[]):
         with select_object(obj):
             some functions...
     """
+    # TODO: reimplement with bpy.context.temp_override
     return __SelectObjects(obj, objects)
 
 def activate_layer_collection(target: Union[bpy.types.Object, bpy.types.LayerCollection, None]):

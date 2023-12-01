@@ -232,10 +232,11 @@ class FnModel:
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: List[bpy.types.Object]):
         parent_armature_object = FnModel.find_armature(parent_root_object)
-        bpy.ops.object.transform_apply({
-            'active_object': parent_armature_object,
-            'selected_editable_objects': [parent_armature_object],
-        }, location=True, rotation=True, scale=True)
+        with bpy.context.temp_override(
+            active_object=parent_armature_object,
+            selected_editable_objects=[parent_armature_object],
+        ):
+            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
         def _change_bone_id(bone: bpy.types.PoseBone, new_bone_id: int, bone_morphs, pose_bones):
             """This function will also update the references of bone morphs and rotate+/move+."""
@@ -278,10 +279,12 @@ class FnModel:
 
             child_armature_matrix = child_armature_object.matrix_parent_inverse.copy()
 
-            bpy.ops.object.transform_apply({
-                'active_object': child_armature_object,
-                'selected_editable_objects': [child_armature_object],
-            }, location=True, rotation=True, scale=True)
+
+            with bpy.context.temp_override(
+                active_object=child_armature_object,
+                selected_editable_objects=[child_armature_object],
+            ):
+                bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
             # Disconnect mesh dependencies because transform_apply fails when mesh data are multiple used.
             related_meshes: Dict[MaterialMorphData, bpy.types.Mesh] = {}
@@ -294,10 +297,11 @@ class FnModel:
                 # replace mesh armature modifier.object
                 mesh: bpy.types.Object
                 for mesh in FnModel.child_meshes(child_armature_object):
-                    bpy.ops.object.transform_apply({
-                        'active_object': mesh,
-                        'selected_editable_objects': [mesh],
-                    }, location=True, rotation=True, scale=True)
+                    with bpy.context.temp_override(
+                        active_object=mesh,
+                        selected_editable_objects=[mesh],
+                    ):
+                        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
             finally:
                 # Restore mesh dependencies
                 for material_morph in child_root_object.mmd_root.material_morphs:
@@ -305,10 +309,11 @@ class FnModel:
                         material_morph_data.related_mesh_data = related_meshes.get(material_morph_data, None)
 
             # join armatures
-            bpy.ops.object.join({
-                'active_object': parent_armature_object,
-                'selected_editable_objects': [parent_armature_object, child_armature_object],
-            })
+            with bpy.context.temp_override(
+                active_object=parent_armature_object,
+                selected_editable_objects=[parent_armature_object, child_armature_object],
+            ):
+                bpy.ops.object.join()
 
             for mesh in FnModel.child_meshes(parent_armature_object):
                 armature_modifier: bpy.types.ArmatureModifier = (
@@ -322,28 +327,32 @@ class FnModel:
             child_rigid_group_object = FnModel.find_rigid_group(child_root_object)
             if child_rigid_group_object is not None:
                 parent_rigid_group_object = FnModel.find_rigid_group(parent_root_object)
-                bpy.ops.object.parent_set({
-                    'object': parent_rigid_group_object,
-                    'selected_editable_objects': [parent_rigid_group_object, *FnModel.iterate_rigid_body_objects(child_root_object)],
-                }, type='OBJECT', keep_transform=True)
+
+                with bpy.context.temp_override(
+                    object=parent_rigid_group_object,
+                    selected_editable_objects=[parent_rigid_group_object, *FnModel.iterate_rigid_body_objects(child_root_object)],
+                ):
+                    bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
                 bpy.data.objects.remove(child_rigid_group_object)
 
             child_joint_group_object = FnModel.find_joint_group(child_root_object)
             if child_joint_group_object is not None:
                 parent_joint_group_object = FnModel.find_joint_group(parent_root_object)
-                bpy.ops.object.parent_set({
-                    'object': parent_joint_group_object,
-                    'selected_editable_objects': [parent_joint_group_object, *FnModel.iterate_joint_objects(child_root_object)],
-                }, type='OBJECT', keep_transform=True)
+                with bpy.context.temp_override(
+                    object=parent_joint_group_object,
+                    selected_editable_objects=[parent_joint_group_object, *FnModel.iterate_joint_objects(child_root_object)],
+                ):
+                    bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
                 bpy.data.objects.remove(child_joint_group_object)
 
             child_temporary_group_object = FnModel.find_temporary_group(child_root_object)
             if child_temporary_group_object is not None:
                 parent_temporary_group_object = FnModel.find_temporary_group(parent_root_object)
-                bpy.ops.object.parent_set({
-                    'object': parent_temporary_group_object,
-                    'selected_editable_objects': [parent_temporary_group_object, *FnModel.iterate_temporary_objects(child_root_object)],
-                }, type='OBJECT', keep_transform=True)
+                with bpy.context.temp_override(
+                    object=parent_temporary_group_object,
+                    selected_editable_objects=[parent_temporary_group_object, *FnModel.iterate_temporary_objects(child_root_object)],
+                ):
+                    bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
                 for obj in list(FnModel.all_children(child_temporary_group_object)):
                     bpy.data.objects.remove(obj)
@@ -1007,25 +1016,8 @@ class Model:
         rigid_body.setRigidBodyWorldEnabled(rigidbody_world_enabled)
 
     def __removeTemporaryObjects(self):
-        if bpy.app.version < (2, 78, 0):
-            self.__removeChildrenOfTemporaryGroupObject()  # for speeding up only
-            for i in self.temporaryObjects():
-                bpy.context.scene.objects.unlink(i)
-                bpy.data.objects.remove(i)
-        elif bpy.app.version < (2, 80, 0):
-            for i in self.temporaryObjects():
-                bpy.data.objects.remove(i, do_unlink=True)
-        elif bpy.app.version < (2, 81, 0):
-            tmp_objs = tuple(self.temporaryObjects())
-            for i in tmp_objs:
-                for c in i.users_collection:
-                    c.objects.unlink(i)
-            bpy.ops.object.delete({'selected_objects': tmp_objs, 'active_object': self.rootObject()})
-            for i in tmp_objs:
-                if i.users < 1:
-                    bpy.data.objects.remove(i)
-        else:
-            bpy.ops.object.delete({'selected_objects': tuple(self.temporaryObjects()), 'active_object': self.rootObject()})
+        with bpy.context.temp_override(selected_objects=tuple(self.temporaryObjects()), active_object=self.rootObject()):
+            bpy.ops.object.delete()
 
     def __removeChildrenOfTemporaryGroupObject(self):
         tmp_grp_obj = self.temporaryGroupObject()

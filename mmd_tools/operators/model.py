@@ -425,7 +425,8 @@ class AssembleAll(Operator):
             rig.build()
             rig.morph_slider.bind()
 
-            bpy.ops.mmd_tools.sdef_bind({'selected_objects': [active_object]})
+            with bpy.context.temp_override(selected_objects=[active_object]):
+                bpy.ops.mmd_tools.sdef_bind()
             root_object.mmd_root.use_property_driver = True
 
             SceneOp(context).active_object = active_object
@@ -445,7 +446,8 @@ class DisassembleAll(Operator):
             rig = mmd_model.Model(root_object)
 
             root_object.mmd_root.use_property_driver = False
-            bpy.ops.mmd_tools.sdef_unbind({'selected_objects': [active_object]})
+            with bpy.context.temp_override(selected_objects=[active_object]):
+                bpy.ops.mmd_tools.sdef_unbind()
             rig.morph_slider.unbind()
             rig.clean()
             FnBone.clean_additional_transformation(rig.armature())
