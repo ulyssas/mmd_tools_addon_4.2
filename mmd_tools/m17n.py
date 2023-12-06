@@ -404,7 +404,7 @@ translation_dict = {
         ("*", "Sphere Tex"): "スフィアテクスチャ",
         ("*", "Sphere Tex Add"): "スフィアテクスチャ加算",
     },
-    "zh_CN": {
+    "zh_HANS": {
         # Preferences
         ("*", "View3D > Sidebar > MMD Tools Panel"): "3D视图 > 侧栏 > MMD Tools面板",
         ("*", "Utility tools for MMD model editing. (UuuNyaa's forked version)"): "用于MMD模型编辑的实用工具。(UuuNyaa的分叉版本)",
