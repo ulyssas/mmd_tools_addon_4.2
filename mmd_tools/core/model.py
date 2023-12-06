@@ -24,78 +24,10 @@ class InvalidRigidSettingException(ValueError):
     pass
 
 
-def _copy_property_group(destination: bpy.types.PropertyGroup, source: bpy.types.PropertyGroup, overwrite: bool = True, replace_name2values: Dict[str,Dict[Any,Any]] = dict()):
-    destination_rna_properties = destination.bl_rna.properties
-    for name in source.keys():
-        is_attr = hasattr(source, name)
-        value = getattr(source, name) if is_attr else source[name]
-        if isinstance(value, bpy.types.PropertyGroup):
-            _copy_property_group(getattr(destination, name) if is_attr else destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
-        elif isinstance(value, bpy.types.bpy_prop_collection):
-            _copy_collection_property(getattr(destination, name) if is_attr else destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
-        elif isinstance(value, idprop.types.IDPropertyArray):
-            pass
-            # _copy_collection_property(getattr(destination, name) if is_attr else destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
-        else:
-            value2values = replace_name2values.get(name)
-            if value2values is not None:
-                replace_value = value2values.get(value)
-                if replace_value is not None:
-                    value = replace_value
-
-            if overwrite or destination_rna_properties[name].default == getattr(destination, name) if is_attr else destination[name]:
-                if is_attr:
-                    setattr(destination, name, value)
-                else:
-                    destination[name] = value
-
-
-def _copy_collection_property(destination: bpy.types.bpy_prop_collection, source: bpy.types.bpy_prop_collection, overwrite: bool = True, replace_name2values: Dict[str,Dict[Any,Any]] = dict()):
-    if overwrite:
-        destination.clear()
-
-    len_source = len(source)
-    if len_source == 0:
-        return
-
-    source_names: Set[str] = set(source.keys())
-    if len(source_names) == len_source and source[0].name != '':
-        # names work
-        destination_names: Set[str] = set(destination.keys())
-
-        missing_names = source_names - destination_names
-
-        destination_index = 0
-        for name, value in source.items():
-            if name in missing_names:
-                new_element = destination.add()
-                new_element['name'] = name
-
-            _copy_property(destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
-            destination.move(destination.find(name), destination_index)
-            destination_index += 1
-    else:
-        # names not work
-        while len_source > len(destination):
-            destination.add()
-
-        for index, name in enumerate(source.keys()):
-            _copy_property(destination[index], source[index], overwrite=True, replace_name2values=replace_name2values)
-
-
-def _copy_property(destination: Union[bpy.types.PropertyGroup, bpy.types.bpy_prop_collection], source: Union[bpy.types.PropertyGroup, bpy.types.bpy_prop_collection], overwrite: bool = True, replace_name2values: Dict[str,Dict[Any,Any]] = dict()):
-    if isinstance(destination, bpy.types.PropertyGroup):
-        _copy_property_group(destination, source, overwrite=overwrite, replace_name2values=replace_name2values)
-    elif isinstance(destination, bpy.types.bpy_prop_collection):
-        _copy_collection_property(destination, source, overwrite=overwrite, replace_name2values=replace_name2values)
-    else:
-        raise ValueError(f'Unsupported destination: {destination}')
-
-
 class FnModel:
     @staticmethod
-    def copy_mmd_root(destination_root_object: bpy.types.Object, source_root_object: bpy.types.Object, overwrite: bool = True, replace_name2values: Dict[str,Dict[Any,Any]] = dict()):
-        _copy_property(destination_root_object.mmd_root, source_root_object.mmd_root, overwrite=overwrite, replace_name2values=replace_name2values)
+    def copy_mmd_root(destination_root_object: bpy.types.Object, source_root_object: bpy.types.Object, overwrite: bool = True, replace_name2values: Dict[str,Dict[Any,Any]] = None):
+        FnModel.__copy_property(destination_root_object.mmd_root, source_root_object.mmd_root, overwrite=overwrite, replace_name2values=replace_name2values or {})
 
     @staticmethod
     def find_root(obj: bpy.types.Object) -> Optional[bpy.types.Object]:
@@ -145,7 +77,6 @@ class FnModel:
     @staticmethod
     def all_children(obj: bpy.types.Object) -> Iterator[bpy.types.Object]:
         child: bpy.types.Object
-        obj.children_recursive
         for child in obj.children:
             yield child
             yield from FnModel.all_children(child)
@@ -227,7 +158,7 @@ class FnModel:
             height = abs((z1 - z0) - diameter)
             return (radius, height, 0.0)
         else:
-            raise Exception('Invalid shape type.')
+            raise ValueError(f'Invalid shape type: {shape}')
 
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: List[bpy.types.Object]):
@@ -446,6 +377,78 @@ class FnModel:
 
         return
 
+    @staticmethod
+    def __copy_property_group(destination: bpy.types.PropertyGroup, source: bpy.types.PropertyGroup, overwrite: bool, replace_name2values: Dict[str,Dict[Any,Any]]):
+        destination_rna_properties = destination.bl_rna.properties
+        for name in source.keys():
+            is_attr = hasattr(source, name)
+            value = getattr(source, name) if is_attr else source[name]
+            if isinstance(value, bpy.types.PropertyGroup):
+                FnModel.__copy_property_group(getattr(destination, name) if is_attr else destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
+            elif isinstance(value, bpy.types.bpy_prop_collection):
+                FnModel.__copy_collection_property(getattr(destination, name) if is_attr else destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
+            elif isinstance(value, idprop.types.IDPropertyArray):
+                pass
+                # _copy_collection_property(getattr(destination, name) if is_attr else destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
+            else:
+                value2values = replace_name2values.get(name)
+                if value2values is not None:
+                    replace_value = value2values.get(value)
+                    if replace_value is not None:
+                        value = replace_value
+
+                if overwrite or destination_rna_properties[name].default == getattr(destination, name) if is_attr else destination[name]:
+                    if is_attr:
+                        setattr(destination, name, value)
+                    else:
+                        destination[name] = value
+
+
+    @staticmethod
+    def __copy_collection_property(destination: bpy.types.bpy_prop_collection, source: bpy.types.bpy_prop_collection, overwrite: bool, replace_name2values: Dict[str,Dict[Any,Any]]):
+        if overwrite:
+            destination.clear()
+
+        len_source = len(source)
+        if len_source == 0:
+            return
+
+        source_names: Set[str] = set(source.keys())
+        if len(source_names) == len_source and source[0].name != '':
+            # names work
+            destination_names: Set[str] = set(destination.keys())
+
+            missing_names = source_names - destination_names
+
+            destination_index = 0
+            for name, value in source.items():
+                if name in missing_names:
+                    new_element = destination.add()
+                    new_element['name'] = name
+
+                FnModel.__copy_property(destination[name], value, overwrite=overwrite, replace_name2values=replace_name2values)
+                destination.move(destination.find(name), destination_index)
+                destination_index += 1
+        else:
+            # names not work
+            while len_source > len(destination):
+                destination.add()
+
+            for index, name in enumerate(source.keys()):
+                FnModel.__copy_property(destination[index], source[index], overwrite=True, replace_name2values=replace_name2values)
+
+
+    @staticmethod
+    def __copy_property(destination: Union[bpy.types.PropertyGroup, bpy.types.bpy_prop_collection], source: Union[bpy.types.PropertyGroup, bpy.types.bpy_prop_collection], overwrite: bool, replace_name2values: Dict[str,Dict[Any,Any]]):
+        if isinstance(destination, bpy.types.PropertyGroup):
+            FnModel.__copy_property_group(destination, source, overwrite=overwrite, replace_name2values=replace_name2values)
+        elif isinstance(destination, bpy.types.bpy_prop_collection):
+            FnModel.__copy_collection_property(destination, source, overwrite=overwrite, replace_name2values=replace_name2values)
+        else:
+            raise ValueError(f'Unsupported destination: {destination}')
+
+
+
 class MigrationFnModel:
     """Migration Functions for old MMD models broken by bugs or issues"""
 
@@ -534,8 +537,11 @@ class Model:
         setattr(armObj, Props.show_in_front, True)
         setattr(armObj, Props.display_type, 'WIRE')
 
+        from mmd_tools.core.bone import FnBone
+        FnBone.setup_special_bone_collections(armObj)
+
         if add_root_bone:
-            bone_name = u'全ての親'
+            bone_name = '全ての親'
             with bpyutils.edit_object(armObj) as data:
                 bone = data.edit_bones.new(name=bone_name)
                 bone.head = [0.0, 0.0, 0.0]
@@ -561,8 +567,8 @@ class Model:
         frame_root.name_e = 'Root'
         frame_root.is_special = True
 
-        frame_facial = frames.get(u'表情', None) or frames.add()
-        frame_facial.name = u'表情'
+        frame_facial = frames.get('表情', None) or frames.add()
+        frame_facial.name = '表情'
         frame_facial.name_e = 'Facial'
         frame_facial.is_special = True
 
@@ -574,7 +580,7 @@ class Model:
 
         if not reset:
             frames.move(frames.find('Root'), 0)
-            frames.move(frames.find(u'表情'), 1)
+            frames.move(frames.find('表情'), 1)
 
     @property
     def morph_slider(self):
@@ -642,7 +648,7 @@ class Model:
 
         obj: Optional[bpy.types.Object] = kwargs.get('obj', None)
         if obj is None:
-            obj, = self.createRigidBodyPool(1)
+            obj = self.createRigidBodyPool(1)[0]
 
         obj.location = location
         obj.rotation_euler = rotation
@@ -744,7 +750,7 @@ class Model:
 
         obj = kwargs.get('obj', None)
         if obj is None:
-            obj, = self.createJointPool(1)
+            obj = self.createJointPool(1)[0]
 
         obj.name = 'J.' + name
         obj.mmd_joint.name_j = name

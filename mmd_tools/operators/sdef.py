@@ -72,6 +72,7 @@ class BindSDEF(Operator):
         vm = context.window_manager
         return vm.invoke_props_dialog(self)
 
+    # TODO: Utility Functionalize
     def execute(self, context):
         target_meshes, root_objects = _get_target_objects(context)
 
@@ -80,7 +81,7 @@ class BindSDEF(Operator):
 
         param = ((None, False, True)[int(self.mode)], self.use_skip, self.use_scale)
         count = sum(FnSDEF.bind(i, *param) for i in target_meshes)
-        self.report({'INFO'}, 'Binded %d of %d selected mesh(es)'%(count, len(target_meshes)))
+        self.report({'INFO'}, f'Binded {count} of {len(target_meshes)} selected mesh(es)')
         return {'FINISHED'}
 
 class UnbindSDEF(Operator):
@@ -89,6 +90,7 @@ class UnbindSDEF(Operator):
     bl_description = 'Unbind MMD SDEF data of selected objects'
     bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
 
+    # TODO: Utility Functionalize
     def execute(self, context):
         target_meshes, root_objects = _get_target_objects(context)
         for i in target_meshes:

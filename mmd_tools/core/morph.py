@@ -21,15 +21,9 @@ class FnMorph(object):
         if obj.data.shape_keys is None:
             bpy.ops.object.shape_key_add()
 
-        if bpy.app.version < (2, 73, 0):
-            def __move_to_bottom(key_blocks, name):
-                obj.active_shape_key_index = key_blocks.find(name)
-                for move in range(len(key_blocks)-1-obj.active_shape_key_index):
-                    bpy.ops.object.shape_key_move(type='DOWN')
-        else:
-            def __move_to_bottom(key_blocks, name):
-                obj.active_shape_key_index = key_blocks.find(name)
-                bpy.ops.object.shape_key_move(type='BOTTOM')
+        def __move_to_bottom(key_blocks, name):
+            obj.active_shape_key_index = key_blocks.find(name)
+            bpy.ops.object.shape_key_move(type='BOTTOM')
 
         key_blocks = obj.data.shape_keys.key_blocks
         for name in shape_key_names:
@@ -46,21 +40,12 @@ class FnMorph(object):
         key_blocks = getattr(obj.data.shape_keys, 'key_blocks', None)
         if key_blocks is None:
             return
-        if bpy.app.version < (2, 73, 0):
-            len_key_blocks = len(key_blocks)
-            for ii, name in enumerate(x for x in reversed(shape_key_names) if x in key_blocks):
-                obj.active_shape_key_index = idx = key_blocks.find(name)
-                offset = (len_key_blocks - 1 - idx) - ii
-                move_type = 'UP' if offset < 0 else 'DOWN'
-                for move in range(abs(offset)):
-                    bpy.ops.object.shape_key_move(type=move_type)
-        else:
-            for name in shape_key_names:
-                idx = key_blocks.find(name)
-                if idx < 0:
-                    continue
-                obj.active_shape_key_index = idx
-                bpy.ops.object.shape_key_move(type='BOTTOM')
+        for name in shape_key_names:
+            idx = key_blocks.find(name)
+            if idx < 0:
+                continue
+            obj.active_shape_key_index = idx
+            bpy.ops.object.shape_key_move(type='BOTTOM')
 
     @staticmethod
     def get_morph_slider(rig):
@@ -333,6 +318,8 @@ class _MorphSlider:
             arm.mmd_type = 'PLACEHOLDER'
             arm.parent = obj
             SceneOp(bpy.context).link_object(arm)
+            from mmd_tools.core.bone import FnBone
+            FnBone.setup_special_bone_collections(arm)
         return arm
 
 
@@ -385,8 +372,8 @@ class _MorphSlider:
     def __shape_key_driver_check(key_block, resolve_path=False):
         if resolve_path:
             try:
-                kb = key_block.id_data.path_resolve(key_block.path_from_id())
-            except ValueError as e:
+                key_block.id_data.path_resolve(key_block.path_from_id())
+            except ValueError:
                 return False
         if not key_block.id_data.animation_data:
             return True
@@ -528,10 +515,10 @@ class _MorphSlider:
 
         bone_offset_map = {}
         with bpyutils.edit_object(arm) as data:
+            from mmd_tools.core.bone import FnBone
             edit_bones = data.edit_bones
-            def __get_bone(name, layer, parent):
+            def __get_bone(name, parent):
                 b = edit_bones.get(name, None) or edit_bones.new(name=name)
-                b.layers = [x == layer for x in range(len(b.layers))]
                 b.head = (0, 0, 0)
                 b.tail = (0, 0, 1)
                 b.use_deform = False
@@ -539,24 +526,25 @@ class _MorphSlider:
                 return b
 
             for m in mmd_root.bone_morphs:
-                data_path = 'data.shape_keys.key_blocks["%s"].value'%m.name.replace('"', '\\"')
+                morph_name = m.name.replace('"', '\\"')
+                data_path = f'data.shape_keys.key_blocks["{morph_name}"].value'
                 for d in m.data:
                     if not d.bone:
                         d.name = ''
                         continue
-                    d.name = name_bind = 'mmd_bind%s'%hash(d)
-                    b = __get_bone(name_bind, 10, None)
+                    d.name = name_bind = f'mmd_bind{hash(d)}'
+                    b = FnBone.set_edit_bone_to_shadow(__get_bone(name_bind, None))
                     groups = []
                     bone_offset_map[name_bind] = (m.name, d, b.name, data_path, groups)
                     group_map.setdefault(('bone_morphs', m.name), []).append(groups)
 
-            ctrl_base = __get_bone('mmd_bind_ctrl_base', 11, None)
+            ctrl_base = FnBone.set_edit_bone_to_dummy(__get_bone('mmd_bind_ctrl_base', None))
             for m in mmd_root.uv_morphs:
                 morph_name = m.name.replace('"', '\\"')
-                data_path = 'data.shape_keys.key_blocks["%s"].value'%morph_name
-                scale_path = 'mmd_root.uv_morphs["%s"].vertex_group_scale'%morph_name
-                name_bind = 'mmd_bind%s'%hash(m.name)
-                b = __get_bone(name_bind, 11, ctrl_base)
+                data_path = f'data.shape_keys.key_blocks["{morph_name}"].value'
+                scale_path = f'mmd_root.uv_morphs["{morph_name}"].vertex_group_scale'
+                name_bind = f'mmd_bind{hash(m.name)}'
+                b = FnBone.set_edit_bone_to_dummy(__get_bone(name_bind, ctrl_base))
                 groups = []
                 uv_morph_map.setdefault(name_bind, []).append((b.name, data_path, scale_path, groups))
                 group_map.setdefault(('uv_morphs', m.name), []).append(groups)
@@ -570,12 +558,12 @@ class _MorphSlider:
         material_offset_map = {}
         for m in mmd_root.material_morphs:
             morph_name = m.name.replace('"', '\\"')
-            data_path = 'data.shape_keys.key_blocks["%s"].value'%morph_name
+            data_path = f'data.shape_keys.key_blocks["{morph_name}"].value'
             groups = []
             group_map.setdefault(('material_morphs', m.name), []).append(groups)
             material_offset_map.setdefault('group_dict', {})[m.name] = (data_path, groups)
             for d in m.data:
-                d.name = name_bind = 'mmd_bind%s'%hash(d)
+                d.name = name_bind = f'mmd_bind{hash(d)}'
                 # add '#' before material name to avoid conflict with group_dict
                 table = material_offset_map.setdefault('#'+d.material, ([], []))
                 table[1 if d.offset_type == 'ADD' else 0].append((m.name, d, name_bind))
@@ -584,10 +572,10 @@ class _MorphSlider:
             if len(m.data) != len(set(m.data.keys())):
                 logging.warning(' * Found duplicated morph data in Group Morph "%s"', m.name)
             morph_name = m.name.replace('"', '\\"')
-            morph_path = 'data.shape_keys.key_blocks["%s"].value'%morph_name
+            morph_path = f'data.shape_keys.key_blocks["{morph_name}"].value'
             for d in m.data:
-                param = (morph_name, d.name.replace('"', '\\"'))
-                factor_path = 'mmd_root.group_morphs["%s"].data["%s"].factor'%param
+                data_name = d.name.replace('"', '\\"')
+                factor_path = f'mmd_root.group_morphs["{morph_name}"].data["{data_name}"].factor'
                 for groups in group_map.get((d.morph_type, d.name), ()):
                     groups.append((m.name, morph_path, factor_path))
 
@@ -597,7 +585,7 @@ class _MorphSlider:
             for g_name, morph_path, factor_path in groups:
                 var = self.__add_single_prop(variables, obj, morph_path, 'g')
                 fvar = self.__add_single_prop(variables, root, factor_path, 'w')
-                expression = '%s+%s*%s'%(expression, var.name, fvar.name)
+                expression = f'{expression}+{var.name}*{fvar.name}'
             return expression
 
         # vertex morphs
@@ -605,15 +593,15 @@ class _MorphSlider:
             driver, variables = self.__driver_variables(kb_bind, 'value')
             var = self.__add_single_prop(variables, obj, morph_data_path, 'v')
             if kb_bind.name.startswith('mmd_bind'):
-                driver.expression = '-(%s)'%__config_groups(variables, var.name, groups)
+                driver.expression = f'-({__config_groups(variables, var.name, groups)})'
                 kb_bind.relative_key.mute = True
             else:
-                driver.expression = '%s'%__config_groups(variables, var.name, groups)
+                driver.expression = __config_groups(variables, var.name, groups)
             kb_bind.mute = False
 
         # bone morphs
         def __config_bone_morph(constraints, map_type, attributes, val, val_str):
-            c_name = 'mmd_bind%s.%s'%(hash(data), map_type[:3])
+            c_name = f'mmd_bind{hash(data)}.{map_type[:3]}'
             c = TransformConstraintOp.create(constraints, c_name, map_type)
             TransformConstraintOp.update_min_max(c, val, None)
             c.show_expanded = False
@@ -624,7 +612,7 @@ class _MorphSlider:
                 var = self.__add_single_prop(variables, obj, morph_data_path, 'b')
                 expression = __config_groups(variables, var.name, groups)
                 sign = '-' if attr.startswith('to_min') else ''
-                driver.expression = '%s%s*(%s)'%(sign, val_str, expression)
+                driver.expression = f'{sign}{val_str}*({expression})'
 
         from math import pi
         attributes_rot = TransformConstraintOp.min_max_attributes('ROTATION', 'to')
@@ -652,7 +640,7 @@ class _MorphSlider:
             driver, variables = self.__driver_variables(b, 'location', index=0)
             var = self.__add_single_prop(variables, obj, data_path, 'u')
             fvar = self.__add_single_prop(variables, root, scale_path, 's')
-            driver.expression = '(%s)*%s'%(__config_groups(variables, var.name, groups), fvar.name)
+            driver.expression = f'({__config_groups(variables, var.name, groups)})*{fvar.name}'
 
         # material morphs
         from mmd_tools.core.shader import _MaterialMorph
