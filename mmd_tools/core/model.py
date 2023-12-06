@@ -606,9 +606,6 @@ class Model:
                 if hasattr(obj.cycles_visibility, attr_name):
                     setattr(obj.cycles_visibility, attr_name, False)
 
-        if bpy.app.version < (2, 71, 0):
-            obj.mmd_rigid.shape = "BOX"
-            obj.mmd_rigid.size = (1, 1, 1)
         bpy.ops.rigidbody.object_add(type="ACTIVE")
         if counts == 1:
             return [obj]

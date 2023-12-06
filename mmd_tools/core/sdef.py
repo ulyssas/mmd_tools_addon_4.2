@@ -281,23 +281,18 @@ class FnSDEF:
         ov.type = "SINGLE_PROP"
         ov.targets[0].id = obj
         ov.targets[0].data_path = "name"
-        if bpy.app.version >= (2, 80, 0):
-            if not bulk_update and use_skip:  # FIXME: force disable use_skip=True for bulk_update=False on 2.8
-                use_skip = False
-            mod = obj.modifiers.get("mmd_bone_order_override")
-            variables = f.driver.variables
-            for name in set(data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)):  # add required bones for dependency graph
-                var = variables.new()
-                var.type = "TRANSFORMS"
-                var.targets[0].id = mod.object
-                var.targets[0].bone_target = name
-        if hasattr(f.driver, "use_self"):  # Blender 2.78+
-            f.driver.use_self = True
-            param = (bulk_update, use_skip, use_scale)
-            f.driver.expression = "mmd_sdef_driver(self, obj, bulk_update={}, use_skip={}, use_scale={})".format(*param)
-        else:
-            param = (obj.name, bulk_update, use_skip, use_scale)
-            f.driver.expression = 'mmd_sdef_driver_wrap("{}", bulk_update={}, use_skip={}, use_scale={})'.format(*param)
+        if not bulk_update and use_skip:  # FIXME: force disable use_skip=True for bulk_update=False on 2.8
+            use_skip = False
+        mod = obj.modifiers.get("mmd_bone_order_override")
+        variables = f.driver.variables
+        for name in set(data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)):  # add required bones for dependency graph
+            var = variables.new()
+            var.type = "TRANSFORMS"
+            var.targets[0].id = mod.object
+            var.targets[0].bone_target = name
+        f.driver.use_self = True
+        param = (bulk_update, use_skip, use_scale)
+        f.driver.expression = "mmd_sdef_driver(self, obj, bulk_update={}, use_skip={}, use_scale={})".format(*param)
         return True
 
     @classmethod

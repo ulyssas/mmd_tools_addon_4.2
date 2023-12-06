@@ -971,8 +971,7 @@ class __PmxExporter:
         if is_triangulated:
             loop_normals = custom_normals
         else:
-            quad_method, ngon_method = (1, 1) if bpy.app.version < (2, 80, 0) else ('FIXED', 'EAR_CLIP')
-            face_map = bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=quad_method, ngon_method=ngon_method)['face_map']
+            face_map = bmesh.ops.triangulate(bm, faces=bm.faces, quad_method='FIXED', ngon_method='EAR_CLIP')['face_map']
             logging.debug(' - Remapping custom normals...')
             loop_normals, face_indices = [], []
             for f in bm.faces:
@@ -1032,15 +1031,11 @@ class __PmxExporter:
             normal_matrix = matmul(normal_matrix, invert_scale_matrix) # reset the scale of meshObj.matrix_world
             normal_matrix = matmul(normal_matrix, invert_scale_matrix) # the scale transform of normals
 
-        if bpy.app.version < (2, 80, 0):
-            _to_mesh = lambda obj: obj.to_mesh(bpy.context.scene, apply_modifiers=True, settings='PREVIEW', calc_tessface=False, calc_undeformed=False)
-            _to_mesh_clear = lambda obj, mesh: bpy.data.meshes.remove(mesh)
-        else:
-            def _to_mesh(obj):
-                bpy.context.view_layer.update()
-                depsgraph = bpy.context.evaluated_depsgraph_get()
-                return obj.evaluated_get(depsgraph).to_mesh(depsgraph=depsgraph, preserve_all_data_layers=True)
-            _to_mesh_clear = lambda obj, mesh: obj.to_mesh_clear()
+        def _to_mesh(obj):
+            bpy.context.view_layer.update()
+            depsgraph = bpy.context.evaluated_depsgraph_get()
+            return obj.evaluated_get(depsgraph).to_mesh(depsgraph=depsgraph, preserve_all_data_layers=True)
+        _to_mesh_clear = lambda obj, mesh: obj.to_mesh_clear()
 
         base_mesh = _to_mesh(meshObj)
         loop_normals, face_indices = self.__triangulate(base_mesh, self.__get_normals(base_mesh, normal_matrix))

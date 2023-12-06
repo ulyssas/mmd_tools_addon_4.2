@@ -628,11 +628,10 @@ class PMXImporter:
                 add_zw = uv_layers[add_zw.name]
                 add_zw.data.foreach_set("uv", tuple(v for i in loop_indices_orig for v in zw_table[i]))
 
-        if bpy.app.version >= (2, 80, 0):
-            self.__fixOverlappingFaceMaterials(mesh.materials, mesh.vertices, loop_indices, material_indices)
+        self.__fixOverlappingFaceMaterials(mesh.materials, mesh.vertices, loop_indices, material_indices)
 
     def __fixOverlappingFaceMaterials(self, materials, vertices, loop_indices, material_indices):
-        # This is not the best way to setup blend_method, might just work for some common cases. And FnMaterial.update_alpha() is still using 'HASHED'.
+        # FIXME: This is not the best way to setup blend_method, might just work for some common cases. And FnMaterial.update_alpha() is still using 'HASHED'.
         # For EEVEE, basically users should know which blend_method is best for each material of their models.
         # For Cycles, users have to offset or delete those z-fighting faces to fix it manually.
         check = {}

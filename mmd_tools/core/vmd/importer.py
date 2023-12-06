@@ -134,21 +134,14 @@ class BoneConverterPoseMode:
 
 
 class _FnBezier:
-    __BLENDER_2_91_OR_NEWER = not (bpy.app.version < (2, 91, 0))
-
     @classmethod
     def from_fcurve(cls, kp0, kp1):
         p0, p1, p2, p3 = kp0.co, kp0.handle_right, kp1.handle_left, kp1.co
-        if cls.__BLENDER_2_91_OR_NEWER:  # the F-Curve can become near-vertical
-            if p1.x > p3.x:
-                t = (p3.x - p0.x) / (p1.x - p0.x)
-                p1 = (1 - t) * p0 + p1 * t
-            if p0.x > p2.x:
-                t = (p3.x - p0.x) / (p3.x - p2.x)
-                p2 = (1 - t) * p3 + p2 * t
-        elif p1.x > p2.x:  # legacy F-Curve correction
-            t = (p3.x - p0.x) / (p1.x - p0.x + p3.x - p2.x)
+        if p1.x > p3.x:
+            t = (p3.x - p0.x) / (p1.x - p0.x)
             p1 = (1 - t) * p0 + p1 * t
+        if p0.x > p2.x:
+            t = (p3.x - p0.x) / (p3.x - p2.x)
             p2 = (1 - t) * p3 + p2 * t
         return cls(p0, p1, p2, p3)
 
