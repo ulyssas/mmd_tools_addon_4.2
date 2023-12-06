@@ -11,7 +11,6 @@ import bpy
 from mathutils import Quaternion, Vector
 
 from mmd_tools import utils
-from mmd_tools.bpyutils import matmul
 from mmd_tools.core import vmd
 from mmd_tools.core.camera import MMDCamera
 from mmd_tools.core.lamp import MMDLamp
@@ -87,12 +86,12 @@ class BoneConverter:
         self.convert_interpolation = _InterpolationHelper(self.__mat).convert
 
     def convert_location(self, location):
-        return matmul(self.__mat, Vector(location)) * self.__scale
+        return (self.__mat @ Vector(location)) * self.__scale
 
     def convert_rotation(self, rotation_xyzw):
         rot = Quaternion()
         rot.x, rot.y, rot.z, rot.w = rotation_xyzw
-        return Quaternion(matmul(self.__mat, rot.axis) * -1, rot.angle).normalized()
+        return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
 
 
 class BoneConverterPoseMode:
@@ -102,7 +101,7 @@ class BoneConverterPoseMode:
         self.__mat = mat.transposed()
         self.__scale = scale
         self.__mat_rot = pose_bone.matrix_basis.to_3x3()
-        self.__mat_loc = matmul(self.__mat_rot, self.__mat)
+        self.__mat_loc = self.__mat_rot @ self.__mat
         self.__offset = pose_bone.location.copy()
         self.convert_location = self._convert_location
         self.convert_rotation = self._convert_rotation
@@ -115,22 +114,22 @@ class BoneConverterPoseMode:
         self.convert_interpolation = _InterpolationHelper(self.__mat_loc).convert
 
     def _convert_location(self, location):
-        return self.__offset + matmul(self.__mat_loc, Vector(location)) * self.__scale
+        return self.__offset + (self.__mat_loc @ Vector(location)) * self.__scale
 
     def _convert_rotation(self, rotation_xyzw):
         rot = Quaternion()
         rot.x, rot.y, rot.z, rot.w = rotation_xyzw
-        rot = Quaternion(matmul(self.__mat, rot.axis) * -1, rot.angle)
-        return matmul(self.__mat_rot, rot.to_matrix()).to_quaternion()
+        rot = Quaternion((self.__mat @ rot.axis) * -1, rot.angle)
+        return (self.__mat_rot @ rot.to_matrix()).to_quaternion()
 
     def _convert_location_inverted(self, location):
-        return matmul(self.__mat_loc, Vector(location) - self.__offset) * self.__scale
+        return (self.__mat_loc @ (Vector(location) - self.__offset)) * self.__scale
 
     def _convert_rotation_inverted(self, rotation_xyzw):
         rot = Quaternion()
         rot.x, rot.y, rot.z, rot.w = rotation_xyzw
-        rot = matmul(self.__mat_rot, rot.to_matrix()).to_quaternion()
-        return Quaternion(matmul(self.__mat, rot.axis) * -1, rot.angle).normalized()
+        rot = (self.__mat_rot @ rot.to_matrix()).to_quaternion()
+        return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
 
 
 class _FnBezier:

@@ -309,8 +309,8 @@ class PMXImporter:
             j_set.remove(jj)
             m[ii][jj] = -1 if mat[ii][jj] < 0 else 1
 
-        new_min_angle = bpyutils.matmul(m, Vector(min_angle))
-        new_max_angle = bpyutils.matmul(m, Vector(max_angle))
+        new_min_angle = m @ Vector(min_angle)
+        new_max_angle = m @ Vector(max_angle)
         for i in range(3):
             if new_min_angle[i] > new_max_angle[i]:
                 new_min_angle[i], new_max_angle[i] = new_max_angle[i], new_min_angle[i]

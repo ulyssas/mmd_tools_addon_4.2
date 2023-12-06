@@ -6,9 +6,6 @@ from typing import Optional, Union
 
 import bpy
 
-# TODO: remove
-matmul = (lambda a, b: a.__matmul__(b))
-
 
 class Props:  # For API changes of only name changed properties
     show_in_front = "show_in_front"
