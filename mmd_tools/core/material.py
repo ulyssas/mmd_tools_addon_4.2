@@ -4,7 +4,7 @@
 
 import logging
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 import bpy
 
@@ -60,34 +60,48 @@ class FnMaterial:
                 bpy.data.materials.remove(m)
 
     @staticmethod
-    def swap_materials(meshObj, mat1_ref, mat2_ref, reverse=False, swap_slots=False):
+    def swap_materials(mesh_object: bpy.types.Object, mat1_ref: str | int, mat2_ref: str | int, reverse=False, swap_slots=False) -> Tuple[bpy.types.Material, bpy.types.Material]:
         """
         This method will assign the polygons of mat1 to mat2.
         If reverse is True it will also swap the polygons assigned to mat2 to mat1.
         The reference to materials can be indexes or names
         Finally it will also swap the material slots if the option is given.
+
+        Args:
+            mesh_object (bpy.types.Object): The mesh object
+            mat1_ref (str | int): The reference to the first material
+            mat2_ref (str | int): The reference to the second material
+            reverse (bool, optional): If true it will also swap the polygons assigned to mat2 to mat1. Defaults to False.
+            swap_slots (bool, optional): If true it will also swap the material slots. Defaults to False.
+
+        Retruns:
+            Tuple[bpy.types.Material, bpy.types.Material]: The swapped materials
+
+        Raises:
+            MaterialNotFoundError: If one of the materials is not found
         """
+        mesh: bpy.types.Mesh = mesh_object.data
         try:
             # Try to find the materials
-            mat1 = meshObj.data.materials[mat1_ref]
-            mat2 = meshObj.data.materials[mat2_ref]
+            mat1 = mesh.materials[mat1_ref]
+            mat2 = mesh.materials[mat2_ref]
             if None in (mat1, mat2):
                 raise MaterialNotFoundError()
         except (KeyError, IndexError) as exc:
             # Wrap exceptions within our custom ones
             raise MaterialNotFoundError() from exc
-        mat1_idx = meshObj.data.materials.find(mat1.name)
-        mat2_idx = meshObj.data.materials.find(mat2.name)
+        mat1_idx = mesh.materials.find(mat1.name)
+        mat2_idx = mesh.materials.find(mat2.name)
         # Swap polygons
-        for poly in meshObj.data.polygons:
+        for poly in mesh.polygons:
             if poly.material_index == mat1_idx:
                 poly.material_index = mat2_idx
             elif reverse and poly.material_index == mat2_idx:
                 poly.material_index = mat1_idx
         # Swap slots if specified
         if swap_slots:
-            meshObj.material_slots[mat1_idx].material = mat2
-            meshObj.material_slots[mat2_idx].material = mat1
+            mesh_object.material_slots[mat1_idx].material = mat2
+            mesh_object.material_slots[mat2_idx].material = mat1
         return mat1, mat2
 
     @staticmethod

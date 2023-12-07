@@ -26,7 +26,7 @@ bl_info = {
     "doc_url": "https://mmd-blender.fandom.com/wiki/MMD_Tools",
     "wiki_url": "https://mmd-blender.fandom.com/wiki/MMD_Tools",
     "tracker_url": "https://github.com/UuuNyaa/blender_mmd_tools/issues",
-    'support': 'COMMUNITY',
+    "support": "COMMUNITY",
     "category": "Object",
 }
 
@@ -41,6 +41,9 @@ auto_load.init()
 
 
 import mmd_tools.operators
+import mmd_tools.operators.addon_updater
+import mmd_tools.operators.fileio
+import mmd_tools.operators.model
 import mmd_tools.properties
 
 

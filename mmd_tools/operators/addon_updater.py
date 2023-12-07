@@ -5,6 +5,7 @@ import bpy
 
 # Following code is copied from
 #   https://github.com/nutti/Screencast-Keys/blob/dea64b92ad4c5d7ae64cb48a9dd243ad52e4e33f/src/screencast_keys/utils/addon_updater.py
+# fmt: off
 
 # <pep8-80 compliant>
 
@@ -421,10 +422,9 @@ def register_updater(bl_info, init_py_file):
     config.owner = "UuuNyaa"
     config.repository = "blender_mmd_tools"
     config.current_addon_path = os.path.dirname(os.path.realpath(init_py_file))
-    config.branches = ["main"]
+    config.branches = ["blender-v4"]
     config.addon_directory = os.path.dirname(config.current_addon_path)
-    config.min_release_version = (1, 0, 0)
-    config.max_release_version = (4, 0, 0)
+    config.min_release_version = (4, 0, 0)
     config.default_target_addon_path = "mmd_tools"
     config.target_addon_path = {}
     updater = AddonUpdaterManager.get_instance()
