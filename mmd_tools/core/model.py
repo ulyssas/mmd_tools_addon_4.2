@@ -658,7 +658,7 @@ class Model:
         if bounce:
             rb.restitution = bounce
 
-        obj.select = False
+        obj.select_set(False)
         return obj
 
     def createJointPool(self, counts):
@@ -761,7 +761,7 @@ class Model:
         obj.mmd_joint.spring_linear = spring_linear
         obj.mmd_joint.spring_angular = spring_angular
 
-        obj.select = False
+        obj.select_set(False)
         return obj
 
     def create_ik_constraint(self, bone, ik_target):
@@ -807,7 +807,8 @@ class Model:
                 SceneOp(bpy.context).link_object(rigids)
                 rigids.mmd_type = "RIGID_GRP_OBJ"
                 rigids.parent = self.__root
-                rigids.hide = rigids.hide_select = True
+                rigids.hide_set(True)
+                rigids.hide_select = True
                 rigids.lock_rotation = rigids.lock_location = rigids.lock_scale = [True, True, True]
                 self.__rigid_grp = rigids
         return self.__rigid_grp
@@ -823,7 +824,8 @@ class Model:
                 SceneOp(bpy.context).link_object(joints)
                 joints.mmd_type = "JOINT_GRP_OBJ"
                 joints.parent = self.__root
-                joints.hide = joints.hide_select = True
+                joints.hide_set(True)
+                joints.hide_select = True
                 joints.lock_rotation = joints.lock_location = joints.lock_scale = [True, True, True]
                 self.__joint_grp = joints
         return self.__joint_grp
@@ -839,7 +841,8 @@ class Model:
                 SceneOp(bpy.context).link_object(temporarys)
                 temporarys.mmd_type = "TEMPORARY_GRP_OBJ"
                 temporarys.parent = self.__root
-                temporarys.hide = temporarys.hide_select = True
+                temporarys.hide_set(True)
+                temporarys.hide_select = True
                 temporarys.lock_rotation = temporarys.lock_location = temporarys.lock_scale = [True, True, True]
                 self.__temporary_grp = temporarys
         return self.__temporary_grp
@@ -1016,10 +1019,12 @@ class Model:
         except Exception:
             pass
         for i in bpy.context.selected_objects:
-            i.select = False
+            i.select_set(False)
         for i in tmp_grp_obj.children:
-            i.hide_select = i.hide = False
-            i.select = i.layers[layer_index] = True
+            i.hide_select = False
+            i.hide_set(False)
+            i.select_set(True)
+            i.layers[layer_index] = True
         assert len(bpy.context.selected_objects) == tmp_cnt
         bpy.ops.object.delete()
         assert len(bpy.data.objects) == total_cnt - tmp_cnt
@@ -1177,7 +1182,7 @@ class Model:
                     setattr(empty, Props.empty_display_type, "ARROWS")
                     setattr(empty, Props.empty_display_size, 0.1 * getattr(self.__root, Props.empty_display_size))
                     empty.mmd_type = "TRACK_TARGET"
-                    empty.hide = True
+                    empty.hide_set(True)
                     empty.parent = self.temporaryGroupObject()
 
                     rigid_obj.mmd_rigid.bone = bone_name
@@ -1237,7 +1242,8 @@ class Model:
         for ncc_obj, pair in zip(ncc_objs, nonCollisionJointTable):
             rbc = ncc_obj.rigid_body_constraint
             rbc.object1, rbc.object2 = pair
-            ncc_obj.hide = ncc_obj.hide_select = True
+            ncc_obj.hide_set(True)
+            ncc_obj.hide_select = True
         logging.debug(" finish in %f seconds.", time.time() - start_time)
         logging.debug("-" * 60)
 

@@ -21,7 +21,7 @@ class __EditMode:
             raise ValueError
         self.__prevMode = obj.mode
         self.__obj = obj
-        self.__obj_select = obj.select
+        self.__obj_select = obj.select_get()
         with select_object(obj):
             if obj.mode != "EDIT":
                 bpy.ops.object.mode_set(mode="EDIT")
@@ -33,7 +33,7 @@ class __EditMode:
         if self.__prevMode == "EDIT":
             bpy.ops.object.mode_set(mode="OBJECT")  # update edited data
         bpy.ops.object.mode_set(mode=self.__prevMode)
-        self.__obj.select = self.__obj_select
+        self.__obj.select_set(self.__obj_select)
 
 
 class __SelectObjects:
@@ -46,7 +46,7 @@ class __SelectObjects:
             pass
 
         for i in bpy.context.selected_objects:
-            i.select = False
+            i.select_set(False)
 
         self.__active_object = active_object
         self.__selected_objects = tuple(set(selected_objects) | set([active_object]))
@@ -54,7 +54,7 @@ class __SelectObjects:
         self.__hides = []
         scene = SceneOp(bpy.context)
         for i in self.__selected_objects:
-            self.__hides.append(i.hide)
+            self.__hides.append(i.hide_get())
             scene.select_object(i)
         scene.active_object = active_object
 
@@ -63,7 +63,7 @@ class __SelectObjects:
 
     def __exit__(self, type, value, traceback):
         for i, j in zip(self.__selected_objects, self.__hides):
-            i.hide = j
+            i.hide_set(j)
 
 
 def find_user_layer_collection(target_object: bpy.types.Object) -> Optional[bpy.types.LayerCollection]:
@@ -164,8 +164,8 @@ def activate_layer_collection(target: Union[bpy.types.Object, bpy.types.LayerCol
 
 def duplicateObject(obj, total_len):
     for i in bpy.context.selected_objects:
-        i.select = False
-    obj.select = True
+        i.select_set(False)
+    obj.select_set(True)
     assert len(bpy.context.selected_objects) == 1
     assert bpy.context.selected_objects[0] == obj
     last_selected = objs = [obj]
@@ -176,10 +176,10 @@ def duplicateObject(obj, total_len):
         if remain < 0:
             last_selected = bpy.context.selected_objects
             for i in range(-remain):
-                last_selected[i].select = False
+                last_selected[i].select_set(False)
         else:
             for i in range(min(remain, len(last_selected))):
-                last_selected[i].select = True
+                last_selected[i].select_set(True)
         last_selected = bpy.context.selected_objects
     assert len(objs) == total_len
     return objs

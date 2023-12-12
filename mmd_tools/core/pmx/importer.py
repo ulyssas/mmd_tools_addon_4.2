@@ -492,7 +492,7 @@ class PMXImporter:
                 bounce=rigid.bounce,
                 bone=None if rigid.bone == -1 or rigid.bone is None else self.__boneTable[rigid.bone].name,
             )
-            obj.hide = True
+            obj.hide_set(True)
             MoveObject.set_index(obj, i)
             self.__rigidTable[i] = obj
 
@@ -520,7 +520,7 @@ class PMXImporter:
                 spring_linear=Vector(joint.spring_constant).xzy,
                 spring_angular=Vector(joint.spring_rotation_constant).xzy,
             )
-            obj.hide = True
+            obj.hide_set(True)
             MoveObject.set_index(obj, i)
 
         logging.debug("Finished importing joints in %f seconds.", time.time() - start_time)

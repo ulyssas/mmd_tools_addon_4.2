@@ -102,7 +102,8 @@ def _toggleVisibilityOfMeshes(self, context):
     root = self.id_data
     hide = not self.show_meshes
     for i in mmd_model.Model(root).meshes():
-        i.hide = i.hide_render = hide
+        i.hide_set(hide)
+        i.hide_render = hide
     if hide and context.active_object is None:
         SceneOp(context).active_object = root
 
@@ -121,7 +122,7 @@ def _toggleVisibilityOfRigidBodies(self, context):
     root = self.id_data
     hide = not self.show_rigid_bodies
     for i in mmd_model.Model(root).rigidBodies():
-        i.hide = hide
+        i.hide_set(hide)
     if hide and context.active_object is None:
         SceneOp(context).active_object = root
 
@@ -130,7 +131,7 @@ def _toggleVisibilityOfJoints(self, context):
     root = self.id_data
     hide = not self.show_joints
     for i in mmd_model.Model(root).joints():
-        i.hide = hide
+        i.hide_set(hide)
     if hide and context.active_object is None:
         SceneOp(context).active_object = root
 
@@ -140,7 +141,7 @@ def _toggleVisibilityOfTemporaryObjects(self, context):
     hide = not self.show_temporary_objects
     with activate_layer_collection(root):
         for i in mmd_model.Model(root).temporaryObjects():
-            i.hide = hide
+            i.hide_set(hide)
     if hide and context.active_object is None:
         SceneOp(context).active_object = root
 
@@ -163,14 +164,14 @@ def _setVisibilityOfMMDRigArmature(prop, v):
     if arm:
         if not v and bpy.context.active_object == arm:
             SceneOp(bpy.context).active_object = root
-        arm.hide = not v
+        arm.hide_set(not v)
 
 
 def _getVisibilityOfMMDRigArmature(prop):
     if prop.id_data.mmd_type != "ROOT":
         return False
     arm = mmd_model.FnModel.find_armature(prop.id_data)
-    r = arm and not arm.hide
+    r = arm and not arm.hide_get()
     # Returning the non-BOOL type will raise a exception in the library override mode.
     return bool(r)
 
@@ -502,6 +503,16 @@ class MMDRoot(bpy.types.PropertyGroup):
     )
 
     @staticmethod
+    def __get_select(prop: bpy.types.Object) -> bool:
+        utils.warn_deprecation("Object.select", "v4.0.0", "Use Object.select_get() method instead")
+        return prop.select_get()
+
+    @staticmethod
+    def __set_select(prop: bpy.types.Object, value: bool) -> None:
+        utils.warn_deprecation("Object.select", "v4.0.0", "Use Object.select_set() method instead")
+        prop.select_set(value)
+
+    @staticmethod
     def __get_hide(prop: bpy.types.Object) -> bool:
         utils.warn_deprecation("Object.hide", "v4.0.0", "Use Object.hide_get() method instead")
         return prop.hide_get()
@@ -542,8 +553,8 @@ class MMDRoot(bpy.types.PropertyGroup):
 
         bpy.types.Object.select = patch_library_overridable(
             bpy.props.BoolProperty(
-                get=lambda prop: prop.select_get(),
-                set=lambda prop, value: prop.select_set(value),
+                get=MMDRoot.__get_select,
+                set=MMDRoot.__set_select,
                 options={
                     "SKIP_SAVE",
                     "ANIMATABLE",

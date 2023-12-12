@@ -44,7 +44,7 @@ def selectSingleBone(context, armature, bone_name, reset_pose=False):
     except:
         pass
     for i in context.selected_objects:
-        i.select = False
+        i.select_set(False)
     SceneOp(context).active_object = armature
     bpy.ops.object.mode_set(mode="POSE")
     if reset_pose:
