@@ -275,3 +275,11 @@ class MMDMaterial(bpy.types.PropertyGroup):
 
     def is_id_unique(self):
         return self.material_id < 0 or not next((m for m in bpy.data.materials if m.mmd_material != self and m.mmd_material.material_id == self.material_id), None)
+
+    @staticmethod
+    def register():
+        bpy.types.Material.mmd_material = bpy.props.PointerProperty(type=MMDMaterial)
+
+    @staticmethod
+    def unregister():
+        del bpy.types.Material.mmd_material

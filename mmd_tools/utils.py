@@ -2,8 +2,10 @@
 # Copyright 2012 MMD Tools authors
 # This file is part of MMD Tools.
 
+import logging
 import os
 import re
+from typing import Callable, Optional
 
 import bpy
 
@@ -309,3 +311,43 @@ class ItemMoveOp:
         if index_new != index:
             items.move(index, index_new)
         return index_new
+
+
+def deprecated(deprecated_in: Optional[str] = None, details: Optional[str] = None):
+    """Decorator to mark a function as deprecated.
+    Args:
+        deprecated_in (Optional[str]): Version in which the function was deprecated.
+        details (Optional[str]): Additional details about the deprecation.
+    Returns:
+        Callable: The decorated function.
+    """
+
+    def _function_wrapper(function: Callable):
+        def _inner_wrapper(*args, **kwargs):
+            warn_deprecation(function.__name__, deprecated_in, details)
+            return function(*args, **kwargs)
+
+        return _inner_wrapper
+
+    return _function_wrapper
+
+
+def warn_deprecation(function_name: str, deprecated_in: Optional[str] = None, details: Optional[str] = None) -> None:
+    """Reports a deprecation warning.
+    Args:
+        function_name (str): Name of the deprecated function.
+        deprecated_in (Optional[str]): Version in which the function was deprecated.
+        details (Optional[str]): Additional details about the deprecation.
+    """
+    logging.warning(
+        "%s is deprecated%s%s",
+        function_name,
+        f" since {deprecated_in}" if deprecated_in else "",
+        f": {details}" if details else "",
+        stack_info=True,
+        stacklevel=4,
+    )
+
+    # import warnings  # pylint: disable=import-outside-toplevel
+
+    # warnings.warn(f"""{function_name}is deprecated{f" since {deprecated_in}" if deprecated_in else ""}{f": {details}" if details else ""}""", category=DeprecationWarning, stacklevel=2)

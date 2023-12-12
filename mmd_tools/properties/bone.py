@@ -183,6 +183,25 @@ class MMDBone(bpy.types.PropertyGroup):
     def is_id_unique(self):
         return self.bone_id < 0 or not next((b for b in self.id_data.pose.bones if b.mmd_bone != self and b.mmd_bone.bone_id == self.bone_id), None)
 
+    @staticmethod
+    def register():
+        bpy.types.PoseBone.mmd_bone = bpy.props.PointerProperty(type=MMDBone)
+        bpy.types.PoseBone.is_mmd_shadow_bone = bpy.props.BoolProperty(name="is_mmd_shadow_bone", default=False)
+        bpy.types.PoseBone.mmd_shadow_bone_type = bpy.props.StringProperty(name="mmd_shadow_bone_type")
+        bpy.types.PoseBone.mmd_ik_toggle = bpy.props.BoolProperty(
+            name="MMD IK Toggle",
+            description="MMD IK toggle is used to import/export animation of IK on-off",
+            update=_mmd_ik_toggle_update,
+            default=True,
+        )
+
+    @staticmethod
+    def unregister():
+        del bpy.types.PoseBone.mmd_ik_toggle
+        del bpy.types.PoseBone.mmd_shadow_bone_type
+        del bpy.types.PoseBone.is_mmd_shadow_bone
+        del bpy.types.PoseBone.mmd_bone
+
 
 def _mmd_ik_toggle_get(prop):
     return prop.get("mmd_ik_toggle", True)

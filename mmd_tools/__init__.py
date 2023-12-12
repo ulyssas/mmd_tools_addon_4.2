@@ -48,11 +48,9 @@ def register():
     import bpy
 
     import mmd_tools.operators.addon_updater
-    import mmd_tools.properties
     import mmd_tools.handlers
 
     mmd_tools.auto_load.register()
-    mmd_tools.properties.register()
 
     # pylint: disable=import-outside-toplevel
     from mmd_tools.m17n import translation_dict
@@ -67,7 +65,6 @@ def unregister():
     import bpy
 
     import mmd_tools.operators.addon_updater
-    import mmd_tools.properties
     import mmd_tools.handlers
 
     mmd_tools.handlers.MMDHanders.unregister()
@@ -75,7 +72,6 @@ def unregister():
 
     bpy.app.translations.unregister(bl_info["name"])
 
-    mmd_tools.properties.unregister()
     mmd_tools.auto_load.unregister()
 
 

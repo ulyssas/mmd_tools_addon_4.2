@@ -219,6 +219,14 @@ class MMDRigidBody(bpy.types.PropertyGroup):
         set=_set_size,
     )
 
+    @staticmethod
+    def register():
+        bpy.types.Object.mmd_rigid = bpy.props.PointerProperty(type=MMDRigidBody)
+
+    @staticmethod
+    def unregister():
+        del bpy.types.Object.mmd_rigid
+
 
 def _updateSpringLinear(prop, context):
     obj = prop.id_data
@@ -270,3 +278,11 @@ class MMDJoint(bpy.types.PropertyGroup):
         step=0.1,
         update=_updateSpringAngular,
     )
+
+    @staticmethod
+    def register():
+        bpy.types.Object.mmd_joint = bpy.props.PointerProperty(type=MMDJoint)
+
+    @staticmethod
+    def unregister():
+        del bpy.types.Object.mmd_joint

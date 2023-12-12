@@ -23,3 +23,11 @@ class MMDCamera(bpy.types.PropertyGroup):
         description="Is perspective",
         default=True,
     )
+
+    @staticmethod
+    def register():
+        bpy.types.Object.mmd_camera = bpy.props.PointerProperty(type=MMDCamera)
+
+    @staticmethod
+    def unregister():
+        del bpy.types.Object.mmd_camera

@@ -499,3 +499,66 @@ class MMDRoot(bpy.types.PropertyGroup):
         name="Translation",
         type=MMDTranslation,
     )
+
+    @staticmethod
+    def __get_hide(prop: bpy.types.Object) -> bool:
+        utils.warn_deprecation("Object.hide", "v4.0.0", "Use Object.hide_get() method instead")
+        return prop.hide_get()
+
+    @staticmethod
+    def __set_hide(prop: bpy.types.Object, value: bool) -> None:
+        utils.warn_deprecation("Object.hide", "v4.0.0", "Use Object.hide_set() method instead")
+        prop.hide_set(value)
+        if getattr(prop, "hide_viewport"):
+            setattr(prop, "hide_viewport", False)
+
+    @staticmethod
+    def register():
+        bpy.types.Object.mmd_type = bpy.props.EnumProperty(
+            name="Type",
+            description="Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)",
+            default="NONE",
+            items=[
+                ("NONE", "None", "", 1),
+                ("ROOT", "Root", "", 2),
+                ("RIGID_GRP_OBJ", "Rigid Body Grp Empty", "", 3),
+                ("JOINT_GRP_OBJ", "Joint Grp Empty", "", 4),
+                ("TEMPORARY_GRP_OBJ", "Temporary Grp Empty", "", 5),
+                ("PLACEHOLDER", "Place Holder", "", 6),
+                ("CAMERA", "Camera", "", 21),
+                ("JOINT", "Joint", "", 22),
+                ("RIGID_BODY", "Rigid body", "", 23),
+                ("LIGHT", "Light", "", 24),
+                ("TRACK_TARGET", "Track Target", "", 51),
+                ("NON_COLLISION_CONSTRAINT", "Non Collision Constraint", "", 52),
+                ("SPRING_CONSTRAINT", "Spring Constraint", "", 53),
+                ("SPRING_GOAL", "Spring Goal", "", 54),
+            ],
+        )
+        bpy.types.Object.mmd_root = bpy.props.PointerProperty(type=MMDRoot)
+
+        bpy.types.Object.select = bpy.props.BoolProperty(
+            get=lambda prop: prop.select_get(),
+            set=lambda prop, value: prop.select_set(value),
+            options={
+                "SKIP_SAVE",
+                "ANIMATABLE",
+                "LIBRARY_EDITABLE",
+            },
+        )
+        bpy.types.Object.hide = bpy.props.BoolProperty(
+            get=MMDRoot.__get_hide,
+            set=MMDRoot.__set_hide,
+            options={
+                "SKIP_SAVE",
+                "ANIMATABLE",
+                "LIBRARY_EDITABLE",
+            },
+        )
+
+    @staticmethod
+    def unregister():
+        del bpy.types.Object.hide
+        del bpy.types.Object.select
+        del bpy.types.Object.mmd_root
+        del bpy.types.Object.mmd_type
