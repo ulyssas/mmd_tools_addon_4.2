@@ -5,6 +5,7 @@
 import bpy
 
 from mmd_tools.core.bone import FnBone
+from mmd_tools.properties import patch_library_overridable
 
 
 def _updateMMDBoneAdditionalTransform(prop, context):
@@ -185,14 +186,16 @@ class MMDBone(bpy.types.PropertyGroup):
 
     @staticmethod
     def register():
-        bpy.types.PoseBone.mmd_bone = bpy.props.PointerProperty(type=MMDBone)
-        bpy.types.PoseBone.is_mmd_shadow_bone = bpy.props.BoolProperty(name="is_mmd_shadow_bone", default=False)
-        bpy.types.PoseBone.mmd_shadow_bone_type = bpy.props.StringProperty(name="mmd_shadow_bone_type")
-        bpy.types.PoseBone.mmd_ik_toggle = bpy.props.BoolProperty(
-            name="MMD IK Toggle",
-            description="MMD IK toggle is used to import/export animation of IK on-off",
-            update=_mmd_ik_toggle_update,
-            default=True,
+        bpy.types.PoseBone.mmd_bone = patch_library_overridable(bpy.props.PointerProperty(type=MMDBone))
+        bpy.types.PoseBone.is_mmd_shadow_bone = patch_library_overridable(bpy.props.BoolProperty(name="is_mmd_shadow_bone", default=False))
+        bpy.types.PoseBone.mmd_shadow_bone_type = patch_library_overridable(bpy.props.StringProperty(name="mmd_shadow_bone_type"))
+        bpy.types.PoseBone.mmd_ik_toggle = patch_library_overridable(
+            bpy.props.BoolProperty(
+                name="MMD IK Toggle",
+                description="MMD IK toggle is used to import/export animation of IK on-off",
+                update=_mmd_ik_toggle_update,
+                default=True,
+            )
         )
 
     @staticmethod

@@ -8,6 +8,7 @@ from mmd_tools import utils
 from mmd_tools.core import material
 from mmd_tools.core.material import FnMaterial
 from mmd_tools.core.model import Model
+from mmd_tools.properties import patch_library_overridable
 
 
 def _updateAmbientColor(prop, context):
@@ -278,7 +279,7 @@ class MMDMaterial(bpy.types.PropertyGroup):
 
     @staticmethod
     def register():
-        bpy.types.Material.mmd_material = bpy.props.PointerProperty(type=MMDMaterial)
+        bpy.types.Material.mmd_material = patch_library_overridable(bpy.props.PointerProperty(type=MMDMaterial))
 
     @staticmethod
     def unregister():

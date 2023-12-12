@@ -5,8 +5,14 @@
 import bpy
 
 
-def patch_library_overridable(property: bpy.props._PropertyDeferred) -> bpy.props._PropertyDeferred:
-    """Apply recursively for each mmd_tools property class annotations"""
+def patch_library_overridable(property: "bpy.props._PropertyDeferred") -> "bpy.props._PropertyDeferred":
+    """Apply recursively for each mmd_tools property class annotations.
+    Args:
+        property: The property to be patched.
+
+    Returns:
+        The patched property.
+    """
     property.keywords.setdefault("override", set()).add("LIBRARY_OVERRIDABLE")
 
     if property.function.__name__ not in {"PointerProperty", "CollectionProperty"}:

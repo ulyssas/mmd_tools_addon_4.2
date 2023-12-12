@@ -2,8 +2,8 @@
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
-""" MMDモデルパラメータ用Prop
-"""
+"""Properties for MMD model root object"""
+
 import bpy
 
 import mmd_tools.core.model as mmd_model
@@ -11,6 +11,7 @@ from mmd_tools import utils
 from mmd_tools.bpyutils import SceneOp, activate_layer_collection
 from mmd_tools.core.material import FnMaterial
 from mmd_tools.core.sdef import FnSDEF
+from mmd_tools.properties import patch_library_overridable
 from mmd_tools.properties.morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
 from mmd_tools.properties.translations import MMDTranslation
 
@@ -509,51 +510,57 @@ class MMDRoot(bpy.types.PropertyGroup):
     def __set_hide(prop: bpy.types.Object, value: bool) -> None:
         utils.warn_deprecation("Object.hide", "v4.0.0", "Use Object.hide_set() method instead")
         prop.hide_set(value)
-        if getattr(prop, "hide_viewport"):
-            setattr(prop, "hide_viewport", False)
+        if prop.hide_viewport != value:
+            prop.hide_viewport = value
 
     @staticmethod
     def register():
-        bpy.types.Object.mmd_type = bpy.props.EnumProperty(
-            name="Type",
-            description="Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)",
-            default="NONE",
-            items=[
-                ("NONE", "None", "", 1),
-                ("ROOT", "Root", "", 2),
-                ("RIGID_GRP_OBJ", "Rigid Body Grp Empty", "", 3),
-                ("JOINT_GRP_OBJ", "Joint Grp Empty", "", 4),
-                ("TEMPORARY_GRP_OBJ", "Temporary Grp Empty", "", 5),
-                ("PLACEHOLDER", "Place Holder", "", 6),
-                ("CAMERA", "Camera", "", 21),
-                ("JOINT", "Joint", "", 22),
-                ("RIGID_BODY", "Rigid body", "", 23),
-                ("LIGHT", "Light", "", 24),
-                ("TRACK_TARGET", "Track Target", "", 51),
-                ("NON_COLLISION_CONSTRAINT", "Non Collision Constraint", "", 52),
-                ("SPRING_CONSTRAINT", "Spring Constraint", "", 53),
-                ("SPRING_GOAL", "Spring Goal", "", 54),
-            ],
+        bpy.types.Object.mmd_type = patch_library_overridable(
+            bpy.props.EnumProperty(
+                name="Type",
+                description="Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)",
+                default="NONE",
+                items=[
+                    ("NONE", "None", "", 1),
+                    ("ROOT", "Root", "", 2),
+                    ("RIGID_GRP_OBJ", "Rigid Body Grp Empty", "", 3),
+                    ("JOINT_GRP_OBJ", "Joint Grp Empty", "", 4),
+                    ("TEMPORARY_GRP_OBJ", "Temporary Grp Empty", "", 5),
+                    ("PLACEHOLDER", "Place Holder", "", 6),
+                    ("CAMERA", "Camera", "", 21),
+                    ("JOINT", "Joint", "", 22),
+                    ("RIGID_BODY", "Rigid body", "", 23),
+                    ("LIGHT", "Light", "", 24),
+                    ("TRACK_TARGET", "Track Target", "", 51),
+                    ("NON_COLLISION_CONSTRAINT", "Non Collision Constraint", "", 52),
+                    ("SPRING_CONSTRAINT", "Spring Constraint", "", 53),
+                    ("SPRING_GOAL", "Spring Goal", "", 54),
+                ],
+            )
         )
-        bpy.types.Object.mmd_root = bpy.props.PointerProperty(type=MMDRoot)
+        bpy.types.Object.mmd_root = patch_library_overridable(bpy.props.PointerProperty(type=MMDRoot))
 
-        bpy.types.Object.select = bpy.props.BoolProperty(
-            get=lambda prop: prop.select_get(),
-            set=lambda prop, value: prop.select_set(value),
-            options={
-                "SKIP_SAVE",
-                "ANIMATABLE",
-                "LIBRARY_EDITABLE",
-            },
+        bpy.types.Object.select = patch_library_overridable(
+            bpy.props.BoolProperty(
+                get=lambda prop: prop.select_get(),
+                set=lambda prop, value: prop.select_set(value),
+                options={
+                    "SKIP_SAVE",
+                    "ANIMATABLE",
+                    "LIBRARY_EDITABLE",
+                },
+            )
         )
-        bpy.types.Object.hide = bpy.props.BoolProperty(
-            get=MMDRoot.__get_hide,
-            set=MMDRoot.__set_hide,
-            options={
-                "SKIP_SAVE",
-                "ANIMATABLE",
-                "LIBRARY_EDITABLE",
-            },
+        bpy.types.Object.hide = patch_library_overridable(
+            bpy.props.BoolProperty(
+                get=MMDRoot.__get_hide,
+                set=MMDRoot.__set_hide,
+                options={
+                    "SKIP_SAVE",
+                    "ANIMATABLE",
+                    "LIBRARY_EDITABLE",
+                },
+            )
         )
 
     @staticmethod
