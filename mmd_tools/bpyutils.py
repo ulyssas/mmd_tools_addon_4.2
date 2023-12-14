@@ -151,6 +151,7 @@ def select_object(obj, objects=[]):
     return __SelectObjects(obj, objects)
 
 
+# TODO: change method name to ...override
 def activate_layer_collection(target: Union[bpy.types.Object, bpy.types.LayerCollection, None]):
     if isinstance(target, bpy.types.Object):
         layer_collection = find_user_layer_collection(target)
@@ -480,3 +481,59 @@ class SceneOp:
     @property
     def id_objects(self):
         return self.__scene.objects
+
+
+class FnContext:
+    @staticmethod
+    def get_active_object(context: bpy.types.Context) -> Optional[bpy.types.Object]:
+        return context.active_object
+
+    @staticmethod
+    def set_active_object(context: bpy.types.Context, obj: bpy.types.Object) -> None:
+        context.view_layer.objects.active = obj
+
+    @staticmethod
+    def get_scene_objects(context: bpy.types.Context) -> bpy.types.SceneObjects:
+        return context.scene.objects
+
+    @staticmethod
+    def ensure_selectable(context: bpy.types.Context, obj: bpy.types.Object) -> bpy.types.Object:
+        obj.hide_viewport = False
+        obj.hide_select = False
+        obj.hide_set(False)
+
+        if obj not in context.selectable_objects:
+
+            def __layer_check(layer_collection: bpy.types.LayerCollection):
+                for lc in layer_collection.children:
+                    if __layer_check(lc):
+                        lc.hide_viewport = False
+                        lc.collection.hide_viewport = False
+                        lc.collection.hide_select = False
+                        return True
+                if obj in layer_collection.collection.objects.values():
+                    if layer_collection.exclude:
+                        layer_collection.exclude = False
+                    return True
+                return False
+
+            selected_objects = context.selected_objects
+            __layer_check(context.view_layer.layer_collection)
+            if len(context.selected_objects) != len(selected_objects):
+                for i in context.selected_objects:
+                    if i not in selected_objects:
+                        i.select_set(False)
+
+        return obj
+
+    @staticmethod
+    def select_object(context: bpy.types.Context, obj: bpy.types.Object) -> bpy.types.Object:
+        FnContext.ensure_selectable(context, obj)
+        obj.select_set(True)
+        return obj
+
+    @staticmethod
+    def select_single_object(context: bpy.types.Context, obj: bpy.types.Object) -> bpy.types.Object:
+        for i in context.selected_objects:
+            i.select_set(False)
+        return FnContext.select_object(context, obj)
