@@ -5,7 +5,7 @@
 import itertools
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, TypeGuard, Union
 
 import bpy
 import idprop
@@ -97,7 +97,7 @@ class FnModel:
 
     @staticmethod
     def child_meshes(obj: bpy.types.Object) -> Iterator[bpy.types.Object]:
-        return FnModel.filtered_children(lambda x: x.type == 'MESH' and x.mmd_type == 'NONE', obj)
+        return FnModel.filtered_children(FnModel.is_mesh_object, obj)
 
     @staticmethod
     def iterate_rigid_body_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
@@ -125,20 +125,24 @@ class FnModel:
         return itertools.chain(rigid_body_objects, FnModel.filtered_children(FnModel.is_temporary_object, temporary_group_object))
 
     @staticmethod
-    def is_root_object(obj: bpy.types.Object):
-        return obj and obj.mmd_type == "ROOT"
+    def is_root_object(obj: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        return obj is not None and obj.mmd_type == "ROOT"
 
     @staticmethod
-    def is_rigid_body_object(obj: bpy.types.Object):
-        return obj and obj.mmd_type == "RIGID_BODY"
+    def is_rigid_body_object(obj: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        return obj is not None and obj.mmd_type == "RIGID_BODY"
 
     @staticmethod
-    def is_joint_object(obj: bpy.types.Object):
-        return obj and obj.mmd_type == "JOINT"
+    def is_joint_object(obj: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        return obj is not None and obj.mmd_type == "JOINT"
 
     @staticmethod
-    def is_temporary_object(obj: bpy.types.Object):
-        return obj and obj.mmd_type in {"TRACK_TARGET", "NON_COLLISION_CONSTRAINT", "SPRING_CONSTRAINT", "SPRING_GOAL"}
+    def is_temporary_object(obj: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        return obj is not None and obj.mmd_type in {"TRACK_TARGET", "NON_COLLISION_CONSTRAINT", "SPRING_CONSTRAINT", "SPRING_GOAL"}
+
+    @staticmethod
+    def is_mesh_object(obj: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        return obj is not None and obj.type == "MESH" and obj.mmd_type == "NONE"
 
     @staticmethod
     def get_rigid_body_size(obj: bpy.types.Object):
