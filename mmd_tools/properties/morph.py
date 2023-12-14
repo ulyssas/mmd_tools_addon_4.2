@@ -7,7 +7,7 @@ import bpy
 from mmd_tools import utils
 from mmd_tools.core.bone import FnBone
 from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.model import Model as FnModel
+from mmd_tools.core.model import FnModel, Model
 from mmd_tools.core.morph import FnMorph
 
 
@@ -30,9 +30,11 @@ def _set_name(prop, value):
     if prop_name is not None:
         if morph_type == "vertex_morphs":
             kb_list = {}
-            for mesh in FnModel(prop.id_data).meshes():
-                for kb in getattr(mesh.data.shape_keys, "key_blocks", ()):
-                    kb_list.setdefault(kb.name, []).append(kb)
+            armature_object = FnModel.find_armature(prop.id_data)
+            if armature_object is not None:
+                for mesh in FnModel.child_meshes(armature_object):
+                    for kb in getattr(mesh.data.shape_keys, "key_blocks", ()):
+                        kb_list.setdefault(kb.name, []).append(kb)
 
             if prop_name in kb_list:
                 value = utils.uniqueName(value, used_names | kb_list.keys())
@@ -41,9 +43,11 @@ def _set_name(prop, value):
 
         elif morph_type == "uv_morphs":
             vg_list = {}
-            for mesh in FnModel(prop.id_data).meshes():
-                for vg, n, x in FnMorph.get_uv_morph_vertex_groups(mesh):
-                    vg_list.setdefault(n, []).append(vg)
+            armature_object = FnModel.find_armature(prop.id_data)
+            if armature_object is not None:
+                for mesh in FnModel.child_meshes(armature_object):
+                    for vg, n, x in FnMorph.get_uv_morph_vertex_groups(mesh):
+                        vg_list.setdefault(n, []).append(vg)
 
             if prop_name in vg_list:
                 value = utils.uniqueName(value, used_names | vg_list.keys())
@@ -62,7 +66,7 @@ def _set_name(prop, value):
                 item.name = value
                 break
 
-        obj = FnModel(prop.id_data).morph_slider.placeholder()
+        obj = Model(prop.id_data).morph_slider.placeholder()
         if obj and value not in obj.data.shape_keys.key_blocks:
             kb = obj.data.shape_keys.key_blocks.get(prop_name, None)
             if kb:
@@ -101,21 +105,19 @@ def _get_bone(prop):
     bone_id = prop.get("bone_id", -1)
     if bone_id < 0:
         return ""
-    root = prop.id_data
-    fnModel = FnModel(root)
-    arm = fnModel.armature()
-    if arm is None:
+    root_object = prop.id_data
+    armature_object = FnModel.find_armature(root_object)
+    if armature_object is None:
         return ""
-    fnBone = FnBone.from_bone_id(arm, bone_id)
-    if not fnBone:
+    pose_bone = FnBone.find_pose_bone_by_bone_id(armature_object, bone_id)
+    if pose_bone is None:
         return ""
-    return fnBone.pose_bone.name
+    return pose_bone.name
 
 
 def _set_bone(prop, value):
     root = prop.id_data
-    fnModel = FnModel(root)
-    arm = fnModel.armature()
+    arm = FnModel.find_armature(root)
 
     # Load the library_override file. This function is triggered when loading, but the arm obj cannot be found.
     # The arm obj is exist, but the relative relationship has not yet been established.
@@ -126,8 +128,7 @@ def _set_bone(prop, value):
         prop["bone_id"] = -1
         return
     pose_bone = arm.pose.bones[value]
-    fnBone = FnBone(pose_bone)
-    prop["bone_id"] = fnBone.bone_id
+    prop["bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
 
 
 def _update_bone_morph_data(prop, context):

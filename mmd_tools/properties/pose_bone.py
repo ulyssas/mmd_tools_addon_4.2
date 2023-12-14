@@ -8,17 +8,17 @@ from mmd_tools.core.bone import FnBone
 from mmd_tools.properties import patch_library_overridable
 
 
-def _updateMMDBoneAdditionalTransform(prop, context):
+def _updateMMDBoneAdditionalTransform(prop, context: bpy.types.Context):
     prop["is_additional_transform_dirty"] = True
     p_bone = context.active_pose_bone
     if p_bone and p_bone.mmd_bone.as_pointer() == prop.as_pointer():
         FnBone.apply_additional_transformation(prop.id_data)
 
 
-def _updateAdditionalTransformInfluence(prop, context):
-    p_bone = context.active_pose_bone
-    if p_bone and p_bone.mmd_bone.as_pointer() == prop.as_pointer():
-        FnBone(p_bone).update_additional_transform_influence()
+def _updateAdditionalTransformInfluence(prop, context: bpy.types.Context):
+    pose_bone = context.active_pose_bone
+    if pose_bone and pose_bone.mmd_bone.as_pointer() == prop.as_pointer():
+        FnBone.update_additional_transform_influence(pose_bone)
     else:
         prop["is_additional_transform_dirty"] = True
 
@@ -28,10 +28,10 @@ def _getAdditionalTransformBone(prop):
     bone_id = prop.get("additional_transform_bone_id", -1)
     if bone_id < 0:
         return ""
-    fnBone = FnBone.from_bone_id(arm, bone_id)
-    if not fnBone:
+    pose_bone = FnBone.find_pose_bone_by_bone_id(arm, bone_id)
+    if pose_bone is None:
         return ""
-    return fnBone.pose_bone.name
+    return pose_bone.name
 
 
 def _setAdditionalTransformBone(prop, value):
@@ -41,8 +41,7 @@ def _setAdditionalTransformBone(prop, value):
         prop["additional_transform_bone_id"] = -1
         return
     pose_bone = arm.pose.bones[value]
-    bone = FnBone(pose_bone)
-    prop["additional_transform_bone_id"] = bone.bone_id
+    prop["additional_transform_bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
 
 
 class MMDBone(bpy.types.PropertyGroup):
