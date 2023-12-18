@@ -3,7 +3,7 @@
 import itertools
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Union
 
 import bpy
 import idprop
@@ -144,7 +144,7 @@ class FnModel:
         return next(filter(lambda o: o.type == 'MESH' and 'mmd_bone_order_override' in o.modifiers, armature_object.children), None)
 
     @staticmethod
-    def all_children(obj: bpy.types.Object) -> Iterable[bpy.types.Object]:
+    def all_children(obj: bpy.types.Object) -> Iterator[bpy.types.Object]:
         child: bpy.types.Object
         obj.children_recursive
         for child in obj.children:
@@ -152,7 +152,9 @@ class FnModel:
             yield from FnModel.all_children(child)
 
     @staticmethod
-    def filtered_children(condition_function: Callable[[bpy.types.Object], bool], obj: bpy.types.Object) -> Iterable[bpy.types.Object]:
+    def filtered_children(condition_function: Callable[[bpy.types.Object], bool], obj: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
+        if obj is None:
+            return
         child: bpy.types.Object
         for child in obj.children:
             if condition_function(child):
@@ -161,11 +163,11 @@ class FnModel:
                 yield from FnModel.filtered_children(condition_function, child)
 
     @staticmethod
-    def child_meshes(obj: bpy.types.Object) -> Iterable[bpy.types.Object]:
+    def child_meshes(obj: bpy.types.Object) -> Iterator[bpy.types.Object]:
         return FnModel.filtered_children(lambda x: x.type == 'MESH' and x.mmd_type == 'NONE', obj)
 
     @staticmethod
-    def iterate_rigid_body_objects(root_object: bpy.types.Object) -> Iterable[bpy.types.Object]:
+    def iterate_rigid_body_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
         if root_object.mmd_root.is_built:
             return itertools.chain(
                 FnModel.filtered_children(FnModel.is_rigid_body_object, FnModel.find_armature(root_object)),
@@ -174,19 +176,20 @@ class FnModel:
         return FnModel.filtered_children(FnModel.is_rigid_body_object, FnModel.find_rigid_group(root_object))
 
     @staticmethod
-    def iterate_joint_objects(root_object: bpy.types.Object) -> Iterable[bpy.types.Object]:
+    def iterate_joint_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
         return FnModel.filtered_children(FnModel.is_joint_object, FnModel.find_joint_group(root_object))
 
     @staticmethod
-    def iterate_temporary_objects(root_object: bpy.types.Object, rigid_track_only: bool = False) -> Iterable[bpy.types.Object]:
-        rigid_group_object = FnModel.find_rigid_group(root_object)
-        rigid_body_objects = [] if rigid_group_object is None else FnModel.filtered_children(FnModel.is_temporary_object, rigid_group_object)
+    def iterate_temporary_objects(root_object: bpy.types.Object, rigid_track_only: bool = False) -> Iterator[bpy.types.Object]:
+        rigid_body_objects = FnModel.filtered_children(FnModel.is_temporary_object, FnModel.find_rigid_group(root_object))
 
         if rigid_track_only:
             return rigid_body_objects
 
         temporary_group_object = FnModel.find_temporary_group(root_object)
-        return rigid_body_objects if temporary_group_object is None else itertools.chain(rigid_body_objects, FnModel.filtered_children(FnModel.is_temporary_object, temporary_group_object))
+        if temporary_group_object is None:
+            return rigid_body_objects
+        return itertools.chain(rigid_body_objects, FnModel.filtered_children(FnModel.is_temporary_object, temporary_group_object))
 
     @staticmethod
     def is_root_object(obj: bpy.types.Object):
@@ -788,7 +791,7 @@ class Model:
         ik_const.subtarget = ik_target_name
         return ik_const
 
-    def allObjects(self, obj: Optional[bpy.types.Object] = None) -> Iterable[bpy.types.Object]:
+    def allObjects(self, obj: Optional[bpy.types.Object] = None) -> Iterator[bpy.types.Object]:
         if obj is None:
             obj: bpy.types.Object = self.__root
         yield obj
@@ -856,7 +859,7 @@ class Model:
             return []
         return FnModel.child_meshes(arm)
 
-    def attachMeshes(self, meshes: Iterable[bpy.types.Object], add_armature_modifier: bool = True):
+    def attachMeshes(self, meshes: Iterator[bpy.types.Object], add_armature_modifier: bool = True):
         FnModel.attach_meshes(self.rootObject(), meshes, add_armature_modifier)
 
     def firstMesh(self):
