@@ -5,7 +5,7 @@
 import itertools
 import logging
 import time
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, TypeGuard, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, TypeGuard, Union, cast
 
 import bpy
 import idprop
@@ -78,6 +78,17 @@ class FnModel:
         return next(filter(lambda o: o.type == "MESH" and "mmd_bone_order_override" in o.modifiers, armature_object.children), None)
 
     @staticmethod
+    def find_mesh_by_name(root_object: bpy.types.Object, name: str) -> Optional[bpy.types.Object]:
+        armature_object = FnModel.find_armature(root_object)
+        if armature_object is None:
+            return None
+        for o in FnModel.child_meshes(armature_object):
+            if o.name != name:
+                continue
+            return o
+        return None
+
+    @staticmethod
     def all_children(obj: bpy.types.Object) -> Iterator[bpy.types.Object]:
         child: bpy.types.Object
         for child in obj.children:
@@ -123,6 +134,19 @@ class FnModel:
         if temporary_group_object is None:
             return rigid_body_objects
         return itertools.chain(rigid_body_objects, FnModel.filtered_children(FnModel.is_temporary_object, temporary_group_object))
+
+    @staticmethod
+    def iterate_materials(root_object: bpy.types.Object) -> Iterable[bpy.types.Material]:
+        armature_object = FnModel.find_armature(root_object)
+        if armature_object is None:
+            return []
+        return (material for mesh_object in FnModel.child_meshes(armature_object) for material in cast(bpy.types.Mesh, mesh_object.data).materials if material is not None)
+
+    @staticmethod
+    def iterate_unique_materials(root_object: bpy.types.Object) -> Iterable[bpy.types.Material]:
+        materials: Dict[bpy.types.Material, None] = {}  # use dict because set does not guarantee the order
+        materials.update((material, None) for material in FnModel.iterate_materials(root_object))
+        return materials.keys()
 
     @staticmethod
     def is_root_object(obj: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:

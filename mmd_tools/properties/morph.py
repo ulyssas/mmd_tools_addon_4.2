@@ -11,11 +11,11 @@ from mmd_tools.core.model import FnModel, Model
 from mmd_tools.core.morph import FnMorph
 
 
-def _get_name(prop):
+def _morph_base_get_name(prop: "_MorphBase") -> str:
     return prop.get("name", "")
 
 
-def _set_name(prop, value):
+def _morph_base_set_name(prop: "_MorphBase", value: str):
     mmd_root = prop.id_data.mmd_root
     # morph_type = mmd_root.active_morph_type
     morph_type = "%s_morphs" % prop.bl_rna.identifier[:-5].lower()
@@ -26,7 +26,7 @@ def _set_name(prop, value):
         return
 
     used_names = {x.name for x in getattr(mmd_root, morph_type) if x != prop}
-    value = utils.uniqueName(value, used_names)
+    value = utils.unique_name(value, used_names)
     if prop_name is not None:
         if morph_type == "vertex_morphs":
             kb_list = {}
@@ -37,7 +37,7 @@ def _set_name(prop, value):
                         kb_list.setdefault(kb.name, []).append(kb)
 
             if prop_name in kb_list:
-                value = utils.uniqueName(value, used_names | kb_list.keys())
+                value = utils.unique_name(value, used_names | kb_list.keys())
                 for kb in kb_list[prop_name]:
                     kb.name = value
 
@@ -50,7 +50,7 @@ def _set_name(prop, value):
                         vg_list.setdefault(n, []).append(vg)
 
             if prop_name in vg_list:
-                value = utils.uniqueName(value, used_names | vg_list.keys())
+                value = utils.unique_name(value, used_names | vg_list.keys())
                 for vg in vg_list[prop_name]:
                     vg.name = vg.name.replace(prop_name, value)
 
@@ -79,8 +79,8 @@ class _MorphBase:
     name: bpy.props.StringProperty(
         name="Name",
         description="Japanese Name",
-        set=_set_name,
-        get=_get_name,
+        set=_morph_base_set_name,
+        get=_morph_base_get_name,
     )
     name_e: bpy.props.StringProperty(
         name="Name(Eng)",
@@ -101,7 +101,7 @@ class _MorphBase:
     )
 
 
-def _get_bone(prop):
+def _bone_morph_data_get_bone(prop: "BoneMorphData") -> str:
     bone_id = prop.get("bone_id", -1)
     if bone_id < 0:
         return ""
@@ -115,7 +115,7 @@ def _get_bone(prop):
     return pose_bone.name
 
 
-def _set_bone(prop, value):
+def _bone_morph_data_set_bone(prop: "BoneMorphData", value: str):
     root = prop.id_data
     arm = FnModel.find_armature(root)
 
@@ -131,7 +131,7 @@ def _set_bone(prop, value):
     prop["bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
 
 
-def _update_bone_morph_data(prop, context):
+def _bone_morph_data_update_location_or_rotation(prop: "BoneMorphData", _context):
     if not prop.name.startswith("mmd_bind"):
         return
     arm = FnModel(prop.id_data).morph_slider.dummy_armature
@@ -148,8 +148,8 @@ class BoneMorphData(bpy.types.PropertyGroup):
     bone: bpy.props.StringProperty(
         name="Bone",
         description="Target bone",
-        set=_set_bone,
-        get=_get_bone,
+        set=_bone_morph_data_set_bone,
+        get=_bone_morph_data_get_bone,
     )
 
     bone_id: bpy.props.IntProperty(
@@ -162,7 +162,7 @@ class BoneMorphData(bpy.types.PropertyGroup):
         subtype="TRANSLATION",
         size=3,
         default=[0, 0, 0],
-        update=_update_bone_morph_data,
+        update=_bone_morph_data_update_location_or_rotation,
     )
 
     rotation: bpy.props.FloatVectorProperty(
@@ -171,7 +171,7 @@ class BoneMorphData(bpy.types.PropertyGroup):
         subtype="QUATERNION",
         size=4,
         default=[1, 0, 0, 0],
-        update=_update_bone_morph_data,
+        update=_bone_morph_data_update_location_or_rotation,
     )
 
 
@@ -189,14 +189,14 @@ class BoneMorph(_MorphBase, bpy.types.PropertyGroup):
     )
 
 
-def _get_material(prop):
+def _material_morph_data_get_material(prop: "MaterialMorphData"):
     mat_p = prop.get("material_data", None)
     if mat_p is not None:
         return mat_p.name
     return ""
 
 
-def _set_material(prop, value):
+def _material_morph_data_set_material(prop: "MaterialMorphData", value: str):
     if value not in bpy.data.materials:
         prop["material_data"] = None
         prop["material_id"] = -1
@@ -207,23 +207,22 @@ def _set_material(prop, value):
         prop["material_id"] = fnMat.material_id
 
 
-def _set_related_mesh(prop, value):
-    rig = FnModel(prop.id_data)
-    mesh = rig.findMesh(value)
+def _material_morph_data_set_related_mesh(prop: "MaterialMorphData", value: str):
+    mesh = FnModel.find_mesh_by_name(prop.id_data, value)
     if mesh is not None:
         prop["related_mesh_data"] = mesh.data
     else:
         prop["related_mesh_data"] = None
 
 
-def _get_related_mesh(prop):
+def _material_morph_data_get_related_mesh(prop):
     mesh_p = prop.get("related_mesh_data", None)
     if mesh_p is not None:
         return mesh_p.name
     return ""
 
 
-def _update_material_morph_data(prop, context):
+def _material_morph_data_update_modifiable_values(prop: "MaterialMorphData", _context):
     if not prop.name.startswith("mmd_bind"):
         return
     from mmd_tools.core.shader import _MaterialMorph
@@ -242,8 +241,8 @@ class MaterialMorphData(bpy.types.PropertyGroup):
     related_mesh: bpy.props.StringProperty(
         name="Related Mesh",
         description="Stores a reference to the mesh where this morph data belongs to",
-        set=_set_related_mesh,
-        get=_get_related_mesh,
+        set=_material_morph_data_set_related_mesh,
+        get=_material_morph_data_get_related_mesh,
     )
 
     related_mesh_data: bpy.props.PointerProperty(
@@ -256,8 +255,8 @@ class MaterialMorphData(bpy.types.PropertyGroup):
     material: bpy.props.StringProperty(
         name="Material",
         description="Target material",
-        get=_get_material,
-        set=_set_material,
+        get=_material_morph_data_get_material,
+        set=_material_morph_data_set_material,
     )
 
     material_id: bpy.props.IntProperty(
@@ -280,7 +279,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         precision=3,
         step=0.1,
         default=[0, 0, 0, 1],
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     specular_color: bpy.props.FloatVectorProperty(
@@ -293,7 +292,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         precision=3,
         step=0.1,
         default=[0, 0, 0],
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     shininess: bpy.props.FloatProperty(
@@ -303,7 +302,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         soft_max=500,
         step=100.0,
         default=0.0,
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     ambient_color: bpy.props.FloatVectorProperty(
@@ -316,7 +315,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         precision=3,
         step=0.1,
         default=[0, 0, 0],
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     edge_color: bpy.props.FloatVectorProperty(
@@ -329,7 +328,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         precision=3,
         step=0.1,
         default=[0, 0, 0, 1],
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     edge_weight: bpy.props.FloatProperty(
@@ -339,7 +338,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         soft_max=2,
         step=0.1,
         default=0,
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     texture_factor: bpy.props.FloatVectorProperty(
@@ -352,7 +351,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         precision=3,
         step=0.1,
         default=[0, 0, 0, 1],
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     sphere_texture_factor: bpy.props.FloatVectorProperty(
@@ -365,7 +364,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         precision=3,
         step=0.1,
         default=[0, 0, 0, 1],
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
     toon_texture_factor: bpy.props.FloatVectorProperty(
@@ -378,7 +377,7 @@ class MaterialMorphData(bpy.types.PropertyGroup):
         precision=3,
         step=0.1,
         default=[0, 0, 0, 1],
-        update=_update_material_morph_data,
+        update=_material_morph_data_update_modifiable_values,
     )
 
 

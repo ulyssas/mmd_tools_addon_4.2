@@ -812,7 +812,7 @@ class PMXImporter:
     def __fixRepeatedMorphName(self):
         used_names = set()
         for m in self.__model.morphs:
-            m.name = utils.uniqueName(m.name or "Morph", used_names)
+            m.name = utils.unique_name(m.name or "Morph", used_names)
             used_names.add(m.name)
 
     def execute(self, **args):

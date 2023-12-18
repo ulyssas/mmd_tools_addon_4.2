@@ -5,7 +5,7 @@
 import logging
 import os
 import re
-from typing import Callable, Optional
+from typing import Callable, Optional, Set
 
 import bpy
 
@@ -181,13 +181,26 @@ def makePmxBoneMap(armObj):
     return {(i.mmd_bone.name_j or i.get("mmd_bone_name_j", i.get("name_j", i.name))): i for i in armObj.pose.bones}
 
 
-def uniqueName(name, used_names):
+__REMOVE_PREFIX_DIGITS_REGEXP = re.compile(r"\.\d{1,}$")
+
+
+def unique_name(name: str, used_names: Set[str]) -> str:
+    """Helper function for storing unique names.
+    This function is a limited and simplified version of bpy_extras.io_utils.unique_name.
+
+    Args:
+        name (str): The name to make unique.
+        used_names (Set[str]): A set of names that are already used.
+
+    Returns:
+        str: The unique name, formatted as "{name}.{number:03d}".
+    """
     if name not in used_names:
         return name
     count = 1
-    new_name = orig_name = re.sub(r"\.\d{1,}$", "", name)
+    new_name = orig_name = __REMOVE_PREFIX_DIGITS_REGEXP.sub("", name)
     while new_name in used_names:
-        new_name = "%s.%03d" % (orig_name, count)
+        new_name = f"{orig_name}.{count:03d}"
         count += 1
     return new_name
 
