@@ -50,14 +50,14 @@ def selectSingleBone(context, armature, bone_name, reset_pose=False):
     if reset_pose:
         for p_bone in armature.pose.bones:
             p_bone.matrix_basis.identity()
-    armature_bones = armature.data.bones
+    armature_bones: bpy.types.ArmatureBones = armature.data.bones
+    i: bpy.types.Bone
     for i in armature_bones:
         i.select = i.name == bone_name
         i.select_head = i.select_tail = i.select
         if i.select:
             armature_bones.active = i
             i.hide = False
-            # armature.data.layers[list(i.layers).index(True)] = True
 
 
 __CONVERT_NAME_TO_L_REGEXP = re.compile("^(.*)左(.*)$")
@@ -107,42 +107,10 @@ def mergeVertexGroup(meshObj, src_vertex_group_name, dest_vertex_group_name):
             pass
 
 
-def __getCustomNormalKeeper(mesh):
-    if hasattr(mesh, "has_custom_normals") and mesh.use_auto_smooth:
-
-        class _CustomNormalKeeper:
-            def __init__(self, mesh):
-                mesh.calc_normals_split()
-                self.__normals = tuple(zip((l.normal.copy() for l in mesh.loops), (p.material_index for p in mesh.polygons for v in p.vertices)))
-                mesh.free_normals_split()
-                self.__material_map = {}
-                materials = mesh.materials
-                for i, m in enumerate(materials):
-                    if m is None or m.name in self.__material_map:
-                        materials[i] = bpy.data.materials.new("_mmd_tmp_")
-                    self.__material_map[materials[i].name] = (i, getattr(m, "name", ""))
-
-            def restore_custom_normals(self, mesh):
-                materials = mesh.materials
-                for i, m in enumerate(materials):
-                    mat_id, mat_name_orig = self.__material_map[m.name]
-                    if m.name != mat_name_orig:
-                        materials[i] = bpy.data.materials.get(mat_name_orig, None)
-                        m.user_clear()
-                        bpy.data.materials.remove(m)
-                if len(materials) == 1:
-                    mesh.normals_split_custom_set([n for n, x in self.__normals if x == mat_id])
-                    mesh.update()
-
-        return _CustomNormalKeeper(mesh)  # This fixes the issue that "SeparateByMaterials" could break custom normals
-    return None
-
-
 def separateByMaterials(meshObj):
     if len(meshObj.data.materials) < 2:
         selectAObject(meshObj)
         return
-    custom_normal_keeper = __getCustomNormalKeeper(meshObj.data)
     matrix_parent_inverse = meshObj.matrix_parent_inverse.copy()
     prev_parent = meshObj.parent
     dummy_parent = bpy.data.objects.new(name="tmp", object_data=None)

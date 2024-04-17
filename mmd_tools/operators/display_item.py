@@ -242,7 +242,7 @@ class SelectCurrentDisplayItem(Operator):
                 mmd_root.active_morph_type = item.morph_type
                 mmd_root.active_morph = index
         else:
-            utils.selectSingleBone(context, mmd_model.FnModel.find_armature(root), item.name)
+            utils.selectSingleBone(context, mmd_model.FnModel.find_armature_object(root), item.name)
         return {"FINISHED"}
 
 

@@ -18,6 +18,9 @@ jobs:
       - name: Copy LICENSE file
         run: cp -p LICENSE mmd_tools/
 
+      - name: Remove typings for development
+        run: rm -rf mmd_tools/typings
+
       - name: Create a zip
         run: zip -r -9 mmd_tools-${GITHUB_REF_NAME}.zip mmd_tools/
 
