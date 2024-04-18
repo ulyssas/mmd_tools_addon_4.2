@@ -304,9 +304,8 @@ class RigidBodyBake(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     def execute(self, context: bpy.types.Context):
-        override: Dict = context.copy()
-        override.update({"scene": context.scene, "point_cache": context.scene.rigidbody_world.point_cache})
-        bpy.ops.ptcache.bake(override, "INVOKE_DEFAULT", bake=True)
+        with bpy.context.temp_override(scene=context.scene, point_cache=context.scene.rigidbody_world.point_cache):
+            bpy.ops.ptcache.bake("INVOKE_DEFAULT", bake=True)
 
         return {"FINISHED"}
 
@@ -317,9 +316,8 @@ class RigidBodyDeleteBake(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     def execute(self, context: bpy.types.Context):
-        override: Dict = context.copy()
-        override.update({"scene": context.scene, "point_cache": context.scene.rigidbody_world.point_cache})
-        bpy.ops.ptcache.free_bake(override, "INVOKE_DEFAULT")
+        with bpy.context.temp_override(scene=context.scene, point_cache=context.scene.rigidbody_world.point_cache):
+            bpy.ops.ptcache.free_bake("INVOKE_DEFAULT")
 
         return {"FINISHED"}
 
