@@ -645,18 +645,19 @@ class Model:
         yield obj
         yield from FnModel.iterate_child_objects(obj)
 
-    def rootObject(self):
+    def rootObject(self) -> bpy.types.Object:
         return self.__root
 
-    def armature(self):
+    def armature(self) -> bpy.types.Object:
         if self.__arm is None:
             self.__arm = FnModel.find_armature_object(self.__root)
+            assert self.__arm is not None
         return self.__arm
 
-    def hasRigidGroupObject(self):
+    def hasRigidGroupObject(self) -> bool:
         return FnModel.find_rigid_group_object(self.__root) is not None
 
-    def rigidGroupObject(self):
+    def rigidGroupObject(self) -> bpy.types.Object:
         if self.__rigid_grp is None:
             self.__rigid_grp = FnModel.find_rigid_group_object(self.__root)
             if self.__rigid_grp is None:
@@ -670,10 +671,10 @@ class Model:
                 self.__rigid_grp = rigids
         return self.__rigid_grp
 
-    def hasJointGroupObject(self):
+    def hasJointGroupObject(self) -> bool:
         return FnModel.find_joint_group_object(self.__root) is not None
 
-    def jointGroupObject(self):
+    def jointGroupObject(self) -> bpy.types.Object:
         if self.__joint_grp is None:
             self.__joint_grp = FnModel.find_joint_group_object(self.__root)
             if self.__joint_grp is None:
@@ -687,10 +688,10 @@ class Model:
                 self.__joint_grp = joints
         return self.__joint_grp
 
-    def hasTemporaryGroupObject(self):
+    def hasTemporaryGroupObject(self) -> bool:
         return FnModel.find_temporary_group_object(self.__root) is not None
 
-    def temporaryGroupObject(self):
+    def temporaryGroupObject(self) -> bpy.types.Object:
         if self.__temporary_grp is None:
             self.__temporary_grp = FnModel.find_temporary_group_object(self.__root)
             if self.__temporary_grp is None:
@@ -704,18 +705,18 @@ class Model:
                 self.__temporary_grp = temporarys
         return self.__temporary_grp
 
-    def meshes(self):
+    def meshes(self) -> Iterator[bpy.types.Object]:
         return FnModel.iterate_mesh_objects(self.__root)
 
     def attachMeshes(self, meshes: Iterator[bpy.types.Object], add_armature_modifier: bool = True):
         FnModel.attach_mesh_objects(self.rootObject(), meshes, add_armature_modifier)
 
-    def firstMesh(self):
+    def firstMesh(self) -> Optional[bpy.types.Object]:
         for i in self.meshes():
             return i
         return None
 
-    def findMesh(self, mesh_name):
+    def findMesh(self, mesh_name) -> Optional[bpy.types.Object]:
         """
         Helper method to find a mesh by name
         """
@@ -726,7 +727,7 @@ class Model:
                 return mesh
         return None
 
-    def findMeshByIndex(self, index):
+    def findMeshByIndex(self, index: int) -> Optional[bpy.types.Object]:
         """
         Helper method to find the mesh by index
         """
@@ -737,7 +738,7 @@ class Model:
                 return mesh
         return None
 
-    def getMeshIndex(self, mesh_name):
+    def getMeshIndex(self, mesh_name: str) -> int:
         """
         Helper method to get the index of a mesh. Returns -1 if not found
         """
@@ -748,23 +749,23 @@ class Model:
                 return i
         return -1
 
-    def rigidBodies(self):
+    def rigidBodies(self) -> Iterator[bpy.types.Object]:
         return FnModel.iterate_rigid_body_objects(self.__root)
 
-    def joints(self):
+    def joints(self) -> Iterator[bpy.types.Object]:
         return FnModel.iterate_joint_objects(self.__root)
 
-    def temporaryObjects(self, rigid_track_only=False):
+    def temporaryObjects(self, rigid_track_only=False) -> Iterator[bpy.types.Object]:
         return FnModel.iterate_temporary_objects(self.__root, rigid_track_only)
 
-    def materials(self):
+    def materials(self) -> Iterator[bpy.types.Material]:
         """
         Helper method to list all materials in all meshes
         """
         materials = {}  # Use dict instead of set to guarantee preserve order
         for mesh in self.meshes():
             materials.update((slot.material, 0) for slot in mesh.material_slots if slot.material is not None)
-        return list(materials.keys())
+        return iter(materials.keys())
 
     def renameBone(self, old_bone_name, new_bone_name):
         if old_bone_name == new_bone_name:
