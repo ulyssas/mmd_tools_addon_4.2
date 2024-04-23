@@ -261,22 +261,18 @@ class FnModel:
                     continue
                 mmd_bone.additional_transform_bone_id = new_bone_id
         
-        # Change Child Bone IDs temporarily to large numbers to completely avoid Bone ID conflict.
-        tmp_bone_id = 1000000000
-        for child_root_object in child_root_objects:
-            child_armature_object = FnModel.find_armature(child_root_object)
-            child_pose_bones = child_armature_object.pose.bones
-            child_bone_morphs = child_root_object.mmd_root.bone_morphs
-
-            for pose_bone in child_pose_bones:
-                if pose_bone.is_mmd_shadow_bone:
-                    continue
-                if pose_bone.mmd_bone.bone_id != -1:
-                    tmp_bone_id += 1
-                    _change_bone_id(pose_bone, tmp_bone_id, child_bone_morphs, child_pose_bones)
-        
-        # Reorder Child Bone IDs.
-        max_bone_id = max((b.mmd_bone.bone_id for b in parent_armature_object.pose.bones if not b.is_mmd_shadow_bone), default=-1)
+        max_bone_id = max(
+            (
+                b.mmd_bone.bone_id
+                for o in itertools.chain(
+                    child_root_objects,
+                    [parent_root_object],
+                )
+                for b in FnModel.find_armature(o).pose.bones
+                if not b.is_mmd_shadow_bone
+            ),
+            default=-1,
+        )
         
         child_root_object: bpy.types.Object
         for child_root_object in child_root_objects:
