@@ -52,11 +52,10 @@ class __SelectObjects:
         self.__selected_objects = tuple(set(selected_objects) | set([active_object]))
 
         self.__hides = []
-        scene = SceneOp(bpy.context)
         for i in self.__selected_objects:
             self.__hides.append(i.hide_get())
-            scene.select_object(i)
-        scene.active_object = active_object
+            FnContext.select_object(bpy.context, i)
+        FnContext.set_active_object(bpy.context, active_object)
 
     def __enter__(self):
         return self.__active_object
@@ -161,13 +160,12 @@ def activate_layer_collection(target: Union[bpy.types.Object, bpy.types.LayerCol
 
 
 def duplicateObject(obj, total_len):
-    return FnContext.duplicate_object(bpy.context, obj, total_len)
+    return FnContext.duplicate_object(FnContext.ensure_context(), obj, total_len)
 
 
-def makeCapsuleBak(segment=16, ring_count=8, radius=1.0, height=1.0, target_scene=None):
+def makeCapsuleBak(segment=16, ring_count=8, radius=1.0, height=1.0, context: Optional[bpy.types.Context] = None):
     import math
 
-    target_scene = SceneOp(target_scene)
     mesh = bpy.data.meshes.new(name="Capsule")
     meshObj = bpy.data.objects.new(name="Capsule", object_data=mesh)
     vertices = []
@@ -213,7 +211,7 @@ def makeCapsuleBak(segment=16, ring_count=8, radius=1.0, height=1.0, target_scen
     faces.append([offset - 1, offset, offset - segment])
 
     mesh.from_pydata(vertices, [], faces)
-    target_scene.link_object(meshObj)
+    FnContext.link_object(FnContext.ensure_context(context), meshObj)
     return meshObj
 
 
@@ -398,64 +396,6 @@ class TransformConstraintOp:
             setattr(c, attr, -value * influence)
         for attr in cls.min_max_attributes(c.map_to, "to_max"):
             setattr(c, attr, value * influence)
-
-
-class SceneOp:
-    def __init__(self, context=None):
-        self.__context = context or bpy.context
-        self.__scene = self.__context.scene
-        self.__collection = self.__context.collection
-        self.__view_layer = self.__context.view_layer
-
-    def __ensure_selectable(self, obj):
-        obj.hide_viewport = obj.hide_select = False
-        obj.hide_set(False)
-        if obj not in self.__context.selectable_objects:
-
-            def __unhide(lc):
-                lc.hide_viewport = lc.collection.hide_viewport = lc.collection.hide_select = False
-                return True
-
-            def __layer_check(layer_collection):
-                for lc in layer_collection.children:
-                    if __layer_check(lc):
-                        return __unhide(lc)
-                if obj in layer_collection.collection.objects.values():
-                    if layer_collection.exclude:
-                        layer_collection.exclude = False
-                    return True
-                return False
-
-            selected_objects = self.__context.selected_objects
-            __layer_check(self.__view_layer.layer_collection)
-            if len(self.__context.selected_objects) != len(selected_objects):
-                for i in self.__context.selected_objects:
-                    if i not in selected_objects:
-                        i.select_set(False)
-
-    def select_object(self, obj):
-        self.__ensure_selectable(obj)
-        obj.select_set(True)
-
-    def link_object(self, obj):
-        self.__collection.objects.link(obj)
-
-    @property
-    def active_object(self):
-        return self.__view_layer.objects.active
-
-    @active_object.setter
-    def active_object(self, obj):
-        self.select_object(obj)
-        self.__view_layer.objects.active = obj
-
-    @property
-    def id_scene(self):
-        return self.__scene
-
-    @property
-    def id_objects(self):
-        return self.__scene.objects
 
 
 class FnContext:

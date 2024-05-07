@@ -8,7 +8,7 @@ import re
 import bpy
 
 from mmd_tools import bpyutils
-from mmd_tools.bpyutils import ObjectOp, SceneOp, TransformConstraintOp
+from mmd_tools.bpyutils import FnContext, ObjectOp, TransformConstraintOp
 
 
 class FnMorph:
@@ -20,7 +20,7 @@ class FnMorph:
     def storeShapeKeyOrder(cls, obj, shape_key_names):
         if len(shape_key_names) < 1:
             return
-        assert SceneOp(bpy.context).active_object == obj
+        assert FnContext.get_active_object(FnContext.ensure_context()) == obj
         if obj.data.shape_keys is None:
             bpy.ops.object.shape_key_add()
 
@@ -39,7 +39,7 @@ class FnMorph:
     def fixShapeKeyOrder(cls, obj, shape_key_names):
         if len(shape_key_names) < 1:
             return
-        assert SceneOp(bpy.context).active_object == obj
+        assert FnContext.get_active_object(FnContext.ensure_context()) == obj
         key_blocks = getattr(obj.data.shape_keys, "key_blocks", None)
         if key_blocks is None:
             return
@@ -299,7 +299,7 @@ class _MorphSlider:
             obj = bpy.data.objects.new(name=".placeholder", object_data=bpy.data.meshes.new(".placeholder"))
             obj.mmd_type = "PLACEHOLDER"
             obj.parent = root
-            SceneOp(bpy.context).link_object(obj)
+            FnContext.link_object(FnContext.ensure_context(), obj)
         if obj and obj.data.shape_keys is None:
             key = obj.shape_key_add(name="--- morph sliders ---")
             key.mute = True
@@ -319,7 +319,8 @@ class _MorphSlider:
             arm = bpy.data.objects.new(name=".dummy_armature", object_data=bpy.data.armatures.new(name=".dummy_armature"))
             arm.mmd_type = "PLACEHOLDER"
             arm.parent = obj
-            SceneOp(bpy.context).link_object(arm)
+            FnContext.link_object(FnContext.ensure_context(), arm)
+
             from mmd_tools.core.bone import FnBone
 
             FnBone.setup_special_bone_collections(arm)

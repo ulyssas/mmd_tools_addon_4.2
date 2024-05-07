@@ -3,12 +3,11 @@
 # This file is part of MMD Tools.
 
 from typing import Optional
+
 import bpy
-from bpy.types import Menu, Panel, UIList
 
 import mmd_tools.core.model as mmd_model
 from mmd_tools import bpyutils, operators
-from mmd_tools.bpyutils import SceneOp
 from mmd_tools.utils import ItemOp
 
 
@@ -22,7 +21,7 @@ class _PanelBase:
         return bpyutils.addon_preferences("enable_mmd_model_production_features", True)
 
 
-class MMDModelProductionPanel(_PanelBase, Panel):
+class MMDModelProductionPanel(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_model_production"
     bl_label = "Model Production"
     bl_context = ""
@@ -77,7 +76,7 @@ class MMDModelProductionPanel(_PanelBase, Panel):
         row.operator("mmd_tools.model_join_by_bones", text="Join", icon="GROUP_BONE")
 
 
-class MMD_ROOT_UL_display_item_frames(UIList):
+class MMD_ROOT_UL_display_item_frames(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         frame = item
         if self.layout_type in {"DEFAULT"}:
@@ -97,7 +96,7 @@ class MMD_ROOT_UL_display_item_frames(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class MMD_ROOT_UL_display_items(UIList):
+class MMD_ROOT_UL_display_items(bpy.types.UIList):
     morph_filter: bpy.props.EnumProperty(
         name="Morph Filter",
         description="Only show items matching this category",
@@ -184,7 +183,7 @@ class MMD_ROOT_UL_display_items(UIList):
         row.prop(self, "mmd_name", expand=True)
 
 
-class MMDDisplayItemFrameMenu(Menu):
+class MMDDisplayItemFrameMenu(bpy.types.Menu):
     bl_idname = "OBJECT_MT_mmd_tools_display_item_frame_menu"
     bl_label = "Display Item Frame Menu"
 
@@ -196,7 +195,7 @@ class MMDDisplayItemFrameMenu(Menu):
         layout.operator("mmd_tools.display_item_frame_move", icon="TRIA_DOWN_BAR", text="Move To Bottom").type = "BOTTOM"
 
 
-class MMDDisplayItemMenu(Menu):
+class MMDDisplayItemMenu(bpy.types.Menu):
     bl_idname = "OBJECT_MT_mmd_tools_display_item_menu"
     bl_label = "Display Item Menu"
 
@@ -208,7 +207,7 @@ class MMDDisplayItemMenu(Menu):
         layout.operator("mmd_tools.display_item_move", icon="TRIA_DOWN_BAR", text="Move To Bottom").type = "BOTTOM"
 
 
-class MMDDisplayItemsPanel(_PanelBase, Panel):
+class MMDDisplayItemsPanel(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_display_items"
     bl_label = "Display Panel"
     bl_options = {"DEFAULT_CLOSED"}
@@ -275,7 +274,7 @@ class MMDDisplayItemsPanel(_PanelBase, Panel):
 from mmd_tools.properties.morph import MaterialMorph
 
 
-class MMD_TOOLS_UL_Morphs(UIList):
+class MMD_TOOLS_UL_Morphs(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         mmd_root = data
         if self.layout_type in {"DEFAULT"}:
@@ -302,7 +301,7 @@ class MMD_TOOLS_UL_Morphs(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class MMD_TOOLS_UL_MaterialMorphOffsets(UIList):
+class MMD_TOOLS_UL_MaterialMorphOffsets(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT"}:
             material = item.material
@@ -314,7 +313,7 @@ class MMD_TOOLS_UL_MaterialMorphOffsets(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class MMD_TOOLS_UL_UVMorphOffsets(UIList):
+class MMD_TOOLS_UL_UVMorphOffsets(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT"}:
             layout.label(text=str(item.index), translate=False, icon="MESH_DATA")
@@ -326,7 +325,7 @@ class MMD_TOOLS_UL_UVMorphOffsets(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class MMD_TOOLS_UL_BoneMorphOffsets(UIList):
+class MMD_TOOLS_UL_BoneMorphOffsets(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT"}:
             layout.prop(item, "bone", text="", emboss=False, icon="BONE_DATA")
@@ -338,7 +337,7 @@ class MMD_TOOLS_UL_BoneMorphOffsets(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class MMD_TOOLS_UL_GroupMorphOffsets(UIList):
+class MMD_TOOLS_UL_GroupMorphOffsets(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT"}:
             row = layout.split(factor=0.5, align=True)
@@ -356,7 +355,7 @@ class MMD_TOOLS_UL_GroupMorphOffsets(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class MMDMorphMenu(Menu):
+class MMDMorphMenu(bpy.types.Menu):
     bl_idname = "OBJECT_MT_mmd_tools_morph_menu"
     bl_label = "Morph Menu"
 
@@ -375,7 +374,7 @@ class MMDMorphMenu(Menu):
         layout.operator("mmd_tools.morph_move", icon="TRIA_DOWN_BAR", text="Move To Bottom").type = "BOTTOM"
 
 
-class MMDMorphToolsPanel(_PanelBase, Panel):
+class MMDMorphToolsPanel(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_morph_tools"
     bl_label = "Morph Tools"
     bl_options = {"DEFAULT_CLOSED"}
@@ -656,7 +655,7 @@ class UL_ObjectsMixIn:
         return flt_flags, flt_neworder
 
 
-class MMD_TOOLS_UL_rigidbodies(UIList, UL_ObjectsMixIn):
+class MMD_TOOLS_UL_rigidbodies(bpy.types.UIList, UL_ObjectsMixIn):
     mmd_type = "RIGID_BODY"
     icon = "MESH_ICOSPHERE"
     prop_name = "mmd_rigid"
@@ -669,7 +668,7 @@ class MMD_TOOLS_UL_rigidbodies(UIList, UL_ObjectsMixIn):
             layout.label(icon="BONE_DATA")
 
 
-class MMDRigidbodySelectMenu(Menu):
+class MMDRigidbodySelectMenu(bpy.types.Menu):
     bl_idname = "OBJECT_MT_mmd_tools_rigidbody_select_menu"
     bl_label = "Rigidbody Select Menu"
 
@@ -682,7 +681,7 @@ class MMDRigidbodySelectMenu(Menu):
         layout.operator_enum("mmd_tools.rigid_body_select", "properties")
 
 
-class MMDRigidbodyMenu(Menu):
+class MMDRigidbodyMenu(bpy.types.Menu):
     bl_idname = "OBJECT_MT_mmd_tools_rigidbody_menu"
     bl_label = "Rigidbody Menu"
 
@@ -695,7 +694,7 @@ class MMDRigidbodyMenu(Menu):
         layout.operator("mmd_tools.object_move", icon="TRIA_DOWN_BAR", text="Move To Bottom").type = "BOTTOM"
 
 
-class MMDRigidbodySelectorPanel(_PanelBase, Panel):
+class MMDRigidbodySelectorPanel(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_rigidbody_list"
     bl_label = "Rigid Bodies"
     bl_options = {"DEFAULT_CLOSED"}
@@ -713,7 +712,7 @@ class MMDRigidbodySelectorPanel(_PanelBase, Panel):
         row.template_list(
             "MMD_TOOLS_UL_rigidbodies",
             "",
-            SceneOp(context).id_scene,
+            context.scene,
             "objects",
             root.mmd_root,
             "active_rigidbody_index",
@@ -730,7 +729,7 @@ class MMDRigidbodySelectorPanel(_PanelBase, Panel):
         tb1.operator("mmd_tools.object_move", text="", icon="TRIA_DOWN").type = "DOWN"
 
 
-class MMD_TOOLS_UL_joints(UIList, UL_ObjectsMixIn):
+class MMD_TOOLS_UL_joints(bpy.types.UIList, UL_ObjectsMixIn):
     mmd_type = "JOINT"
     icon = "CONSTRAINT"
     prop_name = "mmd_joint"
@@ -745,7 +744,7 @@ class MMD_TOOLS_UL_joints(UIList, UL_ObjectsMixIn):
             layout.label(icon="MESH_CUBE")
 
 
-class MMDJointMenu(Menu):
+class MMDJointMenu(bpy.types.Menu):
     bl_idname = "OBJECT_MT_mmd_tools_joint_menu"
     bl_label = "Joint Menu"
 
@@ -756,7 +755,7 @@ class MMDJointMenu(Menu):
         layout.operator("mmd_tools.object_move", icon="TRIA_DOWN_BAR", text="Move To Bottom").type = "BOTTOM"
 
 
-class MMDJointSelectorPanel(_PanelBase, Panel):
+class MMDJointSelectorPanel(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_joint_list"
     bl_label = "Joints"
     bl_options = {"DEFAULT_CLOSED"}
@@ -775,7 +774,7 @@ class MMDJointSelectorPanel(_PanelBase, Panel):
         row.template_list(
             "MMD_TOOLS_UL_joints",
             "",
-            SceneOp(context).id_scene,
+            context.scene,
             "objects",
             root.mmd_root,
             "active_joint_index",

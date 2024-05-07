@@ -11,8 +11,8 @@ from mathutils import Euler, Vector
 from mmd_tools import utils
 from mmd_tools.bpyutils import FnContext, Props, activate_layer_collection
 from mmd_tools.core import rigid_body
-from mmd_tools.core.rigid_body import FnRigidBody
 from mmd_tools.core.model import FnModel, Model
+from mmd_tools.core.rigid_body import FnRigidBody
 
 
 class SelectRigidBody(bpy.types.Operator):

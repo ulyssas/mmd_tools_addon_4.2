@@ -3,14 +3,12 @@
 # This file is part of MMD Tools.
 
 import bpy
-from bpy.types import Panel, UIList
 
-from mmd_tools.bpyutils import SceneOp
 from mmd_tools.core.model import FnModel, Model
 from mmd_tools.panels.tool import _PanelBase
 
 
-class MMD_TOOLS_UL_Materials(UIList):
+class MMD_TOOLS_UL_Materials(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT"}:
             if item:
@@ -30,7 +28,7 @@ class MMD_TOOLS_UL_Materials(UIList):
         layout.label(text="Use the arrows to sort", icon="INFO")
 
 
-class MMDMaterialSorter(_PanelBase, Panel):
+class MMDMaterialSorter(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_material_sorter"
     bl_label = "Material Sorter"
     bl_context = ""
@@ -52,7 +50,7 @@ class MMDMaterialSorter(_PanelBase, Panel):
         tb1.operator("mmd_tools.move_material_down", text="", icon="TRIA_DOWN")
 
 
-class MMD_TOOLS_UL_ModelMeshes(UIList):
+class MMD_TOOLS_UL_ModelMeshes(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT"}:
             layout.label(text=item.name, translate=False, icon="OBJECT_DATA")
@@ -87,7 +85,7 @@ class MMD_TOOLS_UL_ModelMeshes(UIList):
         return flt_flags, flt_neworder
 
 
-class MMDMeshSorter(_PanelBase, Panel):
+class MMDMeshSorter(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_meshes_sorter"
     bl_label = "Meshes Sorter"
     bl_context = ""
@@ -103,7 +101,7 @@ class MMDMeshSorter(_PanelBase, Panel):
 
         col = layout.column(align=True)
         row = col.row()
-        row.template_list("MMD_TOOLS_UL_ModelMeshes", "", SceneOp(context).id_scene, "objects", root.mmd_root, "active_mesh_index")
+        row.template_list("MMD_TOOLS_UL_ModelMeshes", "", context.scene, "objects", root.mmd_root, "active_mesh_index")
         tb = row.column()
         tb1 = tb.column(align=True)
         tb1.enabled = active_obj.type == "MESH" and active_obj.mmd_type == "NONE"
@@ -120,7 +118,7 @@ class _DummyVertexGroup:
         self.index = index
 
 
-class MMD_TOOLS_UL_ModelBones(UIList):
+class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
     _IK_MAP = {}
     _IK_BONES = {}
     _DUMMY_VERTEX_GROUPS = {}
@@ -296,7 +294,7 @@ class MMDBoneOrderMenu(bpy.types.Menu):
         layout.operator("mmd_tools.add_missing_vertex_groups_from_bones", icon="PRESET_NEW")
 
 
-class MMDBoneOrder(_PanelBase, Panel):
+class MMDBoneOrder(_PanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_bone_order"
     bl_label = "Bone Order"
     bl_context = ""

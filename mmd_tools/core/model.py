@@ -13,7 +13,7 @@ import rna_prop_ui
 from mathutils import Vector
 
 from mmd_tools import MMD_TOOLS_VERSION, bpyutils
-from mmd_tools.bpyutils import FnContext, Props, SceneOp
+from mmd_tools.bpyutils import FnContext, Props
 from mmd_tools.core import rigid_body
 from mmd_tools.core.morph import FnMorph
 from mmd_tools.core.rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
@@ -572,7 +572,6 @@ class Model:
 
     @staticmethod
     def create(name, name_e="", scale=1, obj_name=None, armature=None, add_root_bone=False):
-        scene = SceneOp(bpy.context)
         if obj_name is None:
             obj_name = name
 
@@ -582,7 +581,7 @@ class Model:
         root.mmd_root.name_e = name_e
         root["mmd_tools_version"] = MMD_TOOLS_VERSION
         setattr(root, Props.empty_display_size, scale / 0.2)
-        scene.link_object(root)
+        FnContext.link_object(FnContext.ensure_context(), root)
 
         armObj = armature
         if armObj:
@@ -596,7 +595,7 @@ class Model:
             arm = bpy.data.armatures.new(name=obj_name)
             armObj = bpy.data.objects.new(name=obj_name + "_arm", object_data=arm)
             armObj.parent = root
-            scene.link_object(armObj)
+            FnContext.link_object(FnContext.ensure_context(), armObj)
         armObj.lock_rotation = armObj.lock_location = armObj.lock_scale = [True, True, True]
         setattr(armObj, Props.show_in_front, True)
         setattr(armObj, Props.display_type, "WIRE")
@@ -672,7 +671,7 @@ class Model:
             self.__rigid_grp = FnModel.find_rigid_group_object(self.__root)
             if self.__rigid_grp is None:
                 rigids = bpy.data.objects.new(name="rigidbodies", object_data=None)
-                SceneOp(bpy.context).link_object(rigids)
+                FnContext.link_object(FnContext.ensure_context(), rigids)
                 rigids.mmd_type = "RIGID_GRP_OBJ"
                 rigids.parent = self.__root
                 rigids.hide_set(True)
@@ -689,7 +688,7 @@ class Model:
             self.__joint_grp = FnModel.find_joint_group_object(self.__root)
             if self.__joint_grp is None:
                 joints = bpy.data.objects.new(name="joints", object_data=None)
-                SceneOp(bpy.context).link_object(joints)
+                FnContext.link_object(FnContext.ensure_context(), joints)
                 joints.mmd_type = "JOINT_GRP_OBJ"
                 joints.parent = self.__root
                 joints.hide_set(True)
@@ -706,7 +705,7 @@ class Model:
             self.__temporary_grp = FnModel.find_temporary_group_object(self.__root)
             if self.__temporary_grp is None:
                 temporarys = bpy.data.objects.new(name="temporary", object_data=None)
-                SceneOp(bpy.context).link_object(temporarys)
+                FnContext.link_object(FnContext.ensure_context(), temporarys)
                 temporarys.mmd_type = "TEMPORARY_GRP_OBJ"
                 temporarys.parent = self.__root
                 temporarys.hide_set(True)
@@ -1017,7 +1016,7 @@ class Model:
 
                 if "mmd_tools_rigid_track" not in target_bone.constraints:
                     empty = bpy.data.objects.new(name="mmd_bonetrack", object_data=None)
-                    SceneOp(bpy.context).link_object(empty)
+                    FnContext.link_object(FnContext.ensure_context(), empty)
                     empty.matrix_world = target_bone.matrix
                     setattr(empty, Props.empty_display_type, "ARROWS")
                     setattr(empty, Props.empty_display_size, 0.1 * getattr(self.__root, Props.empty_display_size))

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, cast
 import bpy
 from bpy.types import Operator
 
-from mmd_tools.bpyutils import SceneOp, activate_layer_collection
+from mmd_tools.bpyutils import FnContext, activate_layer_collection
 from mmd_tools.core.bone import FnBone, MigrationFnBone
 from mmd_tools.core.model import FnModel, Model
 
@@ -44,7 +44,7 @@ class MorphSliderSetup(Operator):
                 rig.morph_slider.unbind()
             else:
                 rig.morph_slider.create()
-            SceneOp(context).active_object = obj
+            FnContext.set_active_object(context, obj)
 
         return {"FINISHED"}
 
@@ -59,7 +59,7 @@ class CleanRiggingObjects(Operator):
         root = FnModel.find_root_object(context.active_object)
         rig = Model(root)
         rig.clean()
-        SceneOp(context).active_object = root
+        FnContext.set_active_object(context, root)
         return {"FINISHED"}
 
 
@@ -92,7 +92,7 @@ class BuildRig(Operator):
         with activate_layer_collection(root):
             rig = Model(root)
             rig.build(self.non_collision_distance_scale, self.collision_margin)
-            SceneOp(context).active_object = root
+            FnContext.set_active_object(context, root)
 
         return {"FINISHED"}
 
@@ -106,9 +106,8 @@ class CleanAdditionalTransformConstraints(Operator):
     def execute(self, context):
         obj = context.active_object
         root = FnModel.find_root_object(obj)
-        rig = Model(root)
-        FnBone.clean_additional_transformation(rig.armature())
-        SceneOp(context).active_object = obj
+        FnBone.clean_additional_transformation(FnModel.find_armature_object(root))
+        FnContext.set_active_object(context, obj)
         return {"FINISHED"}
 
 
@@ -121,11 +120,10 @@ class ApplyAdditionalTransformConstraints(Operator):
     def execute(self, context):
         obj = context.active_object
         root = FnModel.find_root_object(obj)
-        rig = Model(root)
-        MigrationFnBone.fix_mmd_ik_limit_override(rig.armature())
-        FnBone.apply_additional_transformation(rig.armature())
-
-        SceneOp(context).active_object = obj
+        armature_object = FnModel.find_armature_object(root)
+        MigrationFnBone.fix_mmd_ik_limit_override(armature_object)
+        FnBone.apply_additional_transformation(armature_object)
+        FnContext.set_active_object(context, obj)
         return {"FINISHED"}
 
 
@@ -312,27 +310,27 @@ class ConvertToMMDModel(Operator):
 
     def execute(self, context):
         # TODO convert some basic MMD properties
-        armature = context.active_object
+        armature_object = context.active_object
         scale = self.scale
         model_name = "New MMD Model"
 
-        root = FnModel.find_root_object(armature)
-        if root is None or root != armature.parent:
-            Model.create(model_name, model_name, scale, armature=armature)
+        root_object = FnModel.find_root_object(armature_object)
+        if root_object is None or root_object != armature_object.parent:
+            Model.create(model_name, model_name, scale, armature=armature_object)
 
-        self.__attach_meshes_to(armature, SceneOp(context).id_objects)
-        self.__configure_rig(context, Model(armature.parent))
+        self.__attach_meshes_to(armature_object, FnContext.get_scene_objects(context))
+        self.__configure_rig(context, Model(armature_object.parent))
         return {"FINISHED"}
 
-    def __attach_meshes_to(self, armature, objects):
+    def __attach_meshes_to(self, armature_object: bpy.types.Object, objects: bpy.types.SceneObjects):
         def __is_child_of_armature(mesh):
             if mesh.parent is None:
                 return False
-            return mesh.parent == armature or __is_child_of_armature(mesh.parent)
+            return mesh.parent == armature_object or __is_child_of_armature(mesh.parent)
 
         def __is_using_armature(mesh):
             for m in mesh.modifiers:
-                if m.type == "ARMATURE" and m.object == armature:
+                if m.type == "ARMATURE" and m.object == armature_object:
                     return True
             return False
 
@@ -346,19 +344,19 @@ class ConvertToMMDModel(Operator):
                 x_root = __get_root(x)
                 m = x_root.matrix_world
                 x_root.parent_type = "OBJECT"
-                x_root.parent = armature
+                x_root.parent = armature_object
                 x_root.matrix_world = m
 
-    def __configure_rig(self, context, rig):
-        root = rig.rootObject()
-        armature = rig.armature()
-        meshes = tuple(rig.meshes())
+    def __configure_rig(self, context: bpy.types.Context, mmd_model: Model):
+        root_object = mmd_model.rootObject()
+        armature_object = mmd_model.armature()
+        mesh_objects = tuple(mmd_model.meshes())
 
-        rig.loadMorphs()
+        mmd_model.loadMorphs()
 
         if self.middle_joint_bones_lock:
-            vertex_groups = {g.name for mesh in meshes for g in mesh.vertex_groups}
-            for pose_bone in armature.pose.bones:
+            vertex_groups = {g.name for mesh in mesh_objects for g in mesh.vertex_groups}
+            for pose_bone in armature_object.pose.bones:
                 if not pose_bone.parent:
                     continue
                 if not pose_bone.bone.use_connect and pose_bone.name not in vertex_groups:
@@ -369,7 +367,7 @@ class ConvertToMMDModel(Operator):
 
         FnMaterial.set_nodes_are_readonly(not self.convert_material_nodes)
         try:
-            for m in (x for mesh in meshes for x in mesh.data.materials if x):
+            for m in (x for mesh in mesh_objects for x in mesh.data.materials if x):
                 FnMaterial.convert_to_mmd_material(m, context)
                 mmd_material = m.mmd_material
                 if self.ambient_color_source == "MIRROR" and hasattr(m, "mirror_color"):
@@ -385,10 +383,10 @@ class ConvertToMMDModel(Operator):
             FnMaterial.set_nodes_are_readonly(False)
         from mmd_tools.operators.display_item import DisplayItemQuickSetup
 
-        FnBone.sync_display_item_frames_from_bone_collections(armature)
-        rig.initialDisplayFrames(reset=False)  # ensure default frames
-        DisplayItemQuickSetup.load_facial_items(root.mmd_root)
-        root.mmd_root.active_display_item_frame = 0
+        FnBone.sync_display_item_frames_from_bone_collections(armature_object)
+        mmd_model.initialDisplayFrames(reset=False)  # ensure default frames
+        DisplayItemQuickSetup.load_facial_items(root_object.mmd_root)
+        root_object.mmd_root.active_display_item_frame = 0
 
 
 class ResetObjectVisibility(bpy.types.Operator):
@@ -453,7 +451,7 @@ class AssembleAll(Operator):
                 bpy.ops.mmd_tools.sdef_bind()
             root_object.mmd_root.use_property_driver = True
 
-            SceneOp(context).active_object = active_object
+            FnContext.set_active_object(context, active_object)
 
         return {"FINISHED"}
 
@@ -477,6 +475,6 @@ class DisassembleAll(Operator):
             rig.clean()
             FnBone.clean_additional_transformation(rig.armature())
 
-            SceneOp(context).active_object = active_object
+            FnContext.set_active_object(context, active_object)
 
         return {"FINISHED"}
