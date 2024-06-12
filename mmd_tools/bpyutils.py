@@ -2,7 +2,8 @@
 # Copyright 2013 MMD Tools authors
 # This file is part of MMD Tools.
 
-from typing import List, Optional, Union
+import contextlib
+from typing import Generator, List, Optional, TypeVar
 
 import bpy
 
@@ -37,7 +38,7 @@ class __EditMode:
 
 
 class __SelectObjects:
-    def __init__(self, active_object, selected_objects=[]):
+    def __init__(self, active_object: bpy.types.Object, selected_objects: Optional[List[bpy.types.Object]] = None):
         if not isinstance(active_object, bpy.types.Object):
             raise ValueError
         try:
@@ -49,65 +50,20 @@ class __SelectObjects:
             i.select_set(False)
 
         self.__active_object = active_object
-        self.__selected_objects = tuple(set(selected_objects) | set([active_object]))
+        self.__selected_objects = tuple(set(selected_objects) | set([active_object])) if selected_objects else (active_object,)
 
-        self.__hides = []
+        self.__hides: List[bool] = []
         for i in self.__selected_objects:
             self.__hides.append(i.hide_get())
             FnContext.select_object(bpy.context, i)
         FnContext.set_active_object(bpy.context, active_object)
 
-    def __enter__(self):
+    def __enter__(self) -> bpy.types.Object:
         return self.__active_object
 
     def __exit__(self, type, value, traceback):
         for i, j in zip(self.__selected_objects, self.__hides):
             i.hide_set(j)
-
-
-def find_user_layer_collection(target_object: bpy.types.Object) -> Optional[bpy.types.LayerCollection]:
-    context: bpy.types.Context = bpy.context
-    scene_layer_collection: bpy.types.LayerCollection = context.view_layer.layer_collection
-
-    def find_layer_collection_by_name(layer_collection: bpy.types.LayerCollection, name: str) -> Optional[bpy.types.LayerCollection]:
-        if layer_collection.name == name:
-            return layer_collection
-
-        child_layer_collection: bpy.types.LayerCollection
-        for child_layer_collection in layer_collection.children:
-            found = find_layer_collection_by_name(child_layer_collection, name)
-            if found is not None:
-                return found
-
-        return None
-
-    user_collection: bpy.types.Collection
-    for user_collection in target_object.users_collection:
-        found = find_layer_collection_by_name(scene_layer_collection, user_collection.name)
-        if found is not None:
-            return found
-
-    return None
-
-
-class __ActivateLayerCollection:
-    def __init__(self, target_layer_collection: Optional[bpy.types.LayerCollection]):
-        self.__original_layer_collection = bpy.context.view_layer.active_layer_collection
-        self.__target_layer_collection = target_layer_collection if target_layer_collection else self.__original_layer_collection
-
-    def __enter__(self):
-        if bpy.context.view_layer.active_layer_collection.name != self.__target_layer_collection.name:
-            bpy.context.view_layer.active_layer_collection = self.__target_layer_collection
-        return self.__target_layer_collection
-
-    def __exit__(self, _type, _value, _traceback):
-        if bpy.context.view_layer.active_layer_collection.name != self.__original_layer_collection.name:
-            bpy.context.view_layer.active_layer_collection = self.__original_layer_collection
-
-
-def addon_preferences(attrname, default=None):
-    addon = bpy.context.preferences.addons.get(__package__, None)
-    return getattr(addon.preferences, attrname, default) if addon else default
 
 
 def setParent(obj, parent):
@@ -134,7 +90,7 @@ def edit_object(obj):
     return __EditMode(obj)
 
 
-def select_object(obj, objects=[]):
+def select_object(obj: bpy.types.Object, objects: Optional[List[bpy.types.Object]] = None):
     """Select objects.
 
     It is recommended to use 'select_object' with 'with' statement like the following code.
@@ -147,72 +103,8 @@ def select_object(obj, objects=[]):
     return __SelectObjects(obj, objects)
 
 
-# TODO: change method name to ...override
-def activate_layer_collection(target: Union[bpy.types.Object, bpy.types.LayerCollection, None]):
-    if isinstance(target, bpy.types.Object):
-        layer_collection = find_user_layer_collection(target)
-    elif isinstance(target, bpy.types.LayerCollection):
-        layer_collection = target
-    else:
-        layer_collection = None
-
-    return __ActivateLayerCollection(layer_collection)
-
-
 def duplicateObject(obj, total_len):
     return FnContext.duplicate_object(FnContext.ensure_context(), obj, total_len)
-
-
-def makeCapsuleBak(segment=16, ring_count=8, radius=1.0, height=1.0, context: Optional[bpy.types.Context] = None):
-    import math
-
-    mesh = bpy.data.meshes.new(name="Capsule")
-    meshObj = bpy.data.objects.new(name="Capsule", object_data=mesh)
-    vertices = []
-    top = (0, 0, height / 2 + radius)
-    vertices.append(top)
-
-    f = lambda i: radius * i / ring_count
-    for i in range(ring_count, 0, -1):
-        z = f(i - 1)
-        t = math.sqrt(radius**2 - z**2)
-        for j in range(segment):
-            theta = 2 * math.pi / segment * j
-            x = t * math.sin(-theta)
-            y = t * math.cos(-theta)
-            vertices.append((x, y, z + height / 2))
-
-    for i in range(ring_count):
-        z = -f(i)
-        t = math.sqrt(radius**2 - z**2)
-        for j in range(segment):
-            theta = 2 * math.pi / segment * j
-            x = t * math.sin(-theta)
-            y = t * math.cos(-theta)
-            vertices.append((x, y, z - height / 2))
-
-    bottom = (0, 0, -(height / 2 + radius))
-    vertices.append(bottom)
-
-    faces = []
-    for i in range(1, segment):
-        faces.append([0, i, i + 1])
-    faces.append([0, segment, 1])
-    offset = segment + 1
-    for i in range(ring_count * 2 - 1):
-        for j in range(segment - 1):
-            t = offset + j
-            faces.append([t - segment, t, t + 1, t - segment + 1])
-        faces.append([offset - 1, offset + segment - 1, offset, offset - segment])
-        offset += segment
-    for i in range(segment - 1):
-        t = offset + i
-        faces.append([t - segment, offset, t - segment + 1])
-    faces.append([offset - 1, offset, offset - segment])
-
-    mesh.from_pydata(vertices, [], faces)
-    FnContext.link_object(FnContext.ensure_context(context), meshObj)
-    return meshObj
 
 
 def createObject(name="Object", object_data=None, target_scene=None):
@@ -326,27 +218,6 @@ def makeCapsule(segment=8, ring_count=2, radius=1.0, height=1.0, target_object=N
     return target_object
 
 
-class ObjectOp:
-    def __init__(self, obj):
-        self.__obj = obj
-
-    def __clean_drivers(self, key):
-        for d in getattr(key.id_data.animation_data, "drivers", ()):
-            if d.data_path.startswith(key.path_from_id()):
-                key.id_data.driver_remove(d.data_path, -1)
-
-    def shape_key_remove(self, key):
-        obj = self.__obj
-        assert key.id_data == obj.data.shape_keys
-        key_blocks = key.id_data.key_blocks
-        last_index = obj.active_shape_key_index
-        if last_index >= key_blocks.find(key.name):
-            last_index = max(0, last_index - 1)
-        self.__clean_drivers(key)
-        obj.shape_key_remove(key)
-        obj.active_shape_key_index = min(last_index, len(key_blocks) - 1)
-
-
 class TransformConstraintOp:
     __MIN_MAX_MAP = {"ROTATION": "_rot", "SCALE": "_scale"}
 
@@ -396,6 +267,36 @@ class TransformConstraintOp:
             setattr(c, attr, -value * influence)
         for attr in cls.min_max_attributes(c.map_to, "to_max"):
             setattr(c, attr, value * influence)
+
+
+class FnObject:
+    def __init__(self):
+        raise NotImplementedError("This class is not expected to be instantiated.")
+
+    @staticmethod
+    def mesh_remove_shape_key(mesh_object: bpy.types.Object, shape_key: bpy.types.ShapeKey):
+        assert isinstance(mesh_object.data, bpy.types.Mesh)
+
+        key: bpy.types.Key = shape_key.id_data
+        assert key == mesh_object.data.shape_keys
+
+        fc_curve: bpy.types.FCurve
+        for fc_curve in mesh_object.animation_data.drivers:
+            if not fc_curve.data_path.startswith(shape_key.path_from_id()):
+                continue
+            mesh_object.driver_remove(fc_curve.data_path)
+
+        key_blocks = key.key_blocks
+
+        last_index = mesh_object.active_shape_key_index
+        if last_index >= key_blocks.find(shape_key.name):
+            last_index = max(0, last_index - 1)
+
+        mesh_object.shape_key_remove(shape_key)
+        mesh_object.active_shape_key_index = min(last_index, len(key_blocks) - 1)
+
+
+ADDON_PREFERENCE_ATTRIBUTE_VALUE_TYPE = TypeVar("ADDON_PREFERENCE_ATTRIBUTE_VALUE_TYPE")
 
 
 class FnContext:
@@ -454,6 +355,10 @@ class FnContext:
         return obj
 
     @staticmethod
+    def select_objects(context: bpy.types.Context, *objects: bpy.types.Object) -> List[bpy.types.Object]:
+        return [FnContext.select_object(context, obj) for obj in objects]
+
+    @staticmethod
     def select_single_object(context: bpy.types.Context, obj: bpy.types.Object) -> bpy.types.Object:
         for i in context.selected_objects:
             i.select_set(False)
@@ -470,13 +375,21 @@ class FnContext:
 
     @staticmethod
     def duplicate_object(context: bpy.types.Context, object_to_duplicate: bpy.types.Object, target_count: int) -> List[bpy.types.Object]:
-        """Duplicate object
+        """
+        Duplicate object.
+
+        This function duplicates the given object and returns a list of duplicated objects.
+
         Args:
-            context (bpy.types.Context): context
-            obj (bpy.types.Object): object to duplicate
-            target_count (int): target count of duplicated objects
+            context (bpy.types.Context): The context in which the duplication is performed.
+            object_to_duplicate (bpy.types.Object): The object to be duplicated.
+            target_count (int): The desired count of duplicated objects.
+
         Returns:
-            List[bpy.types.Object]: duplicated objects
+            List[bpy.types.Object]: A list of duplicated objects.
+
+        Raises:
+            AssertionError: If the number of selected objects in the context is not equal to 1 or if the selected object is not the same as the object to be duplicated.
         """
         for o in context.selected_objects:
             o.select_set(False)
@@ -498,3 +411,100 @@ class FnContext:
                 last_selected_objects = context.selected_objects
         assert len(result_objects) == target_count
         return result_objects
+
+    @staticmethod
+    def find_user_layer_collection_by_object(context: bpy.types.Context, target_object: bpy.types.Object) -> Optional[bpy.types.LayerCollection]:
+        """
+        Finds the layer collection that contains the given target_object in the user's collections.
+
+        Args:
+            context (bpy.types.Context): The Blender context.
+            target_object (bpy.types.Object): The target object to find the layer collection for.
+
+        Returns:
+            Optional[bpy.types.LayerCollection]: The layer collection that contains the target_object, or None if not found.
+        """
+        scene_layer_collection: bpy.types.LayerCollection = context.view_layer.layer_collection
+
+        def find_layer_collection_by_name(layer_collection: bpy.types.LayerCollection, name: str) -> Optional[bpy.types.LayerCollection]:
+            if layer_collection.name == name:
+                return layer_collection
+
+            child_layer_collection: bpy.types.LayerCollection
+            for child_layer_collection in layer_collection.children:
+                found = find_layer_collection_by_name(child_layer_collection, name)
+                if found is not None:
+                    return found
+
+            return None
+
+        user_collection: bpy.types.Collection
+        for user_collection in target_object.users_collection:
+            found = find_layer_collection_by_name(scene_layer_collection, user_collection.name)
+            if found is not None:
+                return found
+
+        return None
+
+    @staticmethod
+    @contextlib.contextmanager
+    def temp_override_active_layer_collection(context: bpy.types.Context, target_object: bpy.types.Object) -> Generator[bpy.types.Context, None, None]:
+        """
+        Context manager to temporarily override the active_layer_collection that contains the target object.
+
+        This context manager allows you to temporarily change the active_layer_collection in the given context to the one that contains the target object.
+        It ensures that the original active_layer_collection is restored after the context is exited.
+
+        Args:
+            context (bpy.types.Context): The context in which the active_layer_collection will be overridden.
+            target_object (bpy.types.Object): The target object whose layer collection will be set as the active_layer_collection.
+
+        Yields:
+            bpy.types.Context: The modified context with the active_layer_collection overridden.
+
+        Example:
+            with FnContext.temp_override_active_layer_collection(context, target_object):
+                # Perform operations with the modified context
+                bpy.ops.object.select_all(action='DESELECT')
+                target_object.select_set(True)
+                bpy.ops.object.delete()
+
+        """
+        original_layer_collection = context.view_layer.active_layer_collection
+        target_layer_collection = FnContext.find_user_layer_collection_by_object(context, target_object)
+        if target_layer_collection is not None:
+            context.view_layer.active_layer_collection = target_layer_collection
+        try:
+            yield context
+        finally:
+            if context.view_layer.active_layer_collection.name != original_layer_collection.name:
+                context.view_layer.active_layer_collection = original_layer_collection
+
+    @staticmethod
+    def __get_addon_preferences(context: bpy.types.Context) -> Optional[bpy.types.AddonPreferences]:
+        addon: bpy.types.Addon = context.preferences.addons.get(__package__, None)
+        return addon.preferences if addon else None
+
+    @staticmethod
+    def get_addon_preferences_attribute(context: bpy.types.Context, attribute_name: str, default_value: ADDON_PREFERENCE_ATTRIBUTE_VALUE_TYPE = None) -> ADDON_PREFERENCE_ATTRIBUTE_VALUE_TYPE:
+        return getattr(FnContext.__get_addon_preferences(context), attribute_name, default_value)
+
+    @staticmethod
+    def temp_override_objects(
+        context: bpy.types.Context,
+        window: Optional[bpy.types.Window] = None,
+        area: Optional[bpy.types.Area] = None,
+        region: Optional[bpy.types.Region] = None,
+        active_object: Optional[bpy.types.Object] = None,
+        selected_objects: Optional[List[bpy.types.Object]] = None,
+        **keywords,
+    ) -> Generator[bpy.types.Context, None, None]:
+        if active_object is not None:
+            keywords["active_object"] = active_object
+            keywords["object"] = active_object
+
+        if selected_objects is not None:
+            keywords["selected_objects"] = selected_objects
+            keywords["selected_editable_objects"] = selected_objects
+
+        return context.temp_override(window=window, area=area, region=region, **keywords)

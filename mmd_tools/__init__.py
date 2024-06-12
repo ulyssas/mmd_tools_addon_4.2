@@ -19,8 +19,8 @@
 bl_info = {
     "name": "mmd_tools",
     "author": "sugiany",
-    "version": (4, 1, 0),
-    "blender": (4, 1, 1),
+    "version": (4, 2, 0),
+    "blender": (4, 2, 0),
     "location": "View3D > Sidebar > MMD Panel",
     "description": "Utility tools for MMD model editing. (UuuNyaa's forked version)",
     "warning": "",

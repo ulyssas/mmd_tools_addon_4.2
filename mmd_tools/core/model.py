@@ -571,49 +571,49 @@ class Model:
         self.__temporary_grp: Optional[bpy.types.Object] = None
 
     @staticmethod
-    def create(name, name_e="", scale=1, obj_name=None, armature=None, add_root_bone=False):
+    def create(name: str, name_e: str = "", scale: float = 1, obj_name: Optional[str] = None, armature_object: Optional[bpy.types.Object] = None, add_root_bone: bool = False):
         if obj_name is None:
             obj_name = name
 
-        root = bpy.data.objects.new(name=obj_name, object_data=None)
+        context = FnContext.ensure_context()
+
+        root: bpy.types.Object = bpy.data.objects.new(name=obj_name, object_data=None)
         root.mmd_type = "ROOT"
         root.mmd_root.name = name
         root.mmd_root.name_e = name_e
         root["mmd_tools_version"] = MMD_TOOLS_VERSION
         setattr(root, Props.empty_display_size, scale / 0.2)
-        FnContext.link_object(FnContext.ensure_context(), root)
+        FnContext.link_object(context, root)
 
-        armObj = armature
-        if armObj:
-            m = armObj.matrix_world
-            armObj.parent_type = "OBJECT"
-            armObj.parent = root
-            # armObj.matrix_world = m
+        if armature_object:
+            m = armature_object.matrix_world
+            armature_object.parent_type = "OBJECT"
+            armature_object.parent = root
+            # armature_object.matrix_world = m
             root.matrix_world = m
-            armObj.matrix_local.identity()
+            armature_object.matrix_local.identity()
         else:
-            arm = bpy.data.armatures.new(name=obj_name)
-            armObj = bpy.data.objects.new(name=obj_name + "_arm", object_data=arm)
-            armObj.parent = root
-            FnContext.link_object(FnContext.ensure_context(), armObj)
-        armObj.lock_rotation = armObj.lock_location = armObj.lock_scale = [True, True, True]
-        setattr(armObj, Props.show_in_front, True)
-        setattr(armObj, Props.display_type, "WIRE")
+            armature_object = bpy.data.objects.new(name=obj_name + "_arm", object_data=bpy.data.armatures.new(name=obj_name))
+            armature_object.parent = root
+            FnContext.link_object(context, armature_object)
+        armature_object.lock_rotation = armature_object.lock_location = armature_object.lock_scale = [True, True, True]
+        setattr(armature_object, Props.show_in_front, True)
+        setattr(armature_object, Props.display_type, "WIRE")
 
         from mmd_tools.core.bone import FnBone
 
-        FnBone.setup_special_bone_collections(armObj)
+        FnBone.setup_special_bone_collections(armature_object)
 
         if add_root_bone:
             bone_name = "全ての親"
-            with bpyutils.edit_object(armObj) as data:
+            with bpyutils.edit_object(armature_object) as data:
                 bone = data.edit_bones.new(name=bone_name)
                 bone.head = [0.0, 0.0, 0.0]
                 bone.tail = [0.0, 0.0, getattr(root, Props.empty_display_size)]
-            armObj.pose.bones[bone_name].mmd_bone.name_j = bone_name
-            armObj.pose.bones[bone_name].mmd_bone.name_e = "Root"
+            armature_object.pose.bones[bone_name].mmd_bone.name_j = bone_name
+            armature_object.pose.bones[bone_name].mmd_bone.name_e = "Root"
 
-        bpyutils.select_object(root)
+        FnContext.set_active_object(context, FnContext.select_single_object(context, root))
         return Model(root)
 
     @staticmethod

@@ -6,7 +6,7 @@ import time
 
 import bpy
 
-from mmd_tools.core import model
+from mmd_tools.core.model import FnModel, Model
 from mmd_tools.core.sdef import FnSDEF
 
 
@@ -61,7 +61,7 @@ class MMDToolsSceneSetupPanel(bpy.types.Panel):
         col = layout.column(align=True)
         row = col.row(align=False)
         row.label(text="Rigid Body Physics:", icon="PHYSICS")
-        row.row().operator("mmd_tools.rigid_body_world_update", text="Update World", icon="NONE" if getattr(rigidbody_world, "substeps_per_frame", 0) == 1 else "ERROR")
+        row.row().operator("mmd_tools.rigid_body_world_update", text="Update World", icon="NONE" if getattr(rigidbody_world, "substeps_per_frame", 0) == 6 else "ERROR")
 
         if rigidbody_world:
             row = col.row(align=True)
@@ -92,7 +92,7 @@ class MMDToolsModelSetupPanel(bpy.types.Panel):
 
     def draw(self, context: bpy.types.Context):
         active_object: bpy.types.Object = context.active_object
-        mmd_root_object = model.Model.findRoot(active_object)
+        mmd_root_object = Model.findRoot(active_object)
 
         if mmd_root_object is None:
             self.layout.label(text="Select a MMD Model")
@@ -173,7 +173,7 @@ class MMDToolsModelSetupPanel(bpy.types.Panel):
 
         self.__toggle_items_ttl = time.time() + 10
         self.__toggle_items_cache = []
-        armature_object = model.FnModel.find_armature_object(mmd_root_object)
+        armature_object = FnModel.find_armature_object(mmd_root_object)
         pose_bones = armature_object.pose.bones
         ik_map = {pose_bones[c.subtarget]: (b.bone, c.chain_count, not c.is_valid) for b in pose_bones for c in b.constraints if c.type == "IK" and c.subtarget in pose_bones}
 

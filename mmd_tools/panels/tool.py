@@ -6,8 +6,9 @@ from typing import Optional
 
 import bpy
 
-import mmd_tools.core.model as mmd_model
-from mmd_tools import bpyutils, operators
+import mmd_tools.operators.morph
+from mmd_tools.bpyutils import FnContext
+from mmd_tools.core.model import FnModel, Model
 from mmd_tools.utils import ItemOp
 
 
@@ -17,8 +18,8 @@ class _PanelBase:
     bl_category = "MMD"
 
     @classmethod
-    def poll(cls, _context):
-        return bpyutils.addon_preferences("enable_mmd_model_production_features", True)
+    def poll(cls, context):
+        return FnContext.get_addon_preferences_attribute(context, "enable_mmd_model_production_features", True)
 
 
 class MMDModelProductionPanel(_PanelBase, bpy.types.Panel):
@@ -36,7 +37,7 @@ class MMDModelProductionPanel(_PanelBase, bpy.types.Panel):
         row.operator("mmd_tools.create_mmd_model_root_object", text="Create Model", icon="OUTLINER_OB_ARMATURE")
         row.operator("mmd_tools.convert_to_mmd_model", text="Convert Model", icon="ARMATURE_DATA")
 
-        root = mmd_model.Model.findRoot(active_obj)
+        root = FnModel.find_root_object(active_obj)
         row = grid.row(align=True)
         row.enabled = root is not None
         row.operator("mmd_tools.attach_meshes", text="Attach Meshes", icon="OUTLINER_OB_MESH")
@@ -148,7 +149,7 @@ class MMD_ROOT_UL_display_items(bpy.types.UIList):
             if item.type == "BONE":
                 row = layout.split(factor=0.5, align=True)
                 row.prop(item, "name", text="", emboss=False, icon="BONE_DATA")
-                self.draw_bone_special(row, mmd_model.Model(item.id_data).armature(), item.name, self.mmd_name)
+                self.draw_bone_special(row, FnModel.find_armature_object(item.id_data), item.name, self.mmd_name)
             else:
                 row = layout.split(factor=0.6, align=True)
                 row.prop(item, "name", text="", emboss=False, icon="SHAPEKEY_DATA")
@@ -214,7 +215,7 @@ class MMDDisplayItemsPanel(_PanelBase, bpy.types.Panel):
 
     def draw(self, context):
         active_obj = context.active_object
-        root = mmd_model.Model.findRoot(active_obj)
+        root = FnModel.find_root_object(active_obj)
         if root is None:
             self.layout.label(text="Select a MMD Model")
             return
@@ -329,7 +330,7 @@ class MMD_TOOLS_UL_BoneMorphOffsets(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         if self.layout_type in {"DEFAULT"}:
             layout.prop(item, "bone", text="", emboss=False, icon="BONE_DATA")
-            MMD_ROOT_UL_display_items.draw_bone_special(layout, mmd_model.Model(item.id_data).armature(), item.bone)
+            MMD_ROOT_UL_display_items.draw_bone_special(layout, FnModel.find_armature_object(item.id_data), item.bone)
         elif self.layout_type in {"COMPACT"}:
             pass
         elif self.layout_type in {"GRID"}:
@@ -381,12 +382,12 @@ class MMDMorphToolsPanel(_PanelBase, bpy.types.Panel):
 
     def draw(self, context):
         active_obj = context.active_object
-        root = mmd_model.Model.findRoot(active_obj)
+        root = FnModel.find_root_object(active_obj)
         if root is None:
             self.layout.label(text="Select a MMD Model")
             return
 
-        rig = mmd_model.Model(root)
+        rig = Model(root)
         mmd_root = root.mmd_root
         col = self.layout.column()
         row = col.row()
@@ -486,14 +487,14 @@ class MMDMorphToolsPanel(_PanelBase, bpy.types.Panel):
             if base_mat_name == "":
                 row.label(text="This offset affects all materials", icon="INFO")
             else:
-                row.operator(operators.morph.CreateWorkMaterial.bl_idname)
-                row.operator(operators.morph.ClearTempMaterials.bl_idname, text="Clear")
+                row.operator(mmd_tools.operators.morph.CreateWorkMaterial.bl_idname)
+                row.operator(mmd_tools.operators.morph.ClearTempMaterials.bl_idname, text="Clear")
 
             row = c.row()
             row.prop(data, "offset_type", expand=True)
             r1 = row.row(align=True)
-            r1.operator(operators.morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_LEFT").target_value = 0
-            r1.operator(operators.morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_RIGHT").target_value = 1
+            r1.operator(mmd_tools.operators.morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_LEFT").target_value = 0
+            r1.operator(mmd_tools.operators.morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_RIGHT").target_value = 1
             row = c.row()
             row.column(align=True).prop(data, "diffuse_color", expand=True, slider=True)
             c1 = row.column(align=True)
@@ -512,8 +513,8 @@ class MMDMorphToolsPanel(_PanelBase, bpy.types.Panel):
             c_mat.enabled = False
             c = col.column()
             row = c.row(align=True)
-            row.operator(operators.morph.ApplyMaterialOffset.bl_idname, text="Apply")
-            row.operator(operators.morph.ClearTempMaterials.bl_idname, text="Clear")
+            row.operator(mmd_tools.operators.morph.ApplyMaterialOffset.bl_idname, text="Apply")
+            row.operator(mmd_tools.operators.morph.ClearTempMaterials.bl_idname, text="Clear")
 
             row = c.row()
             row.prop(data, "offset_type")
@@ -541,9 +542,9 @@ class MMDMorphToolsPanel(_PanelBase, bpy.types.Panel):
             return
 
         row = col.row(align=True)
-        row.operator(operators.morph.ViewBoneMorph.bl_idname, text="View")
-        row.operator(operators.morph.ApplyBoneMorph.bl_idname, text="Apply")
-        row.operator(operators.morph.ClearBoneMorphView.bl_idname, text="Clear")
+        row.operator(mmd_tools.operators.morph.ViewBoneMorph.bl_idname, text="View")
+        row.operator(mmd_tools.operators.morph.ApplyBoneMorph.bl_idname, text="Apply")
+        row.operator(mmd_tools.operators.morph.ClearBoneMorphView.bl_idname, text="Clear")
 
         col.label(text=bpy.app.translations.pgettext_iface("Bone Offsets (%d)") % len(morph.data))
         data = self._template_morph_offset_list(col, morph, "MMD_TOOLS_UL_BoneMorphOffsets")
@@ -554,9 +555,9 @@ class MMDMorphToolsPanel(_PanelBase, bpy.types.Panel):
         row.prop_search(data, "bone", armature.pose, "bones")
         if data.bone:
             row = col.row(align=True)
-            row.operator(operators.morph.SelectRelatedBone.bl_idname, text="Select")
-            row.operator(operators.morph.EditBoneOffset.bl_idname, text="Edit")
-            row.operator(operators.morph.ApplyBoneOffset.bl_idname, text="Update")
+            row.operator(mmd_tools.operators.morph.SelectRelatedBone.bl_idname, text="Select")
+            row.operator(mmd_tools.operators.morph.EditBoneOffset.bl_idname, text="Edit")
+            row.operator(mmd_tools.operators.morph.ApplyBoneOffset.bl_idname, text="Update")
 
         row = col.row()
         row.column(align=True).prop(data, "location")
@@ -565,11 +566,11 @@ class MMDMorphToolsPanel(_PanelBase, bpy.types.Panel):
     def _draw_uv_data(self, context, rig, col, morph):
         c = col.column(align=True)
         row = c.row(align=True)
-        row.operator(operators.morph.ViewUVMorph.bl_idname, text="View")
-        row.operator(operators.morph.ClearUVMorphView.bl_idname, text="Clear")
+        row.operator(mmd_tools.operators.morph.ViewUVMorph.bl_idname, text="View")
+        row.operator(mmd_tools.operators.morph.ClearUVMorphView.bl_idname, text="Clear")
         row = c.row(align=True)
-        row.operator(operators.morph.EditUVMorph.bl_idname, text="Edit")
-        row.operator(operators.morph.ApplyUVMorph.bl_idname, text="Apply")
+        row.operator(mmd_tools.operators.morph.EditUVMorph.bl_idname, text="Edit")
+        row.operator(mmd_tools.operators.morph.ApplyUVMorph.bl_idname, text="Apply")
 
         c = col.column()
         if len(morph.data):
@@ -635,9 +636,9 @@ class UL_ObjectsMixIn:
         flt_neworder = list(range(len(objects)))
 
         if self.model_filter == "ACTIVE":
-            active_root = mmd_model.Model.findRoot(context.active_object)
+            active_root = FnModel.find_root_object(context.active_object)
             for i, obj in enumerate(objects):
-                if obj.mmd_type == self.mmd_type and mmd_model.Model.findRoot(obj) == active_root:
+                if obj.mmd_type == self.mmd_type and FnModel.find_root_object(obj) == active_root:
                     flt_flags[i] = self.bitflag_filter_item
         else:
             for i, obj in enumerate(objects):
@@ -701,7 +702,7 @@ class MMDRigidbodySelectorPanel(_PanelBase, bpy.types.Panel):
 
     def draw(self, context):
         active_obj = context.active_object
-        root = mmd_model.Model.findRoot(active_obj)
+        root = FnModel.find_root_object(active_obj)
         if root is None:
             self.layout.label(text="Select a MMD Model")
             return
@@ -762,7 +763,7 @@ class MMDJointSelectorPanel(_PanelBase, bpy.types.Panel):
 
     def draw(self, context):
         active_obj = context.active_object
-        root = mmd_model.Model.findRoot(active_obj)
+        root = FnModel.find_root_object(active_obj)
         if root is None:
             self.layout.label(text="Select a MMD Model")
             return

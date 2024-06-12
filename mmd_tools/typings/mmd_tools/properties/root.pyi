@@ -25,6 +25,7 @@ class MMDDisplayItemFrame:
     active_item: int
 
 class MMDRoot:
+    id_data: bpy.types.Object
     name: str
     name_j: str
     name_e: str

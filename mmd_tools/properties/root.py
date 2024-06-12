@@ -7,7 +7,7 @@
 import bpy
 
 from mmd_tools import utils
-from mmd_tools.bpyutils import FnContext, activate_layer_collection
+from mmd_tools.bpyutils import FnContext
 from mmd_tools.core.material import FnMaterial
 from mmd_tools.core.model import FnModel
 from mmd_tools.core.sdef import FnSDEF
@@ -119,22 +119,22 @@ def _toggleVisibilityOfRigidBodies(self: "MMDRoot", context: bpy.types.Context):
 
 
 def _toggleVisibilityOfJoints(self: "MMDRoot", context):
-    root = self.id_data
+    root_object = self.id_data
     hide = not self.show_joints
-    for i in FnModel.iterate_joint_objects(root):
+    for i in FnModel.iterate_joint_objects(root_object):
         i.hide_set(hide)
     if hide and context.active_object is None:
-        FnContext.set_active_object(context, root)
+        FnContext.set_active_object(context, root_object)
 
 
 def _toggleVisibilityOfTemporaryObjects(self: "MMDRoot", context: bpy.types.Context):
-    root = self.id_data
+    root_object: bpy.types.Object = self.id_data
     hide = not self.show_temporary_objects
-    with activate_layer_collection(root):
-        for i in FnModel.iterate_temporary_objects(root):
+    with FnContext.temp_override_active_layer_collection(context, root_object):
+        for i in FnModel.iterate_temporary_objects(root_object):
             i.hide_set(hide)
     if hide and context.active_object is None:
-        FnContext.set_active_object(context, root)
+        FnContext.set_active_object(context, root_object)
 
 
 def _toggleShowNamesOfRigidBodies(self: "MMDRoot", _context):
