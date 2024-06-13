@@ -46,7 +46,9 @@ class __SelectObjects:
         except Exception:
             pass
 
-        for i in bpy.context.selected_objects:
+        contenxt = FnContext.ensure_context()
+
+        for i in contenxt.selected_objects:
             i.select_set(False)
 
         self.__active_object = active_object
@@ -55,8 +57,8 @@ class __SelectObjects:
         self.__hides: List[bool] = []
         for i in self.__selected_objects:
             self.__hides.append(i.hide_get())
-            FnContext.select_object(bpy.context, i)
-        FnContext.set_active_object(bpy.context, active_object)
+            FnContext.select_object(contenxt, i)
+        FnContext.set_active_object(contenxt, active_object)
 
     def __enter__(self) -> bpy.types.Object:
         return self.__active_object
@@ -280,15 +282,16 @@ class FnObject:
         key: bpy.types.Key = shape_key.id_data
         assert key == mesh_object.data.shape_keys
 
-        fc_curve: bpy.types.FCurve
-        for fc_curve in mesh_object.animation_data.drivers:
-            if not fc_curve.data_path.startswith(shape_key.path_from_id()):
-                continue
-            mesh_object.driver_remove(fc_curve.data_path)
+        if mesh_object.animation_data is not None:
+            fc_curve: bpy.types.FCurve
+            for fc_curve in mesh_object.animation_data.drivers:
+                if not fc_curve.data_path.startswith(shape_key.path_from_id()):
+                    continue
+                mesh_object.driver_remove(fc_curve.data_path)
 
         key_blocks = key.key_blocks
 
-        last_index = mesh_object.active_shape_key_index
+        last_index = mesh_object.active_shape_key_index or 0
         if last_index >= key_blocks.find(shape_key.name):
             last_index = max(0, last_index - 1)
 
@@ -317,6 +320,10 @@ class FnContext:
         return obj
 
     @staticmethod
+    def set_active_and_select_single_object(context: bpy.types.Context, obj: bpy.types.Object) -> bpy.types.Object:
+        return FnContext.set_active_object(context, FnContext.select_single_object(context, obj))
+
+    @staticmethod
     def get_scene_objects(context: bpy.types.Context) -> bpy.types.SceneObjects:
         return context.scene.objects
 
@@ -341,7 +348,7 @@ class FnContext:
                     return True
                 return False
 
-            selected_objects = context.selected_objects
+            selected_objects = set(context.selected_objects)
             __layer_check(context.view_layer.layer_collection)
             if len(context.selected_objects) != len(selected_objects):
                 for i in context.selected_objects:
@@ -361,7 +368,8 @@ class FnContext:
     @staticmethod
     def select_single_object(context: bpy.types.Context, obj: bpy.types.Object) -> bpy.types.Object:
         for i in context.selected_objects:
-            i.select_set(False)
+            if i != obj:
+                i.select_set(False)
         return FnContext.select_object(context, obj)
 
     @staticmethod

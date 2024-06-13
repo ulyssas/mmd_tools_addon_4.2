@@ -171,7 +171,7 @@ def _getVisibilityOfMMDRigArmature(prop: "MMDRoot"):
 def _setActiveRigidbodyObject(prop: "MMDRoot", v: int):
     obj = FnContext.get_scene_objects(bpy.context)[v]
     if FnModel.is_rigid_body_object(obj):
-        FnContext.select_single_object(bpy.context, obj)
+        FnContext.set_active_and_select_single_object(bpy.context, obj)
     prop["active_rigidbody_object_index"] = v
 
 
@@ -186,7 +186,7 @@ def _getActiveRigidbodyObject(prop: "MMDRoot"):
 def _setActiveJointObject(prop: "MMDRoot", v: int):
     obj = FnContext.get_scene_objects(bpy.context)[v]
     if FnModel.is_joint_object(obj):
-        FnContext.select_single_object(bpy.context, obj)
+        FnContext.set_active_and_select_single_object(bpy.context, obj)
     prop["active_joint_object_index"] = v
 
 
@@ -213,7 +213,7 @@ def _getActiveMorph(prop: "MMDRoot"):
 def _setActiveMeshObject(prop: "MMDRoot", v: int):
     obj = FnContext.get_scene_objects(bpy.context)[v]
     if FnModel.is_mesh_object(obj):
-        FnContext.select_single_object(bpy.context, obj)
+        FnContext.set_active_and_select_single_object(bpy.context, obj)
     prop["active_mesh_index"] = v
 
 

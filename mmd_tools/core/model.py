@@ -613,7 +613,7 @@ class Model:
             armature_object.pose.bones[bone_name].mmd_bone.name_j = bone_name
             armature_object.pose.bones[bone_name].mmd_bone.name_e = "Root"
 
-        FnContext.set_active_object(context, FnContext.select_single_object(context, root))
+        FnContext.set_active_and_select_single_object(context, root)
         return Model(root)
 
     @staticmethod

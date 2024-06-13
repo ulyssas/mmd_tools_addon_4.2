@@ -410,7 +410,7 @@ class ResetObjectVisibility(bpy.types.Operator):
         active_object: bpy.types.Object = context.active_object
         mmd_root_object = FnModel.find_root_object(active_object)
         assert mmd_root_object is not None
-        mmd_root = cast(MMDRoot, mmd_root_object.mmd_root)
+        mmd_root = mmd_root_object.mmd_root
 
         mmd_root_object.hide_set(False)
 
