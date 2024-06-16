@@ -19,7 +19,7 @@
 bl_info = {
     "name": "mmd_tools",
     "author": "sugiany",
-    "version": (4, 2, 1),
+    "version": (4, 2, 2),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > MMD Panel",
     "description": "Utility tools for MMD model editing. (UuuNyaa's forked version)",
@@ -39,7 +39,7 @@ PACKAGE_PATH = os.path.dirname(__file__)
 PACKAGE_NAME = __package__
 
 
-from mmd_tools import auto_load
+from . import auto_load
 
 auto_load.init()
 
@@ -47,32 +47,28 @@ auto_load.init()
 def register():
     import bpy
 
-    import mmd_tools.handlers
-    import mmd_tools.operators.addon_updater
+    from . import handlers
 
-    mmd_tools.auto_load.register()
+    auto_load.register()
 
     # pylint: disable=import-outside-toplevel
-    from mmd_tools.m17n import translation_dict
+    from .m17n import translation_dict
 
     bpy.app.translations.register(bl_info["name"], translation_dict)
 
-    mmd_tools.operators.addon_updater.register_updater(bl_info, __file__)
-    mmd_tools.handlers.MMDHanders.register()
+    handlers.MMDHanders.register()
 
 
 def unregister():
     import bpy
 
-    import mmd_tools.handlers
-    import mmd_tools.operators.addon_updater
+    from . import handlers
 
-    mmd_tools.handlers.MMDHanders.unregister()
-    mmd_tools.operators.addon_updater.unregister_updater()
+    handlers.MMDHanders.unregister()
 
     bpy.app.translations.unregister(bl_info["name"])
 
-    mmd_tools.auto_load.unregister()
+    auto_load.unregister()
 
 
 if __name__ == "__main__":
