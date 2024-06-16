@@ -15,33 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
-bl_info = {
-    "name": "mmd_tools",
-    "author": "sugiany",
-    "version": (4, 2, 2),
-    "blender": (4, 2, 0),
-    "location": "View3D > Sidebar > MMD Panel",
-    "description": "Utility tools for MMD model editing. (UuuNyaa's forked version)",
-    "warning": "",
-    "doc_url": "https://mmd-blender.fandom.com/wiki/MMD_Tools",
-    "wiki_url": "https://mmd-blender.fandom.com/wiki/MMD_Tools",
-    "tracker_url": "https://github.com/UuuNyaa/blender_mmd_tools/issues",
-    "support": "COMMUNITY",
-    "category": "Object",
-}
-
-MMD_TOOLS_VERSION = ".".join(map(str, bl_info["version"]))
-
 import os
 
-PACKAGE_PATH = os.path.dirname(__file__)
 PACKAGE_NAME = __package__
+PACKAGE_PATH = os.path.dirname(__file__)
+
+with open(os.path.join(PACKAGE_PATH, "blender_manifest.toml"), "rb") as f:
+    import tomllib
+
+    manifest = tomllib.load(f)
+    MMD_TOOLS_VERSION = manifest["version"]
 
 
 from . import auto_load
 
-auto_load.init()
+auto_load.init(PACKAGE_NAME)
 
 
 def register():
@@ -54,7 +42,7 @@ def register():
     # pylint: disable=import-outside-toplevel
     from .m17n import translation_dict
 
-    bpy.app.translations.register(bl_info["name"], translation_dict)
+    bpy.app.translations.register(PACKAGE_NAME, translation_dict)
 
     handlers.MMDHanders.register()
 
@@ -66,7 +54,7 @@ def unregister():
 
     handlers.MMDHanders.unregister()
 
-    bpy.app.translations.unregister(bl_info["name"])
+    bpy.app.translations.unregister(PACKAGE_NAME)
 
     auto_load.unregister()
 
