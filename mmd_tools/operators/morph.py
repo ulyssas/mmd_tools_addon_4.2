@@ -3,16 +3,16 @@
 # This file is part of MMD Tools.
 
 from typing import Optional, cast
+
 import bpy
-from bpy.types import Operator
 from mathutils import Quaternion, Vector
 
-import mmd_tools.core.model as mmd_model
-from mmd_tools import bpyutils, utils
-from mmd_tools.core.exceptions import MaterialNotFoundError
-from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.morph import FnMorph
-from mmd_tools.utils import ItemMoveOp, ItemOp
+from ..core.model import FnModel
+from .. import bpyutils, utils
+from ..core.exceptions import MaterialNotFoundError
+from ..core.material import FnMaterial
+from ..core.morph import FnMorph
+from ..utils import ItemMoveOp, ItemOp
 
 
 # Util functions
@@ -49,7 +49,7 @@ def special_division(n1, n2):
     return n1 / n2
 
 
-class AddMorph(Operator):
+class AddMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.morph_add"
     bl_label = "Add Morph"
     bl_description = "Add a morph item to active morph list"
@@ -57,7 +57,7 @@ class AddMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
         morph_type = mmd_root.active_morph_type
         morphs = getattr(mmd_root, morph_type)
@@ -68,7 +68,7 @@ class AddMorph(Operator):
         return {"FINISHED"}
 
 
-class RemoveMorph(Operator):
+class RemoveMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.morph_remove"
     bl_label = "Remove Morph"
     bl_description = "Remove morph item(s) from the list"
@@ -83,7 +83,7 @@ class RemoveMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
 
         morph_type = mmd_root.active_morph_type
@@ -102,7 +102,7 @@ class RemoveMorph(Operator):
         return {"FINISHED"}
 
 
-class MoveMorph(Operator, ItemMoveOp):
+class MoveMorph(bpy.types.Operator, ItemMoveOp):
     bl_idname = "mmd_tools.morph_move"
     bl_label = "Move Morph"
     bl_description = "Move active morph item up/down in the list"
@@ -110,7 +110,7 @@ class MoveMorph(Operator, ItemMoveOp):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
         mmd_root.active_morph = self.move(
             getattr(mmd_root, mmd_root.active_morph_type),
@@ -120,7 +120,7 @@ class MoveMorph(Operator, ItemMoveOp):
         return {"FINISHED"}
 
 
-class CopyMorph(Operator):
+class CopyMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.morph_copy"
     bl_label = "Copy Morph"
     bl_description = "Make a copy of active morph in the list"
@@ -128,7 +128,8 @@ class CopyMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
+        assert root is not None
         mmd_root = root.mmd_root
 
         morph_type = mmd_root.active_morph_type
@@ -140,12 +141,12 @@ class CopyMorph(Operator):
         name_orig, name_tmp = morph.name, "_tmp%s" % str(morph.as_pointer())
 
         if morph_type.startswith("vertex"):
-            for obj in mmd_model.Model(root).meshes():
+            for obj in FnModel.iterate_mesh_objects(root):
                 FnMorph.copy_shape_key(obj, name_orig, name_tmp)
 
         elif morph_type.startswith("uv"):
             if morph.data_type == "VERTEX_GROUP":
-                for obj in mmd_model.Model(root).meshes():
+                for obj in FnModel.iterate_mesh_objects(root):
                     FnMorph.copy_uv_morph_vertex_groups(obj, name_orig, name_tmp)
 
         morph_new, mmd_root.active_morph = ItemOp.add_after(morphs, mmd_root.active_morph)
@@ -155,27 +156,27 @@ class CopyMorph(Operator):
         return {"FINISHED"}
 
 
-class OverwriteBoneMorphsFromPoseLibrary(Operator):
+class OverwriteBoneMorphsFromPoseLibrary(bpy.types.Operator):
     bl_idname = "mmd_tools.morph_overwrite_from_active_pose_library"
     bl_label = "Overwrite Bone Morphs from active Pose Library"
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     @classmethod
     def poll(cls, context):
-        root = mmd_model.Model.findRoot(context.active_object)
+        root = FnModel.find_root_object(context.active_object)
         if root is None:
             return False
 
         return root.mmd_root.active_morph_type == "bone_morphs"
 
     def execute(self, context):
-        root = mmd_model.Model.findRoot(context.active_object)
-        FnMorph.overwrite_bone_morphs_from_pose_library(mmd_model.FnModel.find_armature_object(root))
+        root = FnModel.find_root_object(context.active_object)
+        FnMorph.overwrite_bone_morphs_from_pose_library(FnModel.find_armature_object(root))
 
         return {"FINISHED"}
 
 
-class AddMorphOffset(Operator):
+class AddMorphOffset(bpy.types.Operator):
     bl_idname = "mmd_tools.morph_offset_add"
     bl_label = "Add Morph Offset"
     bl_description = "Add a morph offset item to the list"
@@ -183,7 +184,7 @@ class AddMorphOffset(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
         morph_type = mmd_root.active_morph_type
         morph = ItemOp.get_by_index(getattr(mmd_root, morph_type), mmd_root.active_morph)
@@ -209,7 +210,7 @@ class AddMorphOffset(Operator):
         return {"FINISHED"}
 
 
-class RemoveMorphOffset(Operator):
+class RemoveMorphOffset(bpy.types.Operator):
     bl_idname = "mmd_tools.morph_offset_remove"
     bl_label = "Remove Morph Offset"
     bl_description = "Remove morph offset item(s) from the list"
@@ -224,7 +225,8 @@ class RemoveMorphOffset(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
+        assert root is not None
         mmd_root = root.mmd_root
         morph_type = mmd_root.active_morph_type
         morph = ItemOp.get_by_index(getattr(mmd_root, morph_type), mmd_root.active_morph)
@@ -236,12 +238,12 @@ class RemoveMorphOffset(Operator):
 
         if self.all:
             if morph_type.startswith("vertex"):
-                for obj in mmd_model.Model(root).meshes():
+                for obj in FnModel.iterate_mesh_objects(root):
                     FnMorph.remove_shape_key(obj, morph.name)
                 return {"FINISHED"}
             elif morph_type.startswith("uv"):
                 if morph.data_type == "VERTEX_GROUP":
-                    for obj in mmd_model.Model(root).meshes():
+                    for obj in FnModel.iterate_mesh_objects(root):
                         FnMorph.store_uv_morph_data(obj, morph)
                     return {"FINISHED"}
             morph.data.clear()
@@ -252,7 +254,7 @@ class RemoveMorphOffset(Operator):
         return {"FINISHED"}
 
 
-class InitMaterialOffset(Operator):
+class InitMaterialOffset(bpy.types.Operator):
     bl_idname = "mmd_tools.material_morph_offset_init"
     bl_label = "Init Material Offset"
     bl_description = "Set all offset values to target value"
@@ -266,8 +268,7 @@ class InitMaterialOffset(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
@@ -280,7 +281,7 @@ class InitMaterialOffset(Operator):
         return {"FINISHED"}
 
 
-class ApplyMaterialOffset(Operator):
+class ApplyMaterialOffset(bpy.types.Operator):
     bl_idname = "mmd_tools.apply_material_morph_offset"
     bl_label = "Apply Material Offset"
     bl_description = "Calculates the offsets and apply them, then the temporary material is removed"
@@ -288,13 +289,12 @@ class ApplyMaterialOffset(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
 
-        meshObj = rig.findMesh(mat_data.related_mesh)
+        meshObj = FnModel.find_mesh_object_by_name(mat_data.related_mesh)
         if meshObj is None:
             self.report({"ERROR"}, "The model mesh can't be found")
             return {"CANCELLED"}
@@ -342,7 +342,7 @@ class ApplyMaterialOffset(Operator):
         return {"FINISHED"}
 
 
-class CreateWorkMaterial(Operator):
+class CreateWorkMaterial(bpy.types.Operator):
     bl_idname = "mmd_tools.create_work_material"
     bl_label = "Create Work Material"
     bl_description = "Creates a temporary material to edit this offset"
@@ -350,13 +350,12 @@ class CreateWorkMaterial(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
 
-        meshObj = rig.findMesh(mat_data.related_mesh)
+        meshObj = FnModel.find_mesh_object_by_name(mat_data.related_mesh)
         if meshObj is None:
             self.report({"ERROR"}, "The model mesh can't be found")
             return {"CANCELLED"}
@@ -408,7 +407,7 @@ class CreateWorkMaterial(Operator):
         return {"FINISHED"}
 
 
-class ClearTempMaterials(Operator):
+class ClearTempMaterials(bpy.types.Operator):
     bl_idname = "mmd_tools.clear_temp_materials"
     bl_label = "Clear Temp Materials"
     bl_description = "Clears all the temporary materials"
@@ -416,9 +415,9 @@ class ClearTempMaterials(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
-        for meshObj in rig.meshes():
+        root = FnModel.find_root_object(obj)
+        assert root is not None
+        for meshObj in FnModel.iterate_mesh_objects(root):
 
             def __pre_remove(m):
                 if m and "_temp" in m.name:
@@ -434,7 +433,7 @@ class ClearTempMaterials(Operator):
         return {"FINISHED"}
 
 
-class ViewBoneMorph(Operator):
+class ViewBoneMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.view_bone_morph"
     bl_label = "View Bone Morph"
     bl_description = "View the result of active bone morph"
@@ -442,10 +441,10 @@ class ViewBoneMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
+        assert root is not None
         mmd_root = root.mmd_root
-        rig = mmd_model.Model(root)
-        armature = rig.armature()
+        armature = FnModel.find_armature_object(root)
         utils.selectSingleBone(context, armature, None, True)
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         for morph_data in morph.data:
@@ -458,7 +457,7 @@ class ViewBoneMorph(Operator):
         return {"FINISHED"}
 
 
-class ClearBoneMorphView(Operator):
+class ClearBoneMorphView(bpy.types.Operator):
     bl_idname = "mmd_tools.clear_bone_morph_view"
     bl_label = "Clear Bone Morph View"
     bl_description = "Reset transforms of all bones to their default values"
@@ -466,15 +465,15 @@ class ClearBoneMorphView(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
-        armature = rig.armature()
+        root = FnModel.find_root_object(obj)
+        assert root is not None
+        armature = FnModel.find_armature_object(root)
         for p_bone in armature.pose.bones:
             p_bone.matrix_basis.identity()
         return {"FINISHED"}
 
 
-class ApplyBoneMorph(Operator):
+class ApplyBoneMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.apply_bone_morph"
     bl_label = "Apply Bone Morph"
     bl_description = "Apply current pose to active bone morph"
@@ -482,9 +481,9 @@ class ApplyBoneMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
-        armature = rig.armature()
+        root = FnModel.find_root_object(obj)
+        assert root is not None
+        armature = FnModel.find_armature_object(root)
         mmd_root = root.mmd_root
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph.data.clear()
@@ -501,7 +500,7 @@ class ApplyBoneMorph(Operator):
         return {"FINISHED"}
 
 
-class SelectRelatedBone(Operator):
+class SelectRelatedBone(bpy.types.Operator):
     bl_idname = "mmd_tools.select_bone_morph_offset_bone"
     bl_label = "Select Related Bone"
     bl_description = "Select the bone assigned to this offset in the armature"
@@ -509,17 +508,17 @@ class SelectRelatedBone(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
+        assert root is not None
         mmd_root = root.mmd_root
-        rig = mmd_model.Model(root)
-        armature = rig.armature()
+        armature = FnModel.find_armature_object(root)
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph_data = morph.data[morph.active_data]
         utils.selectSingleBone(context, armature, morph_data.bone)
         return {"FINISHED"}
 
 
-class EditBoneOffset(Operator):
+class EditBoneOffset(bpy.types.Operator):
     bl_idname = "mmd_tools.edit_bone_morph_offset"
     bl_label = "Edit Related Bone"
     bl_description = "Applies the location and rotation of this offset to the bone"
@@ -527,10 +526,10 @@ class EditBoneOffset(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
+        assert root is not None
         mmd_root = root.mmd_root
-        rig = mmd_model.Model(root)
-        armature = rig.armature()
+        armature = FnModel.find_armature_object(root)
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph_data = morph.data[morph.active_data]
         p_bone = armature.pose.bones[morph_data.bone]
@@ -541,7 +540,7 @@ class EditBoneOffset(Operator):
         return {"FINISHED"}
 
 
-class ApplyBoneOffset(Operator):
+class ApplyBoneOffset(bpy.types.Operator):
     bl_idname = "mmd_tools.apply_bone_morph_offset"
     bl_label = "Apply Bone Morph Offset"
     bl_description = "Stores the current bone location and rotation into this offset"
@@ -549,10 +548,11 @@ class ApplyBoneOffset(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
+        root = FnModel.find_root_object(obj)
+        assert root is not None
         mmd_root = root.mmd_root
-        rig = mmd_model.Model(root)
-        armature = rig.armature()
+        armature = FnModel.find_armature_object(root)
+        assert armature is not None
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph_data = morph.data[morph.active_data]
         p_bone = armature.pose.bones[morph_data.bone]
@@ -561,7 +561,7 @@ class ApplyBoneOffset(Operator):
         return {"FINISHED"}
 
 
-class ViewUVMorph(Operator):
+class ViewUVMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.view_uv_morph"
     bl_label = "View UV Morph"
     bl_description = "View the result of active UV morph on current mesh object"
@@ -569,11 +569,11 @@ class ViewUVMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
+        root = FnModel.find_root_object(obj)
+        assert root is not None
         mmd_root = root.mmd_root
 
-        meshes = tuple(rig.meshes())
+        meshes = tuple(FnModel.iterate_mesh_objects(root))
         if len(meshes) == 1:
             obj = meshes[0]
         elif obj not in meshes:
@@ -621,7 +621,7 @@ class ViewUVMorph(Operator):
         return {"FINISHED"}
 
 
-class ClearUVMorphView(Operator):
+class ClearUVMorphView(bpy.types.Operator):
     bl_idname = "mmd_tools.clear_uv_morph_view"
     bl_label = "Clear UV Morph View"
     bl_description = "Clear all temporary data of UV morphs"
@@ -629,9 +629,9 @@ class ClearUVMorphView(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
-        for m in rig.meshes():
+        root = FnModel.find_root_object(obj)
+        assert root is not None
+        for m in FnModel.iterate_mesh_objects(root):
             mesh = m.data
             uv_textures = getattr(mesh, "uv_textures", mesh.uv_layers)
             for t in uv_textures:
@@ -658,7 +658,7 @@ class ClearUVMorphView(Operator):
         return {"FINISHED"}
 
 
-class EditUVMorph(Operator):
+class EditUVMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.edit_uv_morph"
     bl_label = "Edit UV Morph"
     bl_description = "Edit UV morph on a temporary UV layer (use UV Editor to edit the result)"
@@ -674,9 +674,6 @@ class EditUVMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
-        mmd_root = root.mmd_root
         meshObj = obj
 
         selected = meshObj.select_get()
@@ -701,7 +698,7 @@ class EditUVMorph(Operator):
         return {"FINISHED"}
 
 
-class ApplyUVMorph(Operator):
+class ApplyUVMorph(bpy.types.Operator):
     bl_idname = "mmd_tools.apply_uv_morph"
     bl_label = "Apply UV Morph"
     bl_description = "Calculate the UV offsets of selected vertices and apply to active UV morph"
@@ -717,8 +714,7 @@ class ApplyUVMorph(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = mmd_model.Model.findRoot(obj)
-        rig = mmd_model.Model(root)
+        root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
         meshObj = obj
 
@@ -762,10 +758,10 @@ class CleanDuplicatedMaterialMorphs(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return mmd_model.Model.findRoot(context.active_object) is not None
+        return FnModel.find_root_object(context.active_object) is not None
 
     def execute(self, context: bpy.types.Context):
-        mmd_root_object = mmd_model.FnModel.find_root_object(context.active_object)
+        mmd_root_object = FnModel.find_root_object(context.active_object)
         FnMorph.clean_duplicated_material_morphs(mmd_root_object)
 
         return {"FINISHED"}

@@ -14,15 +14,15 @@ import bmesh
 import bpy
 import mathutils
 
-from mmd_tools import bpyutils
-from mmd_tools.core import pmx
-from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.morph import FnMorph
-from mmd_tools.core.sdef import FnSDEF
-from mmd_tools.core.translations import FnTranslations
-from mmd_tools.core.vmd.importer import BoneConverter, BoneConverterPoseMode
-from mmd_tools.operators.misc import MoveObject
-from mmd_tools.utils import saferelpath
+from ...bpyutils import FnContext
+from .. import pmx
+from ..material import FnMaterial
+from ..morph import FnMorph
+from ..sdef import FnSDEF
+from ..translations import FnTranslations
+from ..vmd.importer import BoneConverter, BoneConverterPoseMode
+from ...operators.misc import MoveObject
+from ...utils import saferelpath
 
 
 class _Vertex:
@@ -225,7 +225,7 @@ class __PmxExporter:
 
     def __copy_textures(self, output_dir, base_folder=""):
         tex_dir_fallback = os.path.join(output_dir, "textures")
-        tex_dir_preference = bpyutils.addon_preferences("base_texture_folder", "")
+        tex_dir_preference = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
 
         path_set = set()  # to prevent overwriting
         tex_copy_list = []
@@ -1269,7 +1269,7 @@ class __PmxExporter:
         if args.get("copy_textures", False):
             output_dir = os.path.dirname(filepath)
             import_folder = root.get("import_folder", "") if root else ""
-            base_folder = bpyutils.addon_preferences("base_texture_folder", "")
+            base_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
             self.__copy_textures(output_dir, import_folder or base_folder)
 
         pmx.save(filepath, self.__model, add_uv_count=self.__add_uv_count)

@@ -5,8 +5,8 @@
 from typing import Literal
 
 import bpy
-from mmd_tools.properties.morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
-from mmd_tools.properties.translations import MMDTranslation
+from .morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
+from .translations import MMDTranslation
 
 class MMDDisplayItem:
     name: str
@@ -25,6 +25,7 @@ class MMDDisplayItemFrame:
     active_item: int
 
 class MMDRoot:
+    id_data: bpy.types.Object
     name: str
     name_j: str
     name_e: str
