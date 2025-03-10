@@ -671,10 +671,16 @@ class _FnMaterialCycles(_FnMaterialBI):
                         return child
                 return None
 
-            active_render_engine = context.engine
+            if hasattr(context, "engine"):
+                active_render_engine = context.engine
+            else:
+                # use ALL anyway
+                active_render_engine = 'ALL'
+
             preferred_output_node_target = {
                 'CYCLES': 'CYCLES',
                 'BLENDER_EEVEE': 'EEVEE',
+                'BLENDER_EEVEE_NEXT': 'EEVEE',
             }.get(active_render_engine, 'ALL')
 
             tex_node = None
@@ -693,10 +699,20 @@ class _FnMaterialCycles(_FnMaterialBI):
                 tex_node = next((n for n in m.node_tree.nodes if n.bl_idname == 'ShaderNodeTexImage'), None)
             if tex_node:
                 tex_node.name = 'mmd_base_tex'
+            else:
+                # Take the Base Color from BSDF if there's no texture
+                bsdf_node = next((n for n in m.node_tree.nodes if n.type.startswith('BSDF_')), None)
+                if bsdf_node:
+                    base_color_input = bsdf_node.inputs.get('Base Color') or bsdf_node.inputs.get('Color')
+                    if base_color_input:
+                        mmd_material.diffuse_color = base_color_input.default_value[:3]
+                        # ambient should be half the diffuse
+                        mmd_material.ambient_color = [x * 0.5 for x in mmd_material.diffuse_color]
 
         shadow_method = getattr(m, 'shadow_method', None)
 
-        mmd_material.diffuse_color = m.diffuse_color[:3]
+        if mmd_material.diffuse_color is None:
+            mmd_material.diffuse_color = m.diffuse_color[:3]
         if hasattr(m, 'alpha'):
             mmd_material.alpha = m.alpha
         elif len(m.diffuse_color) > 3:
@@ -716,6 +732,12 @@ class _FnMaterialCycles(_FnMaterialBI):
         if shadow_method:
             mmd_material.enabled_self_shadow_map = (shadow_method != 'NONE') and mmd_material.alpha > 1e-3
             mmd_material.enabled_self_shadow = (shadow_method != 'NONE')
+
+        # delete bsdf node if it's there
+        if m.use_nodes:
+            nodes_to_remove = [n for n in m.node_tree.nodes if n.type == 'BSDF_PRINCIPLED' or n.type.startswith('BSDF_')]
+            for n in nodes_to_remove:
+                m.node_tree.nodes.remove(n)
 
 
     def __update_shader_input(self, name, val):
@@ -897,7 +919,8 @@ class _FnMaterialCycles(_FnMaterialBI):
         ############################################################################
         ng.new_input_socket('Ambient Color', node_diffuse.inputs['Color1'], (0.4, 0.4, 0.4, 1))
         ng.new_input_socket('Diffuse Color', node_diffuse.inputs['Color2'], (0.8, 0.8, 0.8, 1))
-        ng.new_input_socket('Specular Color', shader_glossy.inputs['Color'], (0.8, 0.8, 0.8, 1))
+        # ↓ specular should be disabled by default
+        ng.new_input_socket('Specular Color', shader_glossy.inputs['Color'], (0.0, 0.0, 0.0, 1))
         ng.new_input_socket('Reflect', node_reflect.inputs[1], 50, min_max=(1, 512))
         ng.new_input_socket('Base Tex Fac', node_tex.inputs['Fac'], 1)
         ng.new_input_socket('Base Tex', node_tex.inputs['Color2'], (1, 1, 1, 1))
