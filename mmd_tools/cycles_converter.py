@@ -2,6 +2,7 @@
 import bpy
 import logging
 from mmd_tools.core.shader import _NodeGroupUtils
+from mmd_tools.core.material import _FnMaterialCycles
 
 def __switchToCyclesRenderEngine():
     if bpy.context.scene.render.engine != 'CYCLES':
@@ -110,6 +111,15 @@ def convertToBlenderShader(obj, use_principled=False, clean_nodes=False, subsurf
             __convertToPrincipledBsdf(i.material, subsurface)
         if clean_nodes:
             __cleanNodeTree(i.material)
+
+def convertToMMDShader(obj):
+    """BSDF -> MMDShaderDev conversion."""
+    for i in obj.material_slots:
+        if not i.material:
+            continue
+        if not i.material.use_nodes:
+            i.material.use_nodes = True
+        _FnMaterialCycles.convert_to_mmd_material(i.material)
 
 def __convertToMMDBasicShader(material):
     mmd_basic_shader_grp = create_MMDBasicShader()
