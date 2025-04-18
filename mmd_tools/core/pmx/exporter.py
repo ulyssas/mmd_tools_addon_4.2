@@ -334,18 +334,7 @@ class __PmxExporter:
         world_mat = arm.matrix_world
         r = {}
 
-        # determine the bone order
-        vtx_grps = {}
-        for mesh in meshes:
-            if mesh.modifiers.get("mmd_bone_order_override", None):
-                vtx_grps = mesh.vertex_groups
-                break
-
-        class _Dummy:
-            index = float("inf")
-
-        sorted_bones = sorted(pose_bones, key=lambda x: vtx_grps.get(x.name, _Dummy).index)
-        # sorted_bones = sorted(pose_bones, key=self.__countBoneDepth)
+        sorted_bones = sorted(pose_bones, key=lambda x: x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"))
 
         Vector = mathutils.Vector
         pmx_matrix = world_mat * self.__scale

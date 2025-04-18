@@ -430,6 +430,7 @@ class PMXImporter:
             mmd_bone.is_controllable = pmx_bone.isControllable
             mmd_bone.transform_order = pmx_bone.transform_order
             mmd_bone.transform_after_dynamics = pmx_bone.transAfterPhis
+            mmd_bone.bone_id = i
 
             if pmx_bone.displayConnection == -1 or pmx_bone.displayConnection == (0.0, 0.0, 0.0):
                 mmd_bone.is_tip = True
@@ -786,7 +787,7 @@ class PMXImporter:
         armModifier = meshObj.modifiers.new(name="Armature", type="ARMATURE")
         armModifier.object = armObj
         armModifier.use_vertex_groups = True
-        armModifier.name = "mmd_bone_order_override"
+        armModifier.name = "mmd_armature"
         armModifier.show_render = armModifier.show_viewport = len(meshObj.data.vertices) > 0
 
     def __assignCustomNormals(self):

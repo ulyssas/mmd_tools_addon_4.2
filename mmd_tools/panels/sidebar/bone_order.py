@@ -3,9 +3,379 @@
 # This file is part of MMD Tools.
 
 import bpy
-
 from ...core.model import FnModel
 from . import PT_ProductionPanelBase
+
+
+class MMDToolsBoneIdMoveUp(bpy.types.Operator):
+    bl_idname = "mmd_tools.bone_id_move_up"
+    bl_label = "Move Bone ID Up"
+    bl_description = "Move active bone up in bone order"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.object)
+        armature = FnModel.find_armature_object(root)
+        
+        if not root or not armature:
+            return {'CANCELLED'}
+            
+        active_bone_index = root.mmd_root.active_bone_index
+        if active_bone_index >= len(armature.pose.bones):
+            return {'CANCELLED'}
+            
+        active_bone = armature.pose.bones[active_bone_index]
+        active_id = active_bone.mmd_bone.bone_id
+        
+        # Find bone with smaller bone_id
+        prev_bone = None
+        prev_id = -1
+        
+        for bone in armature.pose.bones:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if not is_shadow and bone.mmd_bone.bone_id < active_id and bone.mmd_bone.bone_id > prev_id:
+                prev_bone = bone
+                prev_id = bone.mmd_bone.bone_id
+                
+        if prev_bone:
+            # Swap bone_id
+            active_bone.mmd_bone.bone_id, prev_bone.mmd_bone.bone_id = prev_bone.mmd_bone.bone_id, active_bone.mmd_bone.bone_id
+            
+            # Refresh UI
+            for area in context.screen.areas:
+                area.tag_redraw()
+        
+        return {'FINISHED'}
+
+
+class MMDToolsBoneIdMoveDown(bpy.types.Operator):
+    bl_idname = "mmd_tools.bone_id_move_down"
+    bl_label = "Move Bone ID Down"
+    bl_description = "Move active bone down in bone order"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.object)
+        armature = FnModel.find_armature_object(root)
+        
+        if not root or not armature:
+            return {'CANCELLED'}
+            
+        active_bone_index = root.mmd_root.active_bone_index
+        if active_bone_index >= len(armature.pose.bones):
+            return {'CANCELLED'}
+        
+        active_bone = armature.pose.bones[active_bone_index]
+        active_id = active_bone.mmd_bone.bone_id
+        
+        # Find bone with larger bone_id
+        next_bone = None
+        next_id = float('inf')
+        
+        for bone in armature.pose.bones:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if not is_shadow and bone.mmd_bone.bone_id > active_id and bone.mmd_bone.bone_id < next_id:
+                next_bone = bone
+                next_id = bone.mmd_bone.bone_id
+                
+        if next_bone:
+            # Swap bone_id
+            active_bone.mmd_bone.bone_id, next_bone.mmd_bone.bone_id = next_bone.mmd_bone.bone_id, active_bone.mmd_bone.bone_id
+            
+            # Refresh UI
+            for area in context.screen.areas:
+                area.tag_redraw()
+        
+        return {'FINISHED'}
+
+
+class MMDToolsSortBonesByBoneId(bpy.types.Operator):
+    bl_idname = "mmd_tools.sort_bones_by_bone_id"
+    bl_label = "Sort Bones by Bone ID"
+    bl_description = "Sort bones by their bone ID"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        armature = context.object
+        next_id = 0
+        
+        # Find max bone_id
+        for bone in armature.pose.bones:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if not is_shadow and bone.mmd_bone.bone_id >= 0:
+                next_id = max(next_id, bone.mmd_bone.bone_id + 1)
+                
+        # Assign IDs to bones without bone_id
+        for bone in armature.pose.bones:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if not is_shadow and bone.mmd_bone.bone_id < 0:
+                bone.mmd_bone.bone_id = next_id
+                next_id += 1
+        
+        # Refresh UI
+        for area in context.screen.areas:
+            area.tag_redraw()
+                
+        return {'FINISHED'}
+
+
+class MMDToolsRealignBoneIds(bpy.types.Operator):
+    bl_idname = "mmd_tools.realign_bone_ids"
+    bl_label = "Realign Bone IDs"
+    bl_description = "Realign bone IDs to be sequential without gaps"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.object)
+        armature = FnModel.find_armature_object(root)
+        
+        if not root or not armature:
+            return {'CANCELLED'}
+        
+        # Get all bones with valid bone_id, sorted by bone_id
+        valid_bones = []
+        for bone in armature.pose.bones:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if not is_shadow and bone.mmd_bone.bone_id >= 0:
+                valid_bones.append(bone)
+        
+        # Sort by current bone_id
+        valid_bones.sort(key=lambda b: b.mmd_bone.bone_id)
+        
+        # Reassign sequential bone_ids
+        for i, bone in enumerate(valid_bones):
+            bone.mmd_bone.bone_id = i
+        
+        # Refresh UI
+        for area in context.screen.areas:
+            area.tag_redraw()
+        
+        return {'FINISHED'}
+
+
+class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
+    # Static data for bone relationships
+    _IK_MAP = {}
+    _IK_BONES = {}
+    _bone_order_map = {}
+
+    @classmethod
+    def update_bone_tables(cls, armature):
+        """Update bone relationship tables"""
+        cls._IK_MAP.clear()
+        cls._IK_BONES.clear()
+        cls._bone_order_map.clear()
+
+        # Process IK relationships
+        valid_bone_count = 0
+        
+        for bone in armature.pose.bones:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if is_shadow:
+                continue
+                
+            valid_bone_count += 1
+                
+            # Process IK constraints
+            for constraint in bone.constraints:
+                if constraint.type == "IK" and constraint.subtarget in armature.pose.bones:
+                    if not constraint.use_tail:
+                        cls._IK_MAP.setdefault(hash(bone), []).append(constraint.subtarget)
+                        cls._IK_BONES[constraint.subtarget] = hash(bone)
+                        bone_chain = bone.parent_recursive
+                    else:
+                        cls._IK_BONES[constraint.subtarget] = bone.name
+                        bone_chain = [bone] + bone.parent_recursive
+                        
+                    # Add all bones in IK chain
+                    for linked_bone in bone_chain[:constraint.chain_count]:
+                        cls._IK_MAP.setdefault(hash(linked_bone), []).append(constraint.subtarget)
+        
+        # Process special IK connections
+        for subtarget, value in tuple(cls._IK_BONES.items()):
+            if isinstance(value, str):
+                target_bone = cls.__get_ik_target_bone(armature.pose.bones[value])
+                if target_bone:
+                    cls._IK_BONES[subtarget] = hash(target_bone)
+                    cls._IK_MAP.setdefault(hash(target_bone), []).append(subtarget)
+                else:
+                    del cls._IK_BONES[subtarget]
+                    
+        # Update bone sorting
+        cls.update_sorted_bones(armature)
+        
+        return valid_bone_count
+
+    @classmethod
+    def update_sorted_bones(cls, armature):
+        """Update bone order mapping"""
+        cls._bone_order_map.clear()
+        
+        # Create index to bone_id mapping
+        bone_id_list = []
+        for i, bone in enumerate(armature.pose.bones):
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if not is_shadow:
+                bone_id = bone.mmd_bone.bone_id if hasattr(bone.mmd_bone, 'bone_id') else -1
+                bone_id_list.append((i, bone_id))
+        
+        # Sort by bone_id
+        bone_id_list.sort(key=lambda x: x[1] if x[1] >= 0 else float('inf'))
+        
+        # Create order mapping
+        for new_idx, (orig_idx, _) in enumerate(bone_id_list):
+            cls._bone_order_map[orig_idx] = new_idx
+
+    @staticmethod
+    def __get_ik_target_bone(target_bone):
+        """Find the IK target bone from a parent bone"""
+        r = None
+        min_length = None
+        for child in target_bone.children:
+            is_shadow = getattr(child, 'is_mmd_shadow_bone', False) is True
+            if is_shadow:
+                continue
+            if child.bone.use_connect:
+                return child
+            length = (child.head - target_bone.tail).length
+            if min_length is None or length < min_length:
+                min_length = length
+                r = child
+        return r
+
+    def filter_items(self, context, data, propname):
+        """Filter and sort items"""
+        bones = getattr(data, propname)
+        bone_count = len(bones)
+        
+        # Filter out shadow bones
+        filtered_flags = []
+        for bone in bones:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if is_shadow:
+                filtered_flags.append(0)  # Filter out shadow bones
+            else:
+                filtered_flags.append(self.bitflag_filter_item)  # Show non-shadow bones
+        
+        # Use defined sort order
+        if not self._bone_order_map:
+            # If no sort mapping yet, update once
+            self.update_sorted_bones(data)
+            
+        ordered_indices = []
+        for i in range(bone_count):
+            if filtered_flags[i]:  # Only sort displayed bones
+                ordered_indices.append(self._bone_order_map.get(i, i))
+            else:
+                ordered_indices.append(i)  # Keep filtered items in original position
+        
+        return filtered_flags, ordered_indices
+
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        if self.layout_type in {"DEFAULT"}:
+            self._draw_bone_item(layout, item)
+        elif self.layout_type in {"GRID"}:
+            layout.alignment = "CENTER"
+            layout.label(text="", icon_value=icon)
+
+    @classmethod
+    def _draw_bone_item(cls, layout, bone):
+        """Draw a single bone item in the UI list"""
+        is_shadow = False
+        if bone:
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            
+        if not bone or is_shadow:
+            layout.active = False
+            layout.label(text=bone.name if bone else "", translate=False, icon="GROUP_BONE" if bone else "MESH_DATA")
+            return
+
+        bone_id = bone.mmd_bone.bone_id if bone.mmd_bone.bone_id >= 0 else -1
+        count = len(bone.id_data.pose.bones)
+        bone_transform_rank = bone_id + bone.mmd_bone.transform_order * count
+
+        row = layout.split(factor=0.45, align=False)
+        r0 = row.row()
+        r0.label(text=bone.name, translate=False, icon="POSE_HLT" if bone.name in cls._IK_BONES else "BONE_DATA")
+        r = r0.row()
+        r.alignment = "RIGHT"
+        r.label(text=str(bone_id))
+
+        row_sub = row.split(factor=0.67, align=False)
+
+        # Display bone relationships
+        r = row_sub.row()
+
+        # Display parent bone
+        bone_parent = bone.parent
+        if bone_parent:
+            parent_bone_id = bone_parent.mmd_bone.bone_id if bone_parent.mmd_bone.bone_id >= 0 else -1
+            parent_icon = "ERROR"
+            if parent_bone_id >= 0:
+                if bone_transform_rank >= (parent_bone_id + bone_parent.mmd_bone.transform_order * count):
+                    parent_icon = "INFO" if bone_id < parent_bone_id else "FILE_PARENT"
+            r.label(text=str(parent_bone_id), icon=parent_icon)
+        else:
+            r.label()
+
+        # Display additional transforms
+        r = r.row()
+        mmd_bone = bone.mmd_bone
+        if mmd_bone.has_additional_rotation or mmd_bone.has_additional_location:
+            append_bone_name = mmd_bone.additional_transform_bone
+            if append_bone_name in bone.id_data.pose.bones:
+                append_bone = bone.id_data.pose.bones[append_bone_name]
+                append_bone_id = append_bone.mmd_bone.bone_id if append_bone.mmd_bone.bone_id >= 0 else -1
+                
+                icon = "ERROR"
+                if append_bone_id >= 0 and bone_transform_rank >= (append_bone_id + append_bone.mmd_bone.transform_order * count):
+                    if mmd_bone.has_additional_rotation and mmd_bone.has_additional_location:
+                        icon = "IPO_QUAD"
+                    elif mmd_bone.has_additional_rotation:
+                        icon = "IPO_EXPO"
+                    else:
+                        icon = "IPO_LINEAR"
+                        
+                if append_bone_name:
+                    r.label(text=str(append_bone_id), icon=icon)
+
+        # Display IK connections with index-based sorting (like the old version)
+        ik_bones_data = []
+        for ik_bone_name in cls._IK_MAP.get(hash(bone), []):
+            ik_bone = bone.id_data.pose.bones[ik_bone_name]
+            ik_bone_id = ik_bone.mmd_bone.bone_id if ik_bone.mmd_bone.bone_id >= 0 else -1
+            is_ik_chain = hash(bone) != cls._IK_BONES.get(ik_bone_name)
+
+            icon = "LINKED" if is_ik_chain else "HOOK"
+            if ik_bone_id < 0:
+                icon = "ERROR"
+            elif is_ik_chain and bone_transform_rank > (ik_bone_id + ik_bone.mmd_bone.transform_order * count):
+                icon = "ERROR"
+
+            # Store for sorting
+            ik_bones_data.append((ik_bone_id, ik_bone, icon))
+
+        # Sort by bone_id (similar to the old version's vertex_group index sorting)
+        for bone_id, ik_bone, icon in sorted(ik_bones_data, key=lambda x: x[0] if x[0] >= 0 else float('inf')):
+            r.prop(ik_bone, "mmd_ik_toggle", text=str(bone_id), toggle=True, icon=icon)
+
+        # Display transform order and post-dynamics transform
+        row = row_sub.row(align=True)
+        # Fix: Use a specific icon name instead of None
+        if mmd_bone.transform_after_dynamics:
+            row.prop(mmd_bone, "transform_after_dynamics", text="", toggle=True, icon="PHYSICS")
+        else:
+            row.prop(mmd_bone, "transform_after_dynamics", text="", toggle=True, icon="BLANK1")
+        row.prop(mmd_bone, "transform_order", text="", slider=bool(mmd_bone.transform_order))
+
+
+class MMDBoneOrderMenu(bpy.types.Menu):
+    bl_idname = "OBJECT_MT_mmd_tools_bone_order_menu"
+    bl_label = "Bone Order Menu"
+
+    def draw(self, _context):
+        layout = self.layout
+        layout.operator("mmd_tools.sort_bones_by_bone_id", text="Sort by Bone ID", icon="SORTALPHA")
 
 
 class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):
@@ -27,211 +397,26 @@ class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):
             layout.label(text="The armature object of active MMD model can't be found", icon="ERROR")
             return
 
-        bone_order_mesh_object = FnModel.find_bone_order_mesh_object(root)
-        bone_count = MMD_TOOLS_UL_ModelBones.update_bone_tables(armature, bone_order_mesh_object)
+        # Update bone tables
+        valid_bone_count = MMD_TOOLS_UL_ModelBones.update_bone_tables(armature)
 
+        # UI
         col = layout.column(align=True)
         row = col.row()
-        if bone_order_mesh_object is None:
-            row.template_list("MMD_TOOLS_UL_ModelBones", "", armature.pose, "bones", root.vertex_groups, "active_index")
-            col.operator("mmd_tools.object_select", text="(%d) %s" % (bone_count, armature.name), icon="OUTLINER_OB_ARMATURE", emboss=False).name = armature.name
-            col.label(text='No mesh object with "mmd_bone_order_override" modifier', icon="ERROR")
-        else:
-            row.template_list("MMD_TOOLS_UL_ModelBones", "", bone_order_mesh_object, "vertex_groups", bone_order_mesh_object.vertex_groups, "active_index")
 
-            tb = row.column()
-            tb.enabled = bone_order_mesh_object == active_obj
-            tb1 = tb.column(align=True)
-            tb1.menu("OBJECT_MT_mmd_tools_bone_order_menu", text="", icon="DOWNARROW_HLT")
-            tb.separator()
-            tb1 = tb.column(align=True)
-            tb1.operator("object.vertex_group_move", text="", icon="TRIA_UP").direction = "UP"
-            tb1.operator("object.vertex_group_move", text="", icon="TRIA_DOWN").direction = "DOWN"
+        # Bone list sorted by bone_id
+        row.template_list("MMD_TOOLS_UL_ModelBones", "", armature.pose, "bones", root.mmd_root, "active_bone_index")
 
-            row = col.row()
-            row.operator("mmd_tools.object_select", text="(%d) %s" % (bone_count, armature.name), icon="OUTLINER_OB_ARMATURE", emboss=False).name = armature.name
-            row.label(icon="BACK")
-            row.operator("mmd_tools.object_select", text=bone_order_mesh_object.name, icon="OBJECT_DATA", emboss=False).name = bone_order_mesh_object.name
+        # Bone order controls
+        tb = row.column()
+        tb1 = tb.column(align=True)
+        tb1.menu("OBJECT_MT_mmd_tools_bone_order_menu", text="", icon="DOWNARROW_HLT")
+        tb.separator()
+        tb1 = tb.column(align=True)
+        tb1.operator("mmd_tools.bone_id_move_up", text="", icon="TRIA_UP")
+        tb1.operator("mmd_tools.bone_id_move_down", text="", icon="TRIA_DOWN")
 
-
-class _DummyVertexGroup:
-    index = None
-
-    def __init__(self, index):
-        self.index = index
-
-
-class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
-    _IK_MAP = {}
-    _IK_BONES = {}
-    _DUMMY_VERTEX_GROUPS = {}
-
-    @classmethod
-    def __wrap_pose_bones(cls, pose_bones):
-        for i, b in enumerate(pose_bones):
-            cls._DUMMY_VERTEX_GROUPS[b.name] = _DummyVertexGroup(i)
-            yield b
-
-    @classmethod
-    def update_bone_tables(cls, armature, bone_order_object):
-        cls._IK_MAP.clear()
-        cls._IK_BONES.clear()
-        cls._DUMMY_VERTEX_GROUPS.clear()
-
-        ik_target_override = {}
-        ik_target_custom = {}
-        ik_target_fin = {}
-        pose_bones = armature.pose.bones
-        bone_count = len(pose_bones)
-        pose_bone_list = pose_bones if bone_order_object else cls.__wrap_pose_bones(pose_bones)
-
-        for b in pose_bone_list:
-            if b.is_mmd_shadow_bone:
-                bone_count -= 1
-                continue
-            for c in b.constraints:
-                if c.type == "IK" and c.subtarget in pose_bones and c.subtarget not in cls._IK_BONES:
-                    if not c.use_tail:
-                        cls._IK_MAP.setdefault(hash(b), []).append(c.subtarget)
-                        cls._IK_BONES[c.subtarget] = ik_target_fin[c.subtarget] = hash(b)
-                        bone_chain = b.parent_recursive
-                    else:
-                        cls._IK_BONES[c.subtarget] = b.name
-                        bone_chain = [b] + b.parent_recursive
-                    for l in bone_chain[: c.chain_count]:
-                        cls._IK_MAP.setdefault(hash(l), []).append(c.subtarget)
-                if "mmd_ik_target_custom" == c.name:
-                    ik_target_custom[getattr(c, "subtarget", "")] = hash(b)
-                elif "mmd_ik_target_override" == c.name and b.parent:
-                    if b.parent.name == getattr(c, "subtarget", ""):
-                        for c in b.parent.constraints:
-                            if c.type == "IK" and c.subtarget in pose_bones and c.subtarget not in ik_target_override and c.subtarget not in ik_target_custom:
-                                ik_target_override[c.subtarget] = hash(b)
-
-        for k, v in ik_target_custom.items():
-            if k not in ik_target_fin and k in cls._IK_BONES:
-                cls._IK_BONES[k] = v
-                cls._IK_MAP.setdefault(v, []).append(k)
-                if k in ik_target_override:
-                    del ik_target_override[k]
-
-        for k, v in ik_target_override.items():
-            if k not in ik_target_fin and k in cls._IK_BONES:
-                cls._IK_BONES[k] = v
-                cls._IK_MAP.setdefault(v, []).append(k)
-
-        for k, v in tuple(cls._IK_BONES.items()):
-            if isinstance(v, str):
-                b = cls.__get_ik_target_bone(pose_bones[v])
-                if b:
-                    cls._IK_BONES[k] = hash(b)
-                    cls._IK_MAP.setdefault(hash(b), []).append(k)
-                else:
-                    del cls._IK_BONES[k]
-        return bone_count
-
-    @staticmethod
-    def __get_ik_target_bone(target_bone):
-        r = None
-        min_length = None
-        for c in (c for c in target_bone.children if not c.is_mmd_shadow_bone):
-            if c.bone.use_connect:
-                return c
-            length = (c.head - target_bone.tail).length
-            if min_length is None or length < min_length:
-                min_length = length
-                r = c
-        return r
-
-    @classmethod
-    def _draw_bone_item(cls, layout, bone_name, pose_bones, vertex_groups, index):
-        bone = pose_bones.get(bone_name, None)
-        if not bone or bone.is_mmd_shadow_bone:
-            layout.active = False
-            layout.label(text=bone_name, translate=False, icon="GROUP_BONE" if bone else "MESH_DATA")
-            r = layout.row()
-            r.alignment = "RIGHT"
-            r.label(text=str(index))
-        else:
-            row = layout.split(factor=0.45, align=False)
-            r0 = row.row()
-            r0.label(text=bone_name, translate=False, icon="POSE_HLT" if bone_name in cls._IK_BONES else "BONE_DATA")
-            r = r0.row()
-            r.alignment = "RIGHT"
-            r.label(text=str(index))
-
-            row_sub = row.split(factor=0.67, align=False)
-
-            mmd_bone = bone.mmd_bone
-            count = len(pose_bones)
-            bone_transform_rank = index + mmd_bone.transform_order * count
-
-            r = row_sub.row()
-            bone_parent = bone.parent
-            if bone_parent:
-                bone_parent = bone_parent.name
-                idx = vertex_groups.get(bone_parent, _DummyVertexGroup).index
-                if idx is None or bone_transform_rank < (idx + pose_bones[bone_parent].mmd_bone.transform_order * count):
-                    r.label(text=str(idx), icon="ERROR")
-                else:
-                    r.label(text=str(idx), icon="INFO" if index < idx else "FILE_PARENT")
-            else:
-                r.label()
-
-            r = r.row()
-            if mmd_bone.has_additional_rotation:
-                append_bone = mmd_bone.additional_transform_bone
-                idx = vertex_groups.get(append_bone, _DummyVertexGroup).index
-                if idx is None or bone_transform_rank < (idx + pose_bones[append_bone].mmd_bone.transform_order * count):
-                    if append_bone:
-                        r.label(text=str(idx), icon="ERROR")
-                else:
-                    r.label(text=str(idx), icon="IPO_QUAD" if mmd_bone.has_additional_location else "IPO_EXPO")
-            elif mmd_bone.has_additional_location:
-                append_bone = mmd_bone.additional_transform_bone
-                idx = vertex_groups.get(append_bone, _DummyVertexGroup).index
-                if idx is None or bone_transform_rank < (idx + pose_bones[append_bone].mmd_bone.transform_order * count):
-                    if append_bone:
-                        r.label(text=str(idx), icon="ERROR")
-                else:
-                    r.label(text=str(idx), icon="IPO_LINEAR")
-
-            for idx, b in sorted(((vertex_groups.get(b, _DummyVertexGroup).index, b) for b in cls._IK_MAP.get(hash(bone), ())), key=lambda i: i[0] or 0):
-                ik_bone = pose_bones[b]
-                is_ik_chain = hash(bone) != cls._IK_BONES.get(b)
-                if idx is None or (is_ik_chain and bone_transform_rank > (idx + ik_bone.mmd_bone.transform_order * count)):
-                    r.prop(ik_bone, "mmd_ik_toggle", text=str(idx), toggle=True, icon="ERROR")
-                elif b not in cls._IK_BONES:
-                    r.prop(ik_bone, "mmd_ik_toggle", text=str(idx), toggle=True, icon="QUESTION")
-                else:
-                    r.prop(ik_bone, "mmd_ik_toggle", text=str(idx), toggle=True, icon="LINKED" if is_ik_chain else "HOOK")
-
-            row = row_sub.row(align=True)
-            if mmd_bone.transform_after_dynamics:
-                row.prop(mmd_bone, "transform_after_dynamics", text="", toggle=True, icon="PHYSICS")
-            else:
-                row.prop(mmd_bone, "transform_after_dynamics", text="", toggle=True)
-            row.prop(mmd_bone, "transform_order", text="", slider=bool(mmd_bone.transform_order))
-
-    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
-        if self.layout_type in {"DEFAULT"}:
-            if self._DUMMY_VERTEX_GROUPS:
-                self._draw_bone_item(layout, item.name, data.bones, self._DUMMY_VERTEX_GROUPS, index)
-            else:
-                self._draw_bone_item(layout, item.name, data.parent.pose.bones, data.vertex_groups, index)
-        elif self.layout_type in {"COMPACT"}:
-            pass
-        elif self.layout_type in {"GRID"}:
-            layout.alignment = "CENTER"
-            layout.label(text="", icon_value=icon)
-
-
-class MMDBoneOrderMenu(bpy.types.Menu):
-    bl_idname = "OBJECT_MT_mmd_tools_bone_order_menu"
-    bl_label = "Bone Order Menu"
-
-    def draw(self, _context):
-        layout = self.layout
-        layout.operator("object.vertex_group_sort", text="Sort by Bone Hierarchy", icon="BONE_DATA").sort_type = "BONE_HIERARCHY"
-        layout.separator()
-        layout.operator("mmd_tools.add_missing_vertex_groups_from_bones", icon="PRESET_NEW")
+        # Display total bone count with realign button
+        row = col.row(align=True)
+        row.label(text=f"Total Bones: {valid_bone_count}")
+        row.operator("mmd_tools.realign_bone_ids", text="Align IDs", icon="LINENUMBERS_ON")

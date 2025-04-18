@@ -7,7 +7,6 @@ from typing import Generator, List, Optional, TypeVar
 
 import bpy
 
-
 class Props:  # For API changes of only name changed properties
     show_in_front = "show_in_front"
     display_type = "display_type"
@@ -65,7 +64,11 @@ class __SelectObjects:
 
     def __exit__(self, type, value, traceback):
         for i, j in zip(self.__selected_objects, self.__hides):
-            i.hide_set(j)
+            try:
+                i.hide_set(j)
+            except ReferenceError:
+                # Object may no longer exist, so skip restoring hidden state.
+                pass
 
 
 def setParent(obj, parent):
