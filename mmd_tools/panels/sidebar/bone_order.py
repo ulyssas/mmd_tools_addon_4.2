@@ -90,6 +90,65 @@ class MMDToolsBoneIdMoveDown(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class MMDToolsBoneIdMoveTop(bpy.types.Operator):
+    bl_idname = "mmd_tools.bone_id_move_top"
+    bl_label = "Move Bone ID to Top"
+    bl_description = "Move active bone to the top of bone order"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.object)
+        armature = FnModel.find_armature_object(root)
+
+        if not root or not armature:
+            return {'CANCELLED'}
+
+        active_bone_index = root.mmd_root.active_bone_index
+        if active_bone_index >= len(armature.pose.bones):
+            return {'CANCELLED'}
+
+        active_bone = armature.pose.bones[active_bone_index]
+
+        # Change bone ID to 0 safely
+        FnModel.safe_change_bone_id(active_bone, 0, root.mmd_root.bone_morphs, armature.pose.bones)
+
+        # Refresh UI
+        for area in context.screen.areas:
+            area.tag_redraw()
+
+        return {'FINISHED'}
+
+
+class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
+    bl_idname = "mmd_tools.bone_id_move_bottom"
+    bl_label = "Move Bone ID to Bottom"
+    bl_description = "Move active bone to the bottom of bone order"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.object)
+        armature = FnModel.find_armature_object(root)
+
+        if not root or not armature:
+            return {'CANCELLED'}
+
+        active_bone_index = root.mmd_root.active_bone_index
+        if active_bone_index >= len(armature.pose.bones):
+            return {'CANCELLED'}
+
+        active_bone = armature.pose.bones[active_bone_index]
+
+        # Get the maximum bone ID and add 1 to place at the bottom
+        max_bone_id = FnModel.get_max_bone_id(armature.pose.bones)
+        FnModel.safe_change_bone_id(active_bone, max_bone_id + 1, root.mmd_root.bone_morphs, armature.pose.bones)
+
+        # Refresh UI
+        for area in context.screen.areas:
+            area.tag_redraw()
+
+        return {'FINISHED'}
+
+
 class MMDToolsRealignBoneIds(bpy.types.Operator):
     bl_idname = "mmd_tools.fix_bone_order"
     bl_label = "Realign Bone IDs"
@@ -105,7 +164,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
 
         # safe realign bone IDs
         FnModel.realign_bone_ids(armature.pose.bones, 0, root.mmd_root.bone_morphs, armature.pose.bones)
-        
+
         # Apply additional transformation
         MigrationFnBone.fix_mmd_ik_limit_override(armature)
         FnBone.apply_additional_transformation(armature)
@@ -388,11 +447,14 @@ class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):
         # Bone order controls
         tb = row.column()
         tb1 = tb.column(align=True)
-        tb1.menu("OBJECT_MT_mmd_tools_bone_order_menu", text="", icon="DOWNARROW_HLT")
-        tb.separator()
+        # a hard-to-notice small triangle button
+        # tb1.menu("OBJECT_MT_mmd_tools_bone_order_menu", text="", icon="DOWNARROW_HLT")
+        # tb.separator()
         tb1 = tb.column(align=True)
+        tb1.operator("mmd_tools.bone_id_move_top", text="", icon="TRIA_UP_BAR")
         tb1.operator("mmd_tools.bone_id_move_up", text="", icon="TRIA_UP")
         tb1.operator("mmd_tools.bone_id_move_down", text="", icon="TRIA_DOWN")
+        tb1.operator("mmd_tools.bone_id_move_bottom", text="", icon="TRIA_DOWN_BAR")
 
         # Display total bone count with action buttons
         row = col.row(align=True)
