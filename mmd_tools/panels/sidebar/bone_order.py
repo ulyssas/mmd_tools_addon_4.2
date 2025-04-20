@@ -162,10 +162,15 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         if not root or not armature:
             return {'CANCELLED'}
 
-        # safe realign bone IDs
-        FnModel.realign_bone_ids(armature.pose.bones, 0, root.mmd_root.bone_morphs, armature.pose.bones)
+        # Check if this is an old model with vertex group ordering
+        bone_order_mesh_object = self.find_old_bone_order_mesh_object(root)
+        if bone_order_mesh_object:
+            self.migrate_from_vertex_groups(bone_order_mesh_object, armature, root)
+        else:
+            # safe realign bone IDs
+            FnModel.realign_bone_ids(armature.pose.bones, 0, root.mmd_root.bone_morphs, armature.pose.bones)
 
-        # Apply additional transformation
+        # Apply additional transformation (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)
         FnBone.apply_additional_transformation(armature)
 
@@ -174,6 +179,55 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
             area.tag_redraw()
 
         return {'FINISHED'}
+
+    def find_old_bone_order_mesh_object(self, root_object):
+        """Find mesh object with mmd_bone_order_override modifier"""
+        if root_object is None:
+            return None
+
+        armature = FnModel.find_armature_object(root_object)
+        if armature is None:
+            return None
+
+        for mesh in armature.children:
+            if mesh.type != 'MESH':
+                continue
+            for mod in mesh.modifiers:
+                if mod.type == 'ARMATURE' and mod.name == 'mmd_bone_order_override':
+                    return mesh
+        return None
+
+    def migrate_from_vertex_groups(self, mesh_object, armature, root):
+        """Migrate bone order from vertex groups to bone_id"""
+        self.report({'INFO'}, "Migrating from old vertex group ordering to bone_id system")
+
+        # Create mapping from bone name to index in vertex_groups
+        vg_index_map = {}
+        for i, vg in enumerate(mesh_object.vertex_groups):
+            if vg.name in armature.pose.bones:
+                vg_index_map[vg.name] = i
+
+        # Assign bone_id based on vertex group index
+        next_id = 0
+        for bone in sorted(armature.pose.bones, key=lambda b: vg_index_map.get(b.name, float('inf'))):
+            is_shadow = getattr(bone, 'is_mmd_shadow_bone', False) is True
+            if is_shadow:
+                continue
+
+            if bone.name in vg_index_map:
+                bone.mmd_bone.bone_id = next_id
+                next_id += 1
+
+        # Now realign to make sure there are no gaps
+        FnModel.realign_bone_ids(armature.pose.bones, 0, root.mmd_root.bone_morphs, armature.pose.bones)
+
+        # Remove the mmd_bone_order_override modifier from the mesh
+        for modifier in mesh_object.modifiers:
+            if modifier.name == 'mmd_bone_order_override':
+                modifier.name = 'mmd_armature'
+                break
+
+        self.report({'INFO'}, f"Successfully migrated {next_id} bones from vertex groups to bone_id system")
 
 
 class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
