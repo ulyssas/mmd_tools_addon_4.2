@@ -224,24 +224,24 @@ class FnModel:
         Changes bone ID and updates all references without validating if new_bone_id is already in use.
         If new_bone_id is already in use, it may cause conflicts and corrupt existing bone references.
         """
-        # Store original bone_id and change it
+        # Store the original bone_id and change it
         bone_id = bone.mmd_bone.bone_id
         bone.mmd_bone.bone_id = new_bone_id
 
-        # Update bone_id references in all bone morphs
+        # Update all bone_id references in bone morphs
         for bone_morph in bone_morphs:
             for data in bone_morph.data:
                 if data.bone_id == bone_id:
                     data.bone_id = new_bone_id
 
-        # Update additional transform references in all pose bones
+        # Update all additional_transform_bone_id references in pose bones
         for pose_bone in pose_bones:
             if not hasattr(pose_bone, 'is_mmd_shadow_bone') or not pose_bone.is_mmd_shadow_bone:
                 mmd_bone = pose_bone.mmd_bone
                 if mmd_bone.additional_transform_bone_id == bone_id:
                     mmd_bone.additional_transform_bone_id = new_bone_id
 
-        # Update display connection references in all pose bones
+        # Update all display_connection_bone_id references in pose bones
         for pose_bone in pose_bones:
             if not hasattr(pose_bone, 'is_mmd_shadow_bone') or not pose_bone.is_mmd_shadow_bone:
                 mmd_bone = pose_bone.mmd_bone
