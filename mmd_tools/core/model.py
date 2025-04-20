@@ -234,12 +234,19 @@ class FnModel:
                 if data.bone_id == bone_id:
                     data.bone_id = new_bone_id
 
-        # Update transform references in all pose bones
+        # Update additional transform references in all pose bones
         for pose_bone in pose_bones:
             if not hasattr(pose_bone, 'is_mmd_shadow_bone') or not pose_bone.is_mmd_shadow_bone:
                 mmd_bone = pose_bone.mmd_bone
                 if mmd_bone.additional_transform_bone_id == bone_id:
                     mmd_bone.additional_transform_bone_id = new_bone_id
+
+        # Update display connection references in all pose bones
+        for pose_bone in pose_bones:
+            if not hasattr(pose_bone, 'is_mmd_shadow_bone') or not pose_bone.is_mmd_shadow_bone:
+                mmd_bone = pose_bone.mmd_bone
+                if mmd_bone.display_connection_bone_id == bone_id:
+                    mmd_bone.display_connection_bone_id = new_bone_id
 
     @staticmethod
     def safe_change_bone_id(bone: bpy.types.PoseBone, new_bone_id: int, bone_morphs, pose_bones):
