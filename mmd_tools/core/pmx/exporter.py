@@ -24,7 +24,6 @@ from ..vmd.importer import BoneConverter, BoneConverterPoseMode
 from ...operators.misc import MoveObject
 from ...utils import saferelpath
 
-
 class _Vertex:
     def __init__(self, co, groups, offsets, edge_scale, vertex_order, uv_offsets):
         self.co = co
@@ -395,28 +394,17 @@ class __PmxExporter:
                 ):
                     logging.debug(' * fix location of bone %s, parent %s is tip', bone.name, pmx_bone.parent.name)
                     pmx_bone.location = boneMap[pmx_bone.parent].location
-
-                # a connected child bone is preferred
-                pmx_bone.displayConnection = None
-                for child in bone.children:
-                    if (
-                        child.use_connect
-                        or bool(child.get('mmd_bone_use_connect'))
-                        or (
-                            all(pose_bones[child.name].lock_location)
-                            and math.isclose(0.0, (child.head - bone.tail).length)
-                        )
-                    ):
-                        pmx_bone.displayConnection = child
-                        break
                 # fmt: on
 
-                if not pmx_bone.displayConnection:
-                    if mmd_bone.is_tip:
-                        pmx_bone.displayConnection = -1
+                if mmd_bone.display_connection_type == 'NONE':
+                    pmx_bone.displayConnection = -1
+                elif mmd_bone.display_connection_type == 'BONE':
+                    if mmd_bone.display_connection_bone_id >= 0:
+                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
                     else:
-                        tail_loc = __to_pmx_location(p_bone.tail)
-                        pmx_bone.displayConnection = tail_loc - pmx_bone.location
+                        pmx_bone.displayConnection = -1
+                elif mmd_bone.display_connection_type == 'OFFSET':
+                    pmx_bone.displayConnection = mmd_bone.display_connection_offset
 
                 if mmd_bone.enabled_fixed_axis:
                     pmx_bone.axis = __to_pmx_axis(mmd_bone.fixed_axis, p_bone)
