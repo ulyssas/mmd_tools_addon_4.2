@@ -1218,6 +1218,8 @@ class __PmxExporter:
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)
 
+        bpy.ops.mmd_tools.fix_bone_order()
+
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
         sort_vertices = args.get("sort_vertices", "NONE")
