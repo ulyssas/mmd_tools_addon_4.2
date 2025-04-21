@@ -437,6 +437,15 @@ class MMDRoot(bpy.types.PropertyGroup):
     )
 
     # *************************
+    # Bone
+    # *************************
+    active_bone_index: bpy.props.IntProperty(
+        name="Active Bone Index",
+        description="Index of the active bone in the armature",
+        default=0,
+    )
+
+    # *************************
     # Morph
     # *************************
     material_morphs: bpy.props.CollectionProperty(
