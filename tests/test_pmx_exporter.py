@@ -296,7 +296,9 @@ class TestPmxExporter(unittest.TestCase):
             msg = bone0.name
             displayConnection0 = self.__get_bone_display_connection(bone0, source_bones)
             displayConnection1 = self.__get_bone_display_connection(bone1, result_bones)
-            if not isinstance(displayConnection0, str) and not isinstance(displayConnection1, str):
+            if 'nan' in str(displayConnection0):
+                self.assertEqual(str(displayConnection0), str(displayConnection1), msg)
+            elif not isinstance(displayConnection0, str) and not isinstance(displayConnection1, str):
                 self.assertLess(self.__vector_error(displayConnection0, displayConnection1), 1e-4, msg)
             else:
                 self.assertEqual(displayConnection0, displayConnection1, msg)
