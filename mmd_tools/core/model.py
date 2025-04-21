@@ -386,7 +386,7 @@ class FnModel:
                         bpy.ops.object.join()
 
                     except Exception as e:
-                        logging.ERROR(f"Error joining armatures: {e}")
+                        logging.error(f"Error joining armatures: {e}")
                         # Ensure we exit special modes regardless of what happened
                         if bpy.context.mode != 'OBJECT':
                             bpy.ops.object.mode_set(mode='OBJECT')
@@ -446,7 +446,7 @@ class FnModel:
                         if child_rigid_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_rigid_group_object)
                     except Exception as e:
-                        logging.ERROR(f"Error removing rigid group: {e}")
+                        logging.error(f"Error removing rigid group: {e}")
 
             # Handle joints - similar to the rigid body approach
             child_joint_group_object = FnModel.find_joint_group_object(child_root_object)
@@ -479,7 +479,7 @@ class FnModel:
                         if child_joint_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_joint_group_object)
                     except Exception as e:
-                        logging.ERROR(f"Error removing joint group: {e}")
+                        logging.error(f"Error removing joint group: {e}")
 
             # Handle temporary objects - similar approach
             child_temporary_group_object = FnModel.find_temporary_group_object(child_root_object)
@@ -519,13 +519,13 @@ class FnModel:
                         if child_temporary_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_temporary_group_object)
                     except Exception as e:
-                        logging.ERROR(f"Error removing temporary objects: {e}")
+                        logging.error(f"Error removing temporary objects: {e}")
 
             # Copy MMD root properties
             try:
                 FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
             except Exception as e:
-                logging.ERROR(f"Error copying MMD root: {e}")
+                logging.error(f"Error copying MMD root: {e}")
 
             # Safely remove empty child root objects
             try:
@@ -533,7 +533,7 @@ class FnModel:
                     if child_root_object.name in bpy.data.objects:
                         bpy.data.objects.remove(child_root_object)
             except Exception as e:
-                logging.ERROR(f"Error removing child root object: {e}")
+                logging.error(f"Error removing child root object: {e}")
 
     @staticmethod
     def _add_armature_modifier(mesh_object: bpy.types.Object, armature_object: bpy.types.Object) -> bpy.types.ArmatureModifier:
