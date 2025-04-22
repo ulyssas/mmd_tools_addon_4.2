@@ -31,7 +31,7 @@ msgstr "共用的卡通纹理文件夹"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.shared_toon_folder
 msgid "Directory path to toon textures. This is normally the \"Data\" directory within of your MikuMikuDance directory"
-msgstr "卡通纹理的路径. 通常为 MikuMikuDance 目录下的\"Data\"目录"
+msgstr "卡通纹理路径. 通常是 MikuMikuDance 安装路径下的 Data 目录"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.updater_branch_to_update
 msgid "Branch"
@@ -265,7 +265,7 @@ msgstr "将选中物体的物理转译为 Blender 可用的形式"
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig.collision_margin
 msgid "The collision margin between rigid bodies. If 0, the default value for each shape is adopted."
-msgstr "刚体的碰撞距离. 若设为零，则使用形状的默认值"
+msgstr "刚体之间的碰撞裕度. 若为 0, 则使用每个形状的默认值"
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig.non_collision_distance_scale
 msgid "Non-Collision Distance Scale"
@@ -387,7 +387,7 @@ msgstr "清理节点"
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials.clean_nodes
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles.clean_nodes
 msgid "Remove redundant nodes as well if enabled. Disable it to keep node data."
-msgstr "启用时，也清理冗余的节点. 禁用以保留节点数据"
+msgstr "启用时，移除冗余的节点. 禁用以保留节点数据"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials.subsurface
 msgid "Subsurface"
@@ -560,7 +560,6 @@ msgid "The name of the MMD model"
 msgstr "此MMD模型的名称"
 
 #. :src: bpy.types.MMD_TOOLS_OT_create_work_material
-#, fuzzy
 msgctxt "Operator"
 msgid "Create Work Material"
 msgstr "创建工作材质"
@@ -786,7 +785,7 @@ msgstr "禁用SPH/SPA"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.disable_specular
 msgid "Disables all the Specular Map textures. It is required for some MME Shaders."
-msgstr "禁用所有高光贴图纹理. 部分 MME 着色器需要启用此项"
+msgstr "禁用所有高光材质. 部分 MME 着色器必须禁用高光材质"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level
@@ -841,7 +840,7 @@ msgstr "排列材质"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
 msgid "Sort materials for alpha blending. WARNING: Will not work if you have transparent meshes inside the model. E.g. blush meshes"
-msgstr "为 Alpha 混合排列材质. 警告：若模型中有透明材质则无法正常工作"
+msgstr "将材质排序以用于 Alpha 混合 警告: 若透明材质的网格在同一模型中则无效 例如腮红的网格"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices
 msgid "Sort Vertices"
@@ -2306,7 +2305,7 @@ msgstr "相机是否是透视相机"
 
 #. :src: bpy.types.MMDDisplayItem
 msgid "PMX 表示項目(表示枠内の1項目)"
-msgstr ""
+msgstr "PMX 表示（表示枠中的一项）"
 
 #. :src: bpy.types.MMDDisplayItem.type
 msgid "Select item type"
@@ -2322,7 +2321,10 @@ msgid ""
 "\n"
 "    PMXファイル内では表示枠がリストで格納されています。\n"
 "    "
-msgstr ""
+msgstr "PMX 表示枠\n"
+"\n"
+"    在 PMX 文件中，表示枠存储在一个列表中\n"
+"    "
 
 #. :src: bpy.types.MMDDisplayItemFrame.active_item
 msgid "Active Display Item"
@@ -2338,7 +2340,7 @@ msgstr "特别"
 
 #. :src: bpy.types.MMDDisplayItemFrame.is_special
 msgid "Is special"
-msgstr ""
+msgstr "是否是特别的表示枠"
 
 #. :src: bpy.types.MMDMaterial
 msgid "マテリアル"
@@ -2669,7 +2671,7 @@ msgstr ""
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_ENGLISH'
 msgid "Restore English MMD Names"
-msgstr "名称英文MMD名称"
+msgstr "恢复英文MMD名称"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_ENGLISH'
 msgid "org_name_e"
@@ -2961,7 +2963,7 @@ msgstr "已创建 %d 条卡通边缘"
 
 #: scripts/addons/mmd_tools/operators/material.py:48
 msgid " * Failed to change to Cycles render engine."
-msgstr "* 未能改变至 Cycles 渲染引擎"
+msgstr " * 未能改变至 Cycles 渲染引擎"
 
 #: scripts/addons/mmd_tools/operators/material.py:193
 #: scripts/addons/mmd_tools/operators/material.py:219
@@ -3619,7 +3621,7 @@ msgstr ""
 
 #: Add-on mmd_tools info: location
 msgid "View3D > Sidebar > MMD Panel"
-msgstr ""
+msgstr "三维视图 > 侧边栏 > MMD 面板"
 
 #: Add-on mmd_tools info: description
 msgid "Utility tools for MMD model editing. (UuuNyaa's forked version)"
