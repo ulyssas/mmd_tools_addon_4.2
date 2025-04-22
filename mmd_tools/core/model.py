@@ -254,6 +254,11 @@ class FnModel:
         Changes bone ID and updates all references safely by detecting and resolving conflicts automatically.
         If new_bone_id is already in use, shifts all conflicting bone IDs sequentially until a gap is found.
         """
+        # Validate new_bone_id is non-negative
+        if new_bone_id < 0:
+            logging.warning(f"Attempted to set negative bone_id ({new_bone_id}) for bone '{bone.name}'. Using 0 instead.")
+            new_bone_id = 0
+
         # Check if new_bone_id is already in use
         bones_using_id = [pb for pb in pose_bones if pb.mmd_bone.bone_id == new_bone_id]
 
