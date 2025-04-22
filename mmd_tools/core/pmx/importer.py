@@ -272,20 +272,6 @@ class PMXImporter:
                 elif FnBone.has_auto_local_axis(m_bone.name):
                     FnBone.update_auto_bone_roll(b_bone)
 
-            for b_bone, m_bone in zip(editBoneTable, pmx_bones):
-                if isinstance(m_bone.displayConnection, int) and m_bone.displayConnection >= 0:
-                    t = editBoneTable[m_bone.displayConnection]
-                    if t.parent is None or t.parent != b_bone:
-                        continue
-                    if pmx_bones[m_bone.displayConnection].isMovable:
-                        continue
-                    if (b_bone.tail - t.head).length > 1e-4:
-                        continue
-                    if not m_bone.isMovable:
-                        continue
-                    logging.warning(" * connected: %s (%d)-> %s", b_bone.name, len(b_bone.children), t.name)
-                    t.use_connect = True
-
         return nameTable, specialTipBones
 
     def __sortPoseBonesByBoneIndex(self, pose_bones: List[bpy.types.PoseBone], bone_names):
@@ -430,11 +416,25 @@ class PMXImporter:
             mmd_bone.is_controllable = pmx_bone.isControllable
             mmd_bone.transform_order = pmx_bone.transform_order
             mmd_bone.transform_after_dynamics = pmx_bone.transAfterPhis
+            mmd_bone.bone_id = i
 
-            if pmx_bone.displayConnection == -1 or pmx_bone.displayConnection == (0.0, 0.0, 0.0):
+            # set display_connection properties
+            if pmx_bone.displayConnection == -1:
+                mmd_bone.display_connection_type = 'NONE'
                 mmd_bone.is_tip = True
-            elif b_bone.name in specialTipBones:
+            elif pmx_bone.displayConnection == (0.0, 0.0, 0.0):
+                mmd_bone.display_connection_type = 'NONE'
                 mmd_bone.is_tip = True
+            elif isinstance(pmx_bone.displayConnection, int):
+                mmd_bone.display_connection_type = 'BONE'
+                mmd_bone.display_connection_bone_id = pmx_bone.displayConnection
+                if b_bone.name in specialTipBones:
+                    mmd_bone.is_tip = True
+            else:  # vector offset
+                mmd_bone.display_connection_type = 'OFFSET'
+                mmd_bone.display_connection_offset = pmx_bone.displayConnection
+                if b_bone.name in specialTipBones:
+                    mmd_bone.is_tip = True
 
             b_bone.bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
 
@@ -786,7 +786,7 @@ class PMXImporter:
         armModifier = meshObj.modifiers.new(name="Armature", type="ARMATURE")
         armModifier.object = armObj
         armModifier.use_vertex_groups = True
-        armModifier.name = "mmd_bone_order_override"
+        armModifier.name = "mmd_armature"
         armModifier.show_render = armModifier.show_viewport = len(meshObj.data.vertices) > 0
 
     def __assignCustomNormals(self):
@@ -896,7 +896,7 @@ class PMXImporter:
 
         FnModel.change_mmd_ik_loop_factor(self.__root, args.get("ik_loop_factor", 1))
         # bpy.context.scene.gravity[2] = -9.81 * 10 * self.__scale
-        FnContext.set_active_object(self.__targetContext, self.__root)
+        utils.selectAObject(self.__root)
 
         logging.info(" Finished importing the model in %f seconds.", time.time() - start_time)
         logging.info("----------------------------------------")

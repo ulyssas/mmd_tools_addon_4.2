@@ -4,6 +4,8 @@
 
 from typing import List
 
+import bpy
+
 class MMDMaterial(bpy.types.PropertyGroup):
     name_j: str
     name_e: str

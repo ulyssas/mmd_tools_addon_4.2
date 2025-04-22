@@ -24,7 +24,6 @@ from ..vmd.importer import BoneConverter, BoneConverterPoseMode
 from ...operators.misc import MoveObject
 from ...utils import saferelpath
 
-
 class _Vertex:
     def __init__(self, co, groups, offsets, edge_scale, vertex_order, uv_offsets):
         self.co = co
@@ -84,7 +83,7 @@ class __PmxExporter:
         self.__exported_vertices = []
         self.__default_material = None
         self.__vertex_order_map = None  # used for controlling vertex order
-        self.__overwrite_bone_morphs_from_pose_library = False
+        self.__overwrite_bone_morphs_from_action_pose = False
         self.__translate_in_presets = False
         self.__disable_specular = False
         self.__add_uv_count = 0
@@ -334,18 +333,7 @@ class __PmxExporter:
         world_mat = arm.matrix_world
         r = {}
 
-        # determine the bone order
-        vtx_grps = {}
-        for mesh in meshes:
-            if mesh.modifiers.get("mmd_bone_order_override", None):
-                vtx_grps = mesh.vertex_groups
-                break
-
-        class _Dummy:
-            index = float("inf")
-
-        sorted_bones = sorted(pose_bones, key=lambda x: vtx_grps.get(x.name, _Dummy).index)
-        # sorted_bones = sorted(pose_bones, key=self.__countBoneDepth)
+        sorted_bones = sorted(pose_bones, key=lambda x: x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"))
 
         Vector = mathutils.Vector
         pmx_matrix = world_mat * self.__scale
@@ -376,7 +364,12 @@ class __PmxExporter:
 
                 pmx_bone.location = __to_pmx_location(p_bone.head)
                 pmx_bone.parent = bone.parent
-                pmx_bone.visible = not bone.hide and any(c.is_visible for c in bone.collections)
+                # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
+                # This logic is the same as Blender's
+                pmx_bone.visible = (
+                    not bone.hide
+                    and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                )
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)
@@ -401,28 +394,17 @@ class __PmxExporter:
                 ):
                     logging.debug(' * fix location of bone %s, parent %s is tip', bone.name, pmx_bone.parent.name)
                     pmx_bone.location = boneMap[pmx_bone.parent].location
-
-                # a connected child bone is preferred
-                pmx_bone.displayConnection = None
-                for child in bone.children:
-                    if (
-                        child.use_connect
-                        or bool(child.get('mmd_bone_use_connect'))
-                        or (
-                            all(pose_bones[child.name].lock_location)
-                            and math.isclose(0.0, (child.head - bone.tail).length)
-                        )
-                    ):
-                        pmx_bone.displayConnection = child
-                        break
                 # fmt: on
 
-                if not pmx_bone.displayConnection:
-                    if mmd_bone.is_tip:
-                        pmx_bone.displayConnection = -1
+                if mmd_bone.display_connection_type == 'NONE':
+                    pmx_bone.displayConnection = -1
+                elif mmd_bone.display_connection_type == 'BONE':
+                    if mmd_bone.display_connection_bone_id >= 0:
+                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
                     else:
-                        tail_loc = __to_pmx_location(p_bone.tail)
-                        pmx_bone.displayConnection = tail_loc - pmx_bone.location
+                        pmx_bone.displayConnection = -1
+                elif mmd_bone.display_connection_type == 'OFFSET':
+                    pmx_bone.displayConnection = mmd_bone.display_connection_offset
 
                 if mmd_bone.enabled_fixed_axis:
                     pmx_bone.axis = __to_pmx_axis(mmd_bone.fixed_axis, p_bone)
@@ -687,8 +669,8 @@ class __PmxExporter:
         self.__model.faces = sorted_faces
 
     def __export_bone_morphs(self, root):
-        if self.__overwrite_bone_morphs_from_pose_library:
-            FnMorph.overwrite_bone_morphs_from_pose_library(self.__armature)
+        if self.__overwrite_bone_morphs_from_action_pose:
+            FnMorph.overwrite_bone_morphs_from_action_pose(self.__armature)
 
         mmd_root = root.mmd_root
         if len(mmd_root.bone_morphs) == 0:
@@ -1236,13 +1218,15 @@ class __PmxExporter:
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)
 
+        bpy.ops.mmd_tools.fix_bone_order()
+
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
         sort_vertices = args.get("sort_vertices", "NONE")
         if sort_vertices != "NONE":
             self.__vertex_order_map = {"method": sort_vertices}
 
-        self.__overwrite_bone_morphs_from_pose_library = args.get("overwrite_bone_morphs_from_pose_library", False)
+        self.__overwrite_bone_morphs_from_action_pose = args.get("overwrite_bone_morphs_from_action_pose", False)
         self.__translate_in_presets = args.get("translate_in_presets", False)
 
         if self.__translate_in_presets:
