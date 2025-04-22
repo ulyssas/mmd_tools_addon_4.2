@@ -632,7 +632,7 @@ translation_dict = {
         ("*", "Transform Order"): "变形顺序",
         ("Operator", "Add Missing Vertex Groups from Bones"): "从骨骼中添加缺失的顶点组",
         ("*", "Search in all meshes"): "在所有网格中搜索",
-        ("*", "Total Bones"): "骨骼数量",
+        ("*", "Total Bones: %d"): "骨骼数量: %d",
         ("Operator", "Fix Bone Order"): "修复骨骼顺序",
 
         # 3D Viewport > Sidebar > Misc > MMD Display Panel

@@ -561,5 +561,5 @@ class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):
 
         # Display total bone count with action buttons
         row = col.row(align=True)
-        row.label(text=f"{bpy.app.translations.pgettext_iface('Total Bones')}:{valid_bone_count}")
+        row.label(text=bpy.app.translations.pgettext_iface("Total Bones: %d") % valid_bone_count)
         row.operator("mmd_tools.fix_bone_order", text="Fix Bone Order", icon="LINENUMBERS_ON")
