@@ -268,13 +268,10 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
                 continue
 
             if bone.name in vg_index_map:
-                bone.mmd_bone.bone_id = next_id
+                FnModel.safe_change_bone_id(bone, next_id, root.mmd_root.bone_morphs, armature.pose.bones)
                 next_id += 1
 
-        # Now realign to make sure there are no gaps
-        FnModel.realign_bone_ids(armature.pose.bones, 0, root.mmd_root.bone_morphs, armature.pose.bones)
-
-        # Remove the mmd_bone_order_override modifier from the mesh
+        # Rename the mmd_bone_order_override modifier of the mesh
         for modifier in mesh_object.modifiers:
             if modifier.name == 'mmd_bone_order_override':
                 modifier.name = 'mmd_armature'

@@ -252,22 +252,28 @@ class FnModel:
     def safe_change_bone_id(bone: bpy.types.PoseBone, new_bone_id: int, bone_morphs, pose_bones):
         """
         Changes bone ID and updates all references safely by detecting and resolving conflicts automatically.
-        If new_bone_id is already in use, shifts all conflicting bone IDs sequentially to maintain integrity.
+        If new_bone_id is already in use, shifts all conflicting bone IDs sequentially until a gap is found.
         """
         # Check if new_bone_id is already in use
-        bones_using_id = [pb for pb in pose_bones
-                        if not (hasattr(pb, 'is_mmd_shadow_bone') and pb.is_mmd_shadow_bone)
-                        and pb.mmd_bone.bone_id == new_bone_id and pb != bone]
-
-        # Store original bone_id
-        old_bone_id = bone.mmd_bone.bone_id
+        bones_using_id = [pb for pb in pose_bones if pb.mmd_bone.bone_id == new_bone_id]
 
         if bones_using_id:
-            # ID is in use, we need to shift up all bones with ID >= new_bone_id
-            bones_to_shift = [pb for pb in pose_bones
-                            if not (hasattr(pb, 'is_mmd_shadow_bone') and pb.is_mmd_shadow_bone)
-                            and pb.mmd_bone.bone_id >= new_bone_id
-                            and pb != bone]
+            # Find all bones that need to be shifted (those with consecutive IDs starting from new_bone_id)
+            bones_to_shift = []
+            current_id = new_bone_id
+
+            # Sort all pose bones by bone ID
+            sorted_bones = sorted([pb for pb in pose_bones if pb.mmd_bone.bone_id >= new_bone_id],
+                                key=lambda pb: pb.mmd_bone.bone_id)
+
+            # Add bones to shift until we find a gap
+            for pb in sorted_bones:
+                if pb.mmd_bone.bone_id == current_id:
+                    bones_to_shift.append(pb)
+                    current_id += 1
+                else:
+                    # Found a gap, stop adding bones
+                    break
 
             # Sort by bone ID in descending order to avoid conflicts during shifting
             bones_to_shift.sort(key=lambda pb: pb.mmd_bone.bone_id, reverse=True)
@@ -337,8 +343,19 @@ class FnModel:
             # Update bone IDs
             child_pose_bones = child_armature_object.pose.bones
             child_bone_morphs = child_root_object.mmd_root.bone_morphs
-            FnModel.realign_bone_ids(child_pose_bones, max_bone_id + 1, child_bone_morphs, child_pose_bones)
-            max_bone_id = FnModel.get_max_bone_id(child_pose_bones)
+
+            # Reassign bone IDs to avoid conflicts
+            valid_bones = [pb for pb in child_pose_bones
+                        if not (hasattr(pb, 'is_mmd_shadow_bone') and pb.is_mmd_shadow_bone)
+                        and pb.mmd_bone.bone_id != -1]
+            valid_bones.sort(key=lambda pb: pb.mmd_bone.bone_id)
+            new_id = max_bone_id + 1
+            for bone in valid_bones:
+                if bone.mmd_bone.bone_id != new_id:
+                    FnModel.safe_change_bone_id(bone, new_id, child_bone_morphs, child_pose_bones)
+                    new_id += 1
+
+            max_bone_id = new_id - 1
 
             # Save material morph references
             related_meshes = {}
@@ -534,6 +551,10 @@ class FnModel:
                         bpy.data.objects.remove(child_root_object)
             except Exception as e:
                 logging.error(f"Error removing child root object: {e}")
+
+        # Clean and reapply additional transformations to properly set up all bones and constraints
+        bpy.ops.mmd_tools.clean_additional_transform()
+        bpy.ops.mmd_tools.apply_additional_transform()
 
     @staticmethod
     def _add_armature_modifier(mesh_object: bpy.types.Object, armature_object: bpy.types.Object) -> bpy.types.ArmatureModifier:
