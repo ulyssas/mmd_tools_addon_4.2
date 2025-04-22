@@ -3,7 +3,7 @@
 # This file is part of MMD Tools.
 
 import bpy
-from ...core.bone import FnBone, MigrationFnBone
+from ...core.bone import FnBone, MigrationFnBone, BONE_COLLECTION_NAME_SHADOW, BONE_COLLECTION_NAME_DUMMY
 from ...core.model import FnModel
 from . import PT_ProductionPanelBase
 
@@ -162,6 +162,9 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         if not root or not armature:
             return {'CANCELLED'}
 
+        # Migrate bone layers from Blender 3.6 and earlier to bone collections in newer versions
+        self.check_and_rename_collections(armature)
+
         # Check if this is an old model with vertex group ordering
         bone_order_mesh_object = self.find_old_bone_order_mesh_object(root)
         if bone_order_mesh_object:
@@ -179,6 +182,56 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
             area.tag_redraw()
 
         return {'FINISHED'}
+
+    def check_and_rename_collections(self, armature_object):
+        """
+        Migrate bone layers from Blender 3.6 and earlier to the MMD Tools bone collection system.
+
+        When opening files from older Blender versions, bone layers are converted to collections
+        named 'Layer 1', 'Layer 9', etc. This function checks if these collections exist and if
+        the bones within them have the correct is_mmd_shadow_bone property values. If all
+        conditions are met, it renames the collections to the special MMD collection names
+        required by the plugin.
+        """
+        bone_collections = armature_object.data.collections
+
+        # Define collections to check and their MMD equivalents
+        collection_map = {
+            "Layer 1": {"new_name": "mmd_normal", "should_be_shadow": False},
+            "Layer 9": {"new_name": BONE_COLLECTION_NAME_SHADOW, "should_be_shadow": True},
+            "Layer 10": {"new_name": BONE_COLLECTION_NAME_DUMMY, "should_be_shadow": True}
+        }
+
+        # Check if all three collections exist
+        if not all(old_name in bone_collections for old_name in collection_map.keys()):
+            return
+
+        # Check if bones in each collection have the correct is_mmd_shadow_bone property
+        all_conditions_met = True
+
+        for old_name, settings in collection_map.items():
+            collection = bone_collections[old_name]
+            should_be_shadow = settings["should_be_shadow"]
+
+            # Check all bones in this collection
+            for bone in collection.bones:
+                pose_bone = armature_object.pose.bones.get(bone.name)
+                if pose_bone:
+                    is_shadow = getattr(pose_bone, 'is_mmd_shadow_bone', False)
+                    if is_shadow != should_be_shadow:
+                        all_conditions_met = False
+                        break
+
+            if not all_conditions_met:
+                break
+
+        # If all conditions are met, rename the collections
+        if all_conditions_met:
+            self.report({'INFO'}, "Converting layer collections to MMD collections")
+            for old_name, settings in collection_map.items():
+                new_name = settings["new_name"]
+                if old_name in bone_collections and new_name not in bone_collections:
+                    bone_collections[old_name].name = new_name
 
     def find_old_bone_order_mesh_object(self, root_object):
         """Find mesh object with mmd_bone_order_override modifier"""
