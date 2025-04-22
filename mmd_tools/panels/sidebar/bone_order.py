@@ -6,7 +6,7 @@ import bpy
 from ...core.bone import FnBone, MigrationFnBone, BONE_COLLECTION_NAME_SHADOW, BONE_COLLECTION_NAME_DUMMY
 from ...core.model import FnModel
 from . import PT_ProductionPanelBase
-
+from bpy.app.translations import pgettext_iface as _
 
 class MMDToolsBoneIdMoveUp(bpy.types.Operator):
     bl_idname = "mmd_tools.bone_id_move_up"
@@ -562,5 +562,5 @@ class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):
 
         # Display total bone count with action buttons
         row = col.row(align=True)
-        row.label(text=f"Total Bones: {valid_bone_count}")
+        row.label(text=f"{_('Total Bones')}:{valid_bone_count}")
         row.operator("mmd_tools.fix_bone_order", text="Fix Bone Order", icon="LINENUMBERS_ON")
