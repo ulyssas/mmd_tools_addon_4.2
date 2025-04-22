@@ -345,17 +345,8 @@ class FnModel:
             child_bone_morphs = child_root_object.mmd_root.bone_morphs
 
             # Reassign bone IDs to avoid conflicts
-            valid_bones = [pb for pb in child_pose_bones
-                        if not (hasattr(pb, 'is_mmd_shadow_bone') and pb.is_mmd_shadow_bone)
-                        and pb.mmd_bone.bone_id != -1]
-            valid_bones.sort(key=lambda pb: pb.mmd_bone.bone_id)
-            new_id = max_bone_id + 1
-            for bone in valid_bones:
-                if bone.mmd_bone.bone_id != new_id:
-                    FnModel.safe_change_bone_id(bone, new_id, child_bone_morphs, child_pose_bones)
-                    new_id += 1
-
-            max_bone_id = new_id - 1
+            FnModel.realign_bone_ids(child_pose_bones, max_bone_id + 1, child_bone_morphs, child_pose_bones)
+            max_bone_id = FnModel.get_max_bone_id(child_pose_bones)
 
             # Save material morph references
             related_meshes = {}
