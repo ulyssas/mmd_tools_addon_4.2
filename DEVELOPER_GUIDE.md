@@ -92,7 +92,7 @@ We adopt [GitHub flow](https://docs.github.com/en/get-started/using-github/githu
 This section explains some details on the workflow of translating this extension, which is supported by the Blender [Manage UI translations](https://developer.blender.org/docs/handbook/translating/translator_guide/#manage-ui-translations-add-on) official extension.
 
 To use this extension, you need to first set up its environment:
-1. Enable the extension, along with the MMD Tools, from the Blender Perferences interface. It is bundled with the Blender, so you don't need to install it seperately.
+1. Enable the extension, along with the MMD Tools, from the Blender Preferences interface. It is bundled with the Blender, so you don't need to install it separately.
 2. Set up localization resources for the extension. First clone the repositories needed:
    ```
    git clone --depth 1 https://github.com/blender/blender
