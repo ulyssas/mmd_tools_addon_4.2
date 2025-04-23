@@ -166,1081 +166,69 @@ translations_tuple = (
         ("zh_HANS", "弹簧目标", (False, ())),
     ),
     (
-        ("Operator", "Add Missing Vertex Groups from Bones"),
+        ("*", "Bone Order Menu"),
+        (("bpy.types.OBJECT_MT_mmd_tools_bone_order_menu",), ()),
+        ("ja_JP", "ボーン順序", (True, ())),
+        ("zh_HANS", "骨骼顺序", (True, ())),
+    ),
+    (
+        ("*", "Display Item Frame Menu"),
+        (("bpy.types.OBJECT_MT_mmd_tools_display_item_frame_menu",), ()),
+        ("ja_JP", "表示項目フレームを追加", (True, ())),
+        ("zh_HANS", "添加表示枠", (True, ())),
+    ),
+    (
+        ("*", "Display Item Menu"),
+        (("bpy.types.OBJECT_MT_mmd_tools_display_item_menu",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "表示枠项目", (True, ())),
+    ),
+    (
+        ("*", "Joint Menu"),
+        (("bpy.types.OBJECT_MT_mmd_tools_joint_menu",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Morph Menu"),
+        (("bpy.types.OBJECT_MT_mmd_tools_morph_menu",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Rigidbody Menu"),
+        (("bpy.types.OBJECT_MT_mmd_tools_rigidbody_menu",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "刚体", (True, ())),
+    ),
+    (
+        ("*", "Rigidbody Select Menu"),
+        (("bpy.types.OBJECT_MT_mmd_tools_rigidbody_select_menu",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "MMD UuuNyaa"),
         (
             (
-                "bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones",
-                "bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones",
+                "bpy.types.TOPBAR_MT_mmd_file_export",
+                "bpy.types.TOPBAR_MT_mmd_file_import",
+                "bpy.types.VIEW3D_MT_mmd_armature_add",
+                "bpy.types.VIEW3D_MT_mmd_object",
+                "bpy.types.VIEW3D_MT_mmd_pose",
+                "bpy.types.VIEW3D_MT_mmd_select_object",
+                "bpy.types.VIEW3D_PT_mmd_shading",
             ),
             (),
         ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("Operator", "Add Missing Vertex Groups from Bones"),
+        (("bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones",), ()),
         ("ja_JP", "ボーンから不足している頂点グループを追加", (False, ())),
         ("zh_HANS", "从骨骼添加丢失的顶点组", (False, ())),
-    ),
-    (
-        ("Operator", "Apply Additional Transform"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_apply_additional_transform",
-                "bpy.types.MMD_TOOLS_OT_apply_additional_transform",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "应用额外变换", (False, ())),
-    ),
-    (
-        ("Operator", "Apply Bone Morph"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_apply_bone_morph",
-                "bpy.types.MMD_TOOLS_OT_apply_bone_morph",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "应用骨骼变形", (False, ())),
-    ),
-    (
-        ("Operator", "Apply Bone Morph Offset"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset",
-                "bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "应用骨骼形变偏移", (False, ())),
-    ),
-    (
-        ("Operator", "Apply Material Offset"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_apply_material_morph_offset",
-                "bpy.types.MMD_TOOLS_OT_apply_material_morph_offset",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "应用材质偏移", (False, ())),
-    ),
-    (
-        ("Operator", "Apply UV Morph"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_apply_uv_morph",
-                "bpy.types.MMD_TOOLS_OT_apply_uv_morph",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "应用 UV 形变", (False, ())),
-    ),
-    (
-        ("Operator", "Assemble All"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_assemble_all",
-                "bpy.types.MMD_TOOLS_OT_assemble_all",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "全部装配", (False, ())),
-    ),
-    (
-        ("Operator", "Attach Meshes to Model"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_attach_meshes",
-                "bpy.types.MMD_TOOLS_OT_attach_meshes",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将网格附加至模型", (False, ())),
-    ),
-    (
-        ("Operator", "Setup Bone Fixed Axis"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup",
-                "bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup",
-            ),
-            (),
-        ),
-        ("ja_JP", "ボーン修正回転軸を適用", (True, ())),
-        ("zh_HANS", "设置骨骼固定轴", (False, ())),
-    ),
-    (
-        ("Operator", "Move Bone ID to Bottom"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_bottom",
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_bottom",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将骨骼 ID 移至底部", (False, ())),
-    ),
-    (
-        ("Operator", "Move Bone ID Down"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_down",
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_down",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将骨骼 ID 下移", (False, ())),
-    ),
-    (
-        ("Operator", "Move Bone ID to Top"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_top",
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_top",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将骨骼 ID 移至顶部", (False, ())),
-    ),
-    (
-        ("Operator", "Move Bone ID Up"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_up",
-                "bpy.types.MMD_TOOLS_OT_bone_id_move_up",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将骨骼 ID 上移", (False, ())),
-    ),
-    (
-        ("Operator", "Setup Bone Local Axes"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_bone_local_axes_setup",
-                "bpy.types.MMD_TOOLS_OT_bone_local_axes_setup",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "设置骨骼局部轴", (False, ())),
-    ),
-    (
-        ("Operator", "Build Rig"),
-        (("bpy.types.MMD_TOOLS_OT_build_rig", "bpy.types.MMD_TOOLS_OT_build_rig"), ()),
-        ("ja_JP", "ビルドリグ", (False, ())),
-        ("zh_HANS", "绑骨", (False, ())),
-    ),
-    (
-        ("Operator", "Change MMD IK Loop Factor"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor",
-                "bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor",
-                "extensions/user_default/mmd_tools/panels/prop_object.py:34",
-                "extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:161",
-            ),
-            (),
-        ),
-        ("ja_JP", "MMD IK反復係数を変更", (False, ())),
-        ("zh_HANS", "改变MMD IK循环系数", (False, ())),
-    ),
-    (
-        ("Operator", "Clean Additional Transform"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_clean_additional_transform",
-                "bpy.types.MMD_TOOLS_OT_clean_additional_transform",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "清理额外变换", (False, ())),
-    ),
-    (
-        ("Operator", "Clean Duplicated Material Morphs"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_clean_duplicated_material_morphs",
-                "bpy.types.MMD_TOOLS_OT_clean_duplicated_material_morphs",
-            ),
-            (),
-        ),
-        ("ja_JP", "重複マテリアルモーフを掃除", (False, ())),
-        ("zh_HANS", "清理重复材质变形", (False, ())),
-    ),
-    (
-        ("Operator", "Clean Rig"),
-        (("bpy.types.MMD_TOOLS_OT_clean_rig", "bpy.types.MMD_TOOLS_OT_clean_rig"), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "清理物理", (False, ())),
-    ),
-    (
-        ("Operator", "Clean Shape Keys"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_clean_shape_keys",
-                "bpy.types.MMD_TOOLS_OT_clean_shape_keys",
-                "extensions/user_default/mmd_tools/menus.py:87",
-            ),
-            (),
-        ),
-        ("ja_JP", "シェイプキーをクリーン", (False, ())),
-        ("zh_HANS", "清理形态键", (False, ())),
-    ),
-    (
-        ("Operator", "Clear Bone Morph View"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_clear_bone_morph_view",
-                "bpy.types.MMD_TOOLS_OT_clear_bone_morph_view",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "清理骨骼变形视图", (False, ())),
-    ),
-    (
-        ("Operator", "Clear Temp Materials"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_clear_temp_materials",
-                "bpy.types.MMD_TOOLS_OT_clear_temp_materials",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "清理临时材质", (False, ())),
-    ),
-    (
-        ("Operator", "Clear UV Morph View"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_clear_uv_morph_view",
-                "bpy.types.MMD_TOOLS_OT_clear_uv_morph_view",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "清理 UV 变形视图", (False, ())),
-    ),
-    (
-        ("Operator", "Convert Blender Materials"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_convert_bsdf_materials",
-                "bpy.types.MMD_TOOLS_OT_convert_bsdf_materials",
-            ),
-            (),
-        ),
-        ("ja_JP", "マテリアルノードを変換", (True, ())),
-        ("zh_HANS", "转换 Blender 材质", (False, ())),
-    ),
-    (
-        ("Operator", "Convert Materials"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_convert_materials",
-                "bpy.types.MMD_TOOLS_OT_convert_materials",
-            ),
-            (),
-        ),
-        ("ja_JP", "マテリアルノードを変換", (True, ())),
-        ("zh_HANS", "转换材质", (False, ())),
-    ),
-    (
-        ("Operator", "Convert Materials For Cycles"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles",
-                "bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles",
-            ),
-            (),
-        ),
-        ("ja_JP", "マテリアルノードを変換", (True, ())),
-        ("zh_HANS", "为 Cycles 转换材质", (False, ())),
-    ),
-    (
-        ("Operator", "Convert to MMD Camera"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera",
-                "bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera",
-            ),
-            (),
-        ),
-        ("ja_JP", "MMDライトへ変換", (False, ())),
-        ("zh_HANS", "转换为 MMD 相机", (False, ())),
-    ),
-    (
-        ("Operator", "Convert to MMD Light"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp",
-                "bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp",
-            ),
-            (),
-        ),
-        ("ja_JP", "MMDライトへ変換", (False, ())),
-        ("zh_HANS", "转换 MMD 光源", (False, ())),
-    ),
-    (
-        ("Operator", "Convert to a MMD Model"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_convert_to_mmd_model",
-                "bpy.types.MMD_TOOLS_OT_convert_to_mmd_model",
-            ),
-            (),
-        ),
-        ("ja_JP", "MMDモデルへ変換", (False, ())),
-        ("zh_HANS", "转换至 MMD 模型", (False, ())),
-    ),
-    (
-        ("Operator", "Create a MMD Model Root Object"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object",
-                "bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object",
-            ),
-            (),
-        ),
-        ("ja_JP", "MMDモデルルートオブジェクトを作成", (False, ())),
-        ("zh_HANS", "创建 MMD 模型根物体", (False, ())),
-    ),
-    (
-        ("Operator", "Create Work Material"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_create_work_material",
-                "bpy.types.MMD_TOOLS_OT_create_work_material",
-            ),
-            (),
-        ),
-        ("ja_JP", "ワークマテリアルを生成", (False, ())),
-        ("zh_HANS", "创建工作材质", (False, ())),
-    ),
-    (
-        ("Operator", "Disassemble All"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_disassemble_all",
-                "bpy.types.MMD_TOOLS_OT_disassemble_all",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "全部拆卸", (False, ())),
-    ),
-    (
-        ("Operator", "Add Display Item"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_add",
-                "bpy.types.MMD_TOOLS_OT_display_item_add",
-            ),
-            (),
-        ),
-        ("ja_JP", "表示項目を追加", (False, ())),
-        ("zh_HANS", "添加表示项目", (False, ())),
-    ),
-    (
-        ("Operator", "Find Display Item"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_find",
-                "bpy.types.MMD_TOOLS_OT_display_item_find",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "查找表示项目", (False, ())),
-    ),
-    (
-        ("Operator", "Add Display Item Frame"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_frame_add",
-                "bpy.types.MMD_TOOLS_OT_display_item_frame_add",
-            ),
-            (),
-        ),
-        ("ja_JP", "表示項目フレームを追加", (False, ())),
-        ("zh_HANS", "添加表示枠", (False, ())),
-    ),
-    (
-        ("Operator", "Move Display Item Frame"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_frame_move",
-                "bpy.types.MMD_TOOLS_OT_display_item_frame_move",
-            ),
-            (),
-        ),
-        ("ja_JP", "表示項目フレームを移動", (False, ())),
-        ("zh_HANS", "移动表示枠", (False, ())),
-    ),
-    (
-        ("Operator", "Remove Display Item Frame"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_frame_remove",
-                "bpy.types.MMD_TOOLS_OT_display_item_frame_remove",
-            ),
-            (),
-        ),
-        ("ja_JP", "表示項目フレームを削除", (False, ())),
-        ("zh_HANS", "移除表示枠", (False, ())),
-    ),
-    (
-        ("Operator", "Move Display Item"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_move",
-                "bpy.types.MMD_TOOLS_OT_display_item_move",
-            ),
-            (),
-        ),
-        ("ja_JP", "表示項目を移動", (False, ())),
-        ("zh_HANS", "移动表示", (False, ())),
-    ),
-    (
-        ("Operator", "Display Item Quick Setup"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_quick_setup",
-                "bpy.types.MMD_TOOLS_OT_display_item_quick_setup",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "表示快速设置", (False, ())),
-    ),
-    (
-        ("Operator", "Remove Display Item"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_remove",
-                "bpy.types.MMD_TOOLS_OT_display_item_remove",
-            ),
-            (),
-        ),
-        ("ja_JP", "表示項目を削除", (False, ())),
-        ("zh_HANS", "移除表示", (False, ())),
-    ),
-    (
-        ("Operator", "Select Current Display Item"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_display_item_select_current",
-                "bpy.types.MMD_TOOLS_OT_display_item_select_current",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "选中当前表示", (False, ())),
-    ),
-    (
-        ("Operator", "Edge Preview Setup"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_edge_preview_setup",
-                "bpy.types.MMD_TOOLS_OT_edge_preview_setup",
-            ),
-            (),
-        ),
-        ("ja_JP", "輪郭プレビュー", (True, ())),
-        ("zh_HANS", "边缘预览设置", (False, ())),
-    ),
-    (
-        ("Operator", "Edit Related Bone"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_edit_bone_morph_offset",
-                "bpy.types.MMD_TOOLS_OT_edit_bone_morph_offset",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "编辑相关骨骼", (False, ())),
-    ),
-    (
-        ("Operator", "Edit UV Morph"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_edit_uv_morph",
-                "bpy.types.MMD_TOOLS_OT_edit_uv_morph",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "编辑 UV 形变", (False, ())),
-    ),
-    (
-        ("Operator", "Execute Translation Batch"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_execute_translation_batch",
-                "bpy.types.MMD_TOOLS_OT_execute_translation_batch",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "执行批量翻译", (False, ())),
-    ),
-    (
-        ("Operator", "Export PMX File (.pmx)"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_export_pmx", "bpy.types.MMD_TOOLS_OT_export_pmx"),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "导出 PMX 文件 (.pmx)", (False, ())),
-    ),
-    (
-        ("Operator", "Export VMD File (.vmd)"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_export_vmd", "bpy.types.MMD_TOOLS_OT_export_vmd"),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "导出 VMD 文件 (.vmd)", (False, ())),
-    ),
-    (
-        ("Operator", "Export VPD File (.vpd)"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_export_vpd", "bpy.types.MMD_TOOLS_OT_export_vpd"),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "导出 VPD 文件 (.vpd)", (False, ())),
-    ),
-    (
-        ("Operator", "Realign Bone IDs"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_fix_bone_order",
-                "bpy.types.MMD_TOOLS_OT_fix_bone_order",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "重新对齐骨骼 ID", (False, ())),
-    ),
-    (
-        ("Operator", "Flip Pose"),
-        (("bpy.types.MMD_TOOLS_OT_flip_pose", "bpy.types.MMD_TOOLS_OT_flip_pose"), ()),
-        ("ja_JP", "MMDポーズを反転", (True, ())),
-        ("zh_HANS", "翻转姿态", (False, ())),
-    ),
-    (
-        ("Operator", "Global Translation Popup"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_global_translation_popup",
-                "bpy.types.MMD_TOOLS_OT_global_translation_popup",
-            ),
-            (),
-        ),
-        ("ja_JP", "全体翻訳ポップアップ", (False, ())),
-        ("zh_HANS", "全局翻译弹窗", (False, ())),
-    ),
-    (
-        ("Operator", "Import Model File (.pmd, .pmx)"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_import_model",
-                "bpy.types.MMD_TOOLS_OT_import_model",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "导入模型文件 (.pmd, .pmx)", (False, ())),
-    ),
-    (
-        ("Operator", "Import VMD File (.vmd)"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_import_vmd", "bpy.types.MMD_TOOLS_OT_import_vmd"),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "导入 VMD 文件 (.vmd)", (False, ())),
-    ),
-    (
-        ("Operator", "Import VPD File (.vpd)"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_import_vpd", "bpy.types.MMD_TOOLS_OT_import_vpd"),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "导入 VPD 文件 (.vpd)", (False, ())),
-    ),
-    (
-        ("Operator", "Join Meshes"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_join_meshes",
-                "bpy.types.MMD_TOOLS_OT_join_meshes",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "接合网格", (False, ())),
-    ),
-    (
-        ("Operator", "Add Joint"),
-        (("bpy.types.MMD_TOOLS_OT_joint_add", "bpy.types.MMD_TOOLS_OT_joint_add"), ()),
-        ("ja_JP", "ジョイントを追加", (False, ())),
-        ("zh_HANS", "添加关节", (False, ())),
-    ),
-    (
-        ("Operator", "Remove Joint"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_joint_remove",
-                "bpy.types.MMD_TOOLS_OT_joint_remove",
-            ),
-            (),
-        ),
-        ("ja_JP", "ジョイントを削除", (False, ())),
-        ("zh_HANS", "移除关节", (False, ())),
-    ),
-    (
-        ("Operator", "Init Material Offset"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_material_morph_offset_init",
-                "bpy.types.MMD_TOOLS_OT_material_morph_offset_init",
-            ),
-            (),
-        ),
-        ("ja_JP", "マテリアルオフセットを初期化", (False, ())),
-        ("zh_HANS", "初始化材质偏移", (False, ())),
-    ),
-    (
-        ("*", "Create a texture for mmd model material."),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_material_open_sphere_texture",
-                "bpy.types.MMD_TOOLS_OT_material_remove_sphere_texture",
-                "bpy.types.MMD_TOOLS_OT_material_remove_texture",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "为 MMD 模型材质创建纹理", (False, ())),
-    ),
-    (
-        ("Operator", "Open Sphere Texture"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_material_open_sphere_texture",
-                "bpy.types.MMD_TOOLS_OT_material_open_sphere_texture",
-            ),
-            (),
-        ),
-        ("ja_JP", "スフィアテクスチャ", (True, ())),
-        ("zh_HANS", "打开球纹理", (False, ())),
-    ),
-    (
-        ("Operator", "Open Texture"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_material_open_texture",
-                "bpy.types.MMD_TOOLS_OT_material_open_texture",
-            ),
-            (),
-        ),
-        ("ja_JP", "スフィアテクスチャ", (True, ())),
-        ("zh_HANS", "打开纹理", (False, ())),
-    ),
-    (
-        ("Operator", "Remove Sphere Texture"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_material_remove_sphere_texture",
-                "bpy.types.MMD_TOOLS_OT_material_remove_sphere_texture",
-            ),
-            (),
-        ),
-        ("ja_JP", "スフィアテクスチャ", (True, ())),
-        ("zh_HANS", "移除球纹理", (False, ())),
-    ),
-    (
-        ("Operator", "Remove Texture"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_material_remove_texture",
-                "bpy.types.MMD_TOOLS_OT_material_remove_texture",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "移除纹理", (False, ())),
-    ),
-    (
-        ("Operator", "Model Join by Bones"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_model_join_by_bones",
-                "bpy.types.MMD_TOOLS_OT_model_join_by_bones",
-            ),
-            (),
-        ),
-        ("ja_JP", "モデルをボーンで統合", (False, ())),
-        ("zh_HANS", "按骨骼接合模型", (False, ())),
-    ),
-    (
-        ("Operator", "Model Separate by Bones"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_model_separate_by_bones",
-                "bpy.types.MMD_TOOLS_OT_model_separate_by_bones",
-            ),
-            (),
-        ),
-        ("ja_JP", "モデルをボーンで分離", (False, ())),
-        ("zh_HANS", "按骨骼拆分模型", (False, ())),
-    ),
-    (
-        ("Operator", "Add Morph"),
-        (("bpy.types.MMD_TOOLS_OT_morph_add", "bpy.types.MMD_TOOLS_OT_morph_add"), ()),
-        ("ja_JP", "モーフを追加", (False, ())),
-        ("zh_HANS", "添加变形", (False, ())),
-    ),
-    (
-        ("Operator", "Copy Morph"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_morph_copy", "bpy.types.MMD_TOOLS_OT_morph_copy"),
-            (),
-        ),
-        ("ja_JP", "モーフをコピー", (False, ())),
-        ("zh_HANS", "复制变形", (False, ())),
-    ),
-    (
-        ("Operator", "Move Morph"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_morph_move", "bpy.types.MMD_TOOLS_OT_morph_move"),
-            (),
-        ),
-        ("ja_JP", "モーフを移動", (False, ())),
-        ("zh_HANS", "移动变形", (False, ())),
-    ),
-    (
-        ("Operator", "Add Morph Offset"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_morph_offset_add",
-                "bpy.types.MMD_TOOLS_OT_morph_offset_add",
-            ),
-            (),
-        ),
-        ("ja_JP", "モーフオフセットを追加", (False, ())),
-        ("zh_HANS", "添加形变偏移", (False, ())),
-    ),
-    (
-        ("Operator", "Remove Morph Offset"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_morph_offset_remove",
-                "bpy.types.MMD_TOOLS_OT_morph_offset_remove",
-            ),
-            (),
-        ),
-        ("ja_JP", "モーフオフセットを削除", (False, ())),
-        ("zh_HANS", "移除形变偏移", (False, ())),
-    ),
-    (
-        ("Operator", "Overwrite Bone Morphs from active Action Pose"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_morph_overwrite_from_active_action_pose",
-                "bpy.types.MMD_TOOLS_OT_morph_overwrite_from_active_action_pose",
-            ),
-            (),
-        ),
-        ("ja_JP", "ボーンモーフをアクティブなポーズライブラリから上書き", (False, ())),
-        ("zh_HANS", "从活动的动作姿态复写骨骼变形", (False, ())),
-    ),
-    (
-        ("Operator", "Remove Morph"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_morph_remove",
-                "bpy.types.MMD_TOOLS_OT_morph_remove",
-            ),
-            (),
-        ),
-        ("ja_JP", "モーフを削除", (False, ())),
-        ("zh_HANS", "移除变形", (False, ())),
-    ),
-    (
-        ("Operator", "Morph Slider Setup"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_morph_slider_setup",
-                "bpy.types.MMD_TOOLS_OT_morph_slider_setup",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "设置变形滑块", (False, ())),
-    ),
-    (
-        ("Operator", "Move Material Down"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_move_material_down",
-                "bpy.types.MMD_TOOLS_OT_move_material_down",
-            ),
-            (),
-        ),
-        ("ja_JP", "マテリアルを移動", (False, ())),
-        ("zh_HANS", "下移材质", (False, ())),
-    ),
-    (
-        ("Operator", "Move Material Up"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_move_material_up",
-                "bpy.types.MMD_TOOLS_OT_move_material_up",
-            ),
-            (),
-        ),
-        ("ja_JP", "マテリアルを移動", (False, ())),
-        ("zh_HANS", "上移材质", (False, ())),
-    ),
-    (
-        ("Operator", "Move Object"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_object_move",
-                "bpy.types.MMD_TOOLS_OT_object_move",
-            ),
-            (),
-        ),
-        ("ja_JP", "オブジェクトを移動", (False, ())),
-        ("zh_HANS", "移动物体", (False, ())),
-    ),
-    (
-        ("Operator", "Select Object"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_object_select",
-                "bpy.types.MMD_TOOLS_OT_object_select",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "选中物体", (False, ())),
-    ),
-    (
-        ("Operator", "Delete Bake"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_ptcache_rigid_body_delete_bake",
-                "bpy.types.MMD_TOOLS_OT_ptcache_rigid_body_delete_bake",
-                "extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:76",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "删除烘焙", (False, ())),
-    ),
-    (
-        ("Operator", "Recalculate bone roll"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_recalculate_bone_roll",
-                "bpy.types.MMD_TOOLS_OT_recalculate_bone_roll",
-                "extensions/user_default/mmd_tools/panels/prop_object.py:35",
-            ),
-            (),
-        ),
-        ("ja_JP", "ボーンロールを再計算", (False, ())),
-        ("zh_HANS", "重算骨骼滚转", (False, ())),
-    ),
-    (
-        ("Operator", "Reset Object Visivility"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_reset_object_visibility",
-                "bpy.types.MMD_TOOLS_OT_reset_object_visibility",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "重设物体可见性", (False, ())),
-    ),
-    (
-        ("Operator", "Restore this Name"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_restore_mmd_translation_element_name",
-                "bpy.types.MMD_TOOLS_OT_restore_mmd_translation_element_name",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "恢复名称", (False, ())),
-    ),
-    (
-        ("Operator", "Select Rigid Body"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_rigid_body_select",
-                "bpy.types.MMD_TOOLS_OT_rigid_body_select",
-            ),
-            (),
-        ),
-        ("ja_JP", "MMDリジッドボディ選択", (True, ())),
-        ("zh_HANS", "选择刚体", (False, ())),
-    ),
-    (
-        ("Operator", "Update Rigid Body World"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_rigid_body_world_update",
-                "bpy.types.MMD_TOOLS_OT_rigid_body_world_update",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "更新刚体世界", (False, ())),
-    ),
-    (
-        ("Operator", "Bind SDEF Driver"),
-        (("bpy.types.MMD_TOOLS_OT_sdef_bind", "bpy.types.MMD_TOOLS_OT_sdef_bind"), ()),
-        ("ja_JP", "SDEFドライバーをバインド", (False, ())),
-        ("zh_HANS", "绑定 SDEF 驱动器", (False, ())),
-    ),
-    (
-        ("Operator", "Reset MMD SDEF cache"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_sdef_cache_reset",
-                "bpy.types.MMD_TOOLS_OT_sdef_cache_reset",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "重设 MMD SDEF 缓存", (False, ())),
-    ),
-    (
-        ("Operator", "Unbind SDEF Driver"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_sdef_unbind",
-                "bpy.types.MMD_TOOLS_OT_sdef_unbind",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "解绑 SDEF 驱动器", (False, ())),
-    ),
-    (
-        ("Operator", "Select Related Bone"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_select_bone_morph_offset_bone",
-                "bpy.types.MMD_TOOLS_OT_select_bone_morph_offset_bone",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "选择相关骨骼", (False, ())),
-    ),
-    (
-        ("Operator", "Separate By Materials"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_separate_by_materials",
-                "bpy.types.MMD_TOOLS_OT_separate_by_materials",
-            ),
-            (),
-        ),
-        ("ja_JP", "マテリアルで分解", (True, ())),
-        ("zh_HANS", "按材质分离", (False, ())),
-    ),
-    (
-        ("Operator", "Set Frame Range"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_set_frame_range",
-                "bpy.types.MMD_TOOLS_OT_set_frame_range",
-            ),
-            (),
-        ),
-        ("ja_JP", "フレーム範囲を使用", (True, ())),
-        ("zh_HANS", "设置帧区间", (False, ())),
-    ),
-    (
-        ("Operator", "GLSL View"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_set_glsl_shading",
-                "bpy.types.MMD_TOOLS_OT_set_glsl_shading",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "GLSL 视图", (False, ())),
-    ),
-    (
-        ("Operator", "Shadeless GLSL View"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_set_shadeless_glsl_shading",
-                "bpy.types.MMD_TOOLS_OT_set_shadeless_glsl_shading",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "无光影 GLSL 视图", (False, ())),
-    ),
-    (
-        ("Operator", "Translate a MMD Model"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_translate_mmd_model",
-                "bpy.types.MMD_TOOLS_OT_translate_mmd_model",
-            ),
-            (),
-        ),
-        ("ja_JP", "MMDモデルを翻訳", (False, ())),
-        ("zh_HANS", "翻译 MMD 模型", (False, ())),
-    ),
-    (
-        ("Operator", "View Bone Morph"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_view_bone_morph",
-                "bpy.types.MMD_TOOLS_OT_view_bone_morph",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "查看骨骼变形", (False, ())),
-    ),
-    (
-        ("Operator", "View UV Morph"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_view_uv_morph",
-                "bpy.types.MMD_TOOLS_OT_view_uv_morph",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "查看 UV 变形", (False, ())),
     ),
     (
         ("*", "Add the missing vertex groups to the selected mesh"),
@@ -1271,10 +259,22 @@ translations_tuple = (
         ("zh_HANS", "在所有网格中搜索顶点组", (False, ())),
     ),
     (
+        ("Operator", "Apply Additional Transform"),
+        (("bpy.types.MMD_TOOLS_OT_apply_additional_transform",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "应用额外变换", (False, ())),
+    ),
+    (
         ("*", "Translate appended bones of selected object for Blender"),
         (("bpy.types.MMD_TOOLS_OT_apply_additional_transform",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将选中物体的附加骨骼转译为适合 Blender 的形式", (False, ())),
+    ),
+    (
+        ("Operator", "Apply Bone Morph"),
+        (("bpy.types.MMD_TOOLS_OT_apply_bone_morph",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "应用骨骼变形", (False, ())),
     ),
     (
         ("*", "Apply current pose to active bone morph"),
@@ -1283,10 +283,22 @@ translations_tuple = (
         ("zh_HANS", "将当前姿态应用于活动骨骼形变", (False, ())),
     ),
     (
+        ("Operator", "Apply Bone Morph Offset"),
+        (("bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "应用骨骼形变偏移", (False, ())),
+    ),
+    (
         ("*", "Stores the current bone location and rotation into this offset"),
         (("bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将当前的骨骼位置与旋转存入此偏移中", (False, ())),
+    ),
+    (
+        ("Operator", "Apply Material Offset"),
+        (("bpy.types.MMD_TOOLS_OT_apply_material_morph_offset",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "应用材质偏移", (False, ())),
     ),
     (
         (
@@ -1298,6 +310,12 @@ translations_tuple = (
         ("zh_HANS", "计算并应用偏移, 然后移除临时材质", (False, ())),
     ),
     (
+        ("Operator", "Apply UV Morph"),
+        (("bpy.types.MMD_TOOLS_OT_apply_uv_morph",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "应用 UV 形变", (False, ())),
+    ),
+    (
         (
             "*",
             "Calculate the UV offsets of selected vertices and apply to active UV morph",
@@ -1307,10 +325,28 @@ translations_tuple = (
         ("zh_HANS", "计算选中顶点的 UV 偏移并应用至活动的 UV 形变", (False, ())),
     ),
     (
+        ("Operator", "Assemble All"),
+        (("bpy.types.MMD_TOOLS_OT_assemble_all",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "全部装配", (False, ())),
+    ),
+    (
+        ("Operator", "Attach Meshes to Model"),
+        (("bpy.types.MMD_TOOLS_OT_attach_meshes",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "将网格附加至模型", (False, ())),
+    ),
+    (
         ("*", "Finds existing meshes and attaches them to the selected MMD model"),
         (("bpy.types.MMD_TOOLS_OT_attach_meshes",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "寻找现存的网格, 并将其附加到选中的 MMD 模型上", (False, ())),
+    ),
+    (
+        ("Operator", "Setup Bone Fixed Axis"),
+        (("bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup",), ()),
+        ("ja_JP", "ボーン修正回転軸を適用", (True, ())),
+        ("zh_HANS", "设置骨骼固定轴", (False, ())),
     ),
     (
         ("*", "Setup fixed axis of selected bones"),
@@ -1370,10 +406,22 @@ translations_tuple = (
         ("zh_HANS", "将骨骼与MMD固定坐标轴对齐", (False, ())),
     ),
     (
+        ("Operator", "Move Bone ID to Bottom"),
+        (("bpy.types.MMD_TOOLS_OT_bone_id_move_bottom",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "将骨骼 ID 移至底部", (False, ())),
+    ),
+    (
         ("*", "Move active bone to the bottom of bone order"),
         (("bpy.types.MMD_TOOLS_OT_bone_id_move_bottom",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将选中的骨骼移动至骨骼排序的底部", (False, ())),
+    ),
+    (
+        ("Operator", "Move Bone ID Down"),
+        (("bpy.types.MMD_TOOLS_OT_bone_id_move_down",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "将骨骼 ID 下移", (False, ())),
     ),
     (
         ("*", "Move active bone down in bone order"),
@@ -1382,16 +430,34 @@ translations_tuple = (
         ("zh_HANS", "将选中的骨骼在骨骼排序中下移", (False, ())),
     ),
     (
+        ("Operator", "Move Bone ID to Top"),
+        (("bpy.types.MMD_TOOLS_OT_bone_id_move_top",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "将骨骼 ID 移至顶部", (False, ())),
+    ),
+    (
         ("*", "Move active bone to the top of bone order"),
         (("bpy.types.MMD_TOOLS_OT_bone_id_move_top",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将选中的骨骼移动至骨骼排序的顶部", (False, ())),
     ),
     (
+        ("Operator", "Move Bone ID Up"),
+        (("bpy.types.MMD_TOOLS_OT_bone_id_move_up",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "将骨骼 ID 上移", (False, ())),
+    ),
+    (
         ("*", "Move active bone up in bone order"),
         (("bpy.types.MMD_TOOLS_OT_bone_id_move_up",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将选中的骨骼在骨骼排序中上移", (False, ())),
+    ),
+    (
+        ("Operator", "Setup Bone Local Axes"),
+        (("bpy.types.MMD_TOOLS_OT_bone_local_axes_setup",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "设置骨骼局部轴", (False, ())),
     ),
     (
         ("*", "Setup local axes of each bone"),
@@ -1416,6 +482,12 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_bone_local_axes_setup.type:'APPLY'",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将骨骼与MMD局部坐标轴对齐", (False, ())),
+    ),
+    (
+        ("Operator", "Build Rig"),
+        (("bpy.types.MMD_TOOLS_OT_build_rig",), ()),
+        ("ja_JP", "ビルドリグ", (False, ())),
+        ("zh_HANS", "绑骨", (False, ())),
     ),
     (
         ("*", "Translate physics of selected object into format usable by Blender"),
@@ -1446,6 +518,19 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_build_rig.non_collision_distance_scale",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "装配物理时创建的额外非碰撞约束的距离比例", (False, ())),
+    ),
+    (
+        ("Operator", "Change MMD IK Loop Factor"),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor",
+                "extensions/user_default/mmd_tools/panels/prop_object.py:34",
+                "extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:161",
+            ),
+            (),
+        ),
+        ("ja_JP", "MMD IK反復係数を変更", (False, ())),
+        ("zh_HANS", "改变MMD IK循环系数", (False, ())),
     ),
     (
         ("*", "Multiplier for all bones' IK iterations in Blender"),
@@ -1479,6 +564,12 @@ translations_tuple = (
         ("zh_HANS", "MMD 逆运动学循环比例系数", (False, ())),
     ),
     (
+        ("Operator", "Clean Additional Transform"),
+        (("bpy.types.MMD_TOOLS_OT_clean_additional_transform",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "清理额外变换", (False, ())),
+    ),
+    (
         (
             "*",
             "Delete shadow bones of selected object and revert bones to default MMD state",
@@ -1488,10 +579,22 @@ translations_tuple = (
         ("zh_HANS", "删除选中物体的影子骨骼并将骨骼复原至默认 MMD 状态", (False, ())),
     ),
     (
+        ("Operator", "Clean Duplicated Material Morphs"),
+        (("bpy.types.MMD_TOOLS_OT_clean_duplicated_material_morphs",), ()),
+        ("ja_JP", "重複マテリアルモーフを掃除", (False, ())),
+        ("zh_HANS", "清理重复材质变形", (False, ())),
+    ),
+    (
         ("*", "Clean duplicated material morphs"),
         (("bpy.types.MMD_TOOLS_OT_clean_duplicated_material_morphs",), ()),
         ("ja_JP", "重複マテリアルモーフを掃除", (False, ())),
         ("zh_HANS", "清理重复的材质变形", (False, ())),
+    ),
+    (
+        ("Operator", "Clean Rig"),
+        (("bpy.types.MMD_TOOLS_OT_clean_rig",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "清理物理", (False, ())),
     ),
     (
         (
@@ -1507,10 +610,28 @@ translations_tuple = (
         ),
     ),
     (
+        ("Operator", "Clean Shape Keys"),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_clean_shape_keys",
+                "extensions/user_default/mmd_tools/menus.py:87",
+            ),
+            (),
+        ),
+        ("ja_JP", "シェイプキーをクリーン", (False, ())),
+        ("zh_HANS", "清理形态键", (False, ())),
+    ),
+    (
         ("*", "Remove unused shape keys of selected mesh objects"),
         (("bpy.types.MMD_TOOLS_OT_clean_shape_keys",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "清除选中网格物体未使用的形态键", (False, ())),
+    ),
+    (
+        ("Operator", "Clear Bone Morph View"),
+        (("bpy.types.MMD_TOOLS_OT_clear_bone_morph_view",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "清理骨骼变形视图", (False, ())),
     ),
     (
         ("*", "Reset transforms of all bones to their default values"),
@@ -1519,16 +640,34 @@ translations_tuple = (
         ("zh_HANS", "将所有骨骼变换重设为默认值", (False, ())),
     ),
     (
+        ("Operator", "Clear Temp Materials"),
+        (("bpy.types.MMD_TOOLS_OT_clear_temp_materials",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "清理临时材质", (False, ())),
+    ),
+    (
         ("*", "Clears all the temporary materials"),
         (("bpy.types.MMD_TOOLS_OT_clear_temp_materials",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "清除所有临时材质", (False, ())),
     ),
     (
+        ("Operator", "Clear UV Morph View"),
+        (("bpy.types.MMD_TOOLS_OT_clear_uv_morph_view",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "清理 UV 变形视图", (False, ())),
+    ),
+    (
         ("*", "Clear all temporary data of UV morphs"),
         (("bpy.types.MMD_TOOLS_OT_clear_uv_morph_view",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "清除所有 UV 变形的临时数据", (False, ())),
+    ),
+    (
+        ("Operator", "Convert Blender Materials"),
+        (("bpy.types.MMD_TOOLS_OT_convert_bsdf_materials",), ()),
+        ("ja_JP", "マテリアルノードを変換", (True, ())),
+        ("zh_HANS", "转换 Blender 材质", (False, ())),
     ),
     (
         ("*", "Convert materials of selected objects."),
@@ -1541,6 +680,12 @@ translations_tuple = (
         ),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "转换选中物体的材质", (False, ())),
+    ),
+    (
+        ("Operator", "Convert Materials"),
+        (("bpy.types.MMD_TOOLS_OT_convert_materials",), ()),
+        ("ja_JP", "マテリアルノードを変換", (True, ())),
+        ("zh_HANS", "转换材质", (False, ())),
     ),
     (
         ("*", "Clean Nodes"),
@@ -1600,10 +745,22 @@ translations_tuple = (
         ("zh_HANS", "启用时，也将MMD着色器节点转换为原理化BSDF", (False, ())),
     ),
     (
+        ("Operator", "Convert Materials For Cycles"),
+        (("bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles",), ()),
+        ("ja_JP", "マテリアルノードを変換", (True, ())),
+        ("zh_HANS", "为 Cycles 转换材质", (False, ())),
+    ),
+    (
         ("*", "Convert materials of selected objects for Cycles."),
         (("bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "转换选中物体的材质以供 Cycles 使用", (False, ())),
+    ),
+    (
+        ("Operator", "Convert to MMD Camera"),
+        (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera",), ()),
+        ("ja_JP", "MMDライトへ変換", (False, ())),
+        ("zh_HANS", "转换为 MMD 相机", (False, ())),
     ),
     (
         ("*", "Create a camera rig for MMD"),
@@ -1669,6 +826,12 @@ translations_tuple = (
         ("zh_HANS", "初始化相机的比例系数", (False, ())),
     ),
     (
+        ("Operator", "Convert to MMD Light"),
+        (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp",), ()),
+        ("ja_JP", "MMDライトへ変換", (False, ())),
+        ("zh_HANS", "转换 MMD 光源", (False, ())),
+    ),
+    (
         ("*", "Create a light rig for MMD"),
         (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp",), ()),
         ("ja_JP", "", (False, ())),
@@ -1679,6 +842,12 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp.scale",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "初始化灯光的比例系数", (False, ())),
+    ),
+    (
+        ("Operator", "Convert to a MMD Model"),
+        (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_model",), ()),
+        ("ja_JP", "MMDモデルへ変換", (False, ())),
+        ("zh_HANS", "转换至 MMD 模型", (False, ())),
     ),
     (
         ("*", "Convert active armature with its meshes to a MMD model (experimental)"),
@@ -1778,6 +947,12 @@ translations_tuple = (
         ("zh_HANS", "转换该模型时的缩放比例系数", (False, ())),
     ),
     (
+        ("Operator", "Create a MMD Model Root Object"),
+        (("bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object",), ()),
+        ("ja_JP", "MMDモデルルートオブジェクトを作成", (False, ())),
+        ("zh_HANS", "创建 MMD 模型根物体", (False, ())),
+    ),
+    (
         ("*", "Create a MMD model root object with a basic armature"),
         (("bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object",), ()),
         ("ja_JP", "", (False, ())),
@@ -1830,16 +1005,40 @@ translations_tuple = (
         ("zh_HANS", "此MMD模型的名称", (False, ())),
     ),
     (
+        ("Operator", "Create Work Material"),
+        (("bpy.types.MMD_TOOLS_OT_create_work_material",), ()),
+        ("ja_JP", "ワークマテリアルを生成", (False, ())),
+        ("zh_HANS", "创建工作材质", (False, ())),
+    ),
+    (
         ("*", "Creates a temporary material to edit this offset"),
         (("bpy.types.MMD_TOOLS_OT_create_work_material",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "创建临时材质以编辑此偏移", (False, ())),
     ),
     (
+        ("Operator", "Disassemble All"),
+        (("bpy.types.MMD_TOOLS_OT_disassemble_all",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "全部拆卸", (False, ())),
+    ),
+    (
+        ("Operator", "Add Display Item"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_add",), ()),
+        ("ja_JP", "表示項目を追加", (False, ())),
+        ("zh_HANS", "添加表示项目", (False, ())),
+    ),
+    (
         ("*", "Add a display item to the list"),
         (("bpy.types.MMD_TOOLS_OT_display_item_add",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将表示项目添加至列表", (False, ())),
+    ),
+    (
+        ("Operator", "Find Display Item"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_find",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "查找表示项目", (False, ())),
     ),
     (
         ("*", "Find the display item of active bone or morph"),
@@ -1878,10 +1077,22 @@ translations_tuple = (
         ("zh_HANS", "在表示面板中查找变形面板中活动的变形", (False, ())),
     ),
     (
+        ("Operator", "Add Display Item Frame"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_add",), ()),
+        ("ja_JP", "表示項目フレームを追加", (False, ())),
+        ("zh_HANS", "添加表示枠", (False, ())),
+    ),
+    (
         ("*", "Add a display item frame to the list"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_add",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "向列表添加表示枠", (False, ())),
+    ),
+    (
+        ("Operator", "Move Display Item Frame"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_move",), ()),
+        ("ja_JP", "表示項目フレームを移動", (False, ())),
+        ("zh_HANS", "移动表示枠", (False, ())),
     ),
     (
         ("*", "Move active display item frame up/down in the list"),
@@ -1904,16 +1115,34 @@ translations_tuple = (
         ("zh_HANS", "移动类型", (False, ())),
     ),
     (
+        ("Operator", "Remove Display Item Frame"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_remove",), ()),
+        ("ja_JP", "表示項目フレームを削除", (False, ())),
+        ("zh_HANS", "移除表示枠", (False, ())),
+    ),
+    (
         ("*", "Remove active display item frame from the list"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_remove",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "从列表中移除活动的表示枠", (False, ())),
     ),
     (
+        ("Operator", "Move Display Item"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_move",), ()),
+        ("ja_JP", "表示項目を移動", (False, ())),
+        ("zh_HANS", "移动表示", (False, ())),
+    ),
+    (
         ("*", "Move active display item up/dowm in the list"),
         (("bpy.types.MMD_TOOLS_OT_display_item_move",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将活动的表示上移或下移", (False, ())),
+    ),
+    (
+        ("Operator", "Display Item Quick Setup"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_quick_setup",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "表示快速设置", (False, ())),
     ),
     (
         ("*", "Quick setup display items"),
@@ -1964,6 +1193,12 @@ translations_tuple = (
         ("zh_HANS", "将表示枠同步至骨骼集合", (False, ())),
     ),
     (
+        ("Operator", "Remove Display Item"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_remove",), ()),
+        ("ja_JP", "表示項目を削除", (False, ())),
+        ("zh_HANS", "移除表示", (False, ())),
+    ),
+    (
         ("*", "Remove display item(s) from the list"),
         (("bpy.types.MMD_TOOLS_OT_display_item_remove",), ()),
         ("ja_JP", "", (False, ())),
@@ -1976,10 +1211,22 @@ translations_tuple = (
         ("zh_HANS", "删除所有表示", (False, ())),
     ),
     (
+        ("Operator", "Select Current Display Item"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_select_current",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "选中当前表示", (False, ())),
+    ),
+    (
         ("*", "Select the bone or morph assigned to the display item"),
         (("bpy.types.MMD_TOOLS_OT_display_item_select_current",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "选中表示关联的骨骼或变形", (False, ())),
+    ),
+    (
+        ("Operator", "Edge Preview Setup"),
+        (("bpy.types.MMD_TOOLS_OT_edge_preview_setup",), ()),
+        ("ja_JP", "輪郭プレビュー", (True, ())),
+        ("zh_HANS", "边缘预览设置", (False, ())),
     ),
     (
         ("*", 'Preview toon edge settings of active model using "Solidify" modifier'),
@@ -2024,10 +1271,22 @@ translations_tuple = (
         ("zh_HANS", "清除卡通边缘", (False, ())),
     ),
     (
+        ("Operator", "Edit Related Bone"),
+        (("bpy.types.MMD_TOOLS_OT_edit_bone_morph_offset",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "编辑相关骨骼", (False, ())),
+    ),
+    (
         ("*", "Applies the location and rotation of this offset to the bone"),
         (("bpy.types.MMD_TOOLS_OT_edit_bone_morph_offset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将该偏移的位置与旋转应用至骨骼", (False, ())),
+    ),
+    (
+        ("Operator", "Edit UV Morph"),
+        (("bpy.types.MMD_TOOLS_OT_edit_uv_morph",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "编辑 UV 形变", (False, ())),
     ),
     (
         (
@@ -2041,6 +1300,18 @@ translations_tuple = (
             "在临时 UV 图层上编辑 UV 形变 (使用 UV 编辑器来编辑结果)",
             (False, ()),
         ),
+    ),
+    (
+        ("Operator", "Execute Translation Batch"),
+        (("bpy.types.MMD_TOOLS_OT_execute_translation_batch",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "执行批量翻译", (False, ())),
+    ),
+    (
+        ("Operator", "Export PMX File (.pmx)"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "导出 PMX 文件 (.pmx)", (False, ())),
     ),
     (
         ("*", "Export selected MMD model(s) to PMX file(s) (.pmx)"),
@@ -2267,6 +1538,12 @@ translations_tuple = (
         ("zh_HANS", "仅导出可见的网格", (False, ())),
     ),
     (
+        ("Operator", "Export VMD File (.vmd)"),
+        (("bpy.types.MMD_TOOLS_OT_export_vmd",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "导出 VMD 文件 (.vmd)", (False, ())),
+    ),
+    (
         ("*", "Export motion data of active object to a VMD file (.vmd)"),
         (("bpy.types.MMD_TOOLS_OT_export_vmd",), ()),
         ("ja_JP", "", (False, ())),
@@ -2316,6 +1593,12 @@ translations_tuple = (
             "可设置模型的姿态以将动作数据导出至不同的基础姿态，如T字姿态或A字姿态",
             (False, ()),
         ),
+    ),
+    (
+        ("Operator", "Export VPD File (.vpd)"),
+        (("bpy.types.MMD_TOOLS_OT_export_vpd",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "导出 VPD 文件 (.vpd)", (False, ())),
     ),
     (
         ("*", "Export active rig's Action Pose to VPD file(s) (.vpd)"),
@@ -2394,6 +1677,12 @@ translations_tuple = (
         ),
     ),
     (
+        ("Operator", "Realign Bone IDs"),
+        (("bpy.types.MMD_TOOLS_OT_fix_bone_order",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "重新对齐骨骼 ID", (False, ())),
+    ),
+    (
         (
             "*",
             "Realign bone IDs to be sequential without gaps and apply additional transforms",
@@ -2403,6 +1692,12 @@ translations_tuple = (
         ("zh_HANS", "将骨骼 ID 重新对其为连续的序列并应用额外的变换", (False, ())),
     ),
     (
+        ("Operator", "Flip Pose"),
+        (("bpy.types.MMD_TOOLS_OT_flip_pose",), ()),
+        ("ja_JP", "MMDポーズを反転", (True, ())),
+        ("zh_HANS", "翻转姿态", (False, ())),
+    ),
+    (
         (
             "*",
             "Apply the current pose of selected bones to matching bone on opposite side of X-Axis.",
@@ -2410,6 +1705,18 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_flip_pose",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将选中骨骼的当前姿态应用于X轴对称的骨骼", (False, ())),
+    ),
+    (
+        ("Operator", "Global Translation Popup"),
+        (("bpy.types.MMD_TOOLS_OT_global_translation_popup",), ()),
+        ("ja_JP", "全体翻訳ポップアップ", (False, ())),
+        ("zh_HANS", "全局翻译弹窗", (False, ())),
+    ),
+    (
+        ("Operator", "Import Model File (.pmd, .pmx)"),
+        (("bpy.types.MMD_TOOLS_OT_import_model",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "导入模型文件 (.pmd, .pmx)", (False, ())),
     ),
     (
         ("*", "Import model file(s) (.pmd, .pmx)"),
@@ -2648,6 +1955,12 @@ translations_tuple = (
         ("zh_HANS", "不使用点. 例如，重命名骨骼时使用 _R 而非 .R", (False, ())),
     ),
     (
+        ("Operator", "Import VMD File (.vmd)"),
+        (("bpy.types.MMD_TOOLS_OT_import_vmd",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "导入 VMD 文件 (.vmd)", (False, ())),
+    ),
+    (
         ("*", "Import a VMD file to selected objects (.vmd)"),
         (("bpy.types.MMD_TOOLS_OT_import_vmd",), ()),
         ("ja_JP", "", (False, ())),
@@ -2781,6 +2094,12 @@ translations_tuple = (
         ),
     ),
     (
+        ("Operator", "Import VPD File (.vpd)"),
+        (("bpy.types.MMD_TOOLS_OT_import_vpd",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "导入 VPD 文件 (.vpd)", (False, ())),
+    ),
+    (
         ("*", "Import VPD file(s) to selected rig's Action Pose (.vpd)"),
         (("bpy.types.MMD_TOOLS_OT_import_vpd",), ()),
         ("ja_JP", "", (False, ())),
@@ -2812,6 +2131,12 @@ translations_tuple = (
         ),
     ),
     (
+        ("Operator", "Join Meshes"),
+        (("bpy.types.MMD_TOOLS_OT_join_meshes",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "接合网格", (False, ())),
+    ),
+    (
         ("*", "Join the Model meshes into a single one"),
         (("bpy.types.MMD_TOOLS_OT_join_meshes",), ()),
         ("ja_JP", "", (False, ())),
@@ -2828,6 +2153,12 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_join_meshes.sort_shape_keys",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "按顶点变形顺序排列形态键", (False, ())),
+    ),
+    (
+        ("Operator", "Add Joint"),
+        (("bpy.types.MMD_TOOLS_OT_joint_add",), ()),
+        ("ja_JP", "ジョイントを追加", (False, ())),
+        ("zh_HANS", "添加关节", (False, ())),
     ),
     (
         ("*", "Add Joint(s) to selected rigidbody objects"),
@@ -2944,10 +2275,22 @@ translations_tuple = (
         ("zh_HANS", "启用时，将关节的朝向与骨骼的朝向匹配", (False, ())),
     ),
     (
+        ("Operator", "Remove Joint"),
+        (("bpy.types.MMD_TOOLS_OT_joint_remove",), ()),
+        ("ja_JP", "ジョイントを削除", (False, ())),
+        ("zh_HANS", "移除关节", (False, ())),
+    ),
+    (
         ("*", "Deletes the currently selected Joint"),
         (("bpy.types.MMD_TOOLS_OT_joint_remove",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "删除当前选中的关节", (False, ())),
+    ),
+    (
+        ("Operator", "Init Material Offset"),
+        (("bpy.types.MMD_TOOLS_OT_material_morph_offset_init",), ()),
+        ("ja_JP", "マテリアルオフセットを初期化", (False, ())),
+        ("zh_HANS", "初始化材质偏移", (False, ())),
     ),
     (
         ("*", "Set all offset values to target value"),
@@ -2968,10 +2311,22 @@ translations_tuple = (
         ("zh_HANS", "目标值", (False, ())),
     ),
     (
+        ("Operator", "Open Sphere Texture"),
+        (("bpy.types.MMD_TOOLS_OT_material_open_sphere_texture",), ()),
+        ("ja_JP", "スフィアテクスチャ", (True, ())),
+        ("zh_HANS", "打开球纹理", (False, ())),
+    ),
+    (
         ("*", "Create sphere texture of active material"),
         (("bpy.types.MMD_TOOLS_OT_material_open_sphere_texture",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "为活动的材质创建球球面纹理", (False, ())),
+    ),
+    (
+        ("Operator", "Open Texture"),
+        (("bpy.types.MMD_TOOLS_OT_material_open_texture",), ()),
+        ("ja_JP", "スフィアテクスチャ", (True, ())),
+        ("zh_HANS", "打开纹理", (False, ())),
     ),
     (
         ("*", "Create main texture of active material"),
@@ -2980,10 +2335,22 @@ translations_tuple = (
         ("zh_HANS", "为活动的材质创建主纹理", (False, ())),
     ),
     (
+        ("Operator", "Remove Sphere Texture"),
+        (("bpy.types.MMD_TOOLS_OT_material_remove_sphere_texture",), ()),
+        ("ja_JP", "スフィアテクスチャ", (True, ())),
+        ("zh_HANS", "移除球纹理", (False, ())),
+    ),
+    (
         ("*", "Remove sphere texture of active material"),
         (("bpy.types.MMD_TOOLS_OT_material_remove_sphere_texture",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "移除活动材质的球面纹理", (False, ())),
+    ),
+    (
+        ("Operator", "Remove Texture"),
+        (("bpy.types.MMD_TOOLS_OT_material_remove_texture",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "移除纹理", (False, ())),
     ),
     (
         ("*", "Remove main texture of active material"),
@@ -2992,10 +2359,22 @@ translations_tuple = (
         ("zh_HANS", "移除活动材质的主纹理", (False, ())),
     ),
     (
+        ("Operator", "Model Join by Bones"),
+        (("bpy.types.MMD_TOOLS_OT_model_join_by_bones",), ()),
+        ("ja_JP", "モデルをボーンで統合", (False, ())),
+        ("zh_HANS", "按骨骼接合模型", (False, ())),
+    ),
+    (
         ("*", "Join Type"),
         (("bpy.types.MMD_TOOLS_OT_model_join_by_bones.join_type",), ()),
         ("ja_JP", "接続タイプ", (False, ())),
         ("zh_HANS", "接合类型", (False, ())),
+    ),
+    (
+        ("Operator", "Model Separate by Bones"),
+        (("bpy.types.MMD_TOOLS_OT_model_separate_by_bones",), ()),
+        ("ja_JP", "モデルをボーンで分離", (False, ())),
+        ("zh_HANS", "按骨骼拆分模型", (False, ())),
     ),
     (
         ("*", "Boundary Joint Owner"),
@@ -3049,10 +2428,22 @@ translations_tuple = (
         ("zh_HANS", "权重阈值", (False, ())),
     ),
     (
+        ("Operator", "Add Morph"),
+        (("bpy.types.MMD_TOOLS_OT_morph_add",), ()),
+        ("ja_JP", "モーフを追加", (False, ())),
+        ("zh_HANS", "添加变形", (False, ())),
+    ),
+    (
         ("*", "Add a morph item to active morph list"),
         (("bpy.types.MMD_TOOLS_OT_morph_add",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "向活动的变形列表中添加变形", (False, ())),
+    ),
+    (
+        ("Operator", "Copy Morph"),
+        (("bpy.types.MMD_TOOLS_OT_morph_copy",), ()),
+        ("ja_JP", "モーフをコピー", (False, ())),
+        ("zh_HANS", "复制变形", (False, ())),
     ),
     (
         ("*", "Make a copy of active morph in the list"),
@@ -3061,16 +2452,34 @@ translations_tuple = (
         ("zh_HANS", "在列表中创建活动变形的复制", (False, ())),
     ),
     (
+        ("Operator", "Move Morph"),
+        (("bpy.types.MMD_TOOLS_OT_morph_move",), ()),
+        ("ja_JP", "モーフを移動", (False, ())),
+        ("zh_HANS", "移动变形", (False, ())),
+    ),
+    (
         ("*", "Move active morph item up/down in the list"),
         (("bpy.types.MMD_TOOLS_OT_morph_move",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "在列表中上移或下移活动的变形", (False, ())),
     ),
     (
+        ("Operator", "Add Morph Offset"),
+        (("bpy.types.MMD_TOOLS_OT_morph_offset_add",), ()),
+        ("ja_JP", "モーフオフセットを追加", (False, ())),
+        ("zh_HANS", "添加形变偏移", (False, ())),
+    ),
+    (
         ("*", "Add a morph offset item to the list"),
         (("bpy.types.MMD_TOOLS_OT_morph_offset_add",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "向列表中添加形变偏移", (False, ())),
+    ),
+    (
+        ("Operator", "Remove Morph Offset"),
+        (("bpy.types.MMD_TOOLS_OT_morph_offset_remove",), ()),
+        ("ja_JP", "モーフオフセットを削除", (False, ())),
+        ("zh_HANS", "移除形变偏移", (False, ())),
     ),
     (
         ("*", "Remove morph offset item(s) from the list"),
@@ -3085,6 +2494,18 @@ translations_tuple = (
         ("zh_HANS", "删除所有变形偏移项目", (False, ())),
     ),
     (
+        ("Operator", "Overwrite Bone Morphs from active Action Pose"),
+        (("bpy.types.MMD_TOOLS_OT_morph_overwrite_from_active_action_pose",), ()),
+        ("ja_JP", "ボーンモーフをアクティブなポーズライブラリから上書き", (False, ())),
+        ("zh_HANS", "从活动的动作姿态复写骨骼变形", (False, ())),
+    ),
+    (
+        ("Operator", "Remove Morph"),
+        (("bpy.types.MMD_TOOLS_OT_morph_remove",), ()),
+        ("ja_JP", "モーフを削除", (False, ())),
+        ("zh_HANS", "移除变形", (False, ())),
+    ),
+    (
         ("*", "Remove morph item(s) from the list"),
         (("bpy.types.MMD_TOOLS_OT_morph_remove",), ()),
         ("ja_JP", "", (False, ())),
@@ -3095,6 +2516,12 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_morph_remove.all",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "删除所有变形项目", (False, ())),
+    ),
+    (
+        ("Operator", "Morph Slider Setup"),
+        (("bpy.types.MMD_TOOLS_OT_morph_slider_setup",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "设置变形滑块", (False, ())),
     ),
     (
         ("*", "Translate MMD morphs of selected object into format usable by Blender"),
@@ -3133,10 +2560,22 @@ translations_tuple = (
         ("zh_HANS", "解除与变形滑块的绑定", (False, ())),
     ),
     (
+        ("Operator", "Move Material Down"),
+        (("bpy.types.MMD_TOOLS_OT_move_material_down",), ()),
+        ("ja_JP", "マテリアルを移動", (False, ())),
+        ("zh_HANS", "下移材质", (False, ())),
+    ),
+    (
         ("*", "Moves the selected material one slot down"),
         (("bpy.types.MMD_TOOLS_OT_move_material_down",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将选中材质槽下移", (False, ())),
+    ),
+    (
+        ("Operator", "Move Material Up"),
+        (("bpy.types.MMD_TOOLS_OT_move_material_up",), ()),
+        ("ja_JP", "マテリアルを移動", (False, ())),
+        ("zh_HANS", "上移材质", (False, ())),
     ),
     (
         ("*", "Moves selected material one slot up"),
@@ -3145,10 +2584,22 @@ translations_tuple = (
         ("zh_HANS", "将选中材质槽上移", (False, ())),
     ),
     (
+        ("Operator", "Move Object"),
+        (("bpy.types.MMD_TOOLS_OT_object_move",), ()),
+        ("ja_JP", "オブジェクトを移動", (False, ())),
+        ("zh_HANS", "移动物体", (False, ())),
+    ),
+    (
         ("*", "Move active object up/down in the list"),
         (("bpy.types.MMD_TOOLS_OT_object_move",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将活动的物体在列表中上移或下移", (False, ())),
+    ),
+    (
+        ("Operator", "Select Object"),
+        (("bpy.types.MMD_TOOLS_OT_object_select",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "选中物体", (False, ())),
     ),
     (
         ("*", "Select the object"),
@@ -3163,16 +2614,52 @@ translations_tuple = (
         ("zh_HANS", "物体名", (False, ())),
     ),
     (
+        ("Operator", "Delete Bake"),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_ptcache_rigid_body_delete_bake",
+                "extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:76",
+            ),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "删除烘焙", (False, ())),
+    ),
+    (
+        ("Operator", "Recalculate bone roll"),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_recalculate_bone_roll",
+                "extensions/user_default/mmd_tools/panels/prop_object.py:35",
+            ),
+            (),
+        ),
+        ("ja_JP", "ボーンロールを再計算", (False, ())),
+        ("zh_HANS", "重算骨骼滚转", (False, ())),
+    ),
+    (
         ("*", "Recalculate bone roll for arm related bones"),
         (("bpy.types.MMD_TOOLS_OT_recalculate_bone_roll",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "为骨架相关的骨骼重新计算滚转", (False, ())),
     ),
     (
+        ("Operator", "Reset Object Visivility"),
+        (("bpy.types.MMD_TOOLS_OT_reset_object_visibility",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "重设物体可见性", (False, ())),
+    ),
+    (
         ("*", "Reset to default Blender shading"),
         (("bpy.types.MMD_TOOLS_OT_reset_shading",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "重设为 Blender 默认着色", (False, ())),
+    ),
+    (
+        ("Operator", "Restore this Name"),
+        (("bpy.types.MMD_TOOLS_OT_restore_mmd_translation_element_name",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "恢复名称", (False, ())),
     ),
     (
         ("*", "Add Rigid Bodies to selected bones"),
@@ -3352,6 +2839,12 @@ translations_tuple = (
         ("zh_HANS", "删除选中的刚体", (False, ())),
     ),
     (
+        ("Operator", "Select Rigid Body"),
+        (("bpy.types.MMD_TOOLS_OT_rigid_body_select",), ()),
+        ("ja_JP", "MMDリジッドボディ選択", (True, ())),
+        ("zh_HANS", "选择刚体", (False, ())),
+    ),
+    (
         (
             "*",
             "Select similar rigidbody objects which have the same property values with active rigidbody object",
@@ -3429,6 +2922,12 @@ translations_tuple = (
         ("zh_HANS", "目标骨骼", (False, ())),
     ),
     (
+        ("Operator", "Update Rigid Body World"),
+        (("bpy.types.MMD_TOOLS_OT_rigid_body_world_update",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "更新刚体世界", (False, ())),
+    ),
+    (
         (
             "*",
             "Update rigid body world and references of rigid body constraint according to current scene objects (experimental)",
@@ -3442,16 +2941,16 @@ translations_tuple = (
         ),
     ),
     (
+        ("Operator", "Bind SDEF Driver"),
+        (("bpy.types.MMD_TOOLS_OT_sdef_bind",), ()),
+        ("ja_JP", "SDEFドライバーをバインド", (False, ())),
+        ("zh_HANS", "绑定 SDEF 驱动器", (False, ())),
+    ),
+    (
         ("*", "Bind MMD SDEF data of selected objects"),
         (("bpy.types.MMD_TOOLS_OT_sdef_bind",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "为选中物体绑定 MMD SDEF 数据", (False, ())),
-    ),
-    (
-        ("*", "Select mode"),
-        (("bpy.types.MMD_TOOLS_OT_sdef_bind.mode",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "选择模式", (False, ())),
     ),
     (
         ("*", "Bulk"),
@@ -3502,10 +3001,22 @@ translations_tuple = (
         ("zh_HANS", "骨骼不运动时跳过", (False, ())),
     ),
     (
+        ("Operator", "Reset MMD SDEF cache"),
+        (("bpy.types.MMD_TOOLS_OT_sdef_cache_reset",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "重设 MMD SDEF 缓存", (False, ())),
+    ),
+    (
         ("*", "Reset MMD SDEF cache of selected objects and clean unused cache"),
         (("bpy.types.MMD_TOOLS_OT_sdef_cache_reset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "重设选中物体的 MMD SDEF 缓存并清理未使用的缓存", (False, ())),
+    ),
+    (
+        ("Operator", "Unbind SDEF Driver"),
+        (("bpy.types.MMD_TOOLS_OT_sdef_unbind",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "解绑 SDEF 驱动器", (False, ())),
     ),
     (
         ("*", "Unbind MMD SDEF data of selected objects"),
@@ -3514,10 +3025,22 @@ translations_tuple = (
         ("zh_HANS", "解除选中物体的 MMD SDEF 数据绑定", (False, ())),
     ),
     (
+        ("Operator", "Select Related Bone"),
+        (("bpy.types.MMD_TOOLS_OT_select_bone_morph_offset_bone",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "选择相关骨骼", (False, ())),
+    ),
+    (
         ("*", "Select the bone assigned to this offset in the armature"),
         (("bpy.types.MMD_TOOLS_OT_select_bone_morph_offset_bone",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "在骨架中选中与此偏移相关的骨骼", (False, ())),
+    ),
+    (
+        ("Operator", "Separate By Materials"),
+        (("bpy.types.MMD_TOOLS_OT_separate_by_materials",), ()),
+        ("ja_JP", "マテリアルで分解", (True, ())),
+        ("zh_HANS", "按材质分离", (False, ())),
     ),
     (
         ("*", "Clean Shape Keys"),
@@ -3530,6 +3053,12 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "清除分离物体未使用的形态键", (False, ())),
+    ),
+    (
+        ("Operator", "Set Frame Range"),
+        (("bpy.types.MMD_TOOLS_OT_set_frame_range",), ()),
+        ("ja_JP", "フレーム範囲を使用", (True, ())),
+        ("zh_HANS", "设置帧区间", (False, ())),
     ),
     (
         (
@@ -3545,16 +3074,34 @@ translations_tuple = (
         ),
     ),
     (
+        ("Operator", "GLSL View"),
+        (("bpy.types.MMD_TOOLS_OT_set_glsl_shading",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "GLSL 视图", (False, ())),
+    ),
+    (
         ("*", "Use GLSL shading with additional lighting"),
         (("bpy.types.MMD_TOOLS_OT_set_glsl_shading",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "使用带有额外光照的 GLSL 着色", (False, ())),
     ),
     (
+        ("Operator", "Shadeless GLSL View"),
+        (("bpy.types.MMD_TOOLS_OT_set_shadeless_glsl_shading",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "无光影 GLSL 视图", (False, ())),
+    ),
+    (
         ("*", "Use only toon shading"),
         (("bpy.types.MMD_TOOLS_OT_set_shadeless_glsl_shading",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "仅使用卡通着色", (False, ())),
+    ),
+    (
+        ("Operator", "Translate a MMD Model"),
+        (("bpy.types.MMD_TOOLS_OT_translate_mmd_model",), ()),
+        ("ja_JP", "MMDモデルを翻訳", (False, ())),
+        ("zh_HANS", "翻译 MMD 模型", (False, ())),
     ),
     (
         ("*", "Translate Japanese names of a MMD model"),
@@ -3680,16 +3227,150 @@ translations_tuple = (
         ("zh_HANS", "添加或删除变形英文名的前缀", (False, ())),
     ),
     (
+        ("Operator", "View Bone Morph"),
+        (("bpy.types.MMD_TOOLS_OT_view_bone_morph",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "查看骨骼变形", (False, ())),
+    ),
+    (
         ("*", "View the result of active bone morph"),
         (("bpy.types.MMD_TOOLS_OT_view_bone_morph",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "查看活动骨骼变形的结果", (False, ())),
     ),
     (
+        ("Operator", "View UV Morph"),
+        (("bpy.types.MMD_TOOLS_OT_view_uv_morph",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "查看 UV 变形", (False, ())),
+    ),
+    (
         ("*", "View the result of active UV morph on current mesh object"),
         (("bpy.types.MMD_TOOLS_OT_view_uv_morph",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "查看活动 UV 变形在当前网格物体上的结果", (False, ())),
+    ),
+    (
+        ("*", "MMD Bone Tools"),
+        (("bpy.types.BONE_PT_mmd_tools_bone",), ()),
+        ("ja_JP", "MMDボーンツール", (True, ())),
+        ("zh_HANS", "MMD Tools", (True, ())),
+    ),
+    (
+        ("*", "MMD Joint"),
+        (("bpy.types.JOINT_PT_mmd_tools_bone",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "MMD Material"),
+        (("bpy.types.MATERIAL_PT_mmd_tools_material",), ()),
+        ("ja_JP", "マテリアル:", (True, ())),
+        ("zh_HANS", "材质:", (True, ())),
+    ),
+    (
+        ("*", "MMD Texture"),
+        (("bpy.types.MATERIAL_PT_mmd_tools_texture",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "MMD"),
+        (
+            (
+                "bpy.types.OBJECT_PT_mmd_tools_bone_order",
+                "bpy.types.OBJECT_PT_mmd_tools_display_items",
+                "bpy.types.OBJECT_PT_mmd_tools_joint_list",
+                "bpy.types.OBJECT_PT_mmd_tools_material_sorter",
+                "bpy.types.OBJECT_PT_mmd_tools_meshes_sorter",
+                "bpy.types.OBJECT_PT_mmd_tools_model_production",
+                "bpy.types.OBJECT_PT_mmd_tools_model_setup",
+                "bpy.types.OBJECT_PT_mmd_tools_morph_tools",
+                "bpy.types.OBJECT_PT_mmd_tools_rigidbody_list",
+                "bpy.types.OBJECT_PT_mmd_tools_scene_setup",
+            ),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Bone Order"),
+        (("bpy.types.OBJECT_PT_mmd_tools_bone_order",), ()),
+        ("ja_JP", "ボーン順序", (False, ())),
+        ("zh_HANS", "骨骼顺序", (False, ())),
+    ),
+    (
+        ("*", "MMD Camera Tools"),
+        (("bpy.types.OBJECT_PT_mmd_tools_camera",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Display Panel"),
+        (("bpy.types.OBJECT_PT_mmd_tools_display_items",), ()),
+        ("ja_JP", "表示パネル", (False, ())),
+        ("zh_HANS", "表示面板", (False, ())),
+    ),
+    (
+        ("*", "Joints"),
+        (("bpy.types.OBJECT_PT_mmd_tools_joint_list",), ()),
+        ("ja_JP", "ジョイント", (True, ())),
+        ("zh_HANS", "关节", (True, ())),
+    ),
+    (
+        ("*", "MMD Light Tools"),
+        (("bpy.types.OBJECT_PT_mmd_tools_light",), ()),
+        ("ja_JP", "MMDボーンツール", (True, ())),
+        ("zh_HANS", "MMD Tools", (True, ())),
+    ),
+    (
+        ("*", "Material Sorter"),
+        (("bpy.types.OBJECT_PT_mmd_tools_material_sorter",), ()),
+        ("ja_JP", "マテリアル順序", (False, ())),
+        ("zh_HANS", "材质顺序", (False, ())),
+    ),
+    (
+        ("*", "Meshes Sorter"),
+        (("bpy.types.OBJECT_PT_mmd_tools_meshes_sorter",), ()),
+        ("ja_JP", "メッシュ順序", (False, ())),
+        ("zh_HANS", "网格顺序", (False, ())),
+    ),
+    (
+        ("*", "Model Production"),
+        (("bpy.types.OBJECT_PT_mmd_tools_model_production",), ()),
+        ("ja_JP", "モデル製作", (False, ())),
+        ("zh_HANS", "模型制作", (False, ())),
+    ),
+    (
+        ("*", "Model Setup"),
+        (("bpy.types.OBJECT_PT_mmd_tools_model_setup",), ()),
+        ("ja_JP", "モデル設定", (False, ())),
+        ("zh_HANS", "模型设置", (False, ())),
+    ),
+    (
+        ("*", "Morph Tools"),
+        (("bpy.types.OBJECT_PT_mmd_tools_morph_tools",), ()),
+        ("ja_JP", "モーフツール", (False, ())),
+        ("zh_HANS", "变形工具", (False, ())),
+    ),
+    (
+        ("*", "Rigid Bodies"),
+        (("bpy.types.OBJECT_PT_mmd_tools_rigidbody_list",), ()),
+        ("ja_JP", "リジッドボディ", (False, ())),
+        ("zh_HANS", "刚体", (False, ())),
+    ),
+    (
+        ("*", "MMD Model Information"),
+        (("bpy.types.OBJECT_PT_mmd_tools_root_object",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "MMD Rigid Body"),
+        (("bpy.types.RIGID_PT_mmd_tools_bone",), ()),
+        ("ja_JP", "MMDリジッドボディ選択", (True, ())),
+        ("zh_HANS", "刚体", (True, ())),
     ),
     (
         ("*", "MMD IK Toggle"),
@@ -4297,6 +3978,18 @@ translations_tuple = (
         (("bpy.types.MMDMaterial.edge_color",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "卡通边缘色", (False, ())),
+    ),
+    (
+        ("*", "Edge Weight"),
+        (
+            (
+                "bpy.types.MMDMaterial.edge_weight",
+                "bpy.types.MaterialMorphData.edge_weight",
+            ),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "边缘权重", (True, ())),
     ),
     (
         ("*", "Toon edge size"),
@@ -6412,55 +6105,6 @@ translations_tuple = (
         (("Add-on MMD Tools info: description",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "MMD 模型编辑实用工具", (False, ())),
-    ),
-    # These strings are somehow missing ...
-    (
-        ("*", "Model Setup"),
-        (("",), ()),
-        ("ja_JP", "モデル設定", (False, ())),
-        ("zh_HANS", "模型设置", (False, ())),
-    ),
-    (
-        ("*", "Model Production"),
-        (("",), ()),
-        ("ja_JP", "モデル製作", (False, ())),
-        ("zh_HANS", "模型制作", (False, ())),
-    ),
-    (
-        ("*", "Morph Tools"),
-        (("",), ()),
-        ("ja_JP", "モーフツール", (False, ())),
-        ("zh_HANS", "变形工具", (False, ())),
-    ),
-    (
-        ("*", "Bone Order"),
-        (("",), ()),
-        ("ja_JP", "ボーン順序", (False, ())),
-        ("zh_HANS", "骨骼顺序", (False, ())),
-    ),
-    (
-        ("*", "Rigid Bodies"),
-        (("",), ()),
-        ("ja_JP", "リジッドボディ", (False, ())),
-        ("zh_HANS", "刚体", (False, ())),
-    ),
-    (
-        ("*", "Meshes Sorter"),
-        (("",), ()),
-        ("ja_JP", "メッシュ順序", (False, ())),
-        ("zh_HANS", "网格顺序", (False, ())),
-    ),
-    (
-        ("*", "Material Sorter"),
-        (("",), ()),
-        ("ja_JP", "マテリアル順序", (False, ())),
-        ("zh_HANS", "材质顺序", (False, ())),
-    ),
-    (
-        ("*", "Display Panel"),
-        (("",), ()),
-        ("ja_JP", "表示パネル", (False, ())),
-        ("zh_HANS", "表示面板", (False, ())),
     ),
 )
 
