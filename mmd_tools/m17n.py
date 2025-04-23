@@ -632,6 +632,8 @@ translation_dict = {
         ("*", "Transform Order"): "变形顺序",
         ("Operator", "Add Missing Vertex Groups from Bones"): "从骨骼中添加缺失的顶点组",
         ("*", "Search in all meshes"): "在所有网格中搜索",
+        ("*", "Total Bones: %d"): "骨骼数量: %d",
+        ("Operator", "Fix Bone Order"): "修复骨骼顺序",
 
         # 3D Viewport > Sidebar > Misc > MMD Display Panel
         ("*", "MMD Display"): "MMD显示",
@@ -724,6 +726,8 @@ translation_dict = {
         ("*", "Local Z-Axis"): "局部Z轴",
         ("*", "Rotate +"): "旋转 +",
         ("*", "Move +"): "移动 +",
+        ("*", "Display Connection (Bone Target):"): "骨骼末端指向:",
+        ("*", "Target Bone"): "目标骨骼",
 
         # Shader Editor > Shader Nodes
         ("*", "Base Tex Fac"): "基础纹理系数",
