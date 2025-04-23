@@ -174,7 +174,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "ボーンから不足している頂点グループを追加", (False, ())),
         ("zh_HANS", "从骨骼添加丢失的顶点组", (False, ())),
     ),
     (
@@ -336,7 +336,7 @@ translations_tuple = (
     (
         ("Operator", "Build Rig"),
         (("bpy.types.MMD_TOOLS_OT_build_rig", "bpy.types.MMD_TOOLS_OT_build_rig"), ()),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "ビルドリグ", (False, ())),
         ("zh_HANS", "绑骨", (False, ())),
     ),
     (
@@ -374,7 +374,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "重複マテリアルモーフを掃除", (False, ())),
         ("zh_HANS", "清理重复材质变形", (False, ())),
     ),
     (
@@ -477,7 +477,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "MMDライトへ変換", (False, ())),
         ("zh_HANS", "转换为 MMD 相机", (False, ())),
     ),
     (
@@ -489,7 +489,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "MMDライトへ変換", (False, ())),
         ("zh_HANS", "转换 MMD 光源", (False, ())),
     ),
     (
@@ -501,7 +501,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "MMDモデルへ変換", (False, ())),
         ("zh_HANS", "转换至 MMD 模型", (False, ())),
     ),
     (
@@ -513,7 +513,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "MMDモデルルートオブジェクトを作成", (False, ())),
         ("zh_HANS", "创建 MMD 模型根物体", (False, ())),
     ),
     (
@@ -525,7 +525,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "ワークマテリアルを生成", (False, ())),
         ("zh_HANS", "创建工作材质", (False, ())),
     ),
     (
@@ -549,7 +549,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示項目を追加", (False, ())),
         ("zh_HANS", "添加表示项目", (False, ())),
     ),
     (
@@ -573,7 +573,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示項目フレームを追加", (False, ())),
         ("zh_HANS", "添加表示枠", (False, ())),
     ),
     (
@@ -585,7 +585,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示項目フレームを移動", (False, ())),
         ("zh_HANS", "移动表示枠", (False, ())),
     ),
     (
@@ -597,7 +597,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示項目フレームを削除", (False, ())),
         ("zh_HANS", "移除表示枠", (False, ())),
     ),
     (
@@ -609,7 +609,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示項目を移動", (False, ())),
         ("zh_HANS", "移动表示", (False, ())),
     ),
     (
@@ -633,7 +633,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示項目を削除", (False, ())),
         ("zh_HANS", "移除表示", (False, ())),
     ),
     (
@@ -750,7 +750,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "全体翻訳ポップアップ", (False, ())),
         ("zh_HANS", "全局翻译弹窗", (False, ())),
     ),
     (
@@ -798,7 +798,7 @@ translations_tuple = (
     (
         ("Operator", "Add Joint"),
         (("bpy.types.MMD_TOOLS_OT_joint_add", "bpy.types.MMD_TOOLS_OT_joint_add"), ()),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "ジョイントを追加", (False, ())),
         ("zh_HANS", "添加关节", (False, ())),
     ),
     (
@@ -810,7 +810,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "ジョイントを削除", (False, ())),
         ("zh_HANS", "移除关节", (False, ())),
     ),
     (
@@ -822,7 +822,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "マテリアルオフセットを初期化", (False, ())),
         ("zh_HANS", "初始化材质偏移", (False, ())),
     ),
     (
@@ -895,7 +895,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モデルをボーンで統合", (False, ())),
         ("zh_HANS", "按骨骼接合模型", (False, ())),
     ),
     (
@@ -907,13 +907,13 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モデルをボーンで分離", (False, ())),
         ("zh_HANS", "按骨骼拆分模型", (False, ())),
     ),
     (
         ("Operator", "Add Morph"),
         (("bpy.types.MMD_TOOLS_OT_morph_add", "bpy.types.MMD_TOOLS_OT_morph_add"), ()),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モーフを追加", (False, ())),
         ("zh_HANS", "添加变形", (False, ())),
     ),
     (
@@ -922,7 +922,7 @@ translations_tuple = (
             ("bpy.types.MMD_TOOLS_OT_morph_copy", "bpy.types.MMD_TOOLS_OT_morph_copy"),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モーフをコピー", (False, ())),
         ("zh_HANS", "复制变形", (False, ())),
     ),
     (
@@ -931,7 +931,7 @@ translations_tuple = (
             ("bpy.types.MMD_TOOLS_OT_morph_move", "bpy.types.MMD_TOOLS_OT_morph_move"),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モーフを移動", (False, ())),
         ("zh_HANS", "移动变形", (False, ())),
     ),
     (
@@ -943,7 +943,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モーフオフセットを追加", (False, ())),
         ("zh_HANS", "添加形变偏移", (False, ())),
     ),
     (
@@ -955,7 +955,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モーフオフセットを削除", (False, ())),
         ("zh_HANS", "移除形变偏移", (False, ())),
     ),
     (
@@ -967,7 +967,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "ボーンモーフをアクティブなポーズライブラリから上書き", (False, ())),
         ("zh_HANS", "从活动的动作姿态复写骨骼变形", (False, ())),
     ),
     (
@@ -979,7 +979,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モーフを削除", (False, ())),
         ("zh_HANS", "移除变形", (False, ())),
     ),
     (
@@ -1003,7 +1003,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "マテリアルを移動", (False, ())),
         ("zh_HANS", "下移材质", (False, ())),
     ),
     (
@@ -1015,7 +1015,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "マテリアルを移動", (False, ())),
         ("zh_HANS", "上移材质", (False, ())),
     ),
     (
@@ -1027,7 +1027,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "オブジェクトを移動", (False, ())),
         ("zh_HANS", "移动物体", (False, ())),
     ),
     (
@@ -1119,7 +1119,7 @@ translations_tuple = (
     (
         ("Operator", "Bind SDEF Driver"),
         (("bpy.types.MMD_TOOLS_OT_sdef_bind", "bpy.types.MMD_TOOLS_OT_sdef_bind"), ()),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "SDEFドライバーをバインド", (False, ())),
         ("zh_HANS", "绑定 SDEF 驱动器", (False, ())),
     ),
     (
@@ -1215,7 +1215,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "MMDモデルを翻訳", (False, ())),
         ("zh_HANS", "翻译 MMD 模型", (False, ())),
     ),
     (
@@ -1490,7 +1490,7 @@ translations_tuple = (
     (
         ("*", "Clean duplicated material morphs"),
         (("bpy.types.MMD_TOOLS_OT_clean_duplicated_material_morphs",), ()),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "重複マテリアルモーフを掃除", (False, ())),
         ("zh_HANS", "清理重复的材质变形", (False, ())),
     ),
     (
@@ -1918,7 +1918,7 @@ translations_tuple = (
     (
         ("*", "Quick setup display items"),
         (("bpy.types.MMD_TOOLS_OT_display_item_quick_setup",), ()),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示項目のクイックセットアップ", (False, ())),
         ("zh_HANS", "快速设置表示", (False, ())),
     ),
     (
@@ -6417,49 +6417,49 @@ translations_tuple = (
     (
         ("*", "Model Setup"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モデル設定", (False, ())),
         ("zh_HANS", "模型设置", (False, ())),
     ),
     (
         ("*", "Model Production"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モデル製作", (False, ())),
         ("zh_HANS", "模型制作", (False, ())),
     ),
     (
         ("*", "Morph Tools"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "モーフツール", (False, ())),
         ("zh_HANS", "变形工具", (False, ())),
     ),
     (
         ("*", "Bone Order"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "ボーン順序", (False, ())),
         ("zh_HANS", "骨骼顺序", (False, ())),
     ),
     (
         ("*", "Rigid Bodies"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "リジッドボディ", (False, ())),
         ("zh_HANS", "刚体", (False, ())),
     ),
     (
         ("*", "Meshes Sorter"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "メッシュ順序", (False, ())),
         ("zh_HANS", "网格顺序", (False, ())),
     ),
     (
         ("*", "Material Sorter"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "マテリアル順序", (False, ())),
         ("zh_HANS", "材质顺序", (False, ())),
     ),
     (
         ("*", "Display Panel"),
         (),
-        ("ja_JP", "", (False, ())),
+        ("ja_JP", "表示パネル", (False, ())),
         ("zh_HANS", "表示面板", (False, ())),
     ),
 )
