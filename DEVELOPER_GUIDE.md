@@ -94,7 +94,7 @@ If you want to modify only the translated strings, you can ignore this section a
 This workflow is only needed when new UI elements/operators are added to this extension to extract new translatable strings.
 
 To use this extension, you need first to set up its environment:
-1. Enable the extension, along with the MMD Tools, from the Blender Perferences interface. It is bundled with Blender, so you don't need to install it seperately.
+1. Enable the extension, along with the MMD Tools, from the Blender Preferences interface. It is bundled with Blender, so you don't need to install it separately.
 2. Set up localization resources for the extension. First, clone the repositories needed:
    ```
    git clone --depth 1 https://github.com/blender/blender
