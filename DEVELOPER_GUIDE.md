@@ -89,30 +89,32 @@ We adopt [GitHub flow](https://docs.github.com/en/get-started/using-github/githu
 6. Merge your pull request once it’s approved
 
 ### Translating the Extension
-This section explains some details on the workflow of translating this extension, which is supported by the Blender [Manage UI translations](https://developer.blender.org/docs/handbook/translating/translator_guide/#manage-ui-translations-add-on) official extension.
+This section explains some details on the workflow of translating this extension, which is supported by the Blender [Manage UI translations](https://developer.blender.org/docs/handbook/translating/translator_guide/#manage-ui-translations-add-on) official extension. 
+If you want to modify only the translated strings, you can ignore this section and directly edit the `m17n.py` files.
+This workflow is only needed when new UI elements/operators are added to this extension to extract new translatable strings.
 
-To use this extension, you need to first set up its environment:
-1. Enable the extension, along with the MMD Tools, from the Blender Perferences interface. It is bundled with the Blender, so you don't need to install it seperately.
-2. Set up localization resources for the extension. First clone the repositories needed:
+To use this extension, you need first to set up its environment:
+1. Enable the extension, along with the MMD Tools, from the Blender Perferences interface. It is bundled with Blender, so you don't need to install it seperately.
+2. Set up localization resources for the extension. First, clone the repositories needed:
    ```
    git clone --depth 1 https://github.com/blender/blender
    git clone --depth 1 https://projects.blender.org/blender/blender-ui-translations
    ```
    These repositories are mandatory for the extension to function normally, but we will not modify them.
-3. Then configure the extension. In the perferences window of the Manage UI translations extension, point `Source Root` to the root of the former repository (where `.git` is located, not its subdirectories), and `Translation Root` to the root of the latter. Note that these configurations are not persistent unless saved explicitly and could revert to previous ones on each Blender restart.
+3. Then configure the extension. In the Preferences window of the Manage UI translations extension, point `Source Root` to the root of the former repository (where `.git` is located, not its subdirectories), and `Translation Root` to the root of the latter. Note that these configurations are not persistent unless saved explicitly and could revert to previous ones on each Blender restart.
 4. Check whether it is functional. On the Render properties section of the scene editor (where you can switch between EEVEE and Cycles engines), you should be able to find an `I18n Update Translation` panel, and it should be similar to the one you can find on [this page](https://developer.blender.org/docs/handbook/translating/translator_guide/#manage-ui-translations-add-on).
 
-After setting up the environment, first click `Refresh i18n data` button.
+After setting up the environment, first click the `Refresh i18n data` button.
 Then, you can use the `Export PO...` button to generate `.po` files used for translation. 
-This should generate text files that can be edited by any text editor for translating.
-After finishing, click `Import PO...` button to update the interface and the Python source code.
+This should generate text files that can be edited by any text editor for translation.
+After finishing, click the `Import PO...` button to update the interface and the Python source code.
 This should update the `m17n.py` located at the root of this extension.
 
 If clicking the `Refresh i18n data` resulted in errors like:
 ```
 KeyError: 'bpy_prop_collection[key]: key "Blender_27x" not found'
 ```
-you can try to load the specified key binding preset from the Preferences window and retry.
+You can try to load the specified key binding preset from the Preferences window and retry.
 This is likely an upstream issue that can only be resolved by the Blender developers.
 
 ## Release Process
