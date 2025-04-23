@@ -104,8 +104,9 @@ To use this extension, you need first to set up its environment:
 3. Then configure the extension. In the Preferences window of the Manage UI translations extension, point `Source Root` to the root of the former repository (where `.git` is located, not its subdirectories), and `Translation Root` to the root of the latter. Note that these configurations are not persistent unless saved explicitly and could revert to previous ones on each Blender restart.
 4. Check whether it is functional. On the Render properties section of the scene editor (where you can switch between EEVEE and Cycles engines), you should be able to find an `I18n Update Translation` panel, and it should be similar to the one you can find on [this page](https://developer.blender.org/docs/handbook/translating/translator_guide/#manage-ui-translations-add-on).
 
-After setting up the environment, first click the `Refresh i18n data` button.
-Then, you can use the `Export PO...` button to generate `.po` files used for translation. 
+After setting up the environment, first click the `Refresh i18n data` button, which should update the `m17n.py` to contain strings extracted by the extension.
+If you find it more comfortable to edit the raw Python tuples, then you can edit the `m17n.py` directly, and skip the following PO file export and import workflow.
+If you are more familiar with GNU gettext utility, you can use the `Export PO...` button to generate `.po` files used for translation. 
 This should generate text files that can be edited by any text editor for translation.
 After finishing, click the `Import PO...` button to update the interface and the Python source code.
 This should update the `m17n.py` located at the root of this extension.
