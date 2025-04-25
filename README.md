@@ -31,7 +31,7 @@ If you are interested in supporting this project, please reach out via the follo
 - [MMD Tools Issues](https://github.com/UuuNyaa/blender_mmd_tools/issues)
 - [MMD & Blender Discord Server](https://discord.gg/zRgUkuaPWw)
 
-For developers looking to contribute code, please check the [Developer Guide](DEVELOPER_GUIDE.md) for project guidelines and workflow.
+For developers looking to contribute code or translations, please check the [Developer Guide](DEVELOPER_GUIDE.md) for project guidelines and detailed workflows.
 
 ## License
 Distributed under the [GPLv3](LICENSE).
