@@ -396,13 +396,8 @@ class __PmxExporter:
                     pmx_bone.location = boneMap[pmx_bone.parent].location
                 # fmt: on
 
-                if mmd_bone.display_connection_type == 'NONE':
-                    pmx_bone.displayConnection = -1
-                elif mmd_bone.display_connection_type == 'BONE':
-                    if mmd_bone.display_connection_bone_id >= 0:
-                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
-                    else:
-                        pmx_bone.displayConnection = -1
+                if mmd_bone.display_connection_type == 'BONE':
+                    pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
                 elif mmd_bone.display_connection_type == 'OFFSET':
                     pmx_bone.displayConnection = mmd_bone.display_connection_offset
 

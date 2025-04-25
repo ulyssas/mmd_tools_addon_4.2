@@ -26,5 +26,5 @@ class MMDBone:
     is_additional_transform_dirty: bool
     display_connection_bone: str
     display_connection_bone_id: int
-    display_connection_type: str  # 'BONE', 'OFFSET', 'NONE'
+    display_connection_type: str  # 'BONE', 'OFFSET'
     display_connection_offset: Vector

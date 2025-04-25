@@ -418,23 +418,17 @@ class PMXImporter:
             mmd_bone.transform_after_dynamics = pmx_bone.transAfterPhis
             mmd_bone.bone_id = i
 
-            # set display_connection properties
-            if pmx_bone.displayConnection == -1:
-                mmd_bone.display_connection_type = 'NONE'
-                mmd_bone.is_tip = True
-            elif pmx_bone.displayConnection == (0.0, 0.0, 0.0):
-                mmd_bone.display_connection_type = 'NONE'
-                mmd_bone.is_tip = True
-            elif isinstance(pmx_bone.displayConnection, int):
+            if isinstance(pmx_bone.displayConnection, int):
                 mmd_bone.display_connection_type = 'BONE'
                 mmd_bone.display_connection_bone_id = pmx_bone.displayConnection
-                if b_bone.name in specialTipBones:
-                    mmd_bone.is_tip = True
             else:  # vector offset
                 mmd_bone.display_connection_type = 'OFFSET'
                 mmd_bone.display_connection_offset = pmx_bone.displayConnection
-                if b_bone.name in specialTipBones:
-                    mmd_bone.is_tip = True
+
+            if pmx_bone.displayConnection == -1 or pmx_bone.displayConnection == (0.0, 0.0, 0.0):
+                mmd_bone.is_tip = True
+            elif b_bone.name in specialTipBones:
+                mmd_bone.is_tip = True
 
             b_bone.bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
 
