@@ -419,11 +419,10 @@ class PMXImporter:
             mmd_bone.bone_id = i
 
             if isinstance(pmx_bone.displayConnection, int):
-                mmd_bone.display_connection_type = 'BONE'
+                mmd_bone.display_connection_type = "BONE"
                 mmd_bone.display_connection_bone_id = pmx_bone.displayConnection
             else:  # vector offset
-                mmd_bone.display_connection_type = 'OFFSET'
-                mmd_bone.display_connection_offset = pmx_bone.displayConnection
+                mmd_bone.display_connection_type = "OFFSET"
 
             if pmx_bone.displayConnection == -1 or pmx_bone.displayConnection == (0.0, 0.0, 0.0):
                 mmd_bone.is_tip = True

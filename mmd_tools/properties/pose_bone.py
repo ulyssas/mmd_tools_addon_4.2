@@ -225,15 +225,6 @@ class MMDBone(bpy.types.PropertyGroup):
         default="OFFSET",
     )
 
-    display_connection_offset: bpy.props.FloatVectorProperty(
-        name="Display Connection Offset",
-        description="Offset vector for display connection",
-        subtype="XYZ",
-        size=3,
-        precision=3,
-        default=(0, 0, 0),
-    )
-
     def is_id_unique(self):
         return self.bone_id < 0 or not next((b for b in self.id_data.pose.bones if b.mmd_bone != self and b.mmd_bone.bone_id == self.bone_id), None)
 
