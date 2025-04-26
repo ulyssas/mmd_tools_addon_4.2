@@ -88,6 +88,45 @@ We adopt [GitHub flow](https://docs.github.com/en/get-started/using-github/githu
 5. Open a pull request against `main`
 6. Merge your pull request once it’s approved
 
+### Translating the Extension
+This section explains some details on the workflow of translating this extension, which is supported by the Blender [Manage UI translations](https://developer.blender.org/docs/handbook/translating/translator_guide/#manage-ui-translations-add-on) official extension. 
+If you want to modify only the translated strings, you can ignore this section and directly edit the `m17n.py` files.
+This workflow is only needed when new UI elements/operators are added to this extension to extract new translatable strings.
+
+To use this extension, you need first to set up its environment:
+1. Enable the extension, along with the MMD Tools, from the Blender Preferences interface. It is bundled with Blender, so you don't need to install it separately.
+2. Set up localization resources for the extension. First, clone the repositories needed:
+   ```
+   git clone --depth 1 https://github.com/blender/blender
+   git clone --depth 1 https://projects.blender.org/blender/blender-ui-translations
+   ```
+   These repositories are mandatory for the extension to function normally, but we will not modify them.
+3. Then configure the extension. In the Preferences window of the Manage UI translations extension, point `Source Root` to the root of the former repository (where `.git` is located, not its subdirectories), and `Translation Root` to the root of the latter. Note that these configurations are not persistent unless saved explicitly and could revert to previous ones on each Blender restart.
+4. Check whether it is functional. On the Render properties section of the scene editor (where you can switch between EEVEE and Cycles engines), you should be able to find an `I18n Update Translation` panel, and it should be similar to the one you can find on [this page](https://developer.blender.org/docs/handbook/translating/translator_guide/#manage-ui-translations-add-on).
+
+After setting up the environment, there are two types of modifications you can do: modifying current translations, or create new translations.
+
+To modify current translations, simply edit the `.po` files located under the `\locales\` directory, and after finishing, click the `Import PO...` button to update the Python source code.
+
+To add new translations, whether it is missing entries due to UI updates, or you want to add a new language, follow these steps:
+1. First select the languages to be updated and then click the `Refresh i18n data...` button, which should update the `m17n.py` to contain strings extracted by the extension.
+2. You can then use the `Export PO...` button to generate `.po` files used for translation. You should always place these `.po` files under the `\locales\` directory.
+3. After finishing, click the `Import PO...` button to update the interface and the Python source code. This should update the `m17n.py` located at the root of this extension.
+
+Before commiting the updated `m17n.py`, please ensure that it does not contain any syntax errors or non-UTF8 bytes and it is formatted by Ruff.
+You can verify your translation by re-enabling the MMDTools extension.
+
+#### Troubleshooting the Extension
+
+When using the translation extension, please ensure that your Blender version is 4.2 LTS, and _no extensions other than official ones_ bundled with Blender and the MMDTools are installed. If you are enabling the MMDTools extension for the first time, try restarting your Blender instance before translating.
+
+If clicking the `Refresh i18n data...` resulted in errors like:
+```
+KeyError: 'bpy_prop_collection[key]: key "Blender_27x" not found'
+```
+You can try to load the specified key binding preset from the Preferences window and retry.
+This is likely an upstream issue that can only be resolved by the Blender developers.
+
 ## Release Process
 Currently, only @UuuNyaa has permission to perform release tasks:
 
