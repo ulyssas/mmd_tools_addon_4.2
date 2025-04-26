@@ -10,7 +10,6 @@ from math import pi
 from mathutils import Euler
 from mathutils import Vector
 from bl_ext.user_default.mmd_tools.core import pmx
-from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.pmd.importer import import_pmd_to_pmx
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
