@@ -24,6 +24,7 @@ from ..vmd.importer import BoneConverter, BoneConverterPoseMode
 from ...operators.misc import MoveObject
 from ...utils import saferelpath
 
+
 class _Vertex:
     def __init__(self, co, groups, offsets, edge_scale, vertex_order, uv_offsets):
         self.co = co
@@ -366,10 +367,7 @@ class __PmxExporter:
                 pmx_bone.parent = bone.parent
                 # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
                 # This logic is the same as Blender's
-                pmx_bone.visible = (
-                    not bone.hide
-                    and (not bone.collections or any(collection.is_visible for collection in bone.collections))
-                )
+                pmx_bone.visible = not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)
@@ -396,15 +394,17 @@ class __PmxExporter:
                     pmx_bone.location = boneMap[pmx_bone.parent].location
                 # fmt: on
 
-                if mmd_bone.display_connection_type == 'NONE':
-                    pmx_bone.displayConnection = -1
-                elif mmd_bone.display_connection_type == 'BONE':
-                    if mmd_bone.display_connection_bone_id >= 0:
-                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
-                    else:
+                if mmd_bone.display_connection_type == "BONE":
+                    if mmd_bone.is_tip:
                         pmx_bone.displayConnection = -1
-                elif mmd_bone.display_connection_type == 'OFFSET':
-                    pmx_bone.displayConnection = mmd_bone.display_connection_offset
+                    else:
+                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
+                elif mmd_bone.display_connection_type == "OFFSET":
+                    if mmd_bone.is_tip:
+                        pmx_bone.displayConnection = (0.0, 0.0, 0.0)
+                    else:
+                        tail_loc = __to_pmx_location(p_bone.tail)
+                        pmx_bone.displayConnection = tail_loc - pmx_bone.location
 
                 if mmd_bone.enabled_fixed_axis:
                     pmx_bone.axis = __to_pmx_axis(mmd_bone.fixed_axis, p_bone)

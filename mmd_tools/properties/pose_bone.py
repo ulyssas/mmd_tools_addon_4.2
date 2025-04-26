@@ -219,20 +219,10 @@ class MMDBone(bpy.types.PropertyGroup):
         name="Display Connection Type",
         description="Type of display connection",
         items=[
-            ('BONE', "Bone", "Connected to a bone"),
-            ('OFFSET', "Offset", "Connected to an offset position"),
-            ('NONE', "None", "No connection")
+            ("BONE", "Bone", "Connected to a bone"),
+            ("OFFSET", "Offset", "Connected to an offset position"),
         ],
-        default='NONE',
-    )
-
-    display_connection_offset: bpy.props.FloatVectorProperty(
-        name="Display Connection Offset",
-        description="Offset vector for display connection",
-        subtype="XYZ",
-        size=3,
-        precision=3,
-        default=(0, 0, 0),
+        default="OFFSET",
     )
 
     def is_id_unique(self):
