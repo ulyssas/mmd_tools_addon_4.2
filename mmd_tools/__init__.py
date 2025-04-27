@@ -47,28 +47,28 @@ auto_load.init(PACKAGE_NAME)
 def register():
     import bpy
 
-    import mmd_tools.handlers
+    from . import handlers
 
-    mmd_tools.auto_load.register()
+    auto_load.register()
 
     # pylint: disable=import-outside-toplevel
-    from mmd_tools.m17n import translation_dict
+    from .m17n import translations_dict
 
-    bpy.app.translations.register(bl_info["name"], translation_dict)
+    bpy.app.translations.register(PACKAGE_NAME, translations_dict)
 
-    mmd_tools.handlers.MMDHanders.register()
+    handlers.MMDHanders.register()
 
 
 def unregister():
     import bpy
 
-    import mmd_tools.handlers
+    from . import handlers
 
-    mmd_tools.handlers.MMDHanders.unregister()
+    handlers.MMDHanders.unregister()
 
-    bpy.app.translations.unregister(bl_info["name"])
+    bpy.app.translations.unregister(PACKAGE_NAME)
 
-    mmd_tools.auto_load.unregister()
+    auto_load.unregister()
 
 
 if __name__ == "__main__":
