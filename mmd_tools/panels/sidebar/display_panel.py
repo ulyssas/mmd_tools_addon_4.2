@@ -14,7 +14,7 @@ class MMDDisplayItemsPanel(PT_ProductionPanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_display_items"
     bl_label = "Display Panel"
     bl_options = {"DEFAULT_CLOSED"}
-    bl_order = 10
+    bl_order = 11
 
     def draw(self, context):
         active_obj = context.active_object

@@ -12,7 +12,7 @@ class MMDJointSelectorPanel(PT_ProductionPanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_joint_list"
     bl_label = "Joints"
     bl_options = {"DEFAULT_CLOSED"}
-    bl_order = 7
+    bl_order = 8
 
     def draw(self, context):
         active_obj = context.active_object

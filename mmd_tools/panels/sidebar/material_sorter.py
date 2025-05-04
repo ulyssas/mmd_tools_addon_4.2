@@ -11,7 +11,7 @@ class MMDMaterialSorter(PT_ProductionPanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_material_sorter"
     bl_label = "Material Sorter"
     bl_options = {"DEFAULT_CLOSED"}
-    bl_order = 9
+    bl_order = 10
 
     def draw(self, context):
         layout = self.layout

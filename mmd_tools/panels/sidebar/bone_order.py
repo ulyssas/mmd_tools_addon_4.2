@@ -522,7 +522,7 @@ class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_bone_order"
     bl_label = "Bone Order"
     bl_options = {"DEFAULT_CLOSED"}
-    bl_order = 5
+    bl_order = 6
 
     def draw(self, context):
         layout = self.layout
