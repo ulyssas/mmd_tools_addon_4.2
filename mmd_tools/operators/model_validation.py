@@ -7,7 +7,6 @@ import bpy
 import shutil
 import filecmp
 import logging
-from bpy.props import StringProperty
 from bpy.types import Operator
 
 from ..core.model import FnModel
@@ -20,11 +19,19 @@ try:
 except ImportError:
     is_opencc_available = False
 
+
 # Scene property to store validation results
-bpy.types.Scene.mmd_validation_results = StringProperty(
-    name="Validation Results",
-    default="",
-)
+def register():
+    bpy.types.Scene.mmd_validation_results = bpy.props.StringProperty(
+        name="Validation Results",
+        default="",
+    )
+
+
+def unregister():
+    if hasattr(bpy.types.Scene, "mmd_validation_results"):
+        del bpy.types.Scene.mmd_validation_results
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: [%(name)s] %(message)s")
