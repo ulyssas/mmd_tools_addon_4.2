@@ -33,11 +33,6 @@ def unregister():
         del bpy.types.Scene.mmd_validation_results
 
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: [%(name)s] %(message)s")
-logger = logging.getLogger("MMD Tools")
-
-
 def log_message(prefix, message, level="INFO"):
     """Log message with prefix for each line at the specified level.
 
@@ -49,11 +44,11 @@ def log_message(prefix, message, level="INFO"):
     level = level.upper()
     for line in message.split("\n"):
         if level == "WARNING":
-            logger.warning("[%s] %s", prefix, line)
+            logging.warning("[%s] %s", prefix, line)
         elif level == "ERROR":
-            logger.error("[%s] %s", prefix, line)
+            logging.error("[%s] %s", prefix, line)
         else:  # Default to INFO
-            logger.info("[%s] %s", prefix, line)
+            logging.info("[%s] %s", prefix, line)
 
 
 class MMDModelValidateBones(Operator):
