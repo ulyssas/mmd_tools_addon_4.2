@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
 
 import os
 import shutil
-import unittest
 import tempfile
+import unittest
 
 import bpy
-
-from mathutils import Vector, Matrix, Quaternion
 from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.vpd.exporter import VPDExporter
+from mathutils import Matrix, Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")

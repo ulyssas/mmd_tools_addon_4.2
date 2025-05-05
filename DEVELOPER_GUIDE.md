@@ -58,7 +58,6 @@ blender_mmd_tools/
 - Indent with 4 spaces (no tabs)
 - Add the following comment block at the top of each Python file:
   ```
-  # -*- coding: utf-8 -*-
   # Copyright {year} MMD Tools authors
   # This file is part of MMD Tools.
   ```

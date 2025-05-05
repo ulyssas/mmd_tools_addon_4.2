@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -13,6 +12,7 @@ from mathutils import Matrix, Vector
 
 from ... import bpyutils, utils
 from ...bpyutils import FnContext
+from ...operators.misc import MoveObject
 from .. import pmx
 from ..bone import FnBone
 from ..material import FnMaterial
@@ -20,7 +20,6 @@ from ..model import FnModel, Model
 from ..morph import FnMorph
 from ..rigid_body import FnRigidBody
 from ..vmd.importer import BoneConverter
-from ...operators.misc import MoveObject
 
 if TYPE_CHECKING:
     from ...properties.pose_bone import MMDBone

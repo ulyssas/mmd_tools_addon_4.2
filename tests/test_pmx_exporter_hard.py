@@ -1,16 +1,13 @@
-# -*- coding: utf-8 -*-
 
 import os
 import shutil
 import unittest
+from math import pi
 
 import bpy
-
-from math import pi
-from mathutils import Euler
-from mathutils import Vector
 from bl_ext.user_default.mmd_tools.core import pmx
 from bl_ext.user_default.mmd_tools.core.pmd.importer import import_pmd_to_pmx
+from mathutils import Euler, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")

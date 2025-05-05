@@ -1,19 +1,18 @@
-# -*- coding: utf-8 -*-
 
-import os
-import sys
-import shutil
-import unittest
 import logging
+import os
+import shutil
+import sys
+import unittest
 
 import bpy
-context = bpy.context
-from mathutils import Vector
 
+context = bpy.context
 from bl_ext.user_default.mmd_tools.core import pmx
 from bl_ext.user_default.mmd_tools.core.bone import FnBone, MigrationFnBone
-from bl_ext.user_default.mmd_tools.core.model import Model, FnModel
+from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
 from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
+from mathutils import Vector
 
 sys.path.append(os.getcwd())
 #from tests.test_pmx_exporter import TestPmxExporter

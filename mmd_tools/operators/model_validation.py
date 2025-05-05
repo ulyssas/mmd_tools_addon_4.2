@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
 # Copyright 2025 MMD Tools authors
 # This file is part of MMD Tools.
 
-import os
-import bpy
-import shutil
 import filecmp
 import logging
+import os
+import shutil
+
+import bpy
 from bpy.types import Operator
 
-from ..core.model import FnModel
 from ..core.material import FnMaterial
+from ..core.model import FnModel
 
 
 # Scene property to store validation results

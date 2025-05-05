@@ -3,7 +3,6 @@ import shutil
 import unittest
 
 import bpy
-
 from bl_ext.user_default.mmd_tools.core import pmx
 from bl_ext.user_default.mmd_tools.core.model import Model
 

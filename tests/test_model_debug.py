@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
 
+import logging
 import os
 import unittest
-import logging
 
 import bpy
-
-from bl_ext.user_default.mmd_tools.core.model import Model, FnModel
+from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
