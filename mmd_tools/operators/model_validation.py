@@ -6,6 +6,7 @@ import os
 import bpy
 import shutil
 import filecmp
+import logging
 from bpy.props import StringProperty
 from bpy.types import Operator
 
@@ -25,11 +26,27 @@ bpy.types.Scene.mmd_validation_results = StringProperty(
     default="",
 )
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: [%(name)s] %(message)s")
+logger = logging.getLogger("MMD Tools")
 
-def log_to_console(prefix, message):
-    """Log message to console with prefix for each line"""
+
+def log_message(prefix, message, level="INFO"):
+    """Log message with prefix for each line at the specified level.
+
+    Args:
+        prefix (str): Prefix for the log message.
+        message (str): Message to log.
+        level (str): Log level ('INFO', 'WARNING', 'ERROR').
+    """
+    level = level.upper()
     for line in message.split("\n"):
-        print(f"[{prefix}] {line}")
+        if level == "WARNING":
+            logger.warning("[%s] %s", prefix, line)
+        elif level == "ERROR":
+            logger.error("[%s] %s", prefix, line)
+        else:  # Default to INFO
+            logger.info("[%s] %s", prefix, line)
 
 
 class MMDModelValidateBones(Operator):
@@ -44,13 +61,13 @@ class MMDModelValidateBones(Operator):
         root = FnModel.find_root_object(context.active_object)
         if root is None:
             self.report({"ERROR"}, "No MMD model selected")
-            log_to_console("MMD Validation", "Error: No MMD model selected")
+            log_message("MMD Validation", "No MMD model selected", "ERROR")
             return {"CANCELLED"}
 
         armature = FnModel.find_armature_object(root)
         if armature is None:
             self.report({"ERROR"}, "No armature found in model")
-            log_to_console("MMD Validation", "Error: No armature found in model")
+            log_message("MMD Validation", "No armature found in model", "ERROR")
             return {"CANCELLED"}
 
         issues = []
@@ -81,7 +98,8 @@ class MMDModelValidateBones(Operator):
 
         results = "\n".join(issues) or "No bone issues found"
         context.scene.mmd_validation_results = results
-        log_to_console("MMD Bone Validation", results)
+        log_level = "WARNING" if issues else "INFO"
+        log_message("MMD Bone Validation", results, log_level)
 
         return {"FINISHED"}
 
@@ -98,7 +116,7 @@ class MMDModelValidateMorphs(Operator):
         root = FnModel.find_root_object(context.active_object)
         if root is None:
             self.report({"ERROR"}, "No MMD model selected")
-            log_to_console("MMD Validation", "Error: No MMD model selected")
+            log_message("MMD Validation", "No MMD model selected", "ERROR")
             return {"CANCELLED"}
 
         issues = []
@@ -125,7 +143,8 @@ class MMDModelValidateMorphs(Operator):
 
         results = "\n".join(issues) or "No morph issues found"
         context.scene.mmd_validation_results = results
-        log_to_console("MMD Morph Validation", results)
+        log_level = "WARNING" if issues else "INFO"
+        log_message("MMD Morph Validation", results, log_level)
 
         return {"FINISHED"}
 
@@ -142,7 +161,7 @@ class MMDModelValidateTextures(Operator):
         root = FnModel.find_root_object(context.active_object)
         if root is None:
             self.report({"ERROR"}, "No MMD model selected")
-            log_to_console("MMD Validation", "Error: No MMD model selected")
+            log_message("MMD Validation", "No MMD model selected", "ERROR")
             return {"CANCELLED"}
 
         issues = []
@@ -211,7 +230,8 @@ class MMDModelValidateTextures(Operator):
 
         results = "\n".join(issues) or "No texture issues found"
         context.scene.mmd_validation_results = results
-        log_to_console("MMD Texture Validation", results)
+        log_level = "WARNING" if issues else "INFO"
+        log_message("MMD Texture Validation", results, log_level)
 
         return {"FINISHED"}
 
@@ -229,13 +249,13 @@ class MMDModelFixBoneIssues(Operator):
         root = FnModel.find_root_object(context.active_object)
         if root is None:
             self.report({"ERROR"}, "No MMD model selected")
-            log_to_console("MMD Fix", "Error: No MMD model selected")
+            log_message("MMD Fix", "No MMD model selected", "ERROR")
             return {"CANCELLED"}
 
         armature = FnModel.find_armature_object(root)
         if armature is None:
             self.report({"ERROR"}, "No armature found in model")
-            log_to_console("MMD Fix", "Error: No armature found in model")
+            log_message("MMD Fix", "No armature found in model", "ERROR")
             return {"CANCELLED"}
 
         fixed = []
@@ -330,7 +350,7 @@ class MMDModelFixBoneIssues(Operator):
 
         results = "\n".join(fixed) if fixed else "No bone issues to fix"
         context.scene.mmd_validation_results = results
-        log_to_console("MMD Bone Fix", results)
+        log_message("MMD Bone Fix", results, "INFO")
 
         return {"FINISHED"}
 
@@ -347,7 +367,7 @@ class MMDModelFixMorphIssues(Operator):
         root = FnModel.find_root_object(context.active_object)
         if root is None:
             self.report({"ERROR"}, "No MMD model selected")
-            log_to_console("MMD Fix", "Error: No MMD model selected")
+            log_message("MMD Fix", "No MMD model selected", "ERROR")
             return {"CANCELLED"}
 
         fixed = []
@@ -434,7 +454,7 @@ class MMDModelFixMorphIssues(Operator):
 
         results = "\n".join(fixed) if fixed else "No morph issues to fix"
         context.scene.mmd_validation_results = results
-        log_to_console("MMD Morph Fix", results)
+        log_message("MMD Morph Fix", results, "INFO")
 
         return {"FINISHED"}
 
@@ -451,7 +471,7 @@ class MMDModelFixTextureIssues(Operator):
         root = FnModel.find_root_object(context.active_object)
         if root is None:
             self.report({"ERROR"}, "No MMD model selected")
-            log_to_console("MMD Fix", "Error: No MMD model selected")
+            log_message("MMD Fix", "No MMD model selected", "ERROR")
             return {"CANCELLED"}
 
         fixed = []
@@ -607,7 +627,17 @@ class MMDModelFixTextureIssues(Operator):
                 continue
 
             # Skip conflicts involving only toon textures that were fixed
-            if all(any((mat_name, img.name) in fixed_material_image_pairs for mat_name in [m.name for m in bpy.data.materials if m.node_tree and any(n.type == "TEX_IMAGE" and n.image == img for n in m.node_tree.nodes)]) for filepath in filepaths for img in texture_filepaths.get(filepath, [])):
+            all_fixed = True
+            for filepath in filepaths:
+                for img in texture_filepaths.get(filepath, []):
+                    material_names = [m.name for m in bpy.data.materials if m.node_tree and any(n.type == "TEX_IMAGE" and n.image == img for n in m.node_tree.nodes)]
+                    if not any((mat_name, img.name) in fixed_material_image_pairs for mat_name in material_names):
+                        all_fixed = False
+                        break
+                if not all_fixed:
+                    break
+
+            if all_fixed:
                 continue
 
             conflict_fixed = [f"Fix texture filename conflict: '{filename}':"]
@@ -638,7 +668,7 @@ class MMDModelFixTextureIssues(Operator):
 
                     # Create new path with proper suffix checking
                     base_path, ext = os.path.splitext(old_path)
-                    suffix = i + 1  # Change from "suffix = i" to "suffix = i + 1" to start from 2
+                    suffix = i + 1  # Start from 2
                     new_path = f"{base_path}{suffix}{ext}"
                     abs_new_path = bpy.path.abspath(new_path)
 
@@ -669,7 +699,7 @@ class MMDModelFixTextureIssues(Operator):
                     except Exception as e:
                         conflict_fixed.append(f"Error copying texture file: {str(e)}")
 
-            # Only add to fixed list if we actually fixed conflicts (more than just the header)
+                        # Only add to fixed list if we actually fixed conflicts (more than just the header)
             if len(conflict_fixed) > 1:
                 if not filepath_conflicts_fixed:
                     if fixed:  # If we already have content in the fixed list
@@ -703,6 +733,6 @@ class MMDModelFixTextureIssues(Operator):
 
         results = "\n".join(fixed) if fixed else "No texture issues to fix"
         context.scene.mmd_validation_results = results
-        log_to_console("MMD Texture Fix", results)
+        log_message("MMD Texture Fix", results, "INFO")
 
         return {"FINISHED"}

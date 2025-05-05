@@ -153,6 +153,7 @@ class TestModelDebug(unittest.TestCase):
 
     def test_1_validate_bone_limits(self):
         """Test if bone validation runs without errors"""
+        print()
         self.__create_test_bone_with_invalid_name()
 
         # Set active object back to root
@@ -172,6 +173,7 @@ class TestModelDebug(unittest.TestCase):
 
     def test_2_validate_morphs(self):
         """Test if morph validation runs without errors"""
+        print()
         self.__create_test_morph_with_invalid_name()
 
         # Set active object back to root
@@ -191,6 +193,7 @@ class TestModelDebug(unittest.TestCase):
 
     def test_3_validate_textures(self):
         """Test if texture validation runs without errors"""
+        print()
         self.__create_test_texture_issues()
 
         # Set active object back to root
@@ -210,6 +213,7 @@ class TestModelDebug(unittest.TestCase):
 
     def test_4_fix_bone_issues(self):
         """Test if bone issues fix function works"""
+        print()
         self.__create_test_bone_with_invalid_name()
 
         # Set active object back to root
@@ -240,6 +244,7 @@ class TestModelDebug(unittest.TestCase):
 
     def test_5_fix_morph_issues(self):
         """Test if morph issues fix function works"""
+        print()
         self.__create_test_morph_with_invalid_name()
 
         # Set active object back to root
@@ -270,6 +275,7 @@ class TestModelDebug(unittest.TestCase):
 
     def test_6_fix_texture_issues(self):
         """Test if texture issues fix function works"""
+        print()
         self.__create_test_texture_issues()
 
         # Set active object back to root
