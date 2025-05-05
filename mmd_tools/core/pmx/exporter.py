@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -15,14 +14,14 @@ import bpy
 import mathutils
 
 from ...bpyutils import FnContext
+from ...operators.misc import MoveObject
+from ...utils import saferelpath
 from .. import pmx
 from ..material import FnMaterial
 from ..morph import FnMorph
 from ..sdef import FnSDEF
 from ..translations import FnTranslations
 from ..vmd.importer import BoneConverter, BoneConverterPoseMode
-from ...operators.misc import MoveObject
-from ...utils import saferelpath
 
 
 class _Vertex:

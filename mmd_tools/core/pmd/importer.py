@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -10,8 +9,7 @@ from math import radians
 
 import mathutils
 
-from .. import pmd
-from .. import pmx
+from .. import pmd, pmx
 from ..pmx import importer as import_pmx
 
 

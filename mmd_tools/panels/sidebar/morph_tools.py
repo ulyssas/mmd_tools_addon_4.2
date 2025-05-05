@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
 import bpy
 
 from ...core.model import FnModel, Model
-from . import FnDraw, PT_ProductionPanelBase
+from ...operators import morph as operators_morph
 from ...properties.morph import MaterialMorph
 from ...utils import ItemOp
-from ...operators import morph as operators_morph
+from . import FnDraw, PT_ProductionPanelBase
 
 
 class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):

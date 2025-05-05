@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
 from typing import cast
+
 import bpy
 
 from ..core.bone import FnBone

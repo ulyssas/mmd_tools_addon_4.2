@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2013 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -6,6 +5,7 @@ import contextlib
 from typing import Generator, List, Optional, TypeVar
 
 import bpy
+
 
 class Props:  # For API changes of only name changed properties
     show_in_front = "show_in_front"

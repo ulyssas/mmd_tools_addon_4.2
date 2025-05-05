@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
 # Copyright 2016 MMD Tools authors
 # This file is part of MMD Tools.
 
 import bpy
-from ...core.bone import FnBone, MigrationFnBone, BONE_COLLECTION_NAME_SHADOW, BONE_COLLECTION_NAME_DUMMY
+
+from ...core.bone import BONE_COLLECTION_NAME_DUMMY, BONE_COLLECTION_NAME_SHADOW, FnBone, MigrationFnBone
 from ...core.model import FnModel
 from . import PT_ProductionPanelBase
+
 
 class MMDToolsBoneIdMoveUp(bpy.types.Operator):
     bl_idname = "mmd_tools.bone_id_move_up"

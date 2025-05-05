@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -7,10 +6,10 @@ from typing import Optional, cast
 import bpy
 from mathutils import Quaternion, Vector
 
-from ..core.model import FnModel
 from .. import bpyutils, utils
 from ..core.exceptions import MaterialNotFoundError
 from ..core.material import FnMaterial
+from ..core.model import FnModel
 from ..core.morph import FnMorph
 from ..utils import ItemMoveOp, ItemOp
 
