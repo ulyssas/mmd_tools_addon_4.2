@@ -5,7 +5,6 @@ import unittest
 import logging
 
 import bpy
-from mathutils import Vector
 
 from bl_ext.user_default.mmd_tools.core.model import Model, FnModel
 
