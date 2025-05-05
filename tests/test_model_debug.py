@@ -64,13 +64,22 @@ class TestModelDebug(unittest.TestCase):
         long_bone.head = (0, 0, 0)
         long_bone.tail = (0, 1, 0)
 
+        # Create a non-Japanese test bone with Chinese characters
+        non_japanese_bone = armature.data.edit_bones.new("NonJapaneseTestBone1")
+        non_japanese_bone.head = (0, 0, 0)
+        non_japanese_bone.tail = (0, 1, 0)
+
+        non_japanese_bone = armature.data.edit_bones.new("NonJapaneseTestBone2")
+        non_japanese_bone.head = (0, 0, 0)
+        non_japanese_bone.tail = (0, 1, 0)
+
         # Create a duplicate bone with the same name
-        bone1 = armature.data.edit_bones.new("DuplicateNameBone")
+        bone1 = armature.data.edit_bones.new("DuplicateNameBone1")
         bone1.head = (0, 0, 0)
         bone1.tail = (0, 1, 0)
 
         # Create another bone with the same name to create a duplicate
-        bone2 = armature.data.edit_bones.new("AnotherDupBone")
+        bone2 = armature.data.edit_bones.new("DuplicateNameBone2")
         bone2.head = (0, 0, 0)
         bone2.tail = (0, 1, 0)
 
@@ -78,24 +87,36 @@ class TestModelDebug(unittest.TestCase):
         bpy.ops.object.mode_set(mode="OBJECT")
 
         # Set Japanese names
-        armature.pose.bones["TestBoneWithVeryLongName"].mmd_bone.name_j = "非常に長い名前"
-        armature.pose.bones["DuplicateNameBone"].mmd_bone.name_j = "重複した名前"
-        armature.pose.bones["AnotherDupBone"].mmd_bone.name_j = "重複した名前"
+        armature.pose.bones["TestBoneWithVeryLongName"].mmd_bone.name_j = "非常に長い名前のボーン"
+        armature.pose.bones["NonJapaneseTestBone1"].mmd_bone.name_j = "测试"
+        armature.pose.bones["NonJapaneseTestBone2"].mmd_bone.name_j = "測試测试"
+        armature.pose.bones["DuplicateNameBone1"].mmd_bone.name_j = "重複した名前"
+        armature.pose.bones["DuplicateNameBone2"].mmd_bone.name_j = "重複した名前"
 
         # Make sure active object is back to the root
         bpy.context.view_layer.objects.active = self.root_object
 
     def __create_test_morph_with_invalid_name(self):
         """Create test morphs with invalid/duplicate names"""
-        # Add a few test morphs
-        vertex_morph = self.root_object.mmd_root.vertex_morphs.add()
-        vertex_morph.name = "非常に長い名前のモーフ"
+        # Add long name test
+        test_morph = self.root_object.mmd_root.vertex_morphs.add()
+        test_morph.name = "非常に長い名前のモーフ"
 
-        dup_morph1 = self.root_object.mmd_root.vertex_morphs.add()
-        dup_morph1.name = "重複した名前"
+        # Add non-Japanese name test
+        test_morph = self.root_object.mmd_root.vertex_morphs.add()
+        test_morph.name = "测试"
+        test_morph = self.root_object.mmd_root.group_morphs.add()
+        test_morph.name = "测试"
+        test_morph = self.root_object.mmd_root.group_morphs.add()
+        test_morph.name = "測試测试"
+        test_morph = self.root_object.mmd_root.group_morphs.add()
+        test_morph.name = "口横缩げ"
 
-        dup_morph2 = self.root_object.mmd_root.group_morphs.add()
-        dup_morph2.name = "重複した名前"  # Same name to create duplicate
+        # Add duplicate name test
+        test_morph = self.root_object.mmd_root.vertex_morphs.add()
+        test_morph.name = "重複した名前"
+        test_morph = self.root_object.mmd_root.group_morphs.add()
+        test_morph.name = "重複した名前"  # Same name to create duplicate
 
     def __create_test_texture_issues(self):
         """Create test texture issues"""
@@ -166,7 +187,9 @@ class TestModelDebug(unittest.TestCase):
         self.assertEqual(set(result), {"FINISHED"})
 
         # Print validation results
-        print("Bone validation results:", bpy.context.scene.mmd_validation_results)
+        print("Bone validation results:")
+        print(bpy.context.scene.mmd_validation_results)
+        print()
 
         # Just verify it runs without errors, don't verify specific messages
         self.assertIsNotNone(bpy.context.scene.mmd_validation_results)
@@ -186,7 +209,9 @@ class TestModelDebug(unittest.TestCase):
         self.assertEqual(set(result), {"FINISHED"})
 
         # Print validation results
-        print("Morph validation results:", bpy.context.scene.mmd_validation_results)
+        print("Morph validation results:")
+        print(bpy.context.scene.mmd_validation_results)
+        print()
 
         # Just verify it runs without errors, don't verify specific messages
         self.assertIsNotNone(bpy.context.scene.mmd_validation_results)
@@ -206,7 +231,9 @@ class TestModelDebug(unittest.TestCase):
         self.assertEqual(set(result), {"FINISHED"})
 
         # Print validation results
-        print("Texture validation results:", bpy.context.scene.mmd_validation_results)
+        print("Texture validation results:")
+        print(bpy.context.scene.mmd_validation_results)
+        print()
 
         # Just verify it runs without errors, don't verify specific messages
         self.assertIsNotNone(bpy.context.scene.mmd_validation_results)
@@ -222,7 +249,9 @@ class TestModelDebug(unittest.TestCase):
         # First validate to get initial state
         bpy.ops.mmd_tools.validate_bone_limits()
         before_fix = bpy.context.scene.mmd_validation_results
-        print("Before fix:", before_fix)
+        print("Before fix:")
+        print(before_fix)
+        print()
 
         # Run fix operation using operator
         result = bpy.ops.mmd_tools.fix_bone_issues()
@@ -232,12 +261,16 @@ class TestModelDebug(unittest.TestCase):
 
         # Check the fix results
         fix_results = bpy.context.scene.mmd_validation_results
-        print("Fix results:", fix_results)
+        print("Fix results:")
+        print(fix_results)
+        print()
 
         # Run validation again to see if issues were fixed
         bpy.ops.mmd_tools.validate_bone_limits()
         after_fix = bpy.context.scene.mmd_validation_results
-        print("After fix:", after_fix)
+        print("After fix:")
+        print(after_fix)
+        print()
 
         # Success if validation result is empty or says no issues found
         self.assertTrue("No bone issues found" in after_fix or not after_fix, f"Fix failed. After fix: {after_fix}")
@@ -253,7 +286,9 @@ class TestModelDebug(unittest.TestCase):
         # First validate to get initial state
         bpy.ops.mmd_tools.validate_morphs()
         before_fix = bpy.context.scene.mmd_validation_results
-        print("Before fix:", before_fix)
+        print("Before fix:")
+        print(before_fix)
+        print()
 
         # Run fix operation using operator
         result = bpy.ops.mmd_tools.fix_morph_issues()
@@ -263,12 +298,16 @@ class TestModelDebug(unittest.TestCase):
 
         # Check the fix results
         fix_results = bpy.context.scene.mmd_validation_results
-        print("Fix results:", fix_results)
+        print("Fix results:")
+        print(fix_results)
+        print()
 
         # Run validation again to see if issues were fixed
         bpy.ops.mmd_tools.validate_morphs()
         after_fix = bpy.context.scene.mmd_validation_results
-        print("After fix:", after_fix)
+        print("After fix:")
+        print(after_fix)
+        print()
 
         # Success if validation result is empty or says no issues found
         self.assertTrue("No morph issues found" in after_fix or not after_fix, f"Fix failed. After fix: {after_fix}")
@@ -284,7 +323,9 @@ class TestModelDebug(unittest.TestCase):
         # First validate to get initial state
         bpy.ops.mmd_tools.validate_textures()
         before_fix = bpy.context.scene.mmd_validation_results
-        print("Before fix:", before_fix)
+        print("Before fix:")
+        print(before_fix)
+        print()
 
         # Run fix operation using operator
         result = bpy.ops.mmd_tools.fix_texture_issues()
@@ -294,7 +335,9 @@ class TestModelDebug(unittest.TestCase):
 
         # Check the fix results
         fix_results = bpy.context.scene.mmd_validation_results
-        print("Fix results:", fix_results)
+        print("Fix results:")
+        print(fix_results)
+        print()
 
         # Success if fix results contains expected message
         self.assertNotIn("No texture issues to fix", fix_results)
