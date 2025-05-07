@@ -6,28 +6,26 @@ import sys
 import unittest
 
 import bpy
+from bl_ext.user_default.mmd_tools.core import pmx
+from bl_ext.user_default.mmd_tools.core.model import FnModel
+from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
 
 context = bpy.context
-from bl_ext.user_default.mmd_tools.core import pmx
-from bl_ext.user_default.mmd_tools.core.bone import FnBone, MigrationFnBone
-from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
-from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
-from mathutils import Vector
 
-sys.path.append(os.getcwd())
-#from tests.test_pmx_exporter import TestPmxExporter
+# sys.path.append(os.getcwd())
+# from tests.test_pmx_exporter import TestPmxExporter
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
-SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), 'samples')
+SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
+
 
 class TestModelEdit(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         # Clean up output from previous tests
-        output_dir = os.path.join(TESTS_DIR, 'output')
+        output_dir = os.path.join(TESTS_DIR, "output")
         for item in os.listdir(output_dir):
-            if item.endswith('.OUTPUT'):
+            if item.endswith(".OUTPUT"):
                 continue  # Skip the placeholder
             item_fp = os.path.join(output_dir, item)
             if os.path.isfile(item_fp):
@@ -38,14 +36,14 @@ class TestModelEdit(unittest.TestCase):
     def setUp(self):
         # Set up logging and clear the Blender scene
         logger = logging.getLogger()
-        logger.setLevel('ERROR')
+        logger.setLevel("ERROR")
 
         # Clear the scene
         bpy.ops.wm.read_homefile()
 
-    #********************************************
+    # ********************************************
     # Utils
-    #********************************************
+    # ********************************************
 
     def __create_test_collection(self, name="MMD_Test_Collection"):
         """Create a dedicated collection for testing"""
@@ -62,7 +60,7 @@ class TestModelEdit(unittest.TestCase):
     def __list_sample_files(self, file_types):
         ret = []
         for file_type in file_types:
-            file_ext = '.' + file_type
+            file_ext = "." + file_type
             for root, dirs, files in os.walk(os.path.join(SAMPLES_DIR, file_type)):
                 for name in files:
                     if name.lower().endswith(file_ext):
@@ -71,10 +69,10 @@ class TestModelEdit(unittest.TestCase):
 
     def __enable_mmd_tools(self):
         bpy.ops.wm.read_homefile()  # reload blender startup file
-        pref = getattr(context, 'preferences', None) or context.user_preferences
-        if not pref.addons.get('mmd_tools', None):
-            addon_enable = bpy.ops.wm.addon_enable if 'addon_enable' in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module='bl_ext.user_default.mmd_tools')  # make sure addon 'mmd_tools' is enabled
+        pref = getattr(context, "preferences", None) or context.user_preferences
+        if not pref.addons.get("mmd_tools", None):
+            addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
+            addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def __is_object_in_collection(self, obj, collection):
         """Safely check if an object is in a collection"""
@@ -101,14 +99,14 @@ class TestModelEdit(unittest.TestCase):
             importer = PMXImporter()
             importer.execute(
                 pmx=model,
-                types={'MESH', 'ARMATURE', 'PHYSICS', 'DISPLAY', 'MORPHS'},
+                types={"MESH", "ARMATURE", "PHYSICS", "DISPLAY", "MORPHS"},
                 scale=scale,
                 clean_model=False,
             )
 
         # Find all root objects and ensure they're in our collection
         for obj in context.scene.objects:
-            if obj.mmd_type == 'ROOT':
+            if obj.mmd_type == "ROOT":
                 if not self.__is_object_in_collection(obj, collection):
                     # Move the root to our collection
                     scene_collection = context.scene.collection
@@ -139,47 +137,7 @@ class TestModelEdit(unittest.TestCase):
             # Process children recursively
             self.__move_children_to_collection(child, collection)
 
-    def __test_import_export_cycle(self, pmx_file_path):
-        """Test importing and exporting a PMX file"""
-
-        # Clear the scene
-        bpy.ops.wm.read_homefile()
-
-        # Enable mmd_tools addon
-        self.__enable_mmd_tools()
-
-        # Import the PMX file
-        print(f"\nTesting import/export cycle with file: {pmx_file_path}")
-        print("test importing")
-        source_model = pmx.load(pmx_file_path)
-
-        PMXImporter().execute(
-            pmx=source_model,
-            types={'MESH', 'ARMATURE', 'PHYSICS', 'DISPLAY', 'MORPHS'},
-            scale=1,
-            clean_model=False,
-        )
-
-        # Update scene
-        context.view_layer.update()
-
-        # Export to a new file
-        print("test exporting")
-        output_pmx = os.path.join(TESTS_DIR, 'output', 'import_export_test.pmx')
-        bpy.ops.mmd_tools.export_pmx(
-            filepath=output_pmx,
-            scale=1,
-            copy_textures=False,
-            sort_materials=False,
-            log_level='ERROR',
-        )
-
-        print(f"Exported test model to: {output_pmx}")
-        self.assertTrue(os.path.isfile(output_pmx), "Re-exported file was not created")
-
-        return output_pmx
-
-    def __test_joined_model(self, joined_model_path):
+    def __test_joined_model(self, joined_model_path, model_order_str):
         """Test the exported joined model for validity"""
 
         # Clear the scene
@@ -197,7 +155,7 @@ class TestModelEdit(unittest.TestCase):
             # Import the model into Blender
             PMXImporter().execute(
                 pmx=joined_model,
-                types={'MESH', 'ARMATURE', 'PHYSICS', 'DISPLAY', 'MORPHS'},
+                types={"MESH", "ARMATURE", "PHYSICS", "DISPLAY", "MORPHS"},
                 scale=1,
                 clean_model=False,
             )
@@ -214,9 +172,9 @@ class TestModelEdit(unittest.TestCase):
             has_head_bone = False
             has_neck_bone = False
             for bone in joined_model.bones:
-                if bone.name == '頭':
+                if bone.name == "頭":
                     has_head_bone = True
-                elif bone.name == '首':
+                elif bone.name == "首":
                     has_neck_bone = True
 
             print(f"    Total bones: {len(joined_model.bones)}")
@@ -225,28 +183,34 @@ class TestModelEdit(unittest.TestCase):
             self.assertTrue(has_neck_bone, "Joined model is missing the '首' (neck) bone")
 
             # Check if the model was correctly imported into Blender
-            armatures = [obj for obj in bpy.data.objects if obj.type == 'ARMATURE']
+            armatures = [obj for obj in bpy.data.objects if obj.type == "ARMATURE"]
             self.assertTrue(len(armatures) > 0, "No armatures were imported into Blender")
 
             # Now re-export the model to test roundtrip conversion
-            export_path = os.path.join(TESTS_DIR, 'output', 'joined_model_roundtrip.pmx')
+            export_path = os.path.join(TESTS_DIR, "output", f"joined_model_{model_order_str}_test.pmx")
             bpy.ops.mmd_tools.export_pmx(
                 filepath=export_path,
                 scale=1,
                 copy_textures=False,
                 sort_materials=False,
-                log_level='ERROR',
+                log_level="ERROR",
             )
             print("Joined model passed all validation tests!")
             return True
 
         except Exception as e:
             import traceback
+
             traceback.print_exc()
             self.fail(f"Joined model testing failed with error: {e}")
             return False
 
     def test_model_separation_and_join(self):
+        # Run the test twice with models in different orders
+        self.__run_separation_and_join_test(reverse_models=False)
+        self.__run_separation_and_join_test(reverse_models=True)
+
+    def __run_separation_and_join_test(self, reverse_models=False):
         # Test the model separation and joining functionality
         # Enable mmd_tools
         self.__enable_mmd_tools()
@@ -255,15 +219,31 @@ class TestModelEdit(unittest.TestCase):
         test_collection = self.__create_test_collection("MMD_Models")
 
         # Get sample PMX files
-        pmx_files = self.__list_sample_files(['pmx'])
+        pmx_files = self.__list_sample_files(["pmx"])
         if len(pmx_files) < 2:
             self.skipTest("Need at least 2 PMX sample files for this test")
 
-        # Use the first two PMX files
-        test_files = pmx_files[:2]
-        print(f"\nTesting with PMX files:\n - {test_files[0]}\n - {test_files[1]}")
+        # If there are 3 or more models, select the two largest ones
+        if len(pmx_files) >= 3:
+            # Get file sizes
+            file_sizes = [(filepath, os.path.getsize(filepath)) for filepath in pmx_files]
+            # Sort by size in descending order
+            file_sizes.sort(key=lambda x: x[1], reverse=True)
+            # Select the two largest files
+            test_files = [file_info[0] for file_info in file_sizes[:2]]
+        else:
+            # Use the first two PMX files if there are only two
+            test_files = pmx_files[:2]
+
+        # Reverse the order if needed for the second test run
+        if reverse_models:
+            test_files.reverse()
+            print(f"\nTesting with REVERSED PMX files:\n - {test_files[0]}\n - {test_files[1]}")
+        else:
+            print(f"\nTesting with PMX files:\n - {test_files[0]}\n - {test_files[1]}")
 
         try:
+            # Rest of the function remains unchanged
             # Import the models into our collection
             pmx_models = self.__import_pmx_models(test_files, test_collection)
             self.assertEqual(len(pmx_models), 2, "Failed to import two models")
@@ -271,7 +251,7 @@ class TestModelEdit(unittest.TestCase):
             # Keep track of all model roots in our collection before separation
             existing_roots = []
             for obj in test_collection.objects:
-                if obj.mmd_type == 'ROOT':
+                if obj.mmd_type == "ROOT":
                     existing_roots.append(obj)
 
             print(f"\nBefore separation - Model roots: {[root.name for root in existing_roots]}")
@@ -281,7 +261,7 @@ class TestModelEdit(unittest.TestCase):
                 # Get the armature object
                 armature = None
                 for child in model_root.children:
-                    if child.type == 'ARMATURE':
+                    if child.type == "ARMATURE":
                         armature = child
                         break
 
@@ -290,7 +270,7 @@ class TestModelEdit(unittest.TestCase):
 
                 # Enter pose mode
                 context.view_layer.objects.active = armature
-                bpy.ops.object.mode_set(mode='POSE')
+                bpy.ops.object.mode_set(mode="POSE")
 
                 # Deselect all bones
                 for bone in armature.pose.bones:
@@ -299,7 +279,7 @@ class TestModelEdit(unittest.TestCase):
                 # Directly find and use the '頭' bone
                 head_bone = None
                 for bone in armature.pose.bones:
-                    if bone.name == '頭':
+                    if bone.name == "頭":
                         head_bone = bone
                         break
 
@@ -311,18 +291,14 @@ class TestModelEdit(unittest.TestCase):
                 armature.data.bones.active = head_bone.bone
 
                 # Execute separation
-                bpy.ops.mmd_tools.model_separate_by_bones(
-                    separate_armature=True,
-                    include_descendant_bones=True,
-                    boundary_joint_owner='DESTINATION'
-                )
+                bpy.ops.mmd_tools.model_separate_by_bones(separate_armature=True, include_descendant_bones=True, boundary_joint_owner="DESTINATION")
 
                 # Return to object mode
-                bpy.ops.object.mode_set(mode='OBJECT')
+                bpy.ops.object.mode_set(mode="OBJECT")
 
                 # Make sure new objects are in our collection
                 for obj in context.scene.objects:
-                    if obj.mmd_type == 'ROOT' and not self.__is_object_in_collection(obj, test_collection):
+                    if obj.mmd_type == "ROOT" and not self.__is_object_in_collection(obj, test_collection):
                         # Add to collection
                         test_collection.objects.link(obj)
                         # Also move all children
@@ -331,12 +307,12 @@ class TestModelEdit(unittest.TestCase):
             # After separation, find all the armatures and roots in our collection
             all_roots = []
             for obj in test_collection.objects:
-                if obj.mmd_type == 'ROOT':
+                if obj.mmd_type == "ROOT":
                     all_roots.append(obj)
 
             all_armatures = []
             for obj in bpy.data.objects:
-                if obj.type == 'ARMATURE':
+                if obj.type == "ARMATURE":
                     # Check if this armature is in our test collection
                     if self.__is_object_in_collection(obj, test_collection):
                         all_armatures.append(obj)
@@ -348,20 +324,15 @@ class TestModelEdit(unittest.TestCase):
             armatures_with_bone_info = []
             for arm in all_armatures:
                 # Count bones with specific names
-                head_bones = [b for b in arm.pose.bones if b.name in ['頭', 'head', 'Head']]
-                neck_bones = [b for b in arm.pose.bones if b.name in ['首', 'neck', 'Neck']]
+                head_bones = [b for b in arm.pose.bones if b.name in ["頭", "head", "Head"]]
+                neck_bones = [b for b in arm.pose.bones if b.name in ["首", "neck", "Neck"]]
 
                 print(f"Armature: {arm.name}")
                 print(f"    Total bones: {len(arm.pose.bones)}")
                 print(f"    Has head bones: {[b.name for b in head_bones]}")
                 print(f"    Has neck bones: {[b.name for b in neck_bones]}")
 
-                armatures_with_bone_info.append({
-                    'armature': arm,
-                    'bone_count': len(arm.pose.bones),
-                    'head_bones': head_bones,
-                    'neck_bones': neck_bones
-                })
+                armatures_with_bone_info.append({"armature": arm, "bone_count": len(arm.pose.bones), "head_bones": head_bones, "neck_bones": neck_bones})
 
             # Get the original model names from before separation
             original_model_names = [root.name for root in existing_roots]
@@ -372,16 +343,16 @@ class TestModelEdit(unittest.TestCase):
 
             # First model's primary armature with '首' bone
             for arm_info in armatures_with_bone_info:
-                arm_name = arm_info['armature'].name
-                if arm_name == original_model_names[0] + "_arm" and arm_info['neck_bones']:
-                    first_model_arm = arm_info['armature']
+                arm_name = arm_info["armature"].name
+                if arm_name == original_model_names[0] + "_arm" and arm_info["neck_bones"]:
+                    first_model_arm = arm_info["armature"]
                     break
 
             # Second model's separated armature with '頭' bone
             for arm_info in armatures_with_bone_info:
-                arm_name = arm_info['armature'].name
-                if original_model_names[1] + "_arm" in arm_name and ".001" in arm_name and arm_info['head_bones']:
-                    second_model_arm_with_head = arm_info['armature']
+                arm_name = arm_info["armature"].name
+                if original_model_names[1] + "_arm" in arm_name and ".001" in arm_name and arm_info["head_bones"]:
+                    second_model_arm_with_head = arm_info["armature"]
                     break
 
             if not first_model_arm:
@@ -390,7 +361,7 @@ class TestModelEdit(unittest.TestCase):
             if not second_model_arm_with_head:
                 self.fail("Could not find the second model's armature with '頭' bone")
 
-            print(f"\nSelected armatures for joining:")
+            print("\nSelected armatures for joining:")
             print(f"    First model armature: {first_model_arm.name}")
             print(f"    Second model armature: {second_model_arm_with_head.name}")
 
@@ -402,10 +373,10 @@ class TestModelEdit(unittest.TestCase):
                 self.fail("Could not find the root objects for the selected armatures")
 
             # First, ensure we're in object mode
-            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.mode_set(mode="OBJECT")
 
             # Deselect all objects
-            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.object.select_all(action="DESELECT")
 
             # Select both root objects and make the first one active
             first_model_root.select_set(True)
@@ -413,12 +384,12 @@ class TestModelEdit(unittest.TestCase):
             context.view_layer.objects.active = first_model_root
 
             # Now, select and make active the first armature
-            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.object.select_all(action="DESELECT")
             first_model_arm.select_set(True)
             context.view_layer.objects.active = first_model_arm
 
             # Enter pose mode
-            bpy.ops.object.mode_set(mode='POSE')
+            bpy.ops.object.mode_set(mode="POSE")
 
             # Deselect all bones
             for bone in first_model_arm.pose.bones:
@@ -427,7 +398,7 @@ class TestModelEdit(unittest.TestCase):
             # Find and select the '首' bone in the first model
             neck_bone = None
             for bone in first_model_arm.pose.bones:
-                if bone.name == '首':
+                if bone.name == "首":
                     neck_bone = bone
                     break
 
@@ -439,15 +410,15 @@ class TestModelEdit(unittest.TestCase):
             first_model_arm.data.bones.active = neck_bone.bone
 
             # Return to object mode
-            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.mode_set(mode="OBJECT")
 
             # Now, select the second armature and make it active
-            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.object.select_all(action="DESELECT")
             second_model_arm_with_head.select_set(True)
             context.view_layer.objects.active = second_model_arm_with_head
 
             # Enter pose mode
-            bpy.ops.object.mode_set(mode='POSE')
+            bpy.ops.object.mode_set(mode="POSE")
 
             # Deselect all bones
             for bone in second_model_arm_with_head.pose.bones:
@@ -456,7 +427,7 @@ class TestModelEdit(unittest.TestCase):
             # Find and select the '頭' bone in the second model
             head_bone = None
             for bone in second_model_arm_with_head.pose.bones:
-                if bone.name == '頭':
+                if bone.name == "頭":
                     head_bone = bone
                     break
 
@@ -468,10 +439,10 @@ class TestModelEdit(unittest.TestCase):
             second_model_arm_with_head.data.bones.active = head_bone.bone
 
             # Return to object mode
-            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.mode_set(mode="OBJECT")
 
             # Select both model roots again for the join operation
-            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.object.select_all(action="DESELECT")
             first_model_root.select_set(True)
             second_model_root.select_set(True)
 
@@ -483,9 +454,9 @@ class TestModelEdit(unittest.TestCase):
             # First, collect the objects to be removed
             objects_to_remove = []
             for obj in bpy.data.objects:
-                if obj.type == 'ARMATURE' and obj != first_model_arm and obj != second_model_arm_with_head:
+                if obj.type == "ARMATURE" and obj != first_model_arm and obj != second_model_arm_with_head:
                     objects_to_remove.append(obj)
-                elif obj.mmd_type == 'ROOT' and obj != first_model_root and obj != second_model_root:
+                elif obj.mmd_type == "ROOT" and obj != first_model_root and obj != second_model_root:
                     objects_to_remove.append(obj)
             # Then remove them in a separate loop
             for obj in objects_to_remove:
@@ -494,14 +465,14 @@ class TestModelEdit(unittest.TestCase):
                     bpy.data.objects.remove(obj)
 
             # Select the specific armatures again and enter pose mode on the first armature
-            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.object.select_all(action="DESELECT")
             first_model_arm.select_set(True)
             second_model_arm_with_head.select_set(True)
             context.view_layer.objects.active = first_model_arm
 
             for arm in [first_model_arm, second_model_arm_with_head]:
-                head_bones = [b for b in arm.pose.bones if b.name in ['頭', 'head', 'Head']]
-                neck_bones = [b for b in arm.pose.bones if b.name in ['首', 'neck', 'Neck']]
+                head_bones = [b for b in arm.pose.bones if b.name in ["頭", "head", "Head"]]
+                neck_bones = [b for b in arm.pose.bones if b.name in ["首", "neck", "Neck"]]
                 print(f"Armature: {arm.name}")
                 print(f"    Total bones: {len(arm.pose.bones)}")
                 print(f"    Has head bones: {[b.name for b in head_bones]}")
@@ -510,7 +481,7 @@ class TestModelEdit(unittest.TestCase):
             context.view_layer.objects.active = first_model_arm
 
             # Enter pose mode on the active armature
-            bpy.ops.object.mode_set(mode='POSE')
+            bpy.ops.object.mode_set(mode="POSE")
 
             # Select the bones in the armatures
             for bone in first_model_arm.pose.bones:
@@ -528,15 +499,15 @@ class TestModelEdit(unittest.TestCase):
             # context.view_layer.update()
 
             # Execute join
-            bpy.ops.mmd_tools.model_join_by_bones(join_type='OFFSET')
+            bpy.ops.mmd_tools.model_join_by_bones(join_type="OFFSET")
 
             # Return to object mode
-            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.mode_set(mode="OBJECT")
 
             # Check the result - get all roots in our collection
             final_roots = []
             for obj in test_collection.objects:
-                if obj.mmd_type == 'ROOT':
+                if obj.mmd_type == "ROOT":
                     final_roots.append(obj)
 
             print(f"\nAfter joining - Model roots: {[root.name for root in final_roots]}")
@@ -549,51 +520,52 @@ class TestModelEdit(unittest.TestCase):
             joined_model_armature = FnModel.find_armature_object(joined_model_root)
 
             arm = joined_model_armature
-            head_bones = [b for b in arm.pose.bones if b.name in ['頭', 'head', 'Head']]
-            neck_bones = [b for b in arm.pose.bones if b.name in ['首', 'neck', 'Neck']]
+            head_bones = [b for b in arm.pose.bones if b.name in ["頭", "head", "Head"]]
+            neck_bones = [b for b in arm.pose.bones if b.name in ["首", "neck", "Neck"]]
             print(f"Armature: {arm.name}")
             print(f"    Total bones: {len(arm.pose.bones)}")
             print(f"    Has head bones: {[b.name for b in head_bones]}")
             print(f"    Has neck bones: {[b.name for b in neck_bones]}")
 
             # Ensure we're in object mode
-            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.mode_set(mode="OBJECT")
 
             # Deselect all objects and select the joined model root
-            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.object.select_all(action="DESELECT")
             joined_model_root.select_set(True)
             context.view_layer.objects.active = joined_model_root
 
             # Export the joined model
-            output_pmx = os.path.join(TESTS_DIR, 'output', 'joined_model.pmx')
+            # Modify the output filename to indicate model order
+            model_order_str = "2_1" if reverse_models else "1_2"
+            output_pmx = os.path.join(TESTS_DIR, "output", f"joined_model_{model_order_str}.pmx")
 
             bpy.ops.mmd_tools.export_pmx(
                 filepath=output_pmx,
                 scale=1,
                 copy_textures=False,
                 sort_materials=False,
-                log_level='ERROR',
+                log_level="ERROR",
             )
 
             # Verify the file was created
-            self.assertTrue(os.path.isfile(output_pmx), "Exported PMX file was not created")
+            self.assertTrue(os.path.isfile(output_pmx), f"Exported PMX file ({model_order_str} order) was not created")
 
-            # Now test the joined model properly
-            self.__test_joined_model(output_pmx)
-
-            # Also do a standard import/export cycle test
-            output_pmx_2 = self.__test_import_export_cycle(output_pmx)
+            # Now test the joined model properly (include a standard import/export cycle test)
+            self.__test_joined_model(output_pmx, model_order_str)
 
             # Verify both exported files exist
-            self.assertTrue(os.path.isfile(output_pmx), "First exported PMX file was not created")
-            self.assertTrue(os.path.isfile(output_pmx_2), "Second exported PMX file was not created")
+            self.assertTrue(os.path.isfile(output_pmx), f"Exported PMX file ({model_order_str} order) was not created")
 
         except Exception as e:
             import traceback
+
             traceback.print_exc()
             self.fail(f"Test failed with error: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
-    sys.argv = [__file__] + (sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
     unittest.main()
