@@ -11,6 +11,10 @@ from bpy.types import Operator
 
 from ..core.material import FnMaterial
 from ..core.model import FnModel
+from ..externals.opencc import OpenCC
+
+cc_s2t = OpenCC("s2t")
+cc_t2jp = OpenCC("t2jp")
 
 
 # Scene property to store validation results
@@ -288,8 +292,11 @@ class MMDModelFixBoneIssues(Operator):
                 continue
 
             # First convert/remove non-Japanese characters
+            converted_name = cc_s2t.convert(original_name)
+            converted_name = cc_t2jp.convert(converted_name)
+
             new_name = ""
-            for char in original_name:
+            for char in converted_name:
                 try:
                     char.encode("shift_jis")
                     new_name += char
@@ -380,8 +387,11 @@ class MMDModelFixMorphIssues(Operator):
                     continue
 
                 # First convert/remove non-Japanese characters
+                converted_name = cc_s2t.convert(original_name)
+                converted_name = cc_t2jp.convert(converted_name)
+
                 new_name = ""
-                for char in original_name:
+                for char in converted_name:
                     try:
                         char.encode("shift_jis")
                         new_name += char
