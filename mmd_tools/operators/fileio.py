@@ -615,6 +615,11 @@ class ExportVmd(Operator, ExportHelper):
         description="Export frames only in the frame range of context scene",
         default=False,
     )
+    preserve_curves: bpy.props.BoolProperty(
+        name="Preserve Animation Curves",
+        description="Add additional keyframes to preserve animation curves accurately. Blender's curves are more flexible than VMD format, which may not always preserve significant curve changes without additional keyframes.",
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -637,6 +642,7 @@ class ExportVmd(Operator, ExportHelper):
             "scale": self.scale,
             "use_pose_mode": self.use_pose_mode,
             "use_frame_range": self.use_frame_range,
+            "preserve_curves": self.preserve_curves,
         }
 
         obj = context.active_object

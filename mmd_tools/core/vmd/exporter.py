@@ -20,15 +20,19 @@ class _FCurve:
     def __x_co_0(x: bpy.types.Keyframe):
         return x.co[0]
 
-    def __init__(self, default_value):
+    def __init__(self, default_value, preserve_curves=False):
         self.__default_value = default_value
         self.__fcurve: Optional[bpy.types.FCurve] = None
         self.__sorted_keyframe_points: Optional[List[bpy.types.Keyframe]] = None
+        self.__preserve_curves = preserve_curves
 
     def setFCurve(self, fcurve: bpy.types.FCurve):
         assert fcurve.is_valid and self.__fcurve is None
         self.__fcurve = fcurve
         self.__sorted_keyframe_points: List[bpy.types.Keyframe] = sorted(self.__fcurve.keyframe_points, key=self.__x_co_0)
+
+    def set_preserve_curves(self, value):
+        self.__preserve_curves = value
 
     def frameNumbers(self):
         sorted_keyframe_points = self.__sorted_keyframe_points
@@ -45,7 +49,7 @@ class _FCurve:
         kp0 = kp1
         for kp1 in sorted_keyframe_points[1:]:
             result.add(int(kp1.co[0] + 0.5))
-            if kp0.interpolation != "LINEAR" and kp1.co.x - kp0.co.x > 2.5:
+            if self.__preserve_curves and kp0.interpolation != "LINEAR" and kp1.co.x - kp0.co.x > 2.5:
                 if kp0.interpolation == "CONSTANT":
                     result.add(int(kp1.co[0] - 0.5))
                 elif kp0.interpolation == "BEZIER":
@@ -133,10 +137,12 @@ class VMDExporter:
         self.__frame_end = float("inf")
         self.__bone_converter_cls = vmd.importer.BoneConverter
         self.__ik_fcurves = {}
+        self.__preserve_curves = False
 
     def __allFrameKeys(self, curves: List[_FCurve]):
         all_frames = set()
         for i in curves:
+            i.set_preserve_curves(self.__preserve_curves)
             all_frames |= i.frameNumbers()
 
         if len(all_frames) == 0:
@@ -499,6 +505,8 @@ class VMDExporter:
 
         if args.get("use_pose_mode", False):
             self.__bone_converter_cls = vmd.importer.BoneConverterPoseMode
+
+        self.__preserve_curves = args.get('preserve_curves', False)
 
         if armature or mesh:
             vmdFile = vmd.File()
