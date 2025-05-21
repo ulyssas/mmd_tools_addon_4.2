@@ -262,7 +262,8 @@ class VMDImporter:
         self.__convert_mmd_lamp = convert_mmd_lamp
         self.__bone_mapper = bone_mapper
         self.__bone_util_cls = BoneConverterPoseMode if use_pose_mode else BoneConverter
-        self.__frame_margin = frame_margin + 1
+        self.__frame_start = bpy.context.scene.frame_current
+        self.__frame_margin = frame_margin if self.__frame_start == 1 else 0
         self.__mirror = use_mirror
         self.__use_NLA = use_NLA
         self.__detect_camera_changes = detect_camera_changes
@@ -375,7 +376,7 @@ class VMDImporter:
         action_name = action_name or armObj.name
         action = bpy.data.actions.new(name=action_name)
 
-        extra_frame = 1 if self.__frame_margin > 1 else 0
+        extra_frame = 1 if self.__frame_margin > 0 else 0
 
         pose_bones = armObj.pose.bones
         if self.__bone_mapper:
@@ -431,7 +432,7 @@ class VMDImporter:
             prev_kps, indices = None, tuple(converter.convert_interpolation((0, 16, 32))) + (48,) * len(bone_rotation)
             keyFrames.sort(key=lambda x: x.frame_number)
             for k, x, y, z, r0, r1, r2, r3 in zip(keyFrames, *fcurves):
-                frame = k.frame_number + self.__frame_margin
+                frame = k.frame_number + self.__frame_start + self.__frame_margin
                 loc = converter.convert_location(_loc(k.location))
                 curr_rot = converter.convert_rotation(_rot(k.rotation))
                 if prev_rot is not None:
@@ -465,7 +466,7 @@ class VMDImporter:
             logging.info("---- IK animations:%5d  target: %s", len(propertyAnim), armObj.name)
             for keyFrame in propertyAnim:
                 logging.debug("(IK) frame:%5d  list: %s", keyFrame.frame_number, keyFrame.ik_states)
-                frame = keyFrame.frame_number + self.__frame_margin
+                frame = keyFrame.frame_number + self.__frame_start + self.__frame_margin
                 for ikName, enable in keyFrame.ik_states:
                     bone = pose_bones.get(ikName, None)
                     if not bone:
@@ -538,7 +539,7 @@ class VMDImporter:
             fcurve.keyframe_points.add(len(keyFrames))
             keyFrames.sort(key=lambda x: x.frame_number)
             for k, v in zip(keyFrames, fcurve.keyframe_points):
-                v.co = (k.frame_number + self.__frame_margin, k.weight)
+                v.co = (k.frame_number + self.__frame_start + self.__frame_margin, k.weight)
                 v.interpolation = "LINEAR"
             weights = tuple(i.weight for i in keyFrames)
             shapeKey.slider_min = min(shapeKey.slider_min, floor(min(weights)))
@@ -557,7 +558,7 @@ class VMDImporter:
 
         logging.debug("(Display) list(frame, show): %s", [(keyFrame.frame_number, bool(keyFrame.visible)) for keyFrame in propertyAnim])
         for keyFrame in propertyAnim:
-            self.__keyframe_insert(action.fcurves, "mmd_root.show_meshes", keyFrame.frame_number + self.__frame_margin, float(keyFrame.visible))
+            self.__keyframe_insert(action.fcurves, "mmd_root.show_meshes", keyFrame.frame_number + self.__frame_start + self.__frame_margin, float(keyFrame.visible))
 
         self.__assign_action(rootObj, action)
 
@@ -604,7 +605,7 @@ class VMDImporter:
         prev_kps, indices = None, (0, 8, 4, 12, 12, 12, 16, 20)  # x, z, y, rx, ry, rz, dis, fov
         cameraAnim.sort(key=lambda x: x.frame_number)
         for k, x, y, z, rx, ry, rz, fov, persp, dis in zip(cameraAnim, *(c.keyframe_points for c in fcurves)):
-            frame = k.frame_number + self.__frame_margin
+            frame = k.frame_number + self.__frame_start + self.__frame_margin
             x.co, z.co, y.co = ((frame, val * self.__scale) for val in _loc(k.location))
             rx.co, rz.co, ry.co = ((frame, val) for val in _rot(k.rotation))
             fov.co = (frame, math.radians(k.angle))
@@ -655,7 +656,7 @@ class VMDImporter:
 
         _loc = _MirrorMapper.get_location if self.__mirror else lambda i: i
         for keyFrame in lampAnim:
-            frame = keyFrame.frame_number + self.__frame_margin
+            frame = keyFrame.frame_number + self.__frame_start + self.__frame_margin
             self.__keyframe_insert(color_action.fcurves, "color", frame, Vector(keyFrame.color))
             self.__keyframe_insert(location_action.fcurves, "location", frame, Vector(_loc(keyFrame.direction)).xzy * -1)
 
