@@ -253,7 +253,7 @@ class HasAnimationData:
 
 
 class VMDImporter:
-    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, use_NLA=False, detect_camera_changes=True):
+    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, use_NLA=False, detect_camera_changes=True, detect_lamp_changes=True):
         self.__vmdFile = vmd.File()
         self.__vmdFile.load(filepath=filepath)
         logging.debug(str(self.__vmdFile.header))
@@ -266,6 +266,7 @@ class VMDImporter:
         self.__mirror = use_mirror
         self.__use_NLA = use_NLA
         self.__detect_camera_changes = detect_camera_changes
+        self.__detect_lamp_changes = detect_lamp_changes
 
     @staticmethod
     def __minRotationDiff(prev_q, curr_q):
@@ -627,7 +628,7 @@ class VMDImporter:
         self.__assign_action(cameraObj, distance_action)
 
     @staticmethod
-    def detectLampChange(fcurve, threshold=0.1):
+    def detectLampChange(fcurve):
         frames = list(fcurve.keyframe_points)
         frameCount = len(frames)
         frames.sort(key=lambda x: x.co[0])
@@ -635,7 +636,7 @@ class VMDImporter:
             f.interpolation = "LINEAR"
             if i + 1 < frameCount:
                 n = frames[i + 1]
-                if n.co[0] - f.co[0] <= 1.0 and abs(f.co[1] - n.co[1]) > threshold:
+                if n.co[0] - f.co[0] <= 1.0:
                     f.interpolation = "CONSTANT"
 
     def __assignToLamp(self, lampObj, action_name=None):
@@ -658,8 +659,9 @@ class VMDImporter:
             self.__keyframe_insert(color_action.fcurves, "color", frame, Vector(keyFrame.color))
             self.__keyframe_insert(location_action.fcurves, "location", frame, Vector(_loc(keyFrame.direction)).xzy * -1)
 
-        for fcurve in location_action.fcurves:
-            self.detectLampChange(fcurve)
+        if self.__detect_lamp_changes:
+            for fcurve in location_action.fcurves:
+                self.detectLampChange(fcurve)
 
         self.__assign_action(lampObj.data, color_action)
         self.__assign_action(lampObj, location_action)
@@ -680,7 +682,7 @@ class VMDImporter:
             self.__assignToArmature(obj, action_name + "_bone")
         elif obj.type == "CAMERA" and self.__convert_mmd_camera:
             self.__assignToCamera(obj, action_name + "_camera")
-        elif obj.type == "LAMP" and self.__convert_mmd_lamp:
+        elif obj.type == "LIGHT" and self.__convert_mmd_lamp:
             self.__assignToLamp(obj, action_name + "_lamp")
         elif obj.mmd_type == "ROOT":
             self.__assignToRoot(obj, action_name + "_display")
