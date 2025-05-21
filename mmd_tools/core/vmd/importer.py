@@ -253,7 +253,7 @@ class HasAnimationData:
 
 
 class VMDImporter:
-    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, use_NLA=False):
+    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, use_NLA=False, detect_camera_changes=True):
         self.__vmdFile = vmd.File()
         self.__vmdFile.load(filepath=filepath)
         logging.debug(str(self.__vmdFile.header))
@@ -265,6 +265,7 @@ class VMDImporter:
         self.__frame_margin = frame_margin + 1
         self.__mirror = use_mirror
         self.__use_NLA = use_NLA
+        self.__detect_camera_changes = detect_camera_changes
 
     @staticmethod
     def __minRotationDiff(prev_q, curr_q):
@@ -560,14 +561,14 @@ class VMDImporter:
         self.__assign_action(rootObj, action)
 
     @staticmethod
-    def detectCameraChange(fcurve, threshold=10.0):
+    def detectCameraChange(fcurve):
         frames = list(fcurve.keyframe_points)
         frameCount = len(frames)
         frames.sort(key=lambda x: x.co[0])
         for i, f in enumerate(frames):
             if i + 1 < frameCount:
                 n = frames[i + 1]
-                if n.co[0] - f.co[0] <= 1.0 and abs(f.co[1] - n.co[1]) > threshold:
+                if n.co[0] - f.co[0] <= 1.0:
                     f.interpolation = "CONSTANT"
 
     def __assignToCamera(self, cameraObj, action_name=None):
@@ -619,7 +620,7 @@ class VMDImporter:
 
         for fcurve in fcurves:
             self.__fixFcurveHandles(fcurve)
-            if fcurve.data_path == "rotation_euler":
+            if self.__detect_camera_changes:
                 self.detectCameraChange(fcurve)
 
         self.__assign_action(mmdCamera, parent_action)

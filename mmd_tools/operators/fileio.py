@@ -284,6 +284,11 @@ class ImportVmd(Operator, ImportHelper):
         description="Import the motion as NLA strips",
         default=False,
     )
+    detect_camera_changes: bpy.props.BoolProperty(
+        name="Detect Camera Changes",
+        description="When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts.",
+        default=True,
+    )
     files: bpy.props.CollectionProperty(
         type=OperatorFileListElement,
     )
@@ -306,6 +311,7 @@ class ImportVmd(Operator, ImportHelper):
             layout.prop(self, "dictionary")
         layout.prop(self, "use_pose_mode")
         layout.prop(self, "use_mirror")
+        layout.prop(self, "detect_camera_changes")
 
         layout.prop(self, "update_scene_settings")
 
@@ -339,6 +345,7 @@ class ImportVmd(Operator, ImportHelper):
                 frame_margin=self.margin,
                 use_mirror=self.use_mirror,
                 use_NLA=self.use_NLA,
+                detect_camera_changes=self.detect_camera_changes,
             )
 
             for i in selected_objects:
