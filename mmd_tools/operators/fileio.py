@@ -234,7 +234,7 @@ class ImportVmd(Operator, ImportHelper):
     )
     margin: bpy.props.IntProperty(
         name="Margin",
-        description="How many frames added before motion starting",
+        description="Number of frames to add before the motion starts (only applies if current frame is 1)",
         min=0,
         default=5,
     )
@@ -279,6 +279,11 @@ class ImportVmd(Operator, ImportHelper):
         description="Update frame range and frame rate (30 fps)",
         default=True,
     )
+    always_create_new_action: bpy.props.BoolProperty(
+        name="Always Create New Action",
+        description="Always create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
+        default=False,
+    )
     use_NLA: bpy.props.BoolProperty(
         name="Use NLA",
         description="Import the motion as NLA strips",
@@ -314,6 +319,7 @@ class ImportVmd(Operator, ImportHelper):
         layout = self.layout
         layout.prop(self, "scale")
         layout.prop(self, "margin")
+        layout.prop(self, "always_create_new_action")
         layout.prop(self, "use_NLA")
 
         layout.prop(self, "bone_mapper")
@@ -357,6 +363,7 @@ class ImportVmd(Operator, ImportHelper):
                 use_pose_mode=self.use_pose_mode,
                 frame_margin=self.margin,
                 use_mirror=self.use_mirror,
+                always_create_new_action=self.always_create_new_action,
                 use_NLA=self.use_NLA,
                 detect_camera_changes=self.detect_camera_changes,
                 detect_lamp_changes=self.detect_lamp_changes,
