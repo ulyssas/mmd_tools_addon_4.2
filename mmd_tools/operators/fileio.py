@@ -425,7 +425,7 @@ class ImportVmd(Operator, ImportHelper):
     always_create_new_action: bpy.props.BoolProperty(
         name="Always Create New Action",
         description="Always create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
-        default=False,
+        default=True,
     )
     use_NLA: bpy.props.BoolProperty(
         name="Use NLA",
@@ -834,7 +834,7 @@ class ExportVmd(Operator, ExportHelper):
     preserve_curves: bpy.props.BoolProperty(
         name="Preserve Animation Curves",
         description="Add additional keyframes to preserve animation curves accurately. Blender's curves are more flexible than VMD format, which may not always preserve significant curve changes without additional keyframes.",
-        default=False,
+        default=True,
     )
 
     _preferences_applied = False
