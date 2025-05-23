@@ -1,14 +1,13 @@
+import math
 import os
 import shutil
 import unittest
-import math
 
 import bpy
-from bl_ext.user_default.mmd_tools.core import vmd
+from bl_ext.user_default.mmd_tools.core import pmx, vmd
 from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
 from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
-from bl_ext.user_default.mmd_tools.core import pmx
-from mathutils import Vector, Quaternion
+from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
