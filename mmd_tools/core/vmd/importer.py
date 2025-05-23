@@ -135,6 +135,7 @@ class _FnBezier:
     @classmethod
     def from_fcurve(cls, kp0, kp1):
         p0, p1, p2, p3 = kp0.co, kp0.handle_right, kp1.handle_left, kp1.co
+        # Clamp for using Cardano's cubic formula
         if p1.x > p3.x:
             t = (p3.x - p0.x) / (p1.x - p0.x)
             p1 = (1 - t) * p0 + p1 * t
@@ -177,6 +178,7 @@ class _FnBezier:
         return self.evaluate(self.axis_to_t(x))
 
     def axis_to_t(self, val, axis=0):
+        """Find parameter t using Cardano's cubic formula"""
         p0, p1, p2, p3 = self._p0[axis], self._p1[axis], self._p2[axis], self._p3[axis]
         a = p3 - p0 + 3 * (p1 - p2)
         b = 3 * (p0 - 2 * p1 + p2)
@@ -280,10 +282,14 @@ class VMDImporter:
 
     @staticmethod
     def __setInterpolation(bezier, kp0, kp1):
-        if bezier[0] == bezier[1] and bezier[2] == bezier[3]:
-            kp0.interpolation = "LINEAR"
-        else:
-            kp0.interpolation = "BEZIER"
+        # if bezier[0] == bezier[1] and bezier[2] == bezier[3]:
+        #     kp0.interpolation = "BEZIER"
+        # else:
+        #     kp0.interpolation = "BEZIER"
+
+        # Always use BEZIER to preserve VMD handle positions
+        kp0.interpolation = "BEZIER"
+
         kp0.handle_right_type = "FREE"
         kp1.handle_left_type = "FREE"
         d = (kp1.co - kp0.co) / 127.0
