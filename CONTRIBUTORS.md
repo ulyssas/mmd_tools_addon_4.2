@@ -10,12 +10,21 @@ Maintainer
 Contributors
 - iRi-E
 - lordscales91
-- Pixiy
-- r1cebank
+- rintrint
 - nagadomi
+- mmmhj2
 - ptrthomas
 - stefnotch
+- Pixiy
 - qwertychouskie
-- ChennyBaBy
-- Darkblader24
 - aoowweenn
+- One-sixth
+- Melonbwead
+- Darkblader24
+- Vwings
+- amirvincent64
+- tyron82MMD
+- fmnijk
+- ulyssas
+- r1cebank
+- ChennyBaBy
