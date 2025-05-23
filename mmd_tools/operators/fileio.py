@@ -58,6 +58,134 @@ def _update_types(cls, prop):
         cls.types = types  # trigger update
 
 
+def get_addon_package_name():
+    """Get the root package name for addon preferences"""
+    current_package = __package__
+    parts = current_package.split(".")
+    try:
+        index = parts.index("mmd_tools")
+        return ".".join(parts[: index + 1])
+    except ValueError:
+        pass
+    return current_package
+
+
+def get_preset_directories(operator_bl_idname):
+    """Get preset directories for an operator"""
+    preset_dirs = []
+
+    try:
+        # Try the official API first
+        official_dirs = bpy.utils.preset_paths(operator_bl_idname)
+        preset_dirs.extend(official_dirs)
+
+        # Add manual preset paths as fallback
+        scripts_dir = bpy.utils.user_resource("SCRIPTS")
+        config_dir = bpy.utils.user_resource("CONFIG")
+
+        manual_preset_paths = [
+            os.path.join(scripts_dir, "presets", "operator", operator_bl_idname),
+            os.path.join(config_dir, "presets", "operator", operator_bl_idname),
+        ]
+
+        for path in manual_preset_paths:
+            if os.path.exists(path) and path not in preset_dirs:
+                preset_dirs.append(path)
+
+    except Exception:
+        pass
+
+    return preset_dirs
+
+
+def apply_operator_preset(operator, preset_name):
+    """Apply a saved preset to an operator instance"""
+    if not preset_name:
+        return False
+
+    try:
+        preset_dirs = get_preset_directories(operator.__class__.bl_idname)
+
+        if not preset_dirs:
+            return False
+
+        # Look for the preset file
+        preset_file = None
+        for path in preset_dirs:
+            potential_file = os.path.join(path, preset_name + ".py")
+            if os.path.exists(potential_file):
+                preset_file = potential_file
+                break
+
+        if not preset_file:
+            return False
+
+        # Execute preset with proper context
+        with bpy.context.temp_override(active_operator=operator):
+            try:
+                with open(preset_file, "r", encoding="utf-8") as f:
+                    preset_code = f.read()
+
+                namespace = {"bpy": bpy}
+                exec(preset_code, namespace)
+                return True
+
+            except Exception:
+                return False
+
+    except Exception:
+        return False
+
+
+def get_available_presets(operator_bl_idname):
+    """Get list of available presets for an operator"""
+    presets = []
+
+    try:
+        preset_dirs = get_preset_directories(operator_bl_idname)
+
+        for preset_dir in preset_dirs:
+            try:
+                for filename in os.listdir(preset_dir):
+                    if filename.endswith(".py"):
+                        preset_name = filename[:-3]  # Remove .py extension
+                        if preset_name not in presets:
+                            presets.append(preset_name)
+            except Exception:
+                continue
+
+        return sorted(presets)
+
+    except Exception:
+        return []
+
+
+def load_default_settings_from_preferences(operator, context, preset_property_name):
+    """Load default settings from preferences using preset"""
+    try:
+        addon_package = get_addon_package_name()
+        addon_prefs = context.preferences.addons.get(addon_package)
+
+        if not addon_prefs:
+            return False
+
+        prefs = addon_prefs.preferences
+
+        # Check if the preset property exists
+        if not hasattr(prefs, preset_property_name):
+            return False
+
+        # Apply preset if specified
+        preset_name = getattr(prefs, preset_property_name, "")
+        if preset_name and apply_operator_preset(operator, preset_name):
+            return True
+
+        return False
+
+    except Exception:
+        return False
+
+
 class ImportPmx(Operator, ImportHelper):
     bl_idname = "mmd_tools.import_model"
     bl_label = "Import Model File (.pmd, .pmx)"
@@ -164,6 +292,21 @@ class ImportPmx(Operator, ImportHelper):
         description="Create a log file",
         default=False,
     )
+
+    _preferences_applied = False
+
+    def invoke(self, context, event):
+        """Load default values from preferences on first dialog open"""
+        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, "default_pmx_import_preset"):
+                self.__class__._preferences_applied = True
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        """Restore preferences applied state when dialog is cancelled"""
+        self.__class__._preferences_applied = self._preferences_were_applied
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -311,9 +454,24 @@ class ImportVmd(Operator, ImportHelper):
     )
     directory: bpy.props.StringProperty(subtype="DIR_PATH")
 
+    _preferences_applied = False
+
     @classmethod
     def poll(cls, context):
         return len(context.selected_objects) > 0
+
+    def invoke(self, context, event):
+        """Load default values from preferences on first dialog open"""
+        self._preferences_were_applied = ImportVmd._preferences_applied
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, "default_vmd_import_preset"):
+                ImportVmd._preferences_applied = True
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        """Restore preferences applied state when dialog is cancelled"""
+        ImportVmd._preferences_applied = self._preferences_were_applied
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
@@ -429,9 +587,24 @@ class ImportVpd(Operator, ImportHelper):
         options={"SKIP_SAVE"},
     )
 
+    _preferences_applied = False
+
     @classmethod
     def poll(cls, context):
         return len(context.selected_objects) > 0
+
+    def invoke(self, context, event):
+        """Load default values from preferences on first dialog open"""
+        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, "default_vpd_import_preset"):
+                self.__class__._preferences_applied = True
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        """Restore preferences applied state when dialog is cancelled"""
+        self.__class__._preferences_applied = self._preferences_were_applied
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
@@ -542,10 +715,25 @@ class ExportPmx(Operator, ExportHelper):
         default=False,
     )
 
+    _preferences_applied = False
+
     @classmethod
     def poll(cls, context):
         obj = context.active_object
         return obj in context.selected_objects and FnModel.find_root_object(obj)
+
+    def invoke(self, context, event):
+        """Load default values from preferences on first dialog open"""
+        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, "default_pmx_export_preset"):
+                self.__class__._preferences_applied = True
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        """Restore preferences applied state when dialog is cancelled"""
+        self.__class__._preferences_applied = self._preferences_were_applied
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -649,6 +837,8 @@ class ExportVmd(Operator, ExportHelper):
         default=False,
     )
 
+    _preferences_applied = False
+
     @classmethod
     def poll(cls, context):
         obj = context.active_object
@@ -663,6 +853,19 @@ class ExportVmd(Operator, ExportHelper):
             return True
 
         return False
+
+    def invoke(self, context, event):
+        """Load default values from preferences on first dialog open"""
+        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, "default_vmd_export_preset"):
+                self.__class__._preferences_applied = True
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        """Restore preferences applied state when dialog is cancelled"""
+        self.__class__._preferences_applied = self._preferences_were_applied
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         params = {
@@ -736,6 +939,8 @@ class ExportVpd(Operator, ExportHelper):
         options={"SKIP_SAVE"},
     )
 
+    _preferences_applied = False
+
     @classmethod
     def poll(cls, context):
         obj = context.active_object
@@ -748,6 +953,19 @@ class ExportVpd(Operator, ExportHelper):
             return True
 
         return False
+
+    def invoke(self, context, event):
+        """Load default values from preferences on first dialog open"""
+        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, "default_vpd_export_preset"):
+                self.__class__._preferences_applied = True
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        """Restore preferences applied state when dialog is cancelled"""
+        self.__class__._preferences_applied = self._preferences_were_applied
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
