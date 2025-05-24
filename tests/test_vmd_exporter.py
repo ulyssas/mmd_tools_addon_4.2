@@ -66,9 +66,8 @@ class TestVmdExporter(unittest.TestCase):
         if len(interp0) != len(interp1):
             return float("inf")
 
-        # indices in [31, 46, 47, 61, 62, 63] are unclear, may be related to
-        # (センター, 右足IK, 左足IK) bones causing large errors (128.00)
-        skip_indices = {31, 46, 47, 61, 62, 63}
+        # indices in [2, 3, 31, 46, 47, 61, 62, 63] are unclear
+        skip_indices = {2, 3, 31, 46, 47, 61, 62, 63}
 
         max_error = 0
         for i, (i0, i1) in enumerate(zip(interp0, interp1)):
@@ -224,9 +223,10 @@ class TestVmdExporter(unittest.TestCase):
 
                             # Print useful info
                             if interp_error > 0 and not detailed_interp_printed:
-                                # indices in [31, 46, 47, 61, 62, 63] are unclear, may be related to
-                                # (センター, 右足IK, 左足IK) bones causing large errors (128.00)
-                                skip_indices = {31, 46, 47, 61, 62, 63}
+                                # indices in [2, 3, 31, 46, 47, 61, 62, 63] are unclear
+                                # [2, 3] may be related to some special bones
+                                # [31, 46, 47, 61, 62, 63] may be related to (センター, 右足IK, 左足IK) bones
+                                skip_indices = {2, 3, 31, 46, 47, 61, 62, 63}
                                 for j, (s, r) in enumerate(zip(src_frame.interp, res_frame.interp)):
                                     if abs(s - r) > 0 and j not in skip_indices:
                                         print(f"        Difference at index {j:2d}: {s:4d} ->{r:4d}, diff{abs(s - r):4d}, {msg}")

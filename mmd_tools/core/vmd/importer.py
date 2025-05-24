@@ -220,8 +220,8 @@ class _FnBezier:
         def _sqrt3(v):
             return -((-v) ** (1 / 3)) if v < 0 else v ** (1 / 3)
 
-        A = b * c / (6 * a * a) - b * b * b / (27 * a * a * a) - d / (2 * a)
-        B = c / (3 * a) - b * b / (9 * a * a)
+        A = ((b * c / 6 - b * b * b / (27 * a)) / a - d / 2) / a
+        B = (c - b * b / (3 * a)) / (3 * a)
         b_3a = -b / (3 * a)
         D = A * A + B * B * B
 
@@ -292,9 +292,11 @@ class VMDImporter:
 
         kp0.handle_right_type = "FREE"
         kp1.handle_left_type = "FREE"
-        d = (kp1.co - kp0.co) / 127.0
-        kp0.handle_right = kp0.co + Vector((d.x * bezier[0], d.y * bezier[1]))
-        kp1.handle_left = kp0.co + Vector((d.x * bezier[2], d.y * bezier[3]))
+
+        # Always multiply before dividing to reduce precision errors
+        d = (kp1.co - kp0.co)
+        kp0.handle_right = kp0.co + Vector((d.x * bezier[0] / 127.0, d.y * bezier[1] / 127.0))
+        kp1.handle_left = kp0.co + Vector((d.x * bezier[2] / 127.0, d.y * bezier[3] / 127.0))
 
     @staticmethod
     def __fixFcurveHandles(fcurve):

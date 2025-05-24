@@ -72,12 +72,12 @@ class _FCurve:
         dx, dy = p3 - p0
         x1, y1 = p1 - p0
         x2, y2 = p2 - p0
-        if abs(dx) < 1e-5:
+        if abs(dx) < 5e-5:
             (x1, x2) = (20, 107)
         else:
             x1 = max(0, min(127, round(x1 * 127.0 / dx)))
             x2 = max(0, min(127, round(x2 * 127.0 / dx)))
-        if abs(dy) < 1e-5:
+        if abs(dy) < 5e-5:
             # (y1, y2) = (20, 107)
             (y1, y2) = (x1 if x1 in [20, 40] else 0, x2 if x2 in [87, 107] else 127)  # restore VMD handle positions
         else:
@@ -197,7 +197,7 @@ class VMDExporter:
         #    z_x1, 0, 0, 0, z_y1, 0, 0, 0, z_x2, 0, 0, 0, z_y2, 0, 0, 0,
         #    r_x1, 0, 0, 0, r_y1, 0, 0, 0, r_x2, 0, 0, 0, r_y2, 0, 0, 0,
         #    ]
-        return [ # full data, indices in [2, 3] are always 0, indices in [31, 46, 47, 61, 62, 63] are unclear, may be related to (センター, 右足IK, 左足IK) bones
+        return [ # full data, indices in [2, 3, 31, 46, 47, 61, 62, 63] are unclear
             x_x1, y_x1,    0,    0, x_y1, y_y1, z_y1, r_y1, x_x2, y_x2, z_x2, r_x2, x_y2, y_y2, z_y2, r_y2,
             y_x1, z_x1, r_x1, x_y1, y_y1, z_y1, r_y1, x_x2, y_x2, z_x2, r_x2, x_y2, y_y2, z_y2, r_y2,    0,
             z_x1, r_x1, x_y1, y_y1, z_y1, r_y1, x_x2, y_x2, z_x2, r_x2, x_y2, y_y2, z_y2, r_y2,    0,    0,
