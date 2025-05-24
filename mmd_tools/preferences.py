@@ -8,7 +8,7 @@ import bpy
 
 def get_preset_items_for_operator(operator_bl_idname):
     """Get preset items for EnumProperty"""
-    items = [("", "None", "Use built-in defaults")]
+    items = [("__DEFAULT__", "Default", "Use built-in defaults")]
     try:
         from .operators import fileio
 
@@ -107,8 +107,27 @@ class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
         default=0,
     )
 
+    def initialize_defaults(self):
+        """Initialize default preset values, converting empty strings to default preset"""
+        preset_configs = [
+            ("default_pmx_import_preset", "mmd_tools.import_model"),
+            ("default_pmx_export_preset", "mmd_tools.export_pmx"),
+            ("default_vmd_import_preset", "mmd_tools.import_vmd"),
+            ("default_vmd_export_preset", "mmd_tools.export_vmd"),
+            ("default_vpd_import_preset", "mmd_tools.import_vpd"),
+            ("default_vpd_export_preset", "mmd_tools.export_vpd"),
+        ]
+
+        for prop_name, operator_name in preset_configs:
+            current_value = getattr(self, prop_name, "")
+            if current_value == "":  # Uninitialized
+                setattr(self, prop_name, "__DEFAULT__")
+
     def draw(self, _context):
         layout: bpy.types.UILayout = self.layout  # pylint: disable=no-member
+
+        self.initialize_defaults()
+
         layout.prop(self, "enable_mmd_model_production_features")
         layout.prop(self, "shared_toon_folder")
         layout.prop(self, "base_texture_folder")
