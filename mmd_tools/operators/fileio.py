@@ -498,8 +498,12 @@ class ImportVmd(Operator, ImportHelper):
             root = FnModel.find_root_object(i)
             if root == i:
                 rig = Model(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
+                armature = rig.armature()
+                if armature is not None:
+                    selected_objects.add(armature)
+                placeholder = rig.morph_slider.placeholder()
+                if placeholder is not None:
+                    selected_objects.add(placeholder)
                 selected_objects |= set(rig.meshes())
 
         bone_mapper = None
@@ -623,8 +627,12 @@ class ImportVpd(Operator, ImportHelper):
             root = FnModel.find_root_object(i)
             if root == i:
                 rig = Model(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
+                armature = rig.armature()
+                if armature is not None:
+                    selected_objects.add(armature)
+                placeholder = rig.morph_slider.placeholder()
+                if placeholder is not None:
+                    selected_objects.add(placeholder)
                 selected_objects |= set(rig.meshes())
 
         bone_mapper = None
