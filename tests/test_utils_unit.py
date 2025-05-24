@@ -16,8 +16,8 @@ class TestUtilsUnit(unittest.TestCase):
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()
 
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete(use_global=True)
         # Add some useful shortcuts
         self.context = bpy.context
@@ -30,14 +30,14 @@ class TestUtilsUnit(unittest.TestCase):
         # Create test objects
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
-        cube.name = 'TestCube'
+        cube.name = "TestCube"
         
         bpy.ops.mesh.primitive_plane_add()
         plane = bpy.context.active_object
-        plane.name = 'TestPlane'
+        plane.name = "TestPlane"
         
         # Deselect all objects first
-        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.select_all(action="DESELECT")
         self.assertFalse(cube.select_get(), "Cube should be deselected initially")
         self.assertFalse(plane.select_get(), "Plane should be deselected initially")
         
@@ -60,19 +60,19 @@ class TestUtilsUnit(unittest.TestCase):
         # Create a test object
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
-        cube.name = 'TestCube'
+        cube.name = "TestCube"
         
         # Start in object mode
-        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.mode_set(mode="OBJECT")
         
         # Test entering edit mode
         enterEditMode(cube)
-        self.assertEqual(cube.mode, 'EDIT', "Object should be in EDIT mode")
+        self.assertEqual(cube.mode, "EDIT", "Object should be in EDIT mode")
         self.assertEqual(bpy.context.active_object, cube, "Cube should be the active object")
         
         # Test that it works when already in edit mode
         enterEditMode(cube)
-        self.assertEqual(cube.mode, 'EDIT', "Object should remain in EDIT mode")
+        self.assertEqual(cube.mode, "EDIT", "Object should remain in EDIT mode")
 
     def test_setParentToBone(self):
         """
@@ -81,12 +81,12 @@ class TestUtilsUnit(unittest.TestCase):
         # Create an armature
         bpy.ops.object.armature_add()
         armature = bpy.context.active_object
-        armature.name = 'TestArmature'
+        armature.name = "TestArmature"
         
         # Create a mesh object to parent
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
-        cube.name = 'TestCube'
+        cube.name = "TestCube"
         
         # Test parenting
         bone_name = armature.data.bones[0].name
@@ -95,7 +95,7 @@ class TestUtilsUnit(unittest.TestCase):
         # Check if parenting was successful
         self.assertEqual(cube.parent, armature, "Armature should be the parent of the cube")
         self.assertEqual(cube.parent_bone, bone_name, "Cube should be parented to the bone")
-        self.assertEqual(cube.parent_type, 'BONE', "Parent type should be BONE")
+        self.assertEqual(cube.parent_type, "BONE", "Parent type should be BONE")
 
     def test_selectSingleBone(self):
         """
@@ -104,23 +104,23 @@ class TestUtilsUnit(unittest.TestCase):
         # Create an armature with multiple bones
         bpy.ops.object.armature_add()
         armature = bpy.context.active_object
-        armature.name = 'TestArmature'
+        armature.name = "TestArmature"
         
         # Enter edit mode to add more bones
-        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.object.mode_set(mode="EDIT")
         # Add a second bone
         bpy.ops.armature.bone_primitive_add()
         bone_names = [bone.name for bone in armature.data.bones]
         
         # Back to object mode
-        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.mode_set(mode="OBJECT")
         
         # Test bone selection
         target_bone = bone_names[0]
         selectSingleBone(self.context, armature, target_bone)
         
         # Check if the bone is selected and active
-        bpy.ops.object.mode_set(mode='POSE')
+        bpy.ops.object.mode_set(mode="POSE")
         self.assertTrue(armature.data.bones[target_bone].select, "Target bone should be selected")
         self.assertEqual(armature.data.bones.active, armature.data.bones[target_bone], "Target bone should be active")
         
@@ -135,12 +135,12 @@ class TestUtilsUnit(unittest.TestCase):
         """
         # Test cases
         test_cases = [
-            ('左腕', '腕.L'),  # Left arm
-            ('右腕', '腕.R'),  # Right arm
-            ('左足首', '足首.L'),  # Left ankle
-            ('右足首', '足首.R'),  # Right ankle
-            ('胴体', '胴体'),  # Torso (no conversion needed)
-            ('頭', '頭')       # Head (no conversion needed)
+            ("左腕", "腕.L"),  # Left arm
+            ("右腕", "腕.R"),  # Right arm
+            ("左足首", "足首.L"),  # Left ankle
+            ("右足首", "足首.R"),  # Right ankle
+            ("胴体", "胴体"),  # Torso (no conversion needed)
+            ("頭", "頭")       # Head (no conversion needed)
         ]
         
         # Test with default delimiter (dot)
@@ -148,8 +148,8 @@ class TestUtilsUnit(unittest.TestCase):
             self.assertEqual(convertNameToLR(input_name), expected_output, f"Failed to convert {input_name}")
         
         # Test with underscore delimiter
-        self.assertEqual(convertNameToLR('左腕', True), '腕_L', "Failed to convert with underscore")
-        self.assertEqual(convertNameToLR('右腕', True), '腕_R', "Failed to convert with underscore")
+        self.assertEqual(convertNameToLR("左腕", True), "腕_L", "Failed to convert with underscore")
+        self.assertEqual(convertNameToLR("右腕", True), "腕_R", "Failed to convert with underscore")
 
     def test_convertLRToName(self):
         """
@@ -157,14 +157,14 @@ class TestUtilsUnit(unittest.TestCase):
         """
         # Test cases
         test_cases = [
-            ('腕.L', '左腕'),  # Left arm
-            ('腕.R', '右腕'),  # Right arm
-            ('足首.L', '左足首'),  # Left ankle
-            ('足首.R', '右足首'),  # Right ankle
-            ('腕_L', '左腕'),  # Left arm with underscore
-            ('腕_R', '右腕'),  # Right arm with underscore
-            ('胴体', '胴体'),  # Torso (no conversion needed)
-            ('頭', '頭')       # Head (no conversion needed)
+            ("腕.L", "左腕"),  # Left arm
+            ("腕.R", "右腕"),  # Right arm
+            ("足首.L", "左足首"),  # Left ankle
+            ("足首.R", "右足首"),  # Right ankle
+            ("腕_L", "左腕"),  # Left arm with underscore
+            ("腕_R", "右腕"),  # Right arm with underscore
+            ("胴体", "胴体"),  # Torso (no conversion needed)
+            ("頭", "頭")       # Head (no conversion needed)
         ]
         
         for input_name, expected_output in test_cases:
@@ -183,8 +183,8 @@ class TestUtilsUnit(unittest.TestCase):
         vg2 = cube.vertex_groups.new(name="DestGroup")
         
         # Assign vertices to groups
-        vg1.add([0, 1, 2], 1.0, 'REPLACE')
-        vg2.add([3, 4], 0.5, 'REPLACE')
+        vg1.add([0, 1, 2], 1.0, "REPLACE")
+        vg2.add([3, 4], 0.5, "REPLACE")
         
         # Merge vertex groups
         mergeVertexGroup(cube, "SourceGroup", "DestGroup")
@@ -213,9 +213,9 @@ class TestUtilsUnit(unittest.TestCase):
         cube.data.materials.append(mat2)
         
         # Assign materials to different faces
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.select_all(action='DESELECT')
-        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="DESELECT")
+        bpy.ops.object.mode_set(mode="OBJECT")
         
         # Assign first half of faces to material 0, second half to material 1
         for i, polygon in enumerate(cube.data.polygons):
@@ -231,7 +231,7 @@ class TestUtilsUnit(unittest.TestCase):
         
         # Check if objects have the expected materials
         material_names = {"Material1", "Material2"}
-        separated_objects = [obj for obj in bpy.data.objects if obj.type == 'MESH' and obj != cube]
+        separated_objects = [obj for obj in bpy.data.objects if obj.type == "MESH" and obj != cube]
         
         self.assertGreaterEqual(len(separated_objects), 1, "Should have at least one separated object")
         
@@ -270,7 +270,7 @@ class TestUtilsUnit(unittest.TestCase):
         armature = bpy.context.active_object
         
         # Set up bone properties
-        bpy.ops.object.mode_set(mode='POSE')
+        bpy.ops.object.mode_set(mode="POSE")
         bone = armature.pose.bones[0]
         bone.name = "Bone"
         
@@ -285,7 +285,7 @@ class TestUtilsUnit(unittest.TestCase):
         bone_map = makePmxBoneMap(armature)
         
         # Check if mapping was correctly created
-        if hasattr(bone, 'mmd_bone'):
+        if hasattr(bone, "mmd_bone"):
             self.assertIn("骨", bone_map, "Japanese bone name should be in the map")
             self.assertEqual(bone_map["骨"], bone, "Mapped bone should be the original bone")
         else:
@@ -336,7 +336,7 @@ class TestUtilsUnit(unittest.TestCase):
         Test if saferelpath correctly handles relative paths across drives
         """
         # Test normal relative path (same drive)
-        if os.name == 'posix':  # Unix-like system
+        if os.name == "posix":  # Unix-like system
             self.assertEqual(saferelpath("/a/b/c/file.txt", "/a/b"), "c/file.txt", "Failed to get relative path")
         
         # Test with different strategies
@@ -346,12 +346,12 @@ class TestUtilsUnit(unittest.TestCase):
         
         # Use os.path.relpath for the expected result of "outside" strategy
         # This is what the implementation actually returns when drives are the same
-        expected_outside = os.path.relpath("path/to/file.txt", "different/path") if os.name != 'nt' or not os.path.splitdrive("path/to/file.txt")[0] else ".." + os.sep + base_path
+        expected_outside = os.path.relpath("path/to/file.txt", "different/path") if os.name != "nt" or not os.path.splitdrive("path/to/file.txt")[0] else ".." + os.sep + base_path
         self.assertEqual(saferelpath("path/to/file.txt", "different/path", "outside"), 
                         expected_outside, "Outside strategy should return proper relative path")
         
         # Test absolute strategy
-        if os.name == 'posix':  # Unix-like system
+        if os.name == "posix":  # Unix-like system
             full_path = os.path.abspath("path/to/file.txt")
             self.assertEqual(saferelpath("path/to/file.txt", "different/path", "absolute"), full_path, 
                             "Absolute strategy should return absolute path")
@@ -380,7 +380,7 @@ class TestUtilsUnit(unittest.TestCase):
             return "result"
         
         # Mock the logging module to capture warnings
-        with patch('logging.warning') as mock_warning:
+        with patch("logging.warning") as mock_warning:
             # Call the deprecated function
             result = old_function()
             
@@ -396,7 +396,7 @@ class TestUtilsUnit(unittest.TestCase):
             self.assertIn("Use new_function instead", args[3], "Warning should include details")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     unittest.main()

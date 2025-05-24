@@ -509,7 +509,7 @@ class VMDExporter:
         if args.get("use_pose_mode", False):
             self.__bone_converter_cls = vmd.importer.BoneConverterPoseMode
 
-        self.__preserve_curves = args.get('preserve_curves', False)
+        self.__preserve_curves = args.get("preserve_curves", False)
 
         if armature or mesh:
             vmdFile = vmd.File()

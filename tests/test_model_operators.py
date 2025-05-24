@@ -12,9 +12,9 @@ from bl_ext.user_default.mmd_tools.core.model import Model
 
 # A workaround is to use unicode literals
 # Root bone
-ROOT_BONE = '\u5168\u3066\u306e\u89aa'
+ROOT_BONE = "\u5168\u3066\u306e\u89aa"
 # Facial Frame
-EXP_FRAME = '\u8868\u60c5'
+EXP_FRAME = "\u8868\u60c5"
 
 class ModelOperatorsTest(unittest.TestCase):
     
@@ -26,38 +26,38 @@ class ModelOperatorsTest(unittest.TestCase):
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()
 
-        bpy.ops.object.mode_set(mode='OBJECT')
-        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete(use_global=True)
         # Add some useful shortcuts
         self.context = bpy.context
         self.scene = bpy.context.scene
 
     def test_create_model(self):
-        bpy.ops.mmd_tools.create_mmd_model_root_object(name_j='Test', name_e='Test_e')
-        self.assertIn('Test', self.scene.objects.keys(), 'Model not found')
+        bpy.ops.mmd_tools.create_mmd_model_root_object(name_j="Test", name_e="Test_e")
+        self.assertIn("Test", self.scene.objects.keys(), "Model not found")
         # Check the object has the expected data
-        obj = self.scene.objects['Test']
+        obj = self.scene.objects["Test"]
         root = Model.findRoot(obj)
-        self.assertIsNotNone(root, 'Model not created properly')
+        self.assertIsNotNone(root, "Model not created properly")
         frames = root.mmd_root.display_item_frames
-        self.assertIn('Root', frames.keys())
+        self.assertIn("Root", frames.keys())
         self.assertIn(EXP_FRAME, frames.keys())
         # Check the rig has an armature
         rig = Model(root)
-        self.assertIsNotNone(rig.armature(), 'Armature not found')
+        self.assertIsNotNone(rig.armature(), "Armature not found")
         armObj = rig.armature()
-        self.assertIn(ROOT_BONE, armObj.data.bones.keys(), 'Root bone not found')
+        self.assertIn(ROOT_BONE, armObj.data.bones.keys(), "Root bone not found")
         # Check the root frame has the root bone
-        root_frame = frames['Root']
+        root_frame = frames["Root"]
         try:
-            item = getattr(root_frame, 'data', root_frame.items)[0]
-            self.assertEqual(item.name, armObj.data.bones.keys()[0], 'Incorrect Item name')
-            self.assertEqual(item.type, 'BONE', 'Incorrect Item type')
+            item = getattr(root_frame, "data", root_frame.items)[0]
+            self.assertEqual(item.name, armObj.data.bones.keys()[0], "Incorrect Item name")
+            self.assertEqual(item.type, "BONE", "Incorrect Item type")
         except IndexError:
-            self.fail('Root bone not found in root frame')
+            self.fail("Root bone not found in root frame")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     unittest.main()

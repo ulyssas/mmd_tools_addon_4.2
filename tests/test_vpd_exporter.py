@@ -179,7 +179,7 @@ class TestVPDExporter(unittest.TestCase):
         armature.name = "TestArmature"
         
         # Enter edit mode to add bones
-        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.object.mode_set(mode="EDIT")
         
         # Get the initial bone
         edit_bones = armature.data.edit_bones
@@ -204,7 +204,7 @@ class TestVPDExporter(unittest.TestCase):
         arm_r.parent = first_bone
         
         # Exit edit mode
-        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.mode_set(mode="OBJECT")
         
         # Add Japanese names for MMD compatibility
         for bone in armature.pose.bones:
@@ -287,7 +287,7 @@ class TestVPDExporter(unittest.TestCase):
             
             # Simple verification of file structure without relying on specific Japanese characters
             # Read file in binary mode to avoid encoding issues
-            with open(output_path, 'rb') as f:
+            with open(output_path, "rb") as f:
                 binary_content = f.read()
                 
             # Convert to string for logging purposes
@@ -397,9 +397,9 @@ class TestVPDExporter(unittest.TestCase):
             self.assertTrue(os.path.exists(output_path_2x), "Scale 2x VPD file was not created")
             
             # Read both files to compare content
-            with open(output_path_1x, 'r', encoding='utf-8', errors='replace') as f1:
+            with open(output_path_1x, "r", encoding="utf-8", errors="replace") as f1:
                 content_1x = f1.read()
-            with open(output_path_2x, 'r', encoding='utf-8', errors='replace') as f2:
+            with open(output_path_2x, "r", encoding="utf-8", errors="replace") as f2:
                 content_2x = f2.read()
                 
             # Files should be different due to scale difference
@@ -493,7 +493,7 @@ class TestVPDExporter(unittest.TestCase):
                                        f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
                         
                         # Check content (without assuming Japanese characters work correctly)
-                        with open(output_path, 'r', encoding='shift_jis', errors='replace') as f:
+                        with open(output_path, "r", encoding="shift_jis", errors="replace") as f:
                             content = f.read()
                             # Check for markers that should be present in any VPD file
                             self.assertIn("Vocaloid Pose Data file", content, 
@@ -601,7 +601,7 @@ class TestVPDExporter(unittest.TestCase):
             self.assertTrue(os.path.getsize(output_path) > 0, "VPD file for real model is empty")
             
             # Simple verification by checking file content
-            with open(output_path, 'r', encoding='shift_jis', errors='replace') as f:
+            with open(output_path, "r", encoding="shift_jis", errors="replace") as f:
                 content = f.read()
                 # The file should contain the model name in OSM format
                 self.assertIn(f"{model_name}.osm", content, "Model name not found in VPD file")

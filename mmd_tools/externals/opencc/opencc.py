@@ -25,8 +25,8 @@ import json
 import os
 import re
 
-CONFIG_DIR = 'config'
-DICT_DIR = 'dictionary'
+CONFIG_DIR = "config"
+DICT_DIR = "dictionary"
 
 
 class OpenCC:
@@ -38,7 +38,7 @@ class OpenCC:
          check the json file names in config directory
         :return: None
         """
-        self.conversion_name = ''
+        self.conversion_name = ""
         self.conversion = conversion
         self._dict_init_done = False
         self._dict_chain = list()
@@ -47,7 +47,7 @@ class OpenCC:
         # List of sentence separators from OpenCC PhraseExtract.cpp. None of these separators are allowed as
         # part of a dictionary entry
         self.split_chars_re = re.compile(
-            r'(\s+|-|,|\.|\?|!|\*|　|，|。|、|；|：|？|！|…|“|”|‘|’|『|』|「|」|﹁|﹂|—|－|（|）|《|》|〈|〉|～|．|／|＼|︒|︑|︔|︓|︿|﹀|︹|︺|︙|︐|［|﹇|］|﹈|︕|︖|︰|︳|︴|︽|︾|︵|︶|｛|︷|｝|︸|﹃|﹄|【|︻|】|︼)')
+            r"(\s+|-|,|\.|\?|!|\*|　|，|。|、|；|：|？|！|…|“|”|‘|’|『|』|「|」|﹁|﹂|—|－|（|）|《|》|〈|〉|～|．|／|＼|︒|︑|︔|︓|︿|﹀|︹|︺|︙|︐|［|﹇|］|﹈|︕|︖|︰|︳|︴|︽|︾|︵|︶|｛|︷|｝|︸|﹃|﹄|【|︻|】|︼)")
         if self.conversion is not None:
             self._init_dict()
 
@@ -95,18 +95,18 @@ class OpenCC:
         :return: None
         """
         if self.conversion is None:
-            raise ValueError('conversion is not set')
+            raise ValueError("conversion is not set")
 
         self._dict_chain = []
-        config = self.conversion + '.json'
+        config = self.conversion + ".json"
         config_file = os.path.join(os.path.dirname(__file__), CONFIG_DIR, config)
         with open(config_file) as f:
             setting_json = json.load(f)
 
-        self.conversion_name = setting_json.get('name')
+        self.conversion_name = setting_json.get("name")
 
-        for chain in setting_json.get('conversion_chain'):
-            self._add_dict_chain(self._dict_chain, chain.get('dict'))
+        for chain in setting_json.get("conversion_chain"):
+            self._add_dict_chain(self._dict_chain, chain.get("dict"))
 
         self._dict_chain_data = []
         self._add_dictionaries(self._dict_chain, self._dict_chain_data)
@@ -131,7 +131,7 @@ class OpenCC:
                     min_len = 1000
                     with io.open(item, "r", encoding="utf-8") as f:
                         for line in f:
-                            key, value = line.strip().split('\t')
+                            key, value = line.strip().split("\t")
                             map_dict[key] = value
                             if len(key) > max_len:
                                 max_len = len(key)
@@ -149,14 +149,14 @@ class OpenCC:
         :param dict_dict: the dict to be added in
         :return: None
         """
-        if dict_dict.get('type') == 'group':
+        if dict_dict.get("type") == "group":
             # Create a sublist of dictionaries for a group
             chain = []
-            for dict_item in dict_dict.get('dicts'):
+            for dict_item in dict_dict.get("dicts"):
                 self._add_dict_chain(chain, dict_item)
             dict_chain.append(chain)
-        elif dict_dict.get('type') == 'txt':
-            filename = dict_dict.get('file')
+        elif dict_dict.get("type") == "txt":
+            filename = dict_dict.get("file")
             dict_file = os.path.join(os.path.dirname(__file__), DICT_DIR, filename)
             dict_chain.append(dict_file)
 
@@ -295,9 +295,9 @@ class StringTree(object):
                         rstring = string[i+test_len:]
                     # Save the dictionary value
                     value = test_dict[2][string[i:i+test_len]]
-                    if len(value.split(' ')) > 1:
+                    if len(value.split(" ")) > 1:
                         # multiple mapping, use the first one for now
-                        value = value.split(' ')[0]
+                        value = value.split(" ")[0]
                     return value, lstring, rstring, test_len
             test_len -= 1
         # No match found

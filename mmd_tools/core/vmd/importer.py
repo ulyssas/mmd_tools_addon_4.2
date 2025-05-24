@@ -527,7 +527,7 @@ class VMDImporter:
         if len(propertyAnim) > 0:
             # Collect IK states from the first frame
             first_frame_ik_states = {}
-            first_frame = float('inf')
+            first_frame = float("inf")
             for keyFrame in propertyAnim:
                 frame_num = keyFrame.frame_number
                 if frame_num < first_frame:

@@ -121,7 +121,7 @@ class FnModel:
             return None
 
         for o in FnModel.iterate_mesh_objects(root_object):
-            if o.name == name or (hasattr(o.data, 'name') and o.data.name == name):
+            if o.name == name or (hasattr(o.data, "name") and o.data.name == name):
                 return o
         return None
 
@@ -212,7 +212,7 @@ class FnModel:
         """Find maximum bone ID from pose bones, return -1 if no valid IDs found"""
         max_bone_id = -1
         for bone in pose_bones:
-            if not hasattr(bone, 'is_mmd_shadow_bone') or not bone.is_mmd_shadow_bone:
+            if not hasattr(bone, "is_mmd_shadow_bone") or not bone.is_mmd_shadow_bone:
                 max_bone_id = max(max_bone_id, bone.mmd_bone.bone_id)
         return max_bone_id
 
@@ -234,14 +234,14 @@ class FnModel:
 
         # Update all additional_transform_bone_id references in pose bones
         for pose_bone in pose_bones:
-            if not hasattr(pose_bone, 'is_mmd_shadow_bone') or not pose_bone.is_mmd_shadow_bone:
+            if not hasattr(pose_bone, "is_mmd_shadow_bone") or not pose_bone.is_mmd_shadow_bone:
                 mmd_bone = pose_bone.mmd_bone
                 if mmd_bone.additional_transform_bone_id == bone_id:
                     mmd_bone.additional_transform_bone_id = new_bone_id
 
         # Update all display_connection_bone_id references in pose bones
         for pose_bone in pose_bones:
-            if not hasattr(pose_bone, 'is_mmd_shadow_bone') or not pose_bone.is_mmd_shadow_bone:
+            if not hasattr(pose_bone, "is_mmd_shadow_bone") or not pose_bone.is_mmd_shadow_bone:
                 mmd_bone = pose_bone.mmd_bone
                 if mmd_bone.display_connection_bone_id == bone_id:
                     mmd_bone.display_connection_bone_id = new_bone_id
@@ -306,7 +306,7 @@ class FnModel:
         New sequence starts from bone_id_offset."""
         # Get valid bones (non-shadow bones with valid IDs)
         valid_bones = [pb for pb in pose_bones
-                    if not (hasattr(pb, 'is_mmd_shadow_bone') and pb.is_mmd_shadow_bone)
+                    if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)
                     and pb.mmd_bone.bone_id != -1]
 
         # Sort and reassign IDs sequentially
@@ -319,13 +319,13 @@ class FnModel:
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):
         # Ensure we are in object mode
-        if bpy.context.mode != 'OBJECT':
-            bpy.ops.object.mode_set(mode='OBJECT')
+        if bpy.context.mode != "OBJECT":
+            bpy.ops.object.mode_set(mode="OBJECT")
 
         parent_armature_object = FnModel.find_armature_object(parent_root_object)
 
         # Deselect all objects to ensure a clean selection state before operations
-        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.select_all(action="DESELECT")
 
         # Get the maximum bone ID of parent model's armature to avoid ID conflicts during merging
         max_bone_id = FnModel.get_max_bone_id(parent_armature_object.pose.bones)
@@ -340,8 +340,8 @@ class FnModel:
                 continue
 
             # Ensure we're in the correct mode
-            if bpy.context.mode != 'OBJECT':
-                bpy.ops.object.mode_set(mode='OBJECT')
+            if bpy.context.mode != "OBJECT":
+                bpy.ops.object.mode_set(mode="OBJECT")
 
             # Update bone IDs
             child_pose_bones = child_armature_object.pose.bones
@@ -380,11 +380,11 @@ class FnModel:
                         child_armature_matrix = child_armature_object.matrix_world.copy()
 
                         # Ensure we're in object mode
-                        if bpy.context.mode != 'OBJECT':
-                            bpy.ops.object.mode_set(mode='OBJECT')
+                        if bpy.context.mode != "OBJECT":
+                            bpy.ops.object.mode_set(mode="OBJECT")
 
                         # Clear all selections
-                        bpy.ops.object.select_all(action='DESELECT')
+                        bpy.ops.object.select_all(action="DESELECT")
 
                         # Select and activate the parent armature
                         parent_armature_object.select_set(True)
@@ -399,8 +399,8 @@ class FnModel:
                     except Exception as e:
                         logging.error(f"Error joining armatures: {e}")
                         # Ensure we exit special modes regardless of what happened
-                        if bpy.context.mode != 'OBJECT':
-                            bpy.ops.object.mode_set(mode='OBJECT')
+                        if bpy.context.mode != "OBJECT":
+                            bpy.ops.object.mode_set(mode="OBJECT")
 
             # Update mesh armature modifiers and restore positions
             mesh_objects = list(FnModel.__iterate_child_mesh_objects(parent_armature_object))
@@ -411,8 +411,8 @@ class FnModel:
                 # Handle armature modifiers
                 armature_modifier = None
                 for mod in mesh.modifiers:
-                    if mod.type == 'ARMATURE':
-                        if mod.name == 'mmd_armature' or mod.object is None:
+                    if mod.type == "ARMATURE":
+                        if mod.name == "mmd_armature" or mod.object is None:
                             armature_modifier = mod
                             break
 
@@ -438,8 +438,8 @@ class FnModel:
 
                     if rigid_objects:
                         # Ensure we're in object mode
-                        if bpy.context.mode != 'OBJECT':
-                            bpy.ops.object.mode_set(mode='OBJECT')
+                        if bpy.context.mode != "OBJECT":
+                            bpy.ops.object.mode_set(mode="OBJECT")
 
                         for rigid_obj in rigid_objects:
                             # Save world coordinate position
@@ -447,7 +447,7 @@ class FnModel:
 
                             # Set parent object
                             rigid_obj.parent = parent_rigid_group_object
-                            rigid_obj.parent_type = 'OBJECT'
+                            rigid_obj.parent_type = "OBJECT"
 
                             # Restore world coordinate position
                             rigid_obj.matrix_world = original_matrix_world
@@ -471,8 +471,8 @@ class FnModel:
 
                     if joint_objects:
                         # Ensure we're in object mode
-                        if bpy.context.mode != 'OBJECT':
-                            bpy.ops.object.mode_set(mode='OBJECT')
+                        if bpy.context.mode != "OBJECT":
+                            bpy.ops.object.mode_set(mode="OBJECT")
 
                         for joint_obj in joint_objects:
                             # Save world coordinate position
@@ -480,7 +480,7 @@ class FnModel:
 
                             # Set parent object
                             joint_obj.parent = parent_joint_group_object
-                            joint_obj.parent_type = 'OBJECT'
+                            joint_obj.parent_type = "OBJECT"
 
                             # Restore world coordinate position
                             joint_obj.matrix_world = original_matrix_world
@@ -504,8 +504,8 @@ class FnModel:
 
                     if temp_objects:
                         # Ensure we're in object mode
-                        if bpy.context.mode != 'OBJECT':
-                            bpy.ops.object.mode_set(mode='OBJECT')
+                        if bpy.context.mode != "OBJECT":
+                            bpy.ops.object.mode_set(mode="OBJECT")
 
                         for temp_obj in temp_objects:
                             # Save world coordinate position
@@ -513,7 +513,7 @@ class FnModel:
 
                             # Set parent object
                             temp_obj.parent = parent_temporary_group_object
-                            temp_obj.parent_type = 'OBJECT'
+                            temp_obj.parent_type = "OBJECT"
 
                             # Restore world coordinate position
                             temp_obj.matrix_world = original_matrix_world
