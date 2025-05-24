@@ -6,16 +6,17 @@ import bpy
 
 def setupFrameRanges():
     s, e = 1, 1
+
     for action in bpy.data.actions:
         # Blend frame ranges from two imported VMD files
-        # Get first imported VMD range
-        action.use_frame_range = True
+        # Toggling use_frame_range allows getting ranges from two imported VMD files respectively
         ts, te = action.frame_range
         s, e = min(s, ts), max(e, te)
-        # Get second imported VMD range
-        action.use_frame_range = False
+        action.use_frame_range = not action.use_frame_range
         ts, te = action.frame_range
         s, e = min(s, ts), max(e, te)
+        action.use_frame_range = not action.use_frame_range  # Restore to original state
+
     bpy.context.scene.frame_start = int(s)
     bpy.context.scene.frame_end = int(e)
     if bpy.context.scene.rigidbody_world is not None:
