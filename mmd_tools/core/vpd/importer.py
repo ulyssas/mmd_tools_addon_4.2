@@ -6,7 +6,6 @@ import logging
 import bpy
 from mathutils import Matrix
 
-from ...bpyutils import FnContext
 from .. import vpd
 from ..vmd import importer
 

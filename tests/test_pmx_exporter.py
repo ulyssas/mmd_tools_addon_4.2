@@ -6,7 +6,6 @@ from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core import pmx
-from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.pmd.importer import import_pmd_to_pmx
 from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
 from mathutils import Euler, Vector

@@ -4,9 +4,8 @@ import shutil
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core import pmx, vmd
-from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
-from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
+from bl_ext.user_default.mmd_tools.core import vmd
+from bl_ext.user_default.mmd_tools.core.model import Model
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))

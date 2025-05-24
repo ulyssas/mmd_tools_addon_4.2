@@ -1,10 +1,9 @@
 import os
-import re
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import bpy
-from bl_ext.user_default.mmd_tools.utils import ItemMoveOp, ItemOp, clearUnusedMeshes, convertLRToName, convertNameToLR, deprecated, enterEditMode, int2base, makePmxBoneMap, mergeVertexGroup, saferelpath, selectAObject, selectSingleBone, separateByMaterials, setParentToBone, unique_name, warn_deprecation
+from bl_ext.user_default.mmd_tools.utils import ItemOp, clearUnusedMeshes, convertLRToName, convertNameToLR, deprecated, enterEditMode, int2base, makePmxBoneMap, mergeVertexGroup, saferelpath, selectAObject, selectSingleBone, separateByMaterials, setParentToBone, unique_name
 
 
 class TestUtilsUnit(unittest.TestCase):

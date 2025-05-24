@@ -5,7 +5,6 @@
 
 import bpy
 
-from .. import utils
 from ..bpyutils import FnContext
 from ..core.material import FnMaterial
 from ..core.model import FnModel

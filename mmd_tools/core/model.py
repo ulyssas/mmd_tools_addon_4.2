@@ -18,7 +18,6 @@ from .morph import FnMorph
 from .rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
 
 if TYPE_CHECKING:
-    from ..properties.morph import MaterialMorphData
     from ..properties.rigid_body import MMDRigidBody
 
 

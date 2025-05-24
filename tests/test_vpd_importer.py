@@ -1,13 +1,12 @@
 
 import os
 import shutil
-import time
 import unittest
 
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.vpd.importer import VPDImporter
-from mathutils import Quaternion, Vector
+from mathutils import Quaternion
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
