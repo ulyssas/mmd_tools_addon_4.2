@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import unittest
@@ -33,8 +34,6 @@ class TestPmxExporter(unittest.TestCase):
         """
         We should start each test with a clean state
         """
-        import logging
-
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # logger.setLevel('DEBUG')
@@ -628,12 +627,6 @@ class TestPmxExporter(unittest.TestCase):
                 )
                 # bpy.context.scene.update()
                 bpy.context.scene.frame_set(bpy.context.scene.frame_current)
-                import logging
-
-                logger = logging.getLogger()
-                # logger.setLevel('ERROR')
-                # logger.setLevel('DEBUG')
-                logger.setLevel("INFO")
             except Exception:
                 self.fail("Exception happened during import %s" % filepath)
             else:
