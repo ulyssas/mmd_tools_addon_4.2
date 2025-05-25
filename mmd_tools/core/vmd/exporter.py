@@ -51,7 +51,7 @@ class _FCurve:
             result.add(round(kp1.co[0]))
             if self.__preserve_curves and kp0.interpolation != "LINEAR" and kp1.co.x - kp0.co.x > 2.5:
                 if kp0.interpolation == "CONSTANT":
-                    result.add(math.floor(kp1.co[0]))
+                    result.add(max(0, round(kp1.co[0]) - 1))
                 elif kp0.interpolation == "BEZIER":
                     bz = _FnBezier.from_fcurve(kp0, kp1)
                     for t in bz.find_critical():

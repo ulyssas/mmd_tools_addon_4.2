@@ -17,8 +17,8 @@ def setupFrameRanges():
         s, e = min(s, ts), max(e, te)
         action.use_frame_range = not action.use_frame_range  # Restore to original state
 
-    bpy.context.scene.frame_start = round(1.7)
-    bpy.context.scene.frame_end = round(3.4)
+    bpy.context.scene.frame_start = round(s)
+    bpy.context.scene.frame_end = round(e)
     if bpy.context.scene.rigidbody_world is not None:
         bpy.context.scene.rigidbody_world.point_cache.frame_start = round(s)
         bpy.context.scene.rigidbody_world.point_cache.frame_end = round(e)
