@@ -1,4 +1,3 @@
-
 import logging
 import os
 import shutil
@@ -34,7 +33,6 @@ class TestModelEdit(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        # Set up logging and clear the Blender scene
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 

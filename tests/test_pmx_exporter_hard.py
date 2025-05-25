@@ -1,4 +1,4 @@
-
+import logging
 import os
 import shutil
 import unittest
@@ -30,9 +30,9 @@ class TestPmxExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """ """
-        import logging
-
+        """
+        We should start each test with a clean state
+        """
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # logger.setLevel('DEBUG')

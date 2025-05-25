@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import unittest
@@ -30,6 +31,9 @@ class TestFileIoOperators(unittest.TestCase):
         """
         We should start each test with a clean state
         """
+        logger = logging.getLogger()
+        logger.setLevel("ERROR")
+
         # Ensure active object exists (user may have deleted the default cube)
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()
@@ -52,12 +56,12 @@ class TestFileIoOperators(unittest.TestCase):
         if not os.path.isfile(input_blend):
             self.fail("required sample file %s not found. Please download it" % input_blend)
         output_pmx = os.path.join(TESTS_DIR, "output", "shy_cube.pmx")
-        bpy.ops.wm.open_mainfile(filepath=input_blend)        
+        bpy.ops.wm.open_mainfile(filepath=input_blend)
         root = Model.findRoot(self.context.active_object)
         rig = Model(root)
         orig_material_names = [mat.mmd_material.name_j or mat.name for mat in rig.materials()]
         try:
-            bpy.ops.mmd_tools.export_pmx(filepath=output_pmx)
+            bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, log_level="ERROR")
         except Exception:
             self.fail("Exception happened during export")
         else:

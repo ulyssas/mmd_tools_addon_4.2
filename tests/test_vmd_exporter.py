@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 import shutil
@@ -29,9 +30,9 @@ class TestVmdExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """ """
-        import logging
-
+        """
+        We should start each test with a clean state
+        """
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 

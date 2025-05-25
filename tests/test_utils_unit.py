@@ -341,19 +341,19 @@ class TestUtilsUnit(unittest.TestCase):
         
         # Test with different strategies
         base_path = os.path.basename("path/to/file.txt")
-        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "inside"), base_path, 
+        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "inside"), base_path,
                         "Inside strategy should return basename")
         
         # Use os.path.relpath for the expected result of "outside" strategy
         # This is what the implementation actually returns when drives are the same
         expected_outside = os.path.relpath("path/to/file.txt", "different/path") if os.name != "nt" or not os.path.splitdrive("path/to/file.txt")[0] else ".." + os.sep + base_path
-        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "outside"), 
+        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "outside"),
                         expected_outside, "Outside strategy should return proper relative path")
         
         # Test absolute strategy
         if os.name == "posix":  # Unix-like system
             full_path = os.path.abspath("path/to/file.txt")
-            self.assertEqual(saferelpath("path/to/file.txt", "different/path", "absolute"), full_path, 
+            self.assertEqual(saferelpath("path/to/file.txt", "different/path", "absolute"), full_path,
                             "Absolute strategy should return absolute path")
 
     def test_ItemOp_get_by_index(self):

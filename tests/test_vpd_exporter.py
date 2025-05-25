@@ -1,4 +1,4 @@
-
+import logging
 import os
 import shutil
 import unittest
@@ -34,6 +34,9 @@ class TestVPDExporter(unittest.TestCase):
         """
         We should start each test with a clean state
         """
+        logger = logging.getLogger()
+        logger.setLevel("ERROR")
+
         # Ensure active object exists (user may have deleted the default cube)
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()
@@ -84,6 +87,7 @@ class TestVPDExporter(unittest.TestCase):
             scale=1.0,
             types={"MESH", "ARMATURE", "MORPHS"},
             clean_model=False,
+            log_level="ERROR",
         )
 
         # Find the model root based on the filename
@@ -487,21 +491,21 @@ class TestVPDExporter(unittest.TestCase):
                     
                     # Check output for CURRENT pose type
                     if pose_type == "CURRENT":
-                        self.assertTrue(os.path.exists(output_path), 
+                        self.assertTrue(os.path.exists(output_path),
                                        f"VPD file not created for {pose_type}, use_pose_mode={use_pose_mode}")
-                        self.assertTrue(os.path.getsize(output_path) > 0, 
+                        self.assertTrue(os.path.getsize(output_path) > 0,
                                        f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
                         
                         # Check content (without assuming Japanese characters work correctly)
                         with open(output_path, "r", encoding="shift_jis", errors="replace") as f:
                             content = f.read()
                             # Check for markers that should be present in any VPD file
-                            self.assertIn("Vocaloid Pose Data file", content, 
+                            self.assertIn("Vocaloid Pose Data file", content,
                                          "Missing VPD header")
-                            self.assertIn("Bone", content, 
+                            self.assertIn("Bone", content,
                                          "No bone data found in VPD file")
                             if mesh_obj:
-                                self.assertIn("Morph", content, 
+                                self.assertIn("Morph", content,
                                              "No morph data found in VPD file")
                     
                     # For ALL pose type, check if multiple files are created
@@ -512,7 +516,7 @@ class TestVPDExporter(unittest.TestCase):
                             if file.startswith("Pose_") and file.endswith(".vpd"):
                                 found_pose_files = True
                                 pose_file_path = os.path.join(OUTPUT_DIR, file)
-                                self.assertTrue(os.path.getsize(pose_file_path) > 0, 
+                                self.assertTrue(os.path.getsize(pose_file_path) > 0,
                                                f"Pose file {file} is empty")
                         
                         # Only assert if markers should have been created

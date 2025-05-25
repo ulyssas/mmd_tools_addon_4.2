@@ -1,4 +1,3 @@
-
 import logging
 import os
 import unittest
@@ -20,7 +19,6 @@ class TestModelDebug(unittest.TestCase):
 
     def setUp(self):
         """Set up testing environment"""
-        # Set logging level
         logger = logging.getLogger()
         logger.setLevel("INFO")  # Set to INFO to see validation messages
 

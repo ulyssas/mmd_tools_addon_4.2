@@ -73,7 +73,7 @@ class VPDImporter:
                 
                 data_path = 'pose.bones["%s"].%s' % (bone.name, data_path_rot)
                 for axis_i in range(len(bone_rotation)):
-                    fcurves[3 + axis_i] = action.fcurves.find(data_path, index=axis_i) 
+                    fcurves[3 + axis_i] = action.fcurves.find(data_path, index=axis_i)
                     if fcurves[3 + axis_i] is None:
                         fcurves[3 + axis_i] = action.fcurves.new(data_path=data_path, index=axis_i, action_group=bone.name)
                 

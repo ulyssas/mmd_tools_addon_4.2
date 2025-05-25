@@ -6,7 +6,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # January, 2016
 ##########################################################
 ##########################################################
-# Revised by: Hopkins1 
+# Revised by: Hopkins1
 # June, 2016
 # Apache License Version 2.0, January 2004
 # - Use a tree-like structure hold the result during conversion

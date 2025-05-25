@@ -1,4 +1,4 @@
-
+import logging
 import os
 import shutil
 import unittest
@@ -33,6 +33,9 @@ class TestVPDImporter(unittest.TestCase):
         """
         We should start each test with a clean state
         """
+        logger = logging.getLogger()
+        logger.setLevel("ERROR")
+
         # Ensure active object exists (user may have deleted the default cube)
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()
@@ -83,6 +86,7 @@ class TestVPDImporter(unittest.TestCase):
             scale=1.0,
             types={"MESH", "ARMATURE", "MORPHS"},
             clean_model=False,
+            log_level="ERROR",
         )
 
         # Find the model root based on the filename
