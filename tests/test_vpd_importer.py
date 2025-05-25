@@ -62,7 +62,7 @@ class TestVPDImporter(unittest.TestCase):
 
     def __enable_mmd_tools(self):
         """Make sure mmd_tools addon is enabled"""
-        bpy.ops.wm.read_homefile()  # reload blender startup file
+        bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = (

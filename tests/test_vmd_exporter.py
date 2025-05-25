@@ -37,7 +37,7 @@ class TestVmdExporter(unittest.TestCase):
         logger.setLevel("ERROR")
 
         # Clear the scene
-        bpy.ops.wm.read_homefile()
+        bpy.ops.wm.read_homefile(use_empty=True)
 
     # ********************************************
     # Utils
@@ -88,7 +88,7 @@ class TestVmdExporter(unittest.TestCase):
         return ret
 
     def __enable_mmd_tools(self):
-        bpy.ops.wm.read_homefile()  # reload blender startup file
+        bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
