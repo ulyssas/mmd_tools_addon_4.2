@@ -545,7 +545,7 @@ class TestVPDExporter(unittest.TestCase):
         pmx_files.extend(self.__list_sample_files("pmd", "pmd"))
         
         if not pmx_files:
-            self.skipTest("No PMX/PMD sample files available for testing")
+            self.fail("No PMX/PMD sample files available for testing")
             
         # Enable mmd_tools addon
         self.__enable_mmd_tools()
@@ -558,7 +558,7 @@ class TestVPDExporter(unittest.TestCase):
             # Import the model
             model_root = self.__create_model_from_pmx(pmx_file)
             if not model_root:
-                self.skipTest("Could not import model for real model export test")
+                self.fail("Could not import model for real model export test")
                 
             # Get the model and armature
             model = Model(model_root)
@@ -566,7 +566,7 @@ class TestVPDExporter(unittest.TestCase):
             mesh = model.firstMesh()
             
             if not armature:
-                self.skipTest("Imported model has no armature")
+                self.fail("Imported model has no armature")
                 
             # Select a few bones to modify
             bone_names = []

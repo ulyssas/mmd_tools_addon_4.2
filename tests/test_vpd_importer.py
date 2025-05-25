@@ -171,13 +171,13 @@ class TestVPDImporter(unittest.TestCase):
         pmx_files.extend(self.__list_sample_files("pmd", "pmd"))
 
         if not pmx_files:
-            self.skipTest("No PMX/PMD sample files found")
+            self.fail("No PMX/PMD sample files found")
 
         # Get all VPD files
         vpd_files = self.__list_sample_files("vpd", "vpd")
 
         if not vpd_files:
-            self.skipTest("No VPD sample files found")
+            self.fail("No VPD sample files found")
 
         print(f"\nTesting {len(vpd_files)} VPD files on {len(pmx_files)} models")
 
@@ -264,7 +264,7 @@ class TestVPDImporter(unittest.TestCase):
         pmx_files = self.__list_sample_files("pmx", "pmx")
 
         if not vpd_files or not pmx_files:
-            self.skipTest("No sample files found for direct VPD import test")
+            self.fail("No sample files found for direct VPD import test")
 
         # Use the first PMX and VPD file
         pmx_file = pmx_files[0]
@@ -273,13 +273,13 @@ class TestVPDImporter(unittest.TestCase):
         # Import the model
         model_root = self.__create_model_from_pmx(pmx_file)
         if not model_root:
-            self.skipTest("Could not import model for direct VPD import test")
+            self.fail("Could not import model for direct VPD import test")
 
         # Get the model and armature
         model = Model(model_root)
         armature = model.armature()
         if not armature:
-            self.skipTest("Model has no armature for direct VPD import test")
+            self.fail("Model has no armature for direct VPD import test")
 
         # Directly use VPDImporter
         try:

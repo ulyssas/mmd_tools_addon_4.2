@@ -219,7 +219,7 @@ class TestModelEdit(unittest.TestCase):
         # Get sample PMX files
         pmx_files = self.__list_sample_files(["pmx"])
         if len(pmx_files) < 2:
-            self.skipTest("Need at least 2 PMX sample files for this test")
+            self.fail("Need at least 2 PMX sample files for this test")
 
         # If there are 3 or more models, select the two largest ones
         if len(pmx_files) >= 3:

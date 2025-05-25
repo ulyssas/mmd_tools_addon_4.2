@@ -41,7 +41,7 @@ copyright = ["2021 UuuNyaa", "2014-2022 powroupi", "2012-2015 sugiany"]
 ## Keep this a single short sentence without a period (.) at the end.
 ## For longer explanations use the documentation or detail page.
 [permissions]
-files = "Import/export PMD/PMX/VMD/VPD from/to disk"
+files = "Import/export PMX/PMD/VMD/VPD from/to disk"
 
 # Optional: build settings.
 # https://docs.blender.org/manual/en/dev/advanced/extensions/command_line_arguments.html#command-line-args-extension-build

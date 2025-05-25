@@ -598,7 +598,7 @@ class TestPmxExporter(unittest.TestCase):
         """ """
         input_files = self.__list_sample_files(("pmd", "pmx"))
         if len(input_files) < 1:
-            self.fail("required pmd/pmx sample file(s)!")
+            self.fail("required PMX/PMD sample file(s)!")
 
         check_types = set()
         check_types.add("MESH")

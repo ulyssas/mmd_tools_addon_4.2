@@ -110,7 +110,7 @@ class TestVmdExporter(unittest.TestCase):
         """Import the largest PMX model and return the root object"""
         largest_pmx = self.__get_largest_pmx_file()
         if not largest_pmx:
-            self.skipTest("No PMX sample files found")
+            self.fail("No PMX sample files found")
 
         print(f"\nImporting largest PMX model: {largest_pmx}")
 
@@ -305,7 +305,7 @@ class TestVmdExporter(unittest.TestCase):
         # Get VMD sample files
         vmd_files = self.__list_sample_files(["vmd"])
         if len(vmd_files) < 1:
-            self.skipTest("No VMD sample files found")
+            self.fail("No VMD sample files found")
 
         print(f"\nFound {len(vmd_files)} VMD files to test")
 
@@ -407,7 +407,7 @@ class TestVmdExporter(unittest.TestCase):
         """
         vmd_files = self.__list_sample_files(["vmd"])
         if len(vmd_files) < 1:
-            self.skipTest("No VMD sample files found")
+            self.fail("No VMD sample files found")
 
         print(f"\nTesting direct VMD file operations on {len(vmd_files)} files")
 
