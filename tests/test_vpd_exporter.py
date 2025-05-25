@@ -129,7 +129,7 @@ class TestVPDExporter(unittest.TestCase):
         """Modify morph values for testing export"""
         if not mesh_obj or not mesh_obj.data.shape_keys:
             return
-        
+
         shape_keys = mesh_obj.data.shape_keys.key_blocks
         for morph_name in morph_names:
             if morph_name in shape_keys:
@@ -140,24 +140,24 @@ class TestVPDExporter(unittest.TestCase):
         """Create a pose library with multiple poses for testing"""
         if not armature:
             return
-            
+
         # Ensure animation data exists
         if armature.animation_data is None:
             armature.animation_data_create()
-            
+
         # Create action for pose library if it doesn't exist
         if not armature.animation_data.action:
             action = bpy.data.actions.new(name="PoseLibrary")
             armature.animation_data.action = action
         else:
             action = armature.animation_data.action
-            
+
         # Select armature and enter pose mode
         bpy.ops.object.select_all(action="DESELECT")
         armature.select_set(True)
         bpy.context.view_layer.objects.active = armature
         bpy.ops.object.mode_set(mode="POSE")
-        
+
         # Create multiple poses
         for i in range(num_poses):
             # Create different pose for each iteration
@@ -167,12 +167,12 @@ class TestVPDExporter(unittest.TestCase):
                     bone.rotation_quaternion = Quaternion(((0.9, 0.1 * i, 0.2 * i, 0.3 * i)))
                     bone.keyframe_insert(data_path="location", frame=i+1)
                     bone.keyframe_insert(data_path="rotation_quaternion", frame=i+1)
-                    
+
             # Add pose marker (if current Blender version supports it)
             if hasattr(action, "pose_markers"):
                 marker = action.pose_markers.new(f"Pose_{i+1}")
                 marker.frame = i+1
-                    
+
         # Return to object mode
         bpy.ops.object.mode_set(mode="OBJECT")
 
@@ -181,35 +181,35 @@ class TestVPDExporter(unittest.TestCase):
         bpy.ops.object.armature_add()
         armature = bpy.context.active_object
         armature.name = "TestArmature"
-        
+
         # Enter edit mode to add bones
         bpy.ops.object.mode_set(mode="EDIT")
-        
+
         # Get the initial bone
         edit_bones = armature.data.edit_bones
         first_bone = edit_bones[0]
         first_bone.name = "Root"
-        
+
         # Add a child bone
         child = edit_bones.new("Child")
         child.head = first_bone.tail
         child.tail = child.head + Vector((0, 0.5, 0))
         child.parent = first_bone
-        
+
         # Add a few more bones
         arm_l = edit_bones.new("Arm.L")
         arm_l.head = first_bone.head + Vector((0.5, 0, 0))
         arm_l.tail = arm_l.head + Vector((0, 0.5, 0))
         arm_l.parent = first_bone
-        
+
         arm_r = edit_bones.new("Arm.R")
         arm_r.head = first_bone.head + Vector((-0.5, 0, 0))
         arm_r.tail = arm_r.head + Vector((0, 0.5, 0))
         arm_r.parent = first_bone
-        
+
         # Exit edit mode
         bpy.ops.object.mode_set(mode="OBJECT")
-        
+
         # Add Japanese names for MMD compatibility
         for bone in armature.pose.bones:
             # Try to handle both property structures depending on the Blender version
@@ -217,7 +217,7 @@ class TestVPDExporter(unittest.TestCase):
                 if not hasattr(bone, "mmd_bone"):
                     # Create the property group if it doesn't exist
                     bone["mmd_bone"] = {}
-                
+
                 if bone.name == "Arm.L":
                     bone.mmd_bone.name_j = "左腕"
                 elif bone.name == "Arm.R":
@@ -236,7 +236,7 @@ class TestVPDExporter(unittest.TestCase):
                     bone["name_j"] = "センター"
                 elif bone.name == "Child":
                     bone["name_j"] = "下半身"
-        
+
         return armature
 
     def __create_test_mesh_with_morphs(self):
@@ -244,22 +244,22 @@ class TestVPDExporter(unittest.TestCase):
         bpy.ops.mesh.primitive_cube_add()
         mesh_obj = bpy.context.active_object
         mesh_obj.name = "TestMesh"
-        
+
         # Add shape keys
         bpy.ops.object.shape_key_add(from_mix=False)  # Add basis key
-        
+
         # Add a few shape keys (morphs)
         for name in ["Smile", "Sad", "Angry"]:
             bpy.ops.object.shape_key_add(from_mix=False)
             shape_key = mesh_obj.data.shape_keys.key_blocks[-1]
             shape_key.name = name
-            
+
             # Modify some vertices to make the shape key do something
             for i, v in enumerate(mesh_obj.data.vertices):
                 if i % 2 == 0:  # Modify every other vertex
                     shape_key.data[i].co.x += 0.2
                     shape_key.data[i].co.y += 0.1
-        
+
         return mesh_obj
 
     def test_export_current_pose(self):
@@ -269,10 +269,10 @@ class TestVPDExporter(unittest.TestCase):
         self.__modify_bone_pose(armature, ["Arm.L", "Arm.R"])
         mesh_obj = self.__create_test_mesh_with_morphs()
         self.__modify_morph_values(mesh_obj, ["Smile", "Angry"])
-        
+
         # Define output path
         output_path = os.path.join(OUTPUT_DIR, "test_current_pose.vpd")
-        
+
         try:
             # Create exporter and export the current pose
             exporter = VPDExporter()
@@ -284,35 +284,35 @@ class TestVPDExporter(unittest.TestCase):
                 model_name="TestModel",
                 pose_type="CURRENT"
             )
-            
+
             # Verify file was created
             self.assertTrue(os.path.exists(output_path), "VPD file was not created")
             self.assertTrue(os.path.getsize(output_path) > 0, "VPD file is empty")
-            
+
             # Simple verification of file structure without relying on specific Japanese characters
             # Read file in binary mode to avoid encoding issues
             with open(output_path, "rb") as f:
                 binary_content = f.read()
-                
+
             # Convert to string for logging purposes
             content_str = str(binary_content)
-            
+
             # Check for morph names (ASCII strings should be preserved correctly)
             self.assertIn(b"Smile", binary_content, "Smile morph not found in VPD file")
             self.assertIn(b"Angry", binary_content, "Angry morph not found in VPD file")
-            
+
             # Instead of checking for specific Japanese characters, check for bone presence by structure
             # VPD has a "Bone" structure with location and rotation values
             self.assertIn(b"Bone", binary_content, "No bone data found in VPD file")
-            
+
             # Check for expected number of bones (we should have at least two modified bones)
             bone_count = binary_content.count(b"Bone")
             self.assertGreaterEqual(bone_count, 2, "Expected at least 2 bones in VPD file")
-            
+
             # Check for expected number of morphs
             morph_count = binary_content.count(b"Morph")
             self.assertGreaterEqual(morph_count, 2, "Expected at least 2 morphs in VPD file")
-                
+
         except Exception as e:
             self.fail(f"VPD export failed with error: {str(e)}")
 
@@ -321,11 +321,11 @@ class TestVPDExporter(unittest.TestCase):
         # Set up test armature with pose library
         armature = self.__create_test_armature()
         self.__create_pose_library(armature, num_poses=3)
-        
+
         # Define output paths
         active_pose_path = os.path.join(OUTPUT_DIR, "test_active_pose.vpd")
         all_poses_dir = OUTPUT_DIR
-        
+
         try:
             # Test exporting active pose
             exporter = VPDExporter()
@@ -336,11 +336,11 @@ class TestVPDExporter(unittest.TestCase):
                 model_name="TestModel",
                 pose_type="ACTIVE"
             )
-            
+
             # Verify active pose file was created
             self.assertTrue(os.path.exists(active_pose_path), "Active pose VPD file was not created")
             self.assertTrue(os.path.getsize(active_pose_path) > 0, "Active pose VPD file is empty")
-            
+
             # Test exporting all poses
             all_poses_path = os.path.join(all_poses_dir, "test_all_poses.vpd")
             exporter.export(
@@ -350,7 +350,7 @@ class TestVPDExporter(unittest.TestCase):
                 model_name="TestModel",
                 pose_type="ALL"
             )
-            
+
             # Verify all pose files were created
             # There should be one file per pose marker with pose name
             pose_count = 0
@@ -359,9 +359,9 @@ class TestVPDExporter(unittest.TestCase):
                     pose_count += 1
                     full_path = os.path.join(all_poses_dir, file)
                     self.assertTrue(os.path.getsize(full_path) > 0, f"Pose file {file} is empty")
-                    
+
             self.assertGreater(pose_count, 0, "No pose files were created for ALL export")
-            
+
         except Exception as e:
             self.fail(f"Pose library export failed with error: {str(e)}")
 
@@ -370,11 +370,11 @@ class TestVPDExporter(unittest.TestCase):
         # Set up test objects
         armature = self.__create_test_armature()
         self.__modify_bone_pose(armature, ["Arm.L", "Arm.R"])
-        
+
         # Define output paths for different scales
         output_path_1x = os.path.join(OUTPUT_DIR, "test_scale_1x.vpd")
         output_path_2x = os.path.join(OUTPUT_DIR, "test_scale_2x.vpd")
-        
+
         try:
             # Export with scale 1.0
             exporter = VPDExporter()
@@ -385,7 +385,7 @@ class TestVPDExporter(unittest.TestCase):
                 model_name="TestModel",
                 pose_type="CURRENT"
             )
-            
+
             # Export with scale 2.0
             exporter = VPDExporter()
             exporter.export(
@@ -395,20 +395,20 @@ class TestVPDExporter(unittest.TestCase):
                 model_name="TestModel",
                 pose_type="CURRENT"
             )
-            
+
             # Verify both files were created
             self.assertTrue(os.path.exists(output_path_1x), "Scale 1x VPD file was not created")
             self.assertTrue(os.path.exists(output_path_2x), "Scale 2x VPD file was not created")
-            
+
             # Read both files to compare content
             with open(output_path_1x, "r", encoding="utf-8", errors="replace") as f1:
                 content_1x = f1.read()
             with open(output_path_2x, "r", encoding="utf-8", errors="replace") as f2:
                 content_2x = f2.read()
-                
+
             # Files should be different due to scale difference
             self.assertNotEqual(content_1x, content_2x, "Scale factor did not affect output")
-            
+
         except Exception as e:
             self.fail(f"Scale test export failed with error: {str(e)}")
 
@@ -416,43 +416,43 @@ class TestVPDExporter(unittest.TestCase):
         """Test exporting using all combinations of pose_type and use_pose_mode"""
         # Enable mmd_tools addon
         self.__enable_mmd_tools()
-        
+
         # Set up test objects
         armature = self.__create_test_armature()
         self.__modify_bone_pose(armature, ["Arm.L", "Arm.R"])
         mesh_obj = self.__create_test_mesh_with_morphs()
         self.__modify_morph_values(mesh_obj, ["Smile", "Angry"])
-        
+
         # Create animations for pose testing
         self.__create_pose_library(armature, num_poses=3)
-        
+
         # Test all 6 combinations directly using VPDExporter
         pose_types = ["CURRENT", "ACTIVE", "ALL"]
         use_pose_modes = [False, True]
-        
+
         for pose_type in pose_types:
             for use_pose_mode in use_pose_modes:
                 # Define a unique output path for each combination
                 output_name = f"test_export_{pose_type}_pose_mode_{use_pose_mode}.vpd"
                 output_path = os.path.join(OUTPUT_DIR, output_name)
-                
+
                 print(f"\nTesting combination: pose_type={pose_type}, use_pose_mode={use_pose_mode}")
-                
+
                 try:
                     # Create exporter and export
                     exporter = VPDExporter()
-                    
+
                     # For ACTIVE and ALL pose types, we need animation data
                     if pose_type in ["ACTIVE", "ALL"]:
                         # Ensure armature has animation data
                         if armature.animation_data is None:
                             armature.animation_data_create()
-                        
+
                         # Create an action if needed
                         if armature.animation_data.action is None:
                             action = bpy.data.actions.new(name="PoseLib")
                             armature.animation_data.action = action
-                        
+
                         # Add some keyframes if none exist
                         action = armature.animation_data.action
                         if not action.fcurves:
@@ -461,23 +461,23 @@ class TestVPDExporter(unittest.TestCase):
                             armature.select_set(True)
                             bpy.context.view_layer.objects.active = armature
                             bpy.ops.object.mode_set(mode="POSE")
-                            
+
                             # Insert keyframes for a bone
                             if len(armature.pose.bones) > 0:
                                 bone = armature.pose.bones[0]
                                 bone.location = (0.1, 0.2, 0.3)
                                 bone.keyframe_insert(data_path="location", frame=1)
-                            
+
                             # Add pose markers if needed for ACTIVE and ALL modes
                             if not hasattr(action, "pose_markers") or len(action.pose_markers) == 0:
                                 # Modern Blender might not use pose_markers
                                 # We can simulate them by adding a marker to the timeline
                                 if hasattr(bpy.context.scene, "timeline_markers"):
                                     marker = bpy.context.scene.timeline_markers.new("Pose_1", frame=1)
-                            
+
                             # Return to object mode
                             bpy.ops.object.mode_set(mode="OBJECT")
-                    
+
                     # Export with current combination
                     exporter.export(
                         armature=armature,
@@ -488,14 +488,14 @@ class TestVPDExporter(unittest.TestCase):
                         pose_type=pose_type,
                         use_pose_mode=use_pose_mode
                     )
-                    
+
                     # Check output for CURRENT pose type
                     if pose_type == "CURRENT":
                         self.assertTrue(os.path.exists(output_path),
                                        f"VPD file not created for {pose_type}, use_pose_mode={use_pose_mode}")
                         self.assertTrue(os.path.getsize(output_path) > 0,
                                        f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
-                        
+
                         # Check content (without assuming Japanese characters work correctly)
                         with open(output_path, "r", encoding="shift_jis", errors="replace") as f:
                             content = f.read()
@@ -507,7 +507,7 @@ class TestVPDExporter(unittest.TestCase):
                             if mesh_obj:
                                 self.assertIn("Morph", content,
                                              "No morph data found in VPD file")
-                    
+
                     # For ALL pose type, check if multiple files are created
                     if pose_type == "ALL":
                         # Files should be created in the output directory with names matching the pose markers
@@ -518,16 +518,16 @@ class TestVPDExporter(unittest.TestCase):
                                 pose_file_path = os.path.join(OUTPUT_DIR, file)
                                 self.assertTrue(os.path.getsize(pose_file_path) > 0,
                                                f"Pose file {file} is empty")
-                        
+
                         # Only assert if markers should have been created
                         if hasattr(armature, "animation_data") and armature.animation_data and \
                            hasattr(armature.animation_data, "action") and armature.animation_data.action and \
                            hasattr(armature.animation_data.action, "pose_markers") and \
                            len(armature.animation_data.action.pose_markers) > 0:
                             self.assertTrue(found_pose_files, "No pose files created for ALL export")
-                        
+
                     print(f"ok Successfully tested: pose_type={pose_type}, use_pose_mode={use_pose_mode}")
-                    
+
                 except Exception as e:
                     # For older Blender versions, pose_library might not be available
                     if "pose_library" in str(e) and pose_type in ["ACTIVE", "ALL"]:
@@ -535,7 +535,7 @@ class TestVPDExporter(unittest.TestCase):
                         print("   This is normal if your Blender version doesn't support pose libraries")
                     else:
                         self.fail(f"Export failed with pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
-        
+
         print("\nAll available export combinations tested successfully")
 
     def test_export_real_model(self):
@@ -543,52 +543,52 @@ class TestVPDExporter(unittest.TestCase):
         # Get available PMX files
         pmx_files = self.__list_sample_files("pmx", "pmx")
         pmx_files.extend(self.__list_sample_files("pmd", "pmd"))
-        
+
         if not pmx_files:
             self.fail("No PMX/PMD sample files available for testing")
-            
+
         # Enable mmd_tools addon
         self.__enable_mmd_tools()
-        
+
         # Test with first available model
         pmx_file = pmx_files[0]
         model_name = os.path.splitext(os.path.basename(pmx_file))[0]
-        
+
         try:
             # Import the model
             model_root = self.__create_model_from_pmx(pmx_file)
             if not model_root:
                 self.fail("Could not import model for real model export test")
-                
+
             # Get the model and armature
             model = Model(model_root)
             armature = model.armature()
             mesh = model.firstMesh()
-            
+
             if not armature:
                 self.fail("Imported model has no armature")
-                
+
             # Select a few bones to modify
             bone_names = []
             for i, bone in enumerate(armature.pose.bones):
                 if i % 10 == 0 and i < 30:  # Just select a few bones for testing
                     bone_names.append(bone.name)
-                    
+
             # Modify selected bones
             self.__modify_bone_pose(armature, bone_names)
-            
+
             # Also modify some morphs if available
             if mesh and mesh.data.shape_keys:
                 morph_names = []
                 for i, key in enumerate(mesh.data.shape_keys.key_blocks):
                     if i > 0 and i < 5:  # Skip basis key (0) and limit to a few morphs
                         morph_names.append(key.name)
-                        
+
                 self.__modify_morph_values(mesh, morph_names)
-                
+
             # Export current pose
             output_path = os.path.join(OUTPUT_DIR, f"{model_name}_pose.vpd")
-            
+
             # Create exporter and export
             exporter = VPDExporter()
             exporter.export(
@@ -599,11 +599,11 @@ class TestVPDExporter(unittest.TestCase):
                 model_name=model_name,
                 pose_type="CURRENT"
             )
-            
+
             # Verify export succeeded
             self.assertTrue(os.path.exists(output_path), "VPD file was not created for real model")
             self.assertTrue(os.path.getsize(output_path) > 0, "VPD file for real model is empty")
-            
+
             # Simple verification by checking file content
             with open(output_path, "r", encoding="shift_jis", errors="replace") as f:
                 content = f.read()
@@ -611,7 +611,7 @@ class TestVPDExporter(unittest.TestCase):
                 self.assertIn(f"{model_name}.osm", content, "Model name not found in VPD file")
                 # And bone data
                 self.assertIn("Bone", content, "No bone data found in VPD file")
-                
+
         except Exception as e:
             self.fail(f"Real model export test failed with error: {str(e)}")
 
@@ -620,13 +620,13 @@ class TestVPDExporter(unittest.TestCase):
         # Setup simple objects for export
         armature = self.__create_test_armature()
         self.__modify_bone_pose(armature, ["Arm.L", "Arm.R"])
-        
+
         output_path = os.path.join(OUTPUT_DIR, "direct_api_export.vpd")
-        
+
         try:
             # Create the exporter and export directly
             exporter = VPDExporter()
-            
+
             # Test the direct export functionality
             exporter.export(
                 armature=armature,
@@ -635,11 +635,11 @@ class TestVPDExporter(unittest.TestCase):
                 model_name="TestDirectAPI",
                 pose_type="CURRENT"
             )
-            
+
             # Verify export succeeded
             self.assertTrue(os.path.exists(output_path), "VPD file was not created with direct API")
             self.assertTrue(os.path.getsize(output_path) > 0, "VPD file created with direct API is empty")
-            
+
         except Exception as e:
             self.fail(f"Direct API export test failed with error: {str(e)}")
 
@@ -647,7 +647,7 @@ class TestVPDExporter(unittest.TestCase):
         """Test that invalid pose_type values raise appropriate errors"""
         armature = self.__create_test_armature()
         output_path = os.path.join(OUTPUT_DIR, "invalid_pose_type.vpd")
-        
+
         # Test with invalid pose type
         exporter = VPDExporter()
         with self.assertRaises(ValueError):
