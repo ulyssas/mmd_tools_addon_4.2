@@ -186,7 +186,24 @@ def load_default_settings_from_preferences(operator, context, preset_property_na
         return False
 
 
-class ImportPmx(Operator, ImportHelper):
+class PreferencesMixin:
+    """Mixin for operators that load default settings from preferences"""
+
+    _preferences_applied = False
+
+    def load_preferences_on_invoke(self, context, preset_property_name):
+        """Helper method to load preferences on first invoke"""
+        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, preset_property_name):
+                self.__class__._preferences_applied = True
+
+    def restore_preferences_on_cancel(self):
+        """Helper method to restore preferences state on cancel"""
+        self.__class__._preferences_applied = self._preferences_were_applied
+
+
+class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_model"
     bl_label = "Import Model File (.pmd, .pmx)"
     bl_description = "Import model file(s) (.pmd, .pmx)"
@@ -293,19 +310,12 @@ class ImportPmx(Operator, ImportHelper):
         default=False,
     )
 
-    _preferences_applied = False
-
     def invoke(self, context, event):
-        """Load default values from preferences on first dialog open"""
-        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
-        if not self._preferences_were_applied:
-            if load_default_settings_from_preferences(self, context, "default_pmx_import_preset"):
-                self.__class__._preferences_applied = True
+        self.load_preferences_on_invoke(context, "default_pmx_import_preset")
         return super().invoke(context, event)
 
     def cancel(self, context):
-        """Restore preferences applied state when dialog is cancelled"""
-        self.__class__._preferences_applied = self._preferences_were_applied
+        self.restore_preferences_on_cancel()
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
@@ -361,7 +371,7 @@ class ImportPmx(Operator, ImportHelper):
         return {"FINISHED"}
 
 
-class ImportVmd(Operator, ImportHelper):
+class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vmd"
     bl_label = "Import VMD File (.vmd)"
     bl_description = "Import a VMD file to selected objects (.vmd)"
@@ -454,23 +464,16 @@ class ImportVmd(Operator, ImportHelper):
     )
     directory: bpy.props.StringProperty(subtype="DIR_PATH")
 
-    _preferences_applied = False
-
     @classmethod
     def poll(cls, context):
         return len(context.selected_objects) > 0
 
     def invoke(self, context, event):
-        """Load default values from preferences on first dialog open"""
-        self._preferences_were_applied = ImportVmd._preferences_applied
-        if not self._preferences_were_applied:
-            if load_default_settings_from_preferences(self, context, "default_vmd_import_preset"):
-                ImportVmd._preferences_applied = True
+        self.load_preferences_on_invoke(context, "default_vmd_import_preset")
         return super().invoke(context, event)
 
     def cancel(self, context):
-        """Restore preferences applied state when dialog is cancelled"""
-        ImportVmd._preferences_applied = self._preferences_were_applied
+        self.restore_preferences_on_cancel()
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
@@ -542,7 +545,7 @@ class ImportVmd(Operator, ImportHelper):
         return {"FINISHED"}
 
 
-class ImportVpd(Operator, ImportHelper):
+class ImportVpd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vpd"
     bl_label = "Import VPD File (.vpd)"
     bl_description = "Import VPD file(s) to selected rig's Action Pose (.vpd)"
@@ -591,23 +594,16 @@ class ImportVpd(Operator, ImportHelper):
         options={"SKIP_SAVE"},
     )
 
-    _preferences_applied = False
-
     @classmethod
     def poll(cls, context):
         return len(context.selected_objects) > 0
 
     def invoke(self, context, event):
-        """Load default values from preferences on first dialog open"""
-        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
-        if not self._preferences_were_applied:
-            if load_default_settings_from_preferences(self, context, "default_vpd_import_preset"):
-                self.__class__._preferences_applied = True
+        self.load_preferences_on_invoke(context, "default_vpd_import_preset")
         return super().invoke(context, event)
 
     def cancel(self, context):
-        """Restore preferences applied state when dialog is cancelled"""
-        self.__class__._preferences_applied = self._preferences_were_applied
+        self.restore_preferences_on_cancel()
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
@@ -657,7 +653,7 @@ class ImportVpd(Operator, ImportHelper):
         return {"FINISHED"}
 
 
-class ExportPmx(Operator, ExportHelper):
+class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_pmx"
     bl_label = "Export PMX File (.pmx)"
     bl_description = "Export selected MMD model(s) to PMX file(s) (.pmx)"
@@ -723,24 +719,17 @@ class ExportPmx(Operator, ExportHelper):
         default=False,
     )
 
-    _preferences_applied = False
-
     @classmethod
     def poll(cls, context):
         obj = context.active_object
         return obj in context.selected_objects and FnModel.find_root_object(obj)
 
     def invoke(self, context, event):
-        """Load default values from preferences on first dialog open"""
-        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
-        if not self._preferences_were_applied:
-            if load_default_settings_from_preferences(self, context, "default_pmx_export_preset"):
-                self.__class__._preferences_applied = True
+        self.load_preferences_on_invoke(context, "default_pmx_export_preset")
         return super().invoke(context, event)
 
     def cancel(self, context):
-        """Restore preferences applied state when dialog is cancelled"""
-        self.__class__._preferences_applied = self._preferences_were_applied
+        self.restore_preferences_on_cancel()
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
@@ -814,7 +803,7 @@ class ExportPmx(Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class ExportVmd(Operator, ExportHelper):
+class ExportVmd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vmd"
     bl_label = "Export VMD File (.vmd)"
     bl_description = "Export motion data of active object to a VMD file (.vmd)"
@@ -845,8 +834,6 @@ class ExportVmd(Operator, ExportHelper):
         default=False,
     )
 
-    _preferences_applied = False
-
     @classmethod
     def poll(cls, context):
         obj = context.active_object
@@ -863,16 +850,11 @@ class ExportVmd(Operator, ExportHelper):
         return False
 
     def invoke(self, context, event):
-        """Load default values from preferences on first dialog open"""
-        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
-        if not self._preferences_were_applied:
-            if load_default_settings_from_preferences(self, context, "default_vmd_export_preset"):
-                self.__class__._preferences_applied = True
+        self.load_preferences_on_invoke(context, "default_vmd_export_preset")
         return super().invoke(context, event)
 
     def cancel(self, context):
-        """Restore preferences applied state when dialog is cancelled"""
-        self.__class__._preferences_applied = self._preferences_were_applied
+        self.restore_preferences_on_cancel()
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
@@ -915,7 +897,7 @@ class ExportVmd(Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class ExportVpd(Operator, ExportHelper):
+class ExportVpd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
     bl_description = "Export to VPD file(s) (.vpd)"
@@ -947,8 +929,6 @@ class ExportVpd(Operator, ExportHelper):
         options={"SKIP_SAVE"},
     )
 
-    _preferences_applied = False
-
     @classmethod
     def poll(cls, context):
         obj = context.active_object
@@ -963,16 +943,11 @@ class ExportVpd(Operator, ExportHelper):
         return False
 
     def invoke(self, context, event):
-        """Load default values from preferences on first dialog open"""
-        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
-        if not self._preferences_were_applied:
-            if load_default_settings_from_preferences(self, context, "default_vpd_export_preset"):
-                self.__class__._preferences_applied = True
+        self.load_preferences_on_invoke(context, "default_vpd_export_preset")
         return super().invoke(context, event)
 
     def cancel(self, context):
-        """Restore preferences applied state when dialog is cancelled"""
-        self.__class__._preferences_applied = self._preferences_were_applied
+        self.restore_preferences_on_cancel()
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
