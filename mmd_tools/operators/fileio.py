@@ -253,8 +253,8 @@ class ImportPmx(Operator, ImportHelper):
     )
     rename_bones: bpy.props.BoolProperty(
         name="Rename Bones - L / R Suffix",
-        description="Use Blender naming conventions for Left / Right paired bones",
-        default=False,
+        description="Use Blender naming conventions for Left / Right paired bones. Required for features like mirror editing and pose mirroring to function properly.",
+        default=True,
     )
     use_underscore: bpy.props.BoolProperty(
         name="Rename Bones - Use Underscore",
@@ -393,8 +393,8 @@ class ImportVmd(Operator, ImportHelper):
     )
     rename_bones: bpy.props.BoolProperty(
         name="Rename Bones - L / R Suffix",
-        description="Use Blender naming conventions for Left / Right paired bones",
-        default=False,
+        description="Use Blender naming conventions for Left / Right paired bones. Required for features like mirror editing and pose mirroring to function properly.",
+        default=True,
     )
     use_underscore: bpy.props.BoolProperty(
         name="Rename Bones - Use Underscore",
@@ -571,8 +571,8 @@ class ImportVpd(Operator, ImportHelper):
     )
     rename_bones: bpy.props.BoolProperty(
         name="Rename Bones - L / R Suffix",
-        description="Use Blender naming conventions for Left / Right paired bones",
-        default=False,
+        description="Use Blender naming conventions for Left / Right paired bones. Required for features like mirror editing and pose mirroring to function properly.",
+        default=True,
     )
     use_underscore: bpy.props.BoolProperty(
         name="Rename Bones - Use Underscore",
