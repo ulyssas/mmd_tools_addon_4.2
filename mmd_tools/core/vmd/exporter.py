@@ -78,8 +78,8 @@ class _FCurve:
             x1 = max(0, min(127, round(x1 * 127.0 / dx)))
             x2 = max(0, min(127, round(x2 * 127.0 / dx)))
         if abs(dy) < 5e-5:
-            # (y1, y2) = (20, 107)
-            (y1, y2) = (x1 if x1 in [20, 40] else 0, x2 if x2 in [87, 107] else 127)  # restore VMD handle positions
+            # Special mapping to maintain VMD import/export consistency (restore effect)
+            (y1, y2) = (x1 if x1 in [20, 40] else 0, x2 if x2 in [87, 107] else 127)
         else:
             y1 = max(0, min(127, round(y1 * 127.0 / dy)))
             y2 = max(0, min(127, round(y2 * 127.0 / dy)))
