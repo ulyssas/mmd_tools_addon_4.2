@@ -141,7 +141,7 @@ class FnMorph:
     @staticmethod
     def overwrite_bone_morphs_from_action_pose(armature_object):
         armature = armature_object.id_data
-        
+
         # Use animation_data and action instead of action_pose
         if armature.animation_data is None or armature.animation_data.action is None:
             logging.warning('[WARNING] armature "%s" has no animation data or action', armature_object.name)
@@ -169,7 +169,7 @@ class FnMorph:
 
                 bpy.ops.pose.select_all(action="SELECT")
                 bpy.ops.pose.transforms_clear()
-                
+
                 frame = pose_marker.frame
                 bpy.context.scene.frame_set(int(frame))
 

@@ -1,13 +1,12 @@
-
+import logging
 import os
 import shutil
-import time
 import unittest
 
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.vpd.importer import VPDImporter
-from mathutils import Quaternion, Vector
+from mathutils import Quaternion
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -34,6 +33,9 @@ class TestVPDImporter(unittest.TestCase):
         """
         We should start each test with a clean state
         """
+        logger = logging.getLogger()
+        logger.setLevel("ERROR")
+
         # Ensure active object exists (user may have deleted the default cube)
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()
@@ -60,7 +62,7 @@ class TestVPDImporter(unittest.TestCase):
 
     def __enable_mmd_tools(self):
         """Make sure mmd_tools addon is enabled"""
-        bpy.ops.wm.read_homefile()  # reload blender startup file
+        bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = (
@@ -84,6 +86,7 @@ class TestVPDImporter(unittest.TestCase):
             scale=1.0,
             types={"MESH", "ARMATURE", "MORPHS"},
             clean_model=False,
+            log_level="ERROR",
         )
 
         # Find the model root based on the filename
@@ -168,13 +171,13 @@ class TestVPDImporter(unittest.TestCase):
         pmx_files.extend(self.__list_sample_files("pmd", "pmd"))
 
         if not pmx_files:
-            self.skipTest("No PMX/PMD sample files found")
+            self.fail("No PMX/PMD sample files found")
 
         # Get all VPD files
         vpd_files = self.__list_sample_files("vpd", "vpd")
 
         if not vpd_files:
-            self.skipTest("No VPD sample files found")
+            self.fail("No VPD sample files found")
 
         print(f"\nTesting {len(vpd_files)} VPD files on {len(pmx_files)} models")
 
@@ -261,7 +264,7 @@ class TestVPDImporter(unittest.TestCase):
         pmx_files = self.__list_sample_files("pmx", "pmx")
 
         if not vpd_files or not pmx_files:
-            self.skipTest("No sample files found for direct VPD import test")
+            self.fail("No sample files found for direct VPD import test")
 
         # Use the first PMX and VPD file
         pmx_file = pmx_files[0]
@@ -270,13 +273,13 @@ class TestVPDImporter(unittest.TestCase):
         # Import the model
         model_root = self.__create_model_from_pmx(pmx_file)
         if not model_root:
-            self.skipTest("Could not import model for direct VPD import test")
+            self.fail("Could not import model for direct VPD import test")
 
         # Get the model and armature
         model = Model(model_root)
         armature = model.armature()
         if not armature:
-            self.skipTest("Model has no armature for direct VPD import test")
+            self.fail("Model has no armature for direct VPD import test")
 
         # Directly use VPDImporter
         try:

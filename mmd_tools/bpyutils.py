@@ -317,7 +317,7 @@ class FnContext:
     def get_active_object(context: bpy.types.Context) -> Optional[bpy.types.Object]:
         # Added defensive programming for get methods
         # Related to: https://github.com/MMD-Blender/blender_mmd_tools/issues/176
-        if context is None or not hasattr(context, 'active_object'):
+        if context is None or not hasattr(context, "active_object"):
             return None
         return context.active_object
 
@@ -334,7 +334,7 @@ class FnContext:
     def get_scene_objects(context: bpy.types.Context) -> bpy.types.SceneObjects:
         # Added defensive programming for get methods
         # Added for consistency with get_active_object
-        if context is None or not hasattr(context, 'scene') or not hasattr(context.scene, 'objects'):
+        if context is None or not hasattr(context, "scene") or not hasattr(context.scene, "objects"):
             return []
         return context.scene.objects
 

@@ -389,7 +389,7 @@ class __PmxExporter:
                     )
                     and p_bone.parent.mmd_bone.is_tip
                 ):
-                    logging.debug(' * fix location of bone %s, parent %s is tip', bone.name, pmx_bone.parent.name)
+                    logging.debug(" * fix location of bone %s, parent %s is tip", bone.name, pmx_bone.parent.name)
                     pmx_bone.location = boneMap[pmx_bone.parent].location
                 # fmt: on
 

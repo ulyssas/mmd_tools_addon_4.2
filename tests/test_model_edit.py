@@ -1,4 +1,3 @@
-
 import logging
 import os
 import shutil
@@ -34,12 +33,11 @@ class TestModelEdit(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        # Set up logging and clear the Blender scene
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
         # Clear the scene
-        bpy.ops.wm.read_homefile()
+        bpy.ops.wm.read_homefile(use_empty=True)
 
     # ********************************************
     # Utils
@@ -68,7 +66,7 @@ class TestModelEdit(unittest.TestCase):
         return ret
 
     def __enable_mmd_tools(self):
-        bpy.ops.wm.read_homefile()  # reload blender startup file
+        bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(context, "preferences", None) or context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
@@ -141,7 +139,7 @@ class TestModelEdit(unittest.TestCase):
         """Test the exported joined model for validity"""
 
         # Clear the scene
-        bpy.ops.wm.read_homefile()
+        bpy.ops.wm.read_homefile(use_empty=True)
 
         # Enable mmd_tools addon
         self.__enable_mmd_tools()
@@ -221,7 +219,7 @@ class TestModelEdit(unittest.TestCase):
         # Get sample PMX files
         pmx_files = self.__list_sample_files(["pmx"])
         if len(pmx_files) < 2:
-            self.skipTest("Need at least 2 PMX sample files for this test")
+            self.fail("Need at least 2 PMX sample files for this test")
 
         # If there are 3 or more models, select the two largest ones
         if len(pmx_files) >= 3:

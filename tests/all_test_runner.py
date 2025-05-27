@@ -17,16 +17,15 @@ TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Global variables for progress tracking
 current_test = ""
-progress_percent = 0
 test_start_time = None
 
 # Shared value to control progress animation
 stop_progress = None
 
 
-def animate_progress(stop_flag, test_name, start_time):
+def animate_progress_smooth(stop_flag, test_name, start_time, current_test_num, total_tests, shared_progress):
     """
-    Animate the progress bar while a test is running
+    Animate the progress bar while a test is running with smooth progression
     """
     chars = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"  # Braille spinner characters
     idx = 0
@@ -39,9 +38,30 @@ def animate_progress(stop_flag, test_name, start_time):
         elapsed = datetime.now() - start_time
         elapsed_str = f"{elapsed.seconds}s"
 
+        # Calculate progress smoothly
+        # Start from the previous progress value
+        start_progress = shared_progress.value
+        end_progress = current_test_num / total_tests
+
+        # Estimate progress within this test based on time
+        test_duration_estimate = 30  # seconds
+        elapsed_seconds = elapsed.total_seconds()
+
+        # Progressive increase from start to end, capped by time estimate
+        if elapsed_seconds < test_duration_estimate:
+            time_progress = elapsed_seconds / test_duration_estimate
+        else:
+            time_progress = 1.0
+
+        # Interpolate between start and end progress
+        current_progress = start_progress + (end_progress - start_progress) * time_progress
+
+        # Update shared progress
+        shared_progress.value = current_progress
+
         # Calculate how much of the bar to fill
         length = 30
-        filled_length = int(length * progress_percent)
+        filled_length = int(length * current_progress)
         bar = "█" * filled_length + "-" * (length - filled_length)
 
         # Print the progress with spinner and elapsed time
@@ -66,11 +86,11 @@ def get_blender_path():
     return "blender"
 
 
-def run_test(blender_path, test_script):
+def run_test(blender_path, test_script, current_test_num, total_tests, previous_progress):
     """
     Run a single test script using Blender in background mode
     """
-    global progress_percent, test_start_time
+    global test_start_time
 
     try:
         # Set the start time for this test
@@ -78,12 +98,14 @@ def run_test(blender_path, test_script):
 
         # Prepare shared flag for process control
         stop_flag = multiprocessing.Value("b", False)
+        # Share the previous progress to avoid regression
+        shared_progress = multiprocessing.Value("d", previous_progress)
 
         # Get test name for display
         test_name = f"Testing {os.path.basename(test_script)}"
 
         # Start the progress animation in a separate process
-        progress_process = multiprocessing.Process(target=animate_progress, args=(stop_flag, test_name, test_start_time))
+        progress_process = multiprocessing.Process(target=animate_progress_smooth, args=(stop_flag, test_name, test_start_time, current_test_num, total_tests, shared_progress))
         progress_process.daemon = True
         progress_process.start()
 
@@ -110,14 +132,17 @@ def run_test(blender_path, test_script):
         if progress_process.is_alive():
             progress_process.terminate()
 
+        # Return the final progress for this test
+        final_progress = current_test_num / total_tests
+
         # Check if the test passed
         # Look for "OK" indicating all tests passed, or check for absence of FAILED/ERROR
         if "OK" in result.stdout or (result.returncode == 0 and "FAILED" not in result.stdout and "ERROR" not in result.stdout):
-            return True, "", elapsed_str
+            return True, "", elapsed_str, final_progress
         else:
             # We no longer extract the detailed error message
             # Just indicate that the test failed
-            return False, "Test failed", elapsed_str
+            return False, "Test failed", elapsed_str, final_progress
 
     except Exception as e:
         # Calculate elapsed time in case of exception
@@ -131,12 +156,12 @@ def run_test(blender_path, test_script):
             if progress_process.is_alive():
                 progress_process.terminate()
 
-        return False, "Exception occurred", elapsed_str
+        final_progress = current_test_num / total_tests
+        return False, "Exception occurred", elapsed_str, final_progress
 
 
 def print_summary_progress(iteration, total):
     """Print a simple progress bar for the overall progress"""
-    global progress_percent
     progress_percent = iteration / float(total)
 
     percent = ("{0:.1f}").format(100 * progress_percent)
@@ -185,6 +210,7 @@ def run_all_tests():
     passed_tests = []
     failed_tests = []
     total_time_seconds = 0
+    current_progress = 0.0  # Track overall progress
 
     # Run each test script
     for i, script in enumerate(test_scripts, 1):
@@ -194,7 +220,9 @@ def run_all_tests():
         # Update the overall progress
         print_summary_progress(i - 1, len(test_scripts))
 
-        passed, error, elapsed = run_test(blender_path, script)
+        # Pass the current progress to avoid regression
+        passed, error, elapsed, new_progress = run_test(blender_path, script, i, len(test_scripts), current_progress)
+        current_progress = new_progress  # Update for next iteration
 
         # Convert elapsed time to seconds for total
         try:

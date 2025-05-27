@@ -58,7 +58,152 @@ def _update_types(cls, prop):
         cls.types = types  # trigger update
 
 
-class ImportPmx(Operator, ImportHelper):
+def get_addon_package_name():
+    """Get the root package name for addon preferences"""
+    current_package = __package__
+    parts = current_package.split(".")
+    try:
+        index = parts.index("mmd_tools")
+        return ".".join(parts[: index + 1])
+    except ValueError:
+        pass
+    return current_package
+
+
+def get_preset_directories(operator_bl_idname):
+    """Get preset directories for an operator"""
+    preset_dirs = []
+
+    try:
+        # Try the official API first
+        official_dirs = bpy.utils.preset_paths(operator_bl_idname)
+        preset_dirs.extend(official_dirs)
+
+        # Add manual preset paths as fallback
+        scripts_dir = bpy.utils.user_resource("SCRIPTS")
+        config_dir = bpy.utils.user_resource("CONFIG")
+
+        manual_preset_paths = [
+            os.path.join(scripts_dir, "presets", "operator", operator_bl_idname),
+            os.path.join(config_dir, "presets", "operator", operator_bl_idname),
+        ]
+
+        for path in manual_preset_paths:
+            if os.path.exists(path) and path not in preset_dirs:
+                preset_dirs.append(path)
+
+    except Exception:
+        pass
+
+    return preset_dirs
+
+
+def apply_operator_preset(operator, preset_name):
+    """Apply a saved preset to an operator instance"""
+    if not preset_name:
+        return False
+
+    try:
+        preset_dirs = get_preset_directories(operator.__class__.bl_idname)
+
+        if not preset_dirs:
+            return False
+
+        # Look for the preset file
+        preset_file = None
+        for path in preset_dirs:
+            potential_file = os.path.join(path, preset_name + ".py")
+            if os.path.exists(potential_file):
+                preset_file = potential_file
+                break
+
+        if not preset_file:
+            return False
+
+        # Execute preset with proper context
+        with bpy.context.temp_override(active_operator=operator):
+            try:
+                with open(preset_file, "r", encoding="utf-8") as f:
+                    preset_code = f.read()
+
+                namespace = {"bpy": bpy}
+                exec(preset_code, namespace)
+                return True
+
+            except Exception:
+                return False
+
+    except Exception:
+        return False
+
+
+def get_available_presets(operator_bl_idname):
+    """Get list of available presets for an operator"""
+    presets = []
+
+    try:
+        preset_dirs = get_preset_directories(operator_bl_idname)
+
+        for preset_dir in preset_dirs:
+            try:
+                for filename in os.listdir(preset_dir):
+                    if filename.endswith(".py"):
+                        preset_name = filename[:-3]  # Remove .py extension
+                        if preset_name not in presets:
+                            presets.append(preset_name)
+            except Exception:
+                continue
+
+        return sorted(presets)
+
+    except Exception:
+        return []
+
+
+def load_default_settings_from_preferences(operator, context, preset_property_name):
+    """Load default settings from preferences using preset"""
+    try:
+        addon_package = get_addon_package_name()
+        addon_prefs = context.preferences.addons.get(addon_package)
+
+        if not addon_prefs:
+            return False
+
+        prefs = addon_prefs.preferences
+
+        # Check if the preset property exists
+        if not hasattr(prefs, preset_property_name):
+            return False
+
+        # Apply preset if specified
+        preset_name = getattr(prefs, preset_property_name, "")
+        if preset_name and apply_operator_preset(operator, preset_name):
+            return True
+
+        return False
+
+    except Exception:
+        return False
+
+
+class PreferencesMixin:
+    """Mixin for operators that load default settings from preferences"""
+
+    _preferences_applied = False
+
+    def load_preferences_on_invoke(self, context, preset_property_name):
+        """Helper method to load preferences on first invoke"""
+        self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
+        if not self._preferences_were_applied:
+            if load_default_settings_from_preferences(self, context, preset_property_name):
+                self.__class__._preferences_applied = True
+
+    def restore_preferences_on_cancel(self):
+        """Helper method to restore preferences state on cancel"""
+        self.__class__._preferences_applied = self._preferences_were_applied
+
+
+class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_model"
     bl_label = "Import Model File (.pmd, .pmx)"
     bl_description = "Import model file(s) (.pmd, .pmx)"
@@ -125,7 +270,7 @@ class ImportPmx(Operator, ImportHelper):
     )
     rename_bones: bpy.props.BoolProperty(
         name="Rename Bones - L / R Suffix",
-        description="Use Blender naming conventions for Left / Right paired bones",
+        description="Use Blender naming conventions for Left / Right paired bones. Required for features like mirror editing and pose mirroring to function properly.",
         default=True,
     )
     use_underscore: bpy.props.BoolProperty(
@@ -164,6 +309,14 @@ class ImportPmx(Operator, ImportHelper):
         description="Create a log file",
         default=False,
     )
+
+    def invoke(self, context, event):
+        self.load_preferences_on_invoke(context, "default_pmx_import_preset")
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        self.restore_preferences_on_cancel()
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -218,7 +371,7 @@ class ImportPmx(Operator, ImportHelper):
         return {"FINISHED"}
 
 
-class ImportVmd(Operator, ImportHelper):
+class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vmd"
     bl_label = "Import VMD File (.vmd)"
     bl_description = "Import a VMD file to selected objects (.vmd)"
@@ -234,9 +387,9 @@ class ImportVmd(Operator, ImportHelper):
     )
     margin: bpy.props.IntProperty(
         name="Margin",
-        description="How many frames added before motion starting",
+        description="Number of frames to add before the motion starts (only applies if current frame is 1)",
         min=0,
-        default=5,
+        default=0,
     )
     bone_mapper: bpy.props.EnumProperty(
         name="Bone Mapper",
@@ -250,7 +403,7 @@ class ImportVmd(Operator, ImportHelper):
     )
     rename_bones: bpy.props.BoolProperty(
         name="Rename Bones - L / R Suffix",
-        description="Use Blender naming conventions for Left / Right paired bones",
+        description="Use Blender naming conventions for Left / Right paired bones. Required for features like mirror editing and pose mirroring to function properly.",
         default=True,
     )
     use_underscore: bpy.props.BoolProperty(
@@ -279,10 +432,32 @@ class ImportVmd(Operator, ImportHelper):
         description="Update frame range and frame rate (30 fps)",
         default=True,
     )
+    always_create_new_action: bpy.props.BoolProperty(
+        name="Always Create New Action",
+        description="Always create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
+        default=False,
+    )
     use_NLA: bpy.props.BoolProperty(
         name="Use NLA",
         description="Import the motion as NLA strips",
         default=False,
+    )
+    detect_camera_changes: bpy.props.BoolProperty(
+        name="Detect Camera Changes",
+        description="When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts.",
+        default=True,
+    )
+    detect_lamp_changes: bpy.props.BoolProperty(
+        # TODO: Update all instances of "lamp" to "light" throughout the repository to align with Blender 2.80+ API changes.
+        # This includes:
+        #   - Variable names and references
+        #   - Class/type checks (LAMP -> LIGHT)
+        #   - Documentation and comments
+        #   - Function parameters and return values
+        # This change is necessary since Blender 2.80 renamed the "Lamp" type to "Light".
+        name="Detect Light Changes",
+        description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
+        default=True,
     )
     files: bpy.props.CollectionProperty(
         type=OperatorFileListElement,
@@ -293,10 +468,19 @@ class ImportVmd(Operator, ImportHelper):
     def poll(cls, context):
         return len(context.selected_objects) > 0
 
+    def invoke(self, context, event):
+        self.load_preferences_on_invoke(context, "default_vmd_import_preset")
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        self.restore_preferences_on_cancel()
+        return super().cancel(context) if hasattr(super(), "cancel") else None
+
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "scale")
         layout.prop(self, "margin")
+        layout.prop(self, "always_create_new_action")
         layout.prop(self, "use_NLA")
 
         layout.prop(self, "bone_mapper")
@@ -306,6 +490,8 @@ class ImportVmd(Operator, ImportHelper):
             layout.prop(self, "dictionary")
         layout.prop(self, "use_pose_mode")
         layout.prop(self, "use_mirror")
+        layout.prop(self, "detect_camera_changes")
+        layout.prop(self, "detect_lamp_changes")
 
         layout.prop(self, "update_scene_settings")
 
@@ -315,8 +501,12 @@ class ImportVmd(Operator, ImportHelper):
             root = FnModel.find_root_object(i)
             if root == i:
                 rig = Model(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
+                armature = rig.armature()
+                if armature is not None:
+                    selected_objects.add(armature)
+                placeholder = rig.morph_slider.placeholder()
+                if placeholder is not None:
+                    selected_objects.add(placeholder)
                 selected_objects |= set(rig.meshes())
 
         bone_mapper = None
@@ -338,7 +528,10 @@ class ImportVmd(Operator, ImportHelper):
                 use_pose_mode=self.use_pose_mode,
                 frame_margin=self.margin,
                 use_mirror=self.use_mirror,
+                always_create_new_action=self.always_create_new_action,
                 use_NLA=self.use_NLA,
+                detect_camera_changes=self.detect_camera_changes,
+                detect_lamp_changes=self.detect_lamp_changes,
             )
 
             for i in selected_objects:
@@ -352,7 +545,7 @@ class ImportVmd(Operator, ImportHelper):
         return {"FINISHED"}
 
 
-class ImportVpd(Operator, ImportHelper):
+class ImportVpd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vpd"
     bl_label = "Import VPD File (.vpd)"
     bl_description = "Import VPD file(s) to selected rig's Action Pose (.vpd)"
@@ -381,7 +574,7 @@ class ImportVpd(Operator, ImportHelper):
     )
     rename_bones: bpy.props.BoolProperty(
         name="Rename Bones - L / R Suffix",
-        description="Use Blender naming conventions for Left / Right paired bones",
+        description="Use Blender naming conventions for Left / Right paired bones. Required for features like mirror editing and pose mirroring to function properly.",
         default=True,
     )
     use_underscore: bpy.props.BoolProperty(
@@ -405,6 +598,14 @@ class ImportVpd(Operator, ImportHelper):
     def poll(cls, context):
         return len(context.selected_objects) > 0
 
+    def invoke(self, context, event):
+        self.load_preferences_on_invoke(context, "default_vpd_import_preset")
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        self.restore_preferences_on_cancel()
+        return super().cancel(context) if hasattr(super(), "cancel") else None
+
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "scale")
@@ -422,8 +623,12 @@ class ImportVpd(Operator, ImportHelper):
             root = FnModel.find_root_object(i)
             if root == i:
                 rig = Model(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
+                armature = rig.armature()
+                if armature is not None:
+                    selected_objects.add(armature)
+                placeholder = rig.morph_slider.placeholder()
+                if placeholder is not None:
+                    selected_objects.add(placeholder)
                 selected_objects |= set(rig.meshes())
 
         bone_mapper = None
@@ -448,7 +653,7 @@ class ImportVpd(Operator, ImportHelper):
         return {"FINISHED"}
 
 
-class ExportPmx(Operator, ExportHelper):
+class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_pmx"
     bl_label = "Export PMX File (.pmx)"
     bl_description = "Export selected MMD model(s) to PMX file(s) (.pmx)"
@@ -518,6 +723,14 @@ class ExportPmx(Operator, ExportHelper):
     def poll(cls, context):
         obj = context.active_object
         return obj in context.selected_objects and FnModel.find_root_object(obj)
+
+    def invoke(self, context, event):
+        self.load_preferences_on_invoke(context, "default_pmx_export_preset")
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        self.restore_preferences_on_cancel()
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -590,7 +803,7 @@ class ExportPmx(Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class ExportVmd(Operator, ExportHelper):
+class ExportVmd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vmd"
     bl_label = "Export VMD File (.vmd)"
     bl_description = "Export motion data of active object to a VMD file (.vmd)"
@@ -615,6 +828,11 @@ class ExportVmd(Operator, ExportHelper):
         description="Export frames only in the frame range of context scene",
         default=False,
     )
+    preserve_curves: bpy.props.BoolProperty(
+        name="Preserve Animation Curves",
+        description="Add additional keyframes to preserve animation curves accurately. Blender's curves are more flexible than VMD format, which may not always preserve significant curve changes without additional keyframes.",
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -631,12 +849,21 @@ class ExportVmd(Operator, ExportHelper):
 
         return False
 
+    def invoke(self, context, event):
+        self.load_preferences_on_invoke(context, "default_vmd_export_preset")
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        self.restore_preferences_on_cancel()
+        return super().cancel(context) if hasattr(super(), "cancel") else None
+
     def execute(self, context):
         params = {
             "filepath": self.filepath,
             "scale": self.scale,
             "use_pose_mode": self.use_pose_mode,
             "use_frame_range": self.use_frame_range,
+            "preserve_curves": self.preserve_curves,
         }
 
         obj = context.active_object
@@ -670,7 +897,7 @@ class ExportVmd(Operator, ExportHelper):
         return {"FINISHED"}
 
 
-class ExportVpd(Operator, ExportHelper):
+class ExportVpd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
     bl_description = "Export to VPD file(s) (.vpd)"
@@ -714,6 +941,14 @@ class ExportVpd(Operator, ExportHelper):
             return True
 
         return False
+
+    def invoke(self, context, event):
+        self.load_preferences_on_invoke(context, "default_vpd_export_preset")
+        return super().invoke(context, event)
+
+    def cancel(self, context):
+        self.restore_preferences_on_cancel()
+        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout

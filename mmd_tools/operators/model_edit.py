@@ -72,15 +72,15 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
 
         # Save original active_layer_collection
         orig_active_layer_collection = context.view_layer.active_layer_collection
-        
+
         # Find layer collection containing parent_root_object and set it as active
         layer_collection = FnContext.find_user_layer_collection_by_object(context, parent_root_object)
         if layer_collection:
             context.view_layer.active_layer_collection = layer_collection
-        
+
         # Execute the join operation
         FnModel.join_models(parent_root_object, child_root_objects)
-        
+
         # Restore original active_layer_collection
         context.view_layer.active_layer_collection = orig_active_layer_collection
 

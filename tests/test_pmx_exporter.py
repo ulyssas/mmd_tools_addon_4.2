@@ -1,4 +1,4 @@
-
+import logging
 import os
 import shutil
 import unittest
@@ -6,7 +6,6 @@ from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core import pmx
-from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.pmd.importer import import_pmd_to_pmx
 from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
 from mathutils import Euler, Vector
@@ -32,9 +31,9 @@ class TestPmxExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """ """
-        import logging
-
+        """
+        We should start each test with a clean state
+        """
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # logger.setLevel('DEBUG')
@@ -589,7 +588,7 @@ class TestPmxExporter(unittest.TestCase):
         return ret
 
     def __enable_mmd_tools(self):
-        bpy.ops.wm.read_homefile()  # reload blender startup file
+        bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
@@ -599,7 +598,7 @@ class TestPmxExporter(unittest.TestCase):
         """ """
         input_files = self.__list_sample_files(("pmd", "pmx"))
         if len(input_files) < 1:
-            self.fail("required pmd/pmx sample file(s)!")
+            self.fail("required PMX/PMD sample file(s)!")
 
         check_types = set()
         check_types.add("MESH")
@@ -628,12 +627,6 @@ class TestPmxExporter(unittest.TestCase):
                 )
                 # bpy.context.scene.update()
                 bpy.context.scene.frame_set(bpy.context.scene.frame_current)
-                import logging
-
-                logger = logging.getLogger()
-                # logger.setLevel('ERROR')
-                # logger.setLevel('DEBUG')
-                logger.setLevel("INFO")
             except Exception:
                 self.fail("Exception happened during import %s" % filepath)
             else:

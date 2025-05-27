@@ -28,7 +28,7 @@ MMD Tools needs contributions such as:
 - Pull requests
 
 If you are interested in supporting this project, please reach out via the following channels:
-- [MMD Tools Issues](https://github.com/UuuNyaa/blender_mmd_tools/issues)
+- [MMD Tools Issues](https://github.com/MMD-Blender/blender_mmd_tools/issues)
 - [MMD & Blender Discord Server](https://discord.gg/zRgUkuaPWw)
 
 For developers looking to contribute code or translations, please check the [Developer Guide](DEVELOPER_GUIDE.md) for project guidelines and detailed workflows.
