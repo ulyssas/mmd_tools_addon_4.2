@@ -139,8 +139,10 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
         active_bone = armature.pose.bones[active_bone_index]
 
         # Get the maximum bone ID and add 1 to place at the bottom
+        bone_id = active_bone.mmd_bone.bone_id
         max_bone_id = FnModel.get_max_bone_id(armature.pose.bones)
-        FnModel.safe_change_bone_id(active_bone, max_bone_id + 1, root.mmd_root.bone_morphs, armature.pose.bones)
+        if bone_id != max_bone_id:
+            FnModel.safe_change_bone_id(active_bone, max_bone_id + 1, root.mmd_root.bone_morphs, armature.pose.bones)
 
         # Refresh UI
         for area in context.screen.areas:
