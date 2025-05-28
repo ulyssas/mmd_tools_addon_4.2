@@ -7,7 +7,7 @@ MMD ToolsはMMD(MikuMikuDance)のモデルデータ(.pmd, .pmx)、モーショ�
 モデルデータ(.pmx)、モーションデータ(.vmd)、ポーズデータ(.vpd)のエクスポートにも対応しています。
 
 ## Limitations
-- **Cannot replace PMX Editor**: This tool is not intended to replace PMX Editor functionality due to limited resources and avoiding reinventing the wheel
+- **Cannot replace PMX Editor**: MMD Tools is not intended to replace PMX Editor functionality due to limited resources and avoiding reinventing the wheel
 - **No guarantee of compatibility with Blender Link features**: Link features still have some known issues that need to be resolved by Blender developers
 - **Currently no guarantee of compatibility with Rigify**: Complex compatibility issues and frequent Rigify updates make it difficult to maintain at this stage
 
