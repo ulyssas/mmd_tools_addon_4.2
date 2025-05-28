@@ -301,6 +301,7 @@ class FnModel:
         FnModel.unsafe_change_bone_id(bone_b, id_a, bone_morphs, pose_bones)
         FnModel.unsafe_change_bone_id(bone_a, id_b, bone_morphs, pose_bones)
 
+    @staticmethod
     def realign_bone_ids(bones, bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps.
         New sequence starts from bone_id_offset."""
@@ -1271,7 +1272,8 @@ class Model:
 
         rb.collision_shape = rigid.shape
 
-    def __getRigidRange(self, obj):
+    @staticmethod
+    def __getRigidRange(obj):
         return (Vector(obj.bound_box[0]) - Vector(obj.bound_box[6])).length
 
     def __createNonCollisionConstraint(self, nonCollisionJointTable):
