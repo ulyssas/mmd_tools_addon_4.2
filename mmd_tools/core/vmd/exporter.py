@@ -136,7 +136,7 @@ class _FCurve:
 class VMDExporter:
     def __init__(self):
         self.__scale = 1
-        self.__frame_start = 1
+        self.__frame_start = min(1, bpy.context.scene.frame_start)  # handle frame_start == 0
         self.__frame_end = float("inf")
         self.__bone_converter_cls = vmd.importer.BoneConverter
         self.__ik_fcurves = {}

@@ -5,7 +5,9 @@ import bpy
 
 
 def setupFrameRanges():
-    s, e = 1, 1
+    base = min(bpy.context.scene.frame_current, bpy.context.scene.frame_start)
+    s = base
+    e = base
 
     for action in bpy.data.actions:
         # When always_create_new_action=False, multiple VMDs share the same action
