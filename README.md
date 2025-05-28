@@ -6,11 +6,6 @@ MMD ToolsはMMD(MikuMikuDance)のモデルデータ(.pmd, .pmx)、モーショ�
 インポートするためのBlenderアドオンです。
 モデルデータ(.pmx)、モーションデータ(.vmd)、ポーズデータ(.vpd)のエクスポートにも対応しています。
 
-## Limitations
-- **Cannot replace PMX Editor**: MMD Tools is not intended to replace PMX Editor functionality due to limited resources and avoiding reinventing the wheel
-- **No guarantee of compatibility with Blender Link features**: Link features still have some known issues that need to be resolved by Blender developers
-- **Currently no guarantee of compatibility with Rigify**: Complex compatibility issues and frequent Rigify updates make it difficult to maintain at this stage
-
 ## Version Compatibility
 | Blender Version | MMD Tools Version | Branch      |
 |-----------------|-------------------|-------------|
@@ -20,8 +15,15 @@ MMD ToolsはMMD(MikuMikuDance)のモデルデータ(.pmd, .pmx)、モーショ�
 Use the MMD Tools version that matches your Blender LTS version.
 
 ## Installation & Usage
-- Check [the MMD Tools Wiki](https://mmd-blender.fandom.com/wiki/MMD_Tools) for details.
+- Check the [MMD Tools Wiki](https://mmd-blender.fandom.com/wiki/MMD_Tools) for details.
 - 詳細は [MMD ToolsのWiki (日本語)](https://mmd-blender.fandom.com/ja/wiki/MMD_Tools) を確認してください。
+
+## Project Scope
+The following features are intentionally excluded from MMD Tools:
+
+- **PMX Editor replacement**: MMD Tools is not designed to replace PMX Editor functionality due to limited resources and to avoid reinventing the wheel
+- **Blender Link features compatibility**: Link features have known issues that need to be resolved by Blender developers, so we do not guarantee compatibility
+- **Rigify compatibility**: Complex compatibility issues and frequent Rigify updates make it difficult to maintain, so we do not support Rigify at this time
 
 ## Contributing
 MMD Tools needs contributions such as:
