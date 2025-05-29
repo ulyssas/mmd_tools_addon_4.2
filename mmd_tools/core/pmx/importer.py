@@ -784,6 +784,21 @@ class PMXImporter:
     def __assignCustomNormals(self):
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
+
+        # CRITICAL: Mark all edges as sharp BEFORE setting custom normals
+        # For mesh.normals_split_custom_set() to work as expected, two conditions must be met:
+        # 1. The normal vectors must be non-zero (mentioned in Blender documentation)
+        # 2. The edges must be marked as sharp (NOT mentioned in Blender documentation)
+        # Without sharp edges, Blender will automatically interpolate/smooth normals between
+        # adjacent faces, causing custom normals to be modified or ignored entirely.
+        current_mode = bpy.context.object.mode
+        bpy.context.view_layer.objects.active = self.__meshObj
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.mark_sharp()
+        bpy.ops.object.mode_set(mode="OBJECT")
+        mesh.update()
+
         if self.__vertex_map:
             verts, faces = self.__model.vertices, self.__model.faces
             custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]
@@ -791,6 +806,9 @@ class PMXImporter:
         else:
             custom_normals = [(Vector(v.normal).xzy).normalized() for v in self.__model.vertices]
             mesh.normals_split_custom_set_from_vertices(custom_normals)
+
+        mesh.update()
+        bpy.ops.object.mode_set(mode=current_mode)
         logging.info("   - Done!!")
 
     def __renameLRBones(self, use_underscore):
