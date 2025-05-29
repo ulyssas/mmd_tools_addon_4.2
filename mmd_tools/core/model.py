@@ -295,11 +295,111 @@ class FnModel:
         id_a = bone_a.mmd_bone.bone_id
         id_b = bone_b.mmd_bone.bone_id
 
+        # Check for invalid bone IDs
+        if id_a < 0:
+            logging.warning(f"Cannot swap bone '{bone_a.name}' with invalid bone_id ({id_a})")
+            return
+        if id_b < 0:
+            logging.warning(f"Cannot swap bone '{bone_b.name}' with invalid bone_id ({id_b})")
+            return
+
+        # If both bones have the same ID, no swap needed
+        if id_a == id_b:
+            return
+
         # Use temporary ID for three-step swap
         temp_id = FnModel.get_max_bone_id(pose_bones) + 1
         FnModel.unsafe_change_bone_id(bone_a, temp_id, bone_morphs, pose_bones)
         FnModel.unsafe_change_bone_id(bone_b, id_a, bone_morphs, pose_bones)
         FnModel.unsafe_change_bone_id(bone_a, id_b, bone_morphs, pose_bones)
+
+    @staticmethod
+    def shift_bone_id(old_bone_id: int, new_bone_id: int, bone_morphs, pose_bones):
+        """
+        Shifts a bone to a specified ID position within a fixed bone ID order structure.
+        Maintains the gap structure of bone IDs unchanged, only changes which bone corresponds to which ID.
+        Other bones shift positions to accommodate the change while preserving relative order.
+        """
+        # Check for invalid bone IDs
+        if old_bone_id < 0:
+            logging.warning(f"Cannot shift bone with invalid old_bone_id ({old_bone_id})")
+            return
+        if new_bone_id < 0:
+            logging.warning(f"Cannot shift bone to invalid new_bone_id ({new_bone_id})")
+            return
+
+        # If source and target IDs are the same, no operation needed
+        if old_bone_id == new_bone_id:
+            return
+
+        # Get all valid pose bones (exclude shadow bones)
+        valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone) and pb.mmd_bone.bone_id >= 0]
+
+        # Sort by bone_id
+        valid_bones.sort(key=lambda pb: pb.mmd_bone.bone_id)
+
+        # Extract current bone IDs (this order structure must remain unchanged)
+        fixed_bone_ids = [pb.mmd_bone.bone_id for pb in valid_bones]
+
+        # Find the bone to move and target position
+        old_pos = None
+        new_pos = None
+        moving_bone = None
+
+        for i, bone in enumerate(valid_bones):
+            if bone.mmd_bone.bone_id == old_bone_id:
+                old_pos = i
+                moving_bone = bone
+            if bone.mmd_bone.bone_id == new_bone_id:
+                new_pos = i
+
+        # If old_bone_id doesn't exist, return directly
+        if old_pos is None or moving_bone is None:
+            logging.warning(f"Could not find bone with ID {old_bone_id}")
+            return
+
+        # If new_bone_id doesn't exist, use safe_change_bone_id instead
+        if new_pos is None:
+            FnModel.safe_change_bone_id(moving_bone, new_bone_id, bone_morphs, pose_bones)
+            return
+
+        # Create new bone order array
+        new_bone_order = valid_bones[:]
+
+        if old_pos < new_pos:
+            # Move right: shift left bones to the right by one position
+            for i in range(old_pos, new_pos):
+                new_bone_order[i] = valid_bones[i + 1]
+            new_bone_order[new_pos] = moving_bone
+        else:
+            # Move left: shift right bones to the left by one position
+            for i in range(old_pos, new_pos, -1):
+                new_bone_order[i] = valid_bones[i - 1]
+            new_bone_order[new_pos] = moving_bone
+
+        # Reassign bone IDs (using fixed ID order) with conflict resolution
+        # Use one temporary ID to perform circular shift, similar to swap_bone_ids approach
+        temp_id = FnModel.get_max_bone_id(pose_bones) + 1
+
+        # Perform circular shift using temporary ID
+        if old_pos < new_pos:
+            # Move right: shift sequence [old_pos+1, new_pos] leftward
+            # moving_bone -> temp_id, then shift others left, finally temp_id -> target
+            FnModel.unsafe_change_bone_id(moving_bone, temp_id, bone_morphs, pose_bones)
+            for i in range(old_pos, new_pos):
+                target_id = fixed_bone_ids[i]
+                source_bone = valid_bones[i + 1]
+                FnModel.unsafe_change_bone_id(source_bone, target_id, bone_morphs, pose_bones)
+            FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
+        else:
+            # Move left: shift sequence [new_pos, old_pos-1] rightward
+            # moving_bone -> temp_id, then shift others right, finally temp_id -> target
+            FnModel.unsafe_change_bone_id(moving_bone, temp_id, bone_morphs, pose_bones)
+            for i in range(old_pos, new_pos, -1):
+                target_id = fixed_bone_ids[i]
+                source_bone = valid_bones[i - 1]
+                FnModel.unsafe_change_bone_id(source_bone, target_id, bone_morphs, pose_bones)
+            FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
 
     @staticmethod
     def realign_bone_ids(bones, bone_id_offset: int, bone_morphs, pose_bones):
