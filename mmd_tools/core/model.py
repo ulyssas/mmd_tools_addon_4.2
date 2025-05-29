@@ -403,15 +403,15 @@ class FnModel:
 
     @staticmethod
     def realign_bone_ids(bones, bone_id_offset: int, bone_morphs, pose_bones):
-        """Realigns all bone IDs sequentially without gaps.
-        New sequence starts from bone_id_offset."""
-        # Get valid bones (non-shadow bones with valid IDs)
-        valid_bones = [pb for pb in pose_bones
-                    if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)
-                    and pb.mmd_bone.bone_id != -1]
+        """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel.
+        New sequence starts from bone_id_offset. Sorts by bone_id if bone_id >= 0, otherwise by bone name."""
+        # Get valid bones (non-shadow bones)
+        valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
 
-        # Sort and reassign IDs sequentially
-        valid_bones.sort(key=lambda pb: pb.mmd_bone.bone_id)
+        # Sort by bone_id if bone_id >= 0, otherwise by bone name
+        valid_bones.sort(key=lambda pb: (0, pb.mmd_bone.bone_id) if pb.mmd_bone.bone_id >= 0 else (1, pb.name))
+
+        # Reassign IDs sequentially
         for i, bone in enumerate(valid_bones):
             new_id = bone_id_offset + i
             if bone.mmd_bone.bone_id != new_id:
