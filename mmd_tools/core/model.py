@@ -40,10 +40,10 @@ class FnModel:
         return obj
 
     @staticmethod
-    def find_armature_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_armature_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
         """Find the armature object of the model.
         Args:
-            root_object (bpy.types.Object): The root object of the model.
+            root_object (Optional[bpy.types.Object]): The root object of the model.
         Returns:
             Optional[bpy.types.Object]: The armature object of the model. If the model does not have an armature, None is returned.
         """
@@ -55,7 +55,7 @@ class FnModel:
         return None
 
     @staticmethod
-    def find_rigid_group_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_rigid_group_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
         if root_object is None:
             return None
         for o in root_object.children:
@@ -75,13 +75,15 @@ class FnModel:
 
     @staticmethod
     def ensure_rigid_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
+        if root_object is None:
+            raise ValueError("root_object cannot be None")
         rigid_group_object = FnModel.find_rigid_group_object(root_object)
         if rigid_group_object is not None:
             return rigid_group_object
         return FnModel.__new_group_object(context, name="rigidbodies", mmd_type="RIGID_GRP_OBJ", parent=root_object)
 
     @staticmethod
-    def find_joint_group_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_joint_group_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
         if root_object is None:
             return None
         for o in root_object.children:
@@ -91,13 +93,15 @@ class FnModel:
 
     @staticmethod
     def ensure_joint_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
+        if root_object is None:
+            raise ValueError("root_object cannot be None")
         joint_group_object = FnModel.find_joint_group_object(root_object)
         if joint_group_object is not None:
             return joint_group_object
         return FnModel.__new_group_object(context, name="joints", mmd_type="JOINT_GRP_OBJ", parent=root_object)
 
     @staticmethod
-    def find_temporary_group_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_temporary_group_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
         if root_object is None:
             return None
         for o in root_object.children:
@@ -107,13 +111,15 @@ class FnModel:
 
     @staticmethod
     def ensure_temporary_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
+        if root_object is None:
+            raise ValueError("root_object cannot be None")
         temporary_group_object = FnModel.find_temporary_group_object(root_object)
         if temporary_group_object is not None:
             return temporary_group_object
         return FnModel.__new_group_object(context, name="temporary", mmd_type="TEMPORARY_GRP_OBJ", parent=root_object)
 
     @staticmethod
-    def find_bone_order_mesh_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_bone_order_mesh_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
         if root_object is None:
             return None
         armature_object = FnModel.find_armature_object(root_object)
@@ -126,7 +132,7 @@ class FnModel:
         return None
 
     @staticmethod
-    def find_mesh_object_by_name(root_object: bpy.types.Object, name: str) -> Optional[bpy.types.Object]:
+    def find_mesh_object_by_name(root_object: Optional[bpy.types.Object], name: str) -> Optional[bpy.types.Object]:
         if root_object is None:
             return None
         if not name:
@@ -138,7 +144,7 @@ class FnModel:
         return None
 
     @staticmethod
-    def iterate_child_objects(obj: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_child_objects(obj: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
         if obj is None:
             return iter(())
         for child in obj.children:
@@ -163,13 +169,13 @@ class FnModel:
         return FnModel.iterate_filtered_child_objects(FnModel.is_mesh_object, obj)
 
     @staticmethod
-    def iterate_mesh_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_mesh_objects(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
         if root_object is None:
             return iter(())
         return FnModel.__iterate_child_mesh_objects(FnModel.find_armature_object(root_object))
 
     @staticmethod
-    def iterate_rigid_body_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_rigid_body_objects(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
         if root_object is None:
             return iter(())
         if root_object.mmd_root.is_built:
@@ -180,13 +186,13 @@ class FnModel:
         return FnModel.iterate_filtered_child_objects(FnModel.is_rigid_body_object, FnModel.find_rigid_group_object(root_object))
 
     @staticmethod
-    def iterate_joint_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_joint_objects(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
         if root_object is None:
             return iter(())
         return FnModel.iterate_filtered_child_objects(FnModel.is_joint_object, FnModel.find_joint_group_object(root_object))
 
     @staticmethod
-    def iterate_temporary_objects(root_object: bpy.types.Object, rigid_track_only: bool = False) -> Iterator[bpy.types.Object]:
+    def iterate_temporary_objects(root_object: Optional[bpy.types.Object], rigid_track_only: bool = False) -> Iterator[bpy.types.Object]:
         if root_object is None:
             return iter(())
 
@@ -200,13 +206,13 @@ class FnModel:
         return itertools.chain(rigid_body_objects, FnModel.__iterate_filtered_child_objects_internal(FnModel.is_temporary_object, temporary_group_object))
 
     @staticmethod
-    def iterate_materials(root_object: bpy.types.Object) -> Iterator[bpy.types.Material]:
+    def iterate_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
         if root_object is None:
             return iter(())
         return (material for mesh_object in FnModel.iterate_mesh_objects(root_object) for material in cast(bpy.types.Mesh, mesh_object.data).materials if material is not None)
 
     @staticmethod
-    def iterate_unique_materials(root_object: bpy.types.Object) -> Iterator[bpy.types.Material]:
+    def iterate_unique_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
         if root_object is None:
             return iter(())
         materials: Dict[bpy.types.Material, None] = {}  # use dict because set does not guarantee the order
