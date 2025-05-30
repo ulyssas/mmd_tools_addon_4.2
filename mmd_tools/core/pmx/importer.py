@@ -3,6 +3,7 @@
 
 import collections
 import logging
+import math
 import os
 import time
 from typing import TYPE_CHECKING, List, Optional
@@ -203,10 +204,8 @@ class PMXImporter:
         #            if p_bone.parent == t.parent:
         #                dependency_cycle_ik_bones.append(i)
 
-        from math import isfinite
-
         def _VectorXZY(v):
-            return Vector(v).xzy if all(isfinite(n) for n in v) else Vector((0, 0, 0))
+            return Vector(v).xzy if all(math.isfinite(n) for n in v) else Vector((0, 0, 0))
 
         with bpyutils.edit_object(obj) as data:
             for i in pmx_bones:
@@ -785,20 +784,32 @@ class PMXImporter:
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
 
-        # CRITICAL: Mark all edges as sharp BEFORE setting custom normals
+        # CRITICAL: Mark sharp edges (based on angle) BEFORE setting custom normals
         # For mesh.normals_split_custom_set() to work as expected, two conditions must be met:
         # 1. The normal vectors must be non-zero (mentioned in Blender documentation)
-        # 2. The edges must be marked as sharp (NOT mentioned in Blender documentation)
-        # Without sharp edges, Blender will automatically interpolate/smooth normals between
-        # adjacent faces, causing custom normals to be modified or ignored entirely.
+        # 2. Some edges must be marked as sharp (NOT mentioned in Blender documentation)
+        # An angle of 179 degrees is confirmed to be sufficient to preserve all custom normals.
+        # 180 degrees does not work because it misses some sharp edges required for normals_split_custom_set to work 100% correctly.
         current_mode = bpy.context.object.mode
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
         bpy.context.view_layer.objects.active = self.__meshObj
-        bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.mark_sharp()
-        bpy.ops.object.mode_set(mode="OBJECT")
+        # Mark sharp edges based on user settings
+        if self.__mark_sharp_edges:
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="DESELECT")
+            bpy.ops.mesh.edges_select_sharp(sharpness=self.__sharp_edge_angle)
+            bpy.ops.mesh.mark_sharp()
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+            # Logging
+            angle_degrees = math.degrees(self.__sharp_edge_angle)
+            total_edges = len(mesh.edges)
+            sharp_edges = sum(1 for edge in mesh.edges if edge.use_edge_sharp)
+            percentage = (sharp_edges / total_edges) * 100 if total_edges > 0 else 0
+            logging.info(f"   - Marked {sharp_edges}/{total_edges} ({percentage:.2f}%) sharp edges with angle: {angle_degrees:.1f} degrees")
+        else:
+            logging.info("   - Skipped marking sharp edges")
         mesh.update()
 
         if self.__vertex_map:
@@ -840,6 +851,8 @@ class PMXImporter:
         types = args.get("types", set())
         clean_model = args.get("clean_model", False)
         remove_doubles = args.get("remove_doubles", False)
+        self.__mark_sharp_edges = args.get("mark_sharp_edges", True)
+        self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(179.0))
         self.__scale = args.get("scale", 1.0)
         self.__use_mipmap = args.get("use_mipmap", True)
         self.__sph_blend_factor = args.get("sph_blend_factor", 1.0)

@@ -2,6 +2,7 @@
 # This file is part of MMD Tools.
 
 import logging
+import math
 import os
 import re
 import time
@@ -250,6 +251,21 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Merge duplicated vertices and faces",
         default=False,
     )
+    mark_sharp_edges: bpy.props.BoolProperty(
+        name="Mark Sharp Edges",
+        description="Mark sharp edges when setting custom normals. Blender uses loop normals with sharp edges to control normal smoothing, which differs from traditional vertex normal approaches. This option ensures PMX normals are preserved correctly in Blender's system. Recommended to enable.",
+        default=True,
+    )
+    sharp_edge_angle: bpy.props.FloatProperty(
+        name="Sharp Edge Angle",
+        description="Angle threshold for marking sharp edges (degrees). 179° is sufficient to preserve all normals during import. However, if you need to edit the model rather than just render animations, you may need to adjust this as needed. MMD Tools cannot guarantee which editing operations in Blender require what angles. This setting has no effect if 'Mark Sharp Edges' is disabled.",
+        default=math.radians(179.0),
+        min=0.0,
+        max=math.radians(180.0),
+        step=100,
+        subtype="ANGLE",
+        unit="ROTATION",
+    )
     fix_IK_links: bpy.props.BoolProperty(
         name="Fix IK Links",
         description="Fix IK links to be blender suitable",
@@ -349,6 +365,8 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 scale=self.scale,
                 clean_model=self.clean_model,
                 remove_doubles=self.remove_doubles,
+                mark_sharp_edges=self.mark_sharp_edges,
+                sharp_edge_angle=self.sharp_edge_angle,
                 fix_IK_links=self.fix_IK_links,
                 ik_loop_factor=self.ik_loop_factor,
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,
