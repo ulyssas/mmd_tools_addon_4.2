@@ -607,7 +607,7 @@ class PMXImporter:
         # Import ADD UV2 as vertex colors
         if pmxModel.header and pmxModel.header.additional_uvs >= 2:
             # Create vertex color layer
-            vertex_colors = mesh.vertex_colors.new(name="Col")
+            vertex_colors = mesh.vertex_colors.new(name="Color")
             for i, loop_index in enumerate(loop_indices_orig):
                 vertex = pmxModel.vertices[loop_index]
                 if len(vertex.additional_uvs) >= 2:
