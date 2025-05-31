@@ -193,7 +193,7 @@ class TestVPDImporter(unittest.TestCase):
 
                 if not model_root:
                     print(
-                        f"   * Skipping model - no MMD root object found after import"
+                        "   * Skipping model - no MMD root object found after import"
                     )
                     continue
 
@@ -202,7 +202,7 @@ class TestVPDImporter(unittest.TestCase):
                 armature = model.armature()
 
                 if not armature:
-                    print(f"   * Skipping model - no armature found in MMD model")
+                    print("   * Skipping model - no armature found in MMD model")
                     continue
 
                 # Test each VPD file
@@ -233,12 +233,12 @@ class TestVPDImporter(unittest.TestCase):
                             print(f"   * Import failed with result: {result}")
                             continue
 
-                        print(f"   * Success! VPD import finished successfully")
+                        print("   * Success! VPD import finished successfully")
 
                         # Success if the operation finished
                         self.assertTrue(
                             "FINISHED" in result,
-                            f"VPD import did not complete successfully",
+                            "VPD import did not complete successfully",
                         )
 
                     except Exception as e:
@@ -285,7 +285,7 @@ class TestVPDImporter(unittest.TestCase):
         try:
             importer = VPDImporter(filepath=vpd_file, scale=1.0)
             importer.assign(armature)
-            print(f"Direct import completed successfully")
+            print("Direct import completed successfully")
             self.assertTrue(True, "Direct VPD import succeeded")
         except Exception as e:
             print(f"Direct import failed with exception: {str(e)}")

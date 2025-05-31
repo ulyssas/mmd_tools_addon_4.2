@@ -384,7 +384,7 @@ class TestVmdExporter(unittest.TestCase):
                 if len(source_vmd.shapeKeyAnimation) > 0:
                     self.__check_vmd_shape_key_animation(source_vmd, result_vmd)
 
-                print(f"    ✓ VMD test passed")
+                print("    ✓ VMD test passed")
                 success_count += 1
 
             except Exception as e:
@@ -394,7 +394,7 @@ class TestVmdExporter(unittest.TestCase):
 
                 traceback.print_exc()
 
-        print(f"\n=== VMD Export Test Results ===")
+        print("\n=== VMD Export Test Results ===")
         print(f"Successfully tested: {success_count}/{len(vmd_files)} VMD files")
 
         # Require all tests to pass
@@ -433,13 +433,13 @@ class TestVmdExporter(unittest.TestCase):
                 self.assertEqual(len(source_vmd.boneAnimation), len(result_vmd.boneAnimation))
                 self.assertEqual(len(source_vmd.shapeKeyAnimation), len(result_vmd.shapeKeyAnimation))
 
-                print(f"    ✓ Direct VMD test passed")
+                print("    ✓ Direct VMD test passed")
                 success_count += 1
 
             except Exception as e:
                 print(f"    ✗ Direct VMD test failed: {e}")
 
-        print(f"\n=== Direct VMD Test Results ===")
+        print("\n=== Direct VMD Test Results ===")
         print(f"Successfully tested: {success_count}/{len(vmd_files)} VMD files")
 
         # Require all tests to pass
