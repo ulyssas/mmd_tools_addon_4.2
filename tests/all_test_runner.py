@@ -143,7 +143,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
             # Just indicate that the test failed
             return False, "Test failed", elapsed_str, final_progress
 
-    except Exception as e:
+    except Exception:
         # Calculate elapsed time in case of exception
         elapsed = datetime.now() - test_start_time
         elapsed_str = f"{elapsed.seconds}.{str(elapsed.microseconds)[:3]}s"

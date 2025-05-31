@@ -343,7 +343,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                     self._do_execute(context)
             elif self.filepath:
                 self._do_execute(context)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -378,7 +378,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 spa_blend_factor=self.spa_blend_factor,
             )
             self.report({"INFO"}, 'Imported MMD model from "%s"' % self.filepath)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             raise
@@ -765,7 +765,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                     os.makedirs(model_folder, exist_ok=True)
                     self.filepath = os.path.join(model_folder, model_name + ".pmx")
                 self._do_execute(context, root)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -907,7 +907,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             start_time = time.time()
             vmd_exporter.VMDExporter().export(**params)
             logging.info(" Finished exporting motion in %f seconds.", time.time() - start_time)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             self.report({"ERROR"}, err_msg)
@@ -998,7 +998,7 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
 
         try:
             vpd_exporter.VPDExporter().export(**params)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             self.report({"ERROR"}, err_msg)
