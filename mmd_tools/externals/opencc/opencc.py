@@ -123,7 +123,7 @@ class OpenCC:
                 self._add_dictionaries(item, chain)
                 chain_data.append(chain)
             else:
-                if not item in self.dict_cache:
+                if item not in self.dict_cache:
                     map_dict = {}
                     # Default max key length to smallest possible value
                     max_len = 1
