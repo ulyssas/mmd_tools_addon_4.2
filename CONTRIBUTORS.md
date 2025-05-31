@@ -28,3 +28,6 @@ Contributors
 - ulyssas
 - r1cebank
 - ChennyBaBy
+
+For detailed contribution history, visit:
+- https://github.com/MMD-Blender/blender_mmd_tools/graphs/contributors
