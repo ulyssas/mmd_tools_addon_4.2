@@ -841,7 +841,7 @@ class Material:
         self.vertex_count = 0
 
     def __repr__(self):
-        return "<Material name %s, name_e %s, diffuse %s, specular %s, shininess %s, ambient %s, double_side %s, drop_shadow %s, self_shadow_map %s, self_shadow %s, toon_edge %s, edge_color %s, edge_size %s, toon_texture %s, comment %s>"%(
+        return "<Material name %s, name_e %s, diffuse %s, specular %s, shininess %s, ambient %s, is_double_sided %s, enabled_drop_shadow %s, enabled_self_shadow_map %s, enabled_self_shadow %s, enabled_toon_edge %s, edge_color %s, edge_size %s, texture %s, sphere_texture %s, toon_texture %s, comment %s>" % (
             self.name,
             self.name_e,
             str(self.diffuse),
@@ -858,7 +858,8 @@ class Material:
             str(self.texture),
             str(self.sphere_texture),
             str(self.toon_texture),
-            str(self.comment),)
+            str(self.comment),
+        )
 
     def load(self, fs, num_textures):
         def __tex_index(index):
