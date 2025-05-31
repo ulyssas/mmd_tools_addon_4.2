@@ -147,9 +147,24 @@ class __PmxExporter:
                     pv.normal = v.normal
                     pv.uv = self.flipUV_V(v.uv)
                     pv.edge_scale = v.edge_scale
-                    for _uvzw in v.add_uvs:
-                        if _uvzw:
-                            pv.additional_uvs.append(self.flipUV_V(_uvzw[0]) + self.flipUV_V(_uvzw[1]))
+
+                    # Handle additional UVs
+                    max_uv_index = max((i for i, uvzw in enumerate(v.add_uvs) if uvzw), default=-1)  # Find the highest index with valid data
+                    if max_uv_index >= 0:
+                        # Ensure additional_uvs list is long enough to include all required indices
+                        for uv_index in range(max_uv_index + 1):
+                            _uvzw = v.add_uvs[uv_index]
+                            if _uvzw:
+                                if uv_index == 1:  # ADD UV2 (vertex color data)
+                                    # Vertex color data doesn't need V-axis flipping
+                                    additional_uv_data = _uvzw[0] + _uvzw[1]
+                                else:
+                                    # Other UV data requires V-axis flipping
+                                    additional_uv_data = self.flipUV_V(_uvzw[0]) + self.flipUV_V(_uvzw[1])
+                                pv.additional_uvs.append(additional_uv_data)
+                            else:
+                                # If this index has no data but higher indices do, insert zero data to keep indices aligned
+                                pv.additional_uvs.append((0.0, 0.0, 0.0, 0.0))
 
                     t = len(v.groups)
                     if t == 0:
@@ -1049,6 +1064,38 @@ class __PmxExporter:
                 )
             ]
 
+        # Get UV layers and vertex colors
+        bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
+        vertex_colors = base_mesh.vertex_colors.active
+
+        # Check total UV count limit (PMX supports maximum 4 additional UVs)
+        total_uv_needed = len(bl_add_uvs)
+        if vertex_colors:
+            total_uv_needed += 1  # Vertex colors need one UV slot
+
+        if total_uv_needed > 4:
+            logging.warning(f"Too many UV channels: {total_uv_needed} needed, but maximum is 4.")
+            logging.warning("Some UV data will be lost.")
+
+            if vertex_colors:
+                # Prioritize vertex colors, limit other UV layers
+                max_other_uvs = 3
+                if len(bl_add_uvs) > max_other_uvs:
+                    logging.warning(f"Keeping vertex colors and first {max_other_uvs} UV layers.")
+                    logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[max_other_uvs:]]}")
+                    bl_add_uvs = bl_add_uvs[:max_other_uvs]
+            else:
+                # No vertex colors, limit to 4 UV layers maximum
+                if len(bl_add_uvs) > 4:
+                    logging.warning(f"Keeping first 4 UV layers out of {len(bl_add_uvs)}.")
+                    logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[4:]]}")
+                    bl_add_uvs = bl_add_uvs[:4]
+
+        # Set additional UV count
+        self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs))
+        if vertex_colors:
+            self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs) + 1, 2)  # Ensure at least 2 for ADD UV2
+
         # load face data
         class _DummyUV:
             uv1 = uv2 = uv3 = mathutils.Vector((0, 1))
@@ -1087,9 +1134,29 @@ class __PmxExporter:
         material_names = {i: _mat_name(m) for i, m in enumerate(base_mesh.materials)}
         material_names = {i: material_names.get(i, None) or _mat_name(None) for i in material_faces.keys()}
 
+        # Process vertex colors as ADD UV2
+        if vertex_colors:
+            for face in face_seq:
+                for i, vertex in enumerate(face.vertices):
+                    # Get vertex color from face loop
+                    loop_index = face.index * 3 + i
+                    color = vertex_colors.data[loop_index].color
+
+                    # Convert vertex color to ADD UV2 data (RGBA → XYZW)
+                    vertex_color_uv = ((color[0], color[1]), (color[2], color[3]))
+
+                    # Initialize add_uvs as list if needed
+                    if not hasattr(vertex, "add_uvs"):
+                        vertex.add_uvs = [None] * 4  # Support up to 4 additional UVs
+                    elif len(vertex.add_uvs) < 2:
+                        vertex.add_uvs.extend([None] * (2 - len(vertex.add_uvs)))
+
+                    # Set ADD UV2 (index 1)
+                    vertex.add_uvs[1] = vertex_color_uv
+
+            logging.info("Exported vertex colors as ADD UV2")
+
         # export add UV
-        bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
-        self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs))
         for uv_n, uv_tex in enumerate(bl_add_uvs):
             if uv_n > 3:
                 logging.warning(" * extra addUV%d+ are not supported", uv_n + 1)
@@ -1102,12 +1169,22 @@ class __PmxExporter:
             else:
                 zw_data = iter(lambda: _DummyUV, None)
             rip_vertices_map = {}
+
+            # Adjust UV index if vertex colors are being used for ADD UV2
+            actual_uv_index = uv_n
+            if vertex_colors:
+                # If vertex colors use index 1, shift other UVs accordingly
+                if uv_n >= 1:
+                    actual_uv_index = uv_n + 1
+                elif uv_n == 0:
+                    actual_uv_index = 0  # UV1 stays at index 0
+
             for f, face, uv, zw in zip(face_seq, base_mesh.polygons, uv_data, zw_data):
                 vertices = [base_vertices[x] for x in face.vertices]
                 rip_vertices = [rip_vertices_map.setdefault(x, [x]) for x in f.vertices]
-                f.vertices[0] = self.__convertAddUV(f.vertices[0], uv.uv1, zw.uv1, uv_n, vertices[0], rip_vertices[0])
-                f.vertices[1] = self.__convertAddUV(f.vertices[1], uv.uv2, zw.uv2, uv_n, vertices[1], rip_vertices[1])
-                f.vertices[2] = self.__convertAddUV(f.vertices[2], uv.uv3, zw.uv3, uv_n, vertices[2], rip_vertices[2])
+                f.vertices[0] = self.__convertAddUV(f.vertices[0], uv.uv1, zw.uv1, actual_uv_index, vertices[0], rip_vertices[0])
+                f.vertices[1] = self.__convertAddUV(f.vertices[1], uv.uv2, zw.uv2, actual_uv_index, vertices[1], rip_vertices[1])
+                f.vertices[2] = self.__convertAddUV(f.vertices[2], uv.uv3, zw.uv3, actual_uv_index, vertices[2], rip_vertices[2])
 
         _to_mesh_clear(meshObj, base_mesh)
 
