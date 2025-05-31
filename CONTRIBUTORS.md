@@ -8,17 +8,17 @@ Maintainer
 - UuuNyaa
 
 Contributors
+- rintrint
+- mmmhj2
 - iRi-E
 - lordscales91
-- rintrint
 - nagadomi
-- mmmhj2
 - ptrthomas
 - stefnotch
-- Pixiy
+- One-sixth
 - qwertychouskie
 - aoowweenn
-- One-sixth
+- Pixiy
 - Melonbwead
 - Darkblader24
 - Vwings
