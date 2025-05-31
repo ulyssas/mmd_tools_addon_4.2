@@ -144,8 +144,8 @@ class FnMaterial:
             # pylint: disable=bare-except
             try:
                 return os.path.samefile(img_filepath, filepath)
-            except:
-                pass
+            except Exception as e:
+                logging.warning(f"Failed to compare files '{img_filepath}' and '{filepath}': {e}")
         return False
 
     def _load_image(self, filepath):
@@ -154,7 +154,7 @@ class FnMaterial:
             # pylint: disable=bare-except
             try:
                 img = bpy.data.images.load(filepath)
-            except:
+            except Exception:
                 logging.warning("Cannot create a texture for %s. No such file.", filepath)
                 img = bpy.data.images.new(os.path.basename(filepath), 1, 1)
                 img.source = "FILE"

@@ -43,7 +43,7 @@ class ConvertMaterialsForCycles(Operator):
     def execute(self, context):
         try:
             context.scene.render.engine = "CYCLES"
-        except:
+        except Exception:
             self.report({"ERROR"}, " * Failed to change to Cycles render engine.")
             return {"CANCELLED"}
         for obj in (x for x in context.selected_objects if x.type == "MESH"):

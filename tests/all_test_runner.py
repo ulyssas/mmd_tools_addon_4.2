@@ -227,8 +227,8 @@ def run_all_tests():
         try:
             elapsed_secs = float(elapsed.replace("s", ""))
             total_time_seconds += elapsed_secs
-        except:
-            pass
+        except Exception as e:
+            logging.warning(f"Failed to parse elapsed time '{elapsed}': {e}")
 
         # Clear the line
         sys.stdout.write("\r" + " " * 100 + "\r")

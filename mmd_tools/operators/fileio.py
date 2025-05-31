@@ -808,7 +808,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 disable_specular=self.disable_specular,
             )
             self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
-        except:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             raise

@@ -646,7 +646,7 @@ class TestPmxExporter(unittest.TestCase):
 
                     try:
                         result_model = pmx.load(output_pmx)
-                    except:
+                    except Exception:
                         self.fail("Failed to load output file %s" % output_pmx)
 
                     self.__check_pmx_header_info(source_model, result_model, import_types)
