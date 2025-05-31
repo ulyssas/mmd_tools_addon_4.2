@@ -1068,6 +1068,16 @@ class __PmxExporter:
         bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
         vertex_colors = base_mesh.vertex_colors.active
 
+        # Handle UV2 layer based on vertex color presence
+        if vertex_colors:
+            # When vertex colors exist, UV2 is likely converted from vertex colors - skip it
+            if any(uv.name == "UV2" for uv in bl_add_uvs):
+                logging.info("Vertex colors detected - UV2 layer treated as vertex color data and skipped.")
+                bl_add_uvs = [uv for uv in bl_add_uvs if uv.name != "UV2"]
+        else:
+            # When no vertex colors, UV2 is treated as normal additional UV layer
+            logging.info("No vertex colors detected - all UV layers exported normally.")
+
         # Check total UV count limit (PMX supports maximum 4 additional UVs)
         total_uv_needed = len(bl_add_uvs)
         if vertex_colors:
