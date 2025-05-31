@@ -176,6 +176,7 @@ class TestPmxExporter(unittest.TestCase):
         result_vertices = result_model.vertices
         self.assertEqual(len(source_vertices), len(result_vertices))
 
+        # Direct vertex comparison - check each vertex individually
         for v0, v1 in zip(source_vertices, result_vertices):
             self.assertLess(self.__vector_error(v0.co, v1.co), 1e-6)
             self.assertLess(self.__vector_error(v0.normal, v1.normal), 1e-2)  # Blender normal vectors can have relatively large discrepancies, so we allow an error tolerance up to 1e-2
@@ -197,8 +198,39 @@ class TestPmxExporter(unittest.TestCase):
         result_faces = result_model.faces
         self.assertEqual(len(source_faces), len(result_faces))
 
+        # Basic face index comparison
         for f0, f1 in zip(source_faces, result_faces):
             self.assertEqual(f0, f1)
+
+        # Face-vertex reference consistency check
+        # This ensures that vertices referenced by faces are consistent in context
+        # even if individual vertex checks pass, we need to verify correctness in face context
+        for face_idx, (f0, f1) in enumerate(zip(source_faces, result_faces)):
+            # Get vertices referenced by this face (original version logic)
+            seq0 = [source_vertices[i] for i in f0]
+            seq1 = [result_vertices[i] for i in f1]
+
+            for vertex_pos, (v0, v1) in enumerate(zip(seq0, seq1)):
+                msg = f"Face {face_idx} vertex {vertex_pos}"
+
+                # These checks ensure face-referenced vertices are consistent in context
+                # Even if vertices pass individual checks, they must be correct in face context
+                self.assertLess(self.__vector_error(v0.co, v1.co), 1e-6, msg)
+                self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6, msg)
+                self.assertLess(self.__vector_error(v0.normal, v1.normal), 1e-2, msg)
+
+        # Additional check: ensure no invalid references
+        # Verify source faces don't reference invalid vertex indices
+        for face_idx, face in enumerate(source_faces):
+            for vertex_pos, vertex_idx in enumerate(face):
+                self.assertGreaterEqual(vertex_idx, 0, f"Source face {face_idx} has negative vertex index")
+                self.assertLess(vertex_idx, len(source_vertices), f"Source face {face_idx} references invalid vertex {vertex_idx}")
+
+        # Verify result faces don't reference invalid vertex indices
+        for face_idx, face in enumerate(result_faces):
+            for vertex_pos, vertex_idx in enumerate(face):
+                self.assertGreaterEqual(vertex_idx, 0, f"Result face {face_idx} has negative vertex index")
+                self.assertLess(vertex_idx, len(result_vertices), f"Result face {face_idx} references invalid vertex {vertex_idx}")
 
     # ********************************************
     # Armature
