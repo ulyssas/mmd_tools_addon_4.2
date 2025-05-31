@@ -882,21 +882,37 @@ class __PmxExporter:
             p_joint.spring_rotation_constant = Vector(mmd_joint.spring_angular).xzy
             self.__model.joints.append(p_joint)
 
-    @staticmethod
-    def __convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map):
+    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map):
         vertices = vertices_map[vert_index]
-        for i in vertices:
-            if i.uv is None:
-                i.uv = uv
-                i.normal = normal
-                return i
-            elif (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
-                return i
-        n = copy.copy(i)  # shallow copy should be fine
-        n.uv = uv
-        n.normal = normal
-        vertices.append(n)
-        return n
+
+        if self.__vertex_splitting:  # Vertex Splitting
+            for i in vertices:
+                if i.uv is None:
+                    i.uv = uv
+                    i.normal = normal
+                    return i
+                elif (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
+                    return i
+            n = copy.copy(i)  # shallow copy should be fine
+            n.uv = uv
+            n.normal = normal
+            vertices.append(n)
+            return n
+        else:  # Disabled Vertex Splitting (Use averaged normals and the first UV set)
+            vertex = vertices[0]
+
+            if not hasattr(vertex, "_normal_list"):
+                vertex._normal_list = []
+            if vertex.uv is None:
+                vertex.uv = uv
+
+            # Add new normal to the list
+            vertex._normal_list.append(normal)
+
+            # Calculate averaged normal via normalized
+            vertex.normal = sum(vertex._normal_list, mathutils.Vector((0, 0, 0))).normalized()
+
+            return vertex
 
     @staticmethod
     def __convertAddUV(vert, adduv, addzw, uv_index, vertices, rip_vertices):
@@ -1221,6 +1237,7 @@ class __PmxExporter:
 
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
+        self.__vertex_splitting = args.get("vertex_splitting", False)
         sort_vertices = args.get("sort_vertices", "NONE")
         if sort_vertices != "NONE":
             self.__vertex_order_map = {"method": sort_vertices}

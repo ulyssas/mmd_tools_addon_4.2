@@ -715,6 +715,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Translate in presets before exporting.",
         default=False,
     )
+    vertex_splitting: bpy.props.BoolProperty(
+        name="Vertex Splitting",
+        description="ENABLE:   Split vertices when UV coordinates or normals differ.\nDISABLE:  Use averaged normals and first UV set.\nWARNING: Enabling vertex splitting will break model geometry by severing connections between faces in order to preserve multiple custom split normals per vertex and can significantly increase vertex count.",
+        default=False,
+    )
     sort_vertices: bpy.props.EnumProperty(
         name="Sort Vertices",
         description="Choose the method to sort vertices",
@@ -806,6 +811,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_materials=self.sort_materials,
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
+                vertex_splitting=self.vertex_splitting,
             )
             self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
         except Exception:
