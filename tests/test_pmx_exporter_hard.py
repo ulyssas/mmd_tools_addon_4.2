@@ -179,7 +179,15 @@ class TestPmxExporter(unittest.TestCase):
         # Direct vertex comparison - check each vertex individually
         for v0, v1 in zip(source_vertices, result_vertices):
             self.assertLess(self.__vector_error(v0.co, v1.co), 1e-6)
+
+            # Vector difference threshold check - detects magnitude and direction changes
             self.assertLess(self.__vector_error(v0.normal, v1.normal), 1e-2)  # Blender normal vectors can have relatively large discrepancies, so we allow an error tolerance up to 1e-2
+
+            # Dot product threshold check - specifically detects angular differences
+            if Vector(v0.normal).length > 0 and Vector(v1.normal).length > 0:
+                dot_product = Vector(v0.normal).normalized().dot(Vector(v1.normal).normalized())
+                self.assertGreaterEqual(dot_product, 0.99999, f"Normal angle difference too large: dot_product={dot_product:.6f}")
+
             self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6)
             self.assertEqual(v0.additional_uvs, v1.additional_uvs)
             self.assertEqual(v0.edge_scale, v1.edge_scale)
