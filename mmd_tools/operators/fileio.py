@@ -248,7 +248,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     )
     remove_doubles: bpy.props.BoolProperty(
         name="Remove Doubles",
-        description="Merge duplicated vertices and faces.\nWarning: This will perform global vertex merging which may break mesh geometry, material boundaries, and distort the UV map. Use with caution.",
+        description="Merge duplicated vertices and faces.\nWarning: This will perform global vertex merging instead of per-material vertex merging which may break mesh geometry, material boundaries, and distort the UV map. Use with caution.",
         default=False,
     )
     mark_sharp_edges: bpy.props.BoolProperty(
