@@ -930,7 +930,7 @@ class __PmxExporter:
             total_area = sum(vertex._area_list)
 
             # Area-weighted UV average
-            if len(vertex._uv_list) == 1:  # Single value, use directly
+            if all(uv_val == uv for uv_val in vertex._uv_list):  # All values are identical (including single value), skip averaging
                 vertex.uv = uv
             elif total_area < 1e-6:  # Fallback to arithmetic average to avoid division by zero or very small numbers
                 vertex.uv = sum(vertex._uv_list, mathutils.Vector((0, 0))) / len(vertex._uv_list)
@@ -939,7 +939,7 @@ class __PmxExporter:
                 vertex.uv = weighted_uv_sum / total_area
 
             # Area-weighted normal average
-            if len(vertex._normal_list) == 1:
+            if all(normal_val == normal for normal_val in vertex._normal_list):
                 vertex.normal = normal  # Blender's normals are already normalized
             elif total_area < 1e-6:
                 vertex.normal = sum(vertex._normal_list, mathutils.Vector((0, 0, 0))).normalized()
@@ -949,22 +949,50 @@ class __PmxExporter:
 
             return vertex
 
-    @staticmethod
-    def __convertAddUV(vert, adduv, addzw, uv_index, vertices, rip_vertices):
-        if vert.add_uvs[uv_index] is None:
-            vert.add_uvs[uv_index] = (adduv, addzw)
-            return vert
-        for i in rip_vertices:
-            uvzw = i.add_uvs[uv_index]
-            if (uvzw[0] - adduv).length < 0.001 and (uvzw[1] - addzw).length < 0.001:
-                return i
-        n = copy.copy(vert)
-        add_uvs = n.add_uvs.copy()
-        add_uvs[uv_index] = (adduv, addzw)
-        n.add_uvs = add_uvs
-        vertices.append(n)
-        rip_vertices.append(n)
-        return n
+    def __convertAddUV(self, vert, adduv, addzw, uv_index, vertices, rip_vertices, face_area):
+        assert vertices, f"Empty vertices list for additional UV processing"
+
+        if self.__vertex_splitting:  # Vertex Splitting enabled
+            if vert.add_uvs[uv_index] is None:
+                vert.add_uvs[uv_index] = (adduv, addzw)
+                return vert
+            for i in rip_vertices:
+                uvzw = i.add_uvs[uv_index]
+                if (uvzw[0] - adduv).length < 0.001 and (uvzw[1] - addzw).length < 0.001:
+                    return i
+            n = copy.copy(vert)
+            add_uvs = n.add_uvs.copy()
+            add_uvs[uv_index] = (adduv, addzw)
+            n.add_uvs = add_uvs
+            vertices.append(n)
+            rip_vertices.append(n)
+            return n
+        else:  # Disabled Vertex Splitting (Area weighted averaging)
+            vertex = vertices[0]
+
+            if not hasattr(vertex, "_add_uv_lists"):
+                vertex._add_uv_lists = [[] for _ in range(4)]
+            if not hasattr(vertex, "_add_uv_area_lists"):
+                vertex._add_uv_area_lists = [[] for _ in range(4)]
+
+            vertex._add_uv_lists[uv_index].append((adduv, addzw))
+            vertex._add_uv_area_lists[uv_index].append(face_area)
+            total_area = sum(vertex._add_uv_area_lists[uv_index])
+
+            # Area-weighted UV average
+            if all(uv == (adduv, addzw) for uv in vertex._add_uv_lists[uv_index]):  # All values are identical (including single value), skip averaging
+                vertex.add_uvs[uv_index] = (adduv, addzw)
+            elif total_area < 1e-6:  # Fallback to arithmetic average to avoid division by zero or very small numbers
+                uv_sum = sum((uv[0] for uv in vertex._add_uv_lists[uv_index]), mathutils.Vector((0, 0)))
+                zw_sum = sum((uv[1] for uv in vertex._add_uv_lists[uv_index]), mathutils.Vector((0, 0)))
+                count = len(vertex._add_uv_lists[uv_index])
+                vertex.add_uvs[uv_index] = (uv_sum / count, zw_sum / count)
+            else:  # Normal case: area-weighted average
+                weighted_uv_sum = sum((uv[0] * area for uv, area in zip(vertex._add_uv_lists[uv_index], vertex._add_uv_area_lists[uv_index])), mathutils.Vector((0, 0)))
+                weighted_zw_sum = sum((uv[1] * area for uv, area in zip(vertex._add_uv_lists[uv_index], vertex._add_uv_area_lists[uv_index])), mathutils.Vector((0, 0)))
+                vertex.add_uvs[uv_index] = (weighted_uv_sum / total_area, weighted_zw_sum / total_area)
+
+            return vertex
 
     @staticmethod
     def __triangulate(mesh, custom_normals):
@@ -1213,9 +1241,10 @@ class __PmxExporter:
             for f, face, uv, zw in zip(face_seq, base_mesh.polygons, uv_data, zw_data):
                 vertices = [base_vertices[x] for x in face.vertices]
                 rip_vertices = [rip_vertices_map.setdefault(x, [x]) for x in f.vertices]
-                f.vertices[0] = self.__convertAddUV(f.vertices[0], uv.uv1, zw.uv1, actual_uv_index, vertices[0], rip_vertices[0])
-                f.vertices[1] = self.__convertAddUV(f.vertices[1], uv.uv2, zw.uv2, actual_uv_index, vertices[1], rip_vertices[1])
-                f.vertices[2] = self.__convertAddUV(f.vertices[2], uv.uv3, zw.uv3, actual_uv_index, vertices[2], rip_vertices[2])
+                face_area = face.area
+                f.vertices[0] = self.__convertAddUV(f.vertices[0], uv.uv1, zw.uv1, actual_uv_index, vertices[0], rip_vertices[0], face_area)
+                f.vertices[1] = self.__convertAddUV(f.vertices[1], uv.uv2, zw.uv2, actual_uv_index, vertices[1], rip_vertices[1], face_area)
+                f.vertices[2] = self.__convertAddUV(f.vertices[2], uv.uv3, zw.uv3, actual_uv_index, vertices[2], rip_vertices[2], face_area)
 
         _to_mesh_clear(meshObj, base_mesh)
 
