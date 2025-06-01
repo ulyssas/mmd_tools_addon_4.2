@@ -717,7 +717,18 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     )
     vertex_splitting: bpy.props.BoolProperty(
         name="Vertex Splitting",
-        description="ENABLE:   Split vertices when UV coordinates or normals differ.\nDISABLE:  Use area-weighted averaging for normals and UV coordinates (including additional UV layers).\nWARNING: Enabling vertex splitting will break model geometry by severing connections between faces in order to preserve multiple custom split normals per vertex and multiple UV coordinates per vertex, and can significantly increase vertex count.",
+        description=(
+            "Vertex Splitting for Custom Split Normals\n"
+            "ENABLE:\n"
+            "    Split vertices when the same vertex has different normals.\n"
+            "DISABLE:\n"
+            "    Use area-weighted averaging for normals.\n"
+            "WARNING:\n"
+            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
+            "\n"
+            "NOTE:\n"
+            "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible."
+        ),
         default=False,
     )
     sort_vertices: bpy.props.EnumProperty(
