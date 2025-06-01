@@ -909,7 +909,7 @@ class __PmxExporter:
                     return i
                 elif (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
                     return i
-            n = copy.copy(i)  # shallow copy should be fine
+            n = copy.copy(vertices[0])  # shallow copy should be fine
             n.uv = uv
             n.normal = normal
             vertices.append(n)
