@@ -932,7 +932,7 @@ class __PmxExporter:
             # Area-weighted UV average
             if all(uv_val == uv for uv_val in vertex._uv_list):  # All values are identical (including single value), skip averaging
                 vertex.uv = uv
-            elif total_area < 1e-6:  # Fallback to arithmetic average to avoid division by zero or very small numbers
+            elif total_area == 0.0:  # Fallback to arithmetic average to avoid division by zero
                 vertex.uv = sum(vertex._uv_list, mathutils.Vector((0, 0))) / len(vertex._uv_list)
             else:  # Normal case: area-weighted average
                 weighted_uv_sum = sum((uv * area for uv, area in zip(vertex._uv_list, vertex._area_list)), mathutils.Vector((0, 0)))
@@ -941,7 +941,7 @@ class __PmxExporter:
             # Area-weighted normal average
             if all(normal_val == normal for normal_val in vertex._normal_list):
                 vertex.normal = normal  # Blender's normals are already normalized
-            elif total_area < 1e-6:
+            elif total_area == 0.0:
                 vertex.normal = sum(vertex._normal_list, mathutils.Vector((0, 0, 0))).normalized()
             else:
                 weighted_normal_sum = sum((normal * area for normal, area in zip(vertex._normal_list, vertex._area_list)), mathutils.Vector((0, 0, 0)))
@@ -982,7 +982,7 @@ class __PmxExporter:
             # Area-weighted UV average
             if all(uv == (adduv, addzw) for uv in vertex._add_uv_lists[uv_index]):  # All values are identical (including single value), skip averaging
                 vertex.add_uvs[uv_index] = (adduv, addzw)
-            elif total_area < 1e-6:  # Fallback to arithmetic average to avoid division by zero or very small numbers
+            elif total_area == 0.0:  # Fallback to arithmetic average to avoid division by zero
                 uv_sum = sum((uv[0] for uv in vertex._add_uv_lists[uv_index]), mathutils.Vector((0, 0)))
                 zw_sum = sum((uv[1] for uv in vertex._add_uv_lists[uv_index]), mathutils.Vector((0, 0)))
                 count = len(vertex._add_uv_lists[uv_index])
