@@ -104,7 +104,10 @@ def select_object(obj: bpy.types.Object, objects: Optional[List[bpy.types.Object
        with select_object(obj):
            some functions...
     """
-    # TODO: Reimplement with bpy.context.temp_override (If it ain't broke, don't fix it.)
+    # TODO: Consider reimplementing with bpy.context.temp_override,
+    #       but note that Blender's new API has stability issues.
+    #       temp_override is prone to crashes, making the current approach safer.
+    #       If it ain't broke, don't fix it.
     return __SelectObjects(obj, objects)
 
 
