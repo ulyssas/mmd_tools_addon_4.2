@@ -950,7 +950,7 @@ class __PmxExporter:
             return vertex
 
     def __convertAddUV(self, vert, adduv, addzw, uv_index, vertices, rip_vertices, face_area):
-        assert vertices, f"Empty vertices list for additional UV processing"
+        assert vertices, "Empty vertices list for additional UV processing"
 
         if self.__vertex_splitting:  # Vertex Splitting enabled
             if vert.add_uvs[uv_index] is None:
