@@ -634,9 +634,11 @@ class TestPmxExporter(unittest.TestCase):
                     output_pmx = os.path.join(TESTS_DIR, "output", "%d.pmx" % test_num)
                     bpy.ops.mmd_tools.export_pmx(
                         filepath=output_pmx,
-                        scale=1,
+                        scale=1.0,
                         copy_textures=False,
                         sort_materials=False,
+                        sort_vertices="NONE",
+                        vertex_splitting=False,
                         log_level="ERROR",
                     )
                 except Exception:

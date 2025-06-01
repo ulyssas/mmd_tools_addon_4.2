@@ -897,8 +897,9 @@ class __PmxExporter:
             p_joint.spring_rotation_constant = Vector(mmd_joint.spring_angular).xzy
             self.__model.joints.append(p_joint)
 
-    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map):
+    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area):
         vertices = vertices_map[vert_index]
+        assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
         if self.__vertex_splitting:  # Vertex Splitting
             for i in vertices:
@@ -913,19 +914,38 @@ class __PmxExporter:
             n.normal = normal
             vertices.append(n)
             return n
-        else:  # Disabled Vertex Splitting (Use averaged normals and the first UV set)
+        else:  # Disabled Vertex Splitting (Area weighted averaging)
             vertex = vertices[0]
 
             if not hasattr(vertex, "_normal_list"):
                 vertex._normal_list = []
-            if vertex.uv is None:
-                vertex.uv = uv
+            if not hasattr(vertex, "_uv_list"):
+                vertex._uv_list = []
+            if not hasattr(vertex, "_area_list"):
+                vertex._area_list = []
 
-            # Add new normal to the list
             vertex._normal_list.append(normal)
+            vertex._uv_list.append(uv)
+            vertex._area_list.append(face_area)
+            total_area = sum(vertex._area_list)
 
-            # Calculate averaged normal via normalized
-            vertex.normal = sum(vertex._normal_list, mathutils.Vector((0, 0, 0))).normalized()
+            # Area-weighted UV average
+            if len(vertex._uv_list) == 1:  # Single value, use directly
+                vertex.uv = uv
+            elif total_area < 1e-6:  # Fallback to arithmetic average to avoid division by zero or very small numbers
+                vertex.uv = sum(vertex._uv_list, mathutils.Vector((0, 0))) / len(vertex._uv_list)
+            else:  # Normal case: area-weighted average
+                weighted_uv_sum = sum((uv * area for uv, area in zip(vertex._uv_list, vertex._area_list)), mathutils.Vector((0, 0)))
+                vertex.uv = weighted_uv_sum / total_area
+
+            # Area-weighted normal average
+            if len(vertex._normal_list) == 1:
+                vertex.normal = normal  # Blender's normals are already normalized
+            elif total_area < 1e-6:
+                vertex.normal = sum(vertex._normal_list, mathutils.Vector((0, 0, 0))).normalized()
+            else:
+                weighted_normal_sum = sum((normal * area for normal, area in zip(vertex._normal_list, vertex._area_list)), mathutils.Vector((0, 0, 0)))
+                vertex.normal = (weighted_normal_sum / total_area).normalized()
 
             return vertex
 
@@ -1127,9 +1147,10 @@ class __PmxExporter:
                 raise Exception
             idx = face.index * 3
             n1, n2, n3 = loop_normals[idx : idx + 3]
-            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
-            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
-            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
+            face_area = face.area
+            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area)
+            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area)
+            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area)
 
             t = _Face([v1, v2, v3], face_index)
             face_seq.append(t)
