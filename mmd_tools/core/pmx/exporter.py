@@ -897,7 +897,7 @@ class __PmxExporter:
             p_joint.spring_rotation_constant = Vector(mmd_joint.spring_angular).xzy
             self.__model.joints.append(p_joint)
 
-    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area):
+    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area, loop_angle):
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
@@ -914,7 +914,7 @@ class __PmxExporter:
             n.normal = normal
             vertices.append(n)
             return n
-        else:  # UV always uses vertex splitting, normals use area-weighted averaging
+        else:  # UV always uses vertex splitting, normals use angle * area weighted averaging
             # First, handle UV with vertex splitting
             v = None
             for i in vertices:
@@ -932,24 +932,31 @@ class __PmxExporter:
                 v.uv = uv
                 vertices.append(v)
 
-            # Handle normals with area-weighted averaging for the selected vertex
+            # Handle normals with angle * area weighted averaging for the selected vertex
             if not hasattr(v, "_normal_list"):
                 v._normal_list = []
             if not hasattr(v, "_area_list"):
                 v._area_list = []
+            if not hasattr(v, "_angle_list"):
+                v._angle_list = []
 
             v._normal_list.append(normal)
             v._area_list.append(face_area)
-            total_area = sum(v._area_list)
+            v._angle_list.append(loop_angle)
 
-            # Area-weighted normal average
+            # Calculate angle * area weighted normal average
             if all(normal_val == normal for normal_val in v._normal_list):  # All values are identical (including single value), skip averaging
                 v.normal = normal  # Blender's normals are already normalized
-            elif total_area == 0.0:  # Fallback to arithmetic average to avoid division by zero
-                v.normal = sum(v._normal_list, mathutils.Vector((0, 0, 0))).normalized()
-            else:  # Normal case: area-weighted average
-                weighted_normal_sum = sum((normal * area for normal, area in zip(v._normal_list, v._area_list)), mathutils.Vector((0, 0, 0)))
-                v.normal = (weighted_normal_sum / total_area).normalized()
+            else:
+                # Calculate weights as angle * area
+                weights = [angle * area for angle, area in zip(v._angle_list, v._area_list)]
+                total_weight = sum(weights)
+
+                if total_weight == 0.0:  # Fallback to arithmetic average to avoid division by zero
+                    v.normal = sum(v._normal_list, mathutils.Vector((0, 0, 0))).normalized()
+                else:  # Normal case: angle * area weighted average
+                    weighted_normal_sum = sum((normal * weight for normal, weight in zip(v._normal_list, weights)), mathutils.Vector((0, 0, 0)))
+                    v.normal = (weighted_normal_sum / total_weight).normalized()
 
             return v
 
@@ -976,6 +983,12 @@ class __PmxExporter:
         bm = bmesh.new()
         bm.from_mesh(mesh)
 
+        # Calculate angles for each loop before triangulation (like normals)
+        loop_angles = []
+        for face in bm.faces:
+            for loop in face.loops:
+                loop_angles.append(loop.calc_angle())
+
         is_triangulated = True
         face_verts_to_loop_id_map = {}
 
@@ -991,24 +1004,29 @@ class __PmxExporter:
         loop_normals, face_indices = None, None
         if is_triangulated:
             loop_normals = custom_normals
+            # loop_angles already calculated above
         else:
             face_map = bmesh.ops.triangulate(bm, faces=bm.faces, quad_method="FIXED", ngon_method="EAR_CLIP")["face_map"]
-            logging.debug(" - Remapping custom normals...")
+            logging.debug(" - Remapping custom normals and angles...")
             loop_normals, face_indices = [], []
+            remapped_loop_angles = []
             for f in bm.faces:
                 f_orig = face_map.get(f, f)
                 face_indices.append(f_orig.index)
                 vert_to_loop_id = face_verts_to_loop_id_map[f_orig]
                 for v in f.verts:
                     loop_normals.append(custom_normals[vert_to_loop_id[v]])
-            logging.debug("   - Done (faces:%d)", len(bm.faces))
+                    remapped_loop_angles.append(loop_angles[vert_to_loop_id[v]])
+            loop_angles = remapped_loop_angles
+            logging.debug("   - Done (faces:%d, normals:%d, angles:%d)", len(bm.faces), len(loop_normals), len(loop_angles))
             bm.to_mesh(mesh)
             face_map.clear()
         face_verts_to_loop_id_map.clear()
         bm.free()
 
         assert len(loop_normals) == len(mesh.loops)
-        return loop_normals, face_indices
+        assert len(loop_angles) == len(mesh.loops)
+        return loop_normals, face_indices, loop_angles
 
     @staticmethod
     def __get_normals(mesh, matrix):
@@ -1039,7 +1057,7 @@ class __PmxExporter:
         _to_mesh_clear = lambda obj, mesh: obj.to_mesh_clear()
 
         base_mesh = _to_mesh(meshObj)
-        loop_normals, face_indices = self.__triangulate(base_mesh, self.__get_normals(base_mesh, normal_matrix))
+        loop_normals, face_indices, loop_angles = self.__triangulate(base_mesh, self.__get_normals(base_mesh, normal_matrix))
         base_mesh.transform(pmx_matrix)
 
         def _get_weight(vertex_group_index, vertex, default_weight):
@@ -1152,10 +1170,11 @@ class __PmxExporter:
                 raise Exception
             idx = face.index * 3
             n1, n2, n3 = loop_normals[idx : idx + 3]
+            a1, a2, a3 = loop_angles[idx : idx + 3]
             face_area = face.area
-            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area)
-            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area)
-            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area)
+            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
+            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
+            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
 
             t = _Face([v1, v2, v3], face_index)
             face_seq.append(t)

@@ -722,7 +722,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
             "ENABLE:\n"
             "    Split vertices when the same vertex has different normals.\n"
             "DISABLE:\n"
-            "    Use area-weighted averaging for normals.\n"
+            "    Use angle * area weighted averaging for normals.\n"
             "WARNING:\n"
             "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
             "\n"
