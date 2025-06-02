@@ -174,7 +174,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
             self.migrate_from_vertex_groups(bone_order_mesh_object, armature, root)
         else:
             # safe realign bone IDs
-            FnModel.realign_bone_ids(armature.pose.bones, 0, root.mmd_root.bone_morphs, armature.pose.bones)
+            FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones)
 
         # Apply additional transformation (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)

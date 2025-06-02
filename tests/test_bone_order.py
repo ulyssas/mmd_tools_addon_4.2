@@ -247,7 +247,7 @@ class TestBoneOrder(unittest.TestCase):
         pose_bones["head"].mmd_bone.bone_id = 20
 
         # Execute realignment
-        FnModel.realign_bone_ids(pose_bones, 0, bone_morphs, pose_bones)
+        FnModel.realign_bone_ids(0, bone_morphs, pose_bones)
 
         # Verify all bone IDs are sequential without gaps
         valid_bones = [b for b in pose_bones if not getattr(b, "is_mmd_shadow_bone", False)]

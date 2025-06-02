@@ -434,7 +434,7 @@ class FnModel:
             FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
 
     @staticmethod
-    def realign_bone_ids(bones, bone_id_offset: int, bone_morphs, pose_bones):
+    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel.
         New sequence starts from bone_id_offset. Sorts by bone_id if bone_id >= 0, otherwise by bone name."""
         # Get valid bones (non-shadow bones)
@@ -481,7 +481,7 @@ class FnModel:
             child_bone_morphs = child_root_object.mmd_root.bone_morphs
 
             # Reassign bone IDs to avoid conflicts
-            FnModel.realign_bone_ids(child_pose_bones, max_bone_id + 1, child_bone_morphs, child_pose_bones)
+            FnModel.realign_bone_ids(max_bone_id + 1, child_bone_morphs, child_pose_bones)
             max_bone_id = FnModel.get_max_bone_id(child_pose_bones)
 
             # Save material morph references
