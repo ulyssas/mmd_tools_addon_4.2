@@ -1385,6 +1385,13 @@ class __PmxExporter:
             base_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
             self.__copy_textures(output_dir, import_folder or base_folder)
 
+        # Output vertex count change
+        original_vertex_count = sum(len(mesh.data.vertices) for mesh in meshes)
+        final_vertex_count = len(self.__model.vertices)
+        vertex_diff = final_vertex_count - original_vertex_count
+        logging.info("Vertex splitting for Normal: %s", "Enabled" if self.__vertex_splitting else "Disabled")
+        logging.info("Vertex statistics: Original %d -> Output %d (%+d)", original_vertex_count, final_vertex_count, vertex_diff)
+
         pmx.save(filepath, self.__model, add_uv_count=self.__add_uv_count)
 
 

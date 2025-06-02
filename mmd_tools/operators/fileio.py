@@ -728,6 +728,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
             "\n"
             "NOTE:\n"
             "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible."
+            "    Additionally, unreferenced vertices will not be exported (similar to Clean Model during import), so the vertex count may also decrease."
         ),
         default=False,
     )
