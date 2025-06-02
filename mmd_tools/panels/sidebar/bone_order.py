@@ -155,7 +155,7 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
 class MMDToolsRealignBoneIds(bpy.types.Operator):
     bl_idname = "mmd_tools.fix_bone_order"
     bl_label = "Realign Bone IDs"
-    bl_description = "Realign bone IDs to be sequential without gaps and apply additional transforms"
+    bl_description = "Realign bone IDs to be sequential without gaps, sorted by bone_id (if valid), then by parent-child hierarchy. Then apply additional transforms again (Assembly -> Bone button)."
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):

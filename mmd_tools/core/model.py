@@ -436,12 +436,21 @@ class FnModel:
     @staticmethod
     def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel.
-        New sequence starts from bone_id_offset. Sorts by bone_id if bone_id >= 0, otherwise by bone name."""
+        New sequence starts from bone_id_offset. Sorts by bone_id if bone_id >= 0, otherwise by parent-child hierarchy."""
+
+        def bone_hierarchy_path(bone):
+            """Build path from root to bone for hierarchy sorting"""
+            path = []
+            while bone:
+                path.append(bone.name)
+                bone = bone.parent
+            return tuple(reversed(path))
+
         # Get valid bones (non-shadow bones)
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
 
         # Sort by bone_id if bone_id >= 0, otherwise by bone name
-        valid_bones.sort(key=lambda pb: (0, pb.mmd_bone.bone_id) if pb.mmd_bone.bone_id >= 0 else (1, pb.name))
+        valid_bones.sort(key=lambda pb: (0, pb.mmd_bone.bone_id) if pb.mmd_bone.bone_id >= 0 else (1, bone_hierarchy_path(pb), pb.name))
 
         # Reassign IDs sequentially
         for i, bone in enumerate(valid_bones):
