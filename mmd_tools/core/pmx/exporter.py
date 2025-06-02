@@ -1404,12 +1404,25 @@ class __PmxExporter:
             base_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
             self.__copy_textures(output_dir, import_folder or base_folder)
 
-        # Output vertex count change
-        original_vertex_count = sum(len(mesh.data.vertices) for mesh in meshes)
+        # Output Changes in Vertex and Face Count
+        original_vertex_count = 0
+        original_face_count = 0
+        depsgraph = bpy.context.evaluated_depsgraph_get()
+        for mesh_obj in meshes:
+            obj_eval = mesh_obj.evaluated_get(depsgraph)
+            mesh_eval = obj_eval.data
+            original_vertex_count += len(mesh_eval.vertices)
+            original_face_count += len(mesh_eval.polygons)
         final_vertex_count = len(self.__model.vertices)
+        final_face_count = len(self.__model.faces)
         vertex_diff = final_vertex_count - original_vertex_count
-        logging.info("Vertex splitting for Normal: %s", "Enabled" if self.__vertex_splitting else "Disabled")
-        logging.info("Vertex statistics: Original %d -> Output %d (%+d)", original_vertex_count, final_vertex_count, vertex_diff)
+        face_diff = final_face_count - original_face_count
+        triangulation_ratio = final_face_count / original_face_count if original_face_count > 0 else 0
+        logging.info("Changes in Vertex and Face Count:")
+        logging.info("  Vertex Splitting for Normals: %s", "Enabled" if self.__vertex_splitting else "Disabled")
+        logging.info("  Vertices: Original %d -> Output %d (%+d)", original_vertex_count, final_vertex_count, vertex_diff)
+        logging.info("  Faces: Original %d -> Output %d (%+d)", original_face_count, final_face_count, face_diff)
+        logging.info("  Face Triangulation Ratio: %.2fx (Output / Original)", triangulation_ratio)
 
         pmx.save(filepath, self.__model, add_uv_count=self.__add_uv_count)
 
