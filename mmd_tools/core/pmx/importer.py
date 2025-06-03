@@ -612,7 +612,7 @@ class PMXImporter:
                 vertex = pmxModel.vertices[loop_index]
                 if len(vertex.additional_uvs) >= 2:
                     uv2_data = vertex.additional_uvs[1]  # ADD UV2 data (X,Y,Z,W)
-                    # Convert UV data to vertex color (XYZW → RGBA)
+                    # Convert UV data to vertex color (XYZW -> RGBA)
                     color = (uv2_data[0], uv2_data[1], uv2_data[2], uv2_data[3])
                     vertex_colors.data[i].color = color
             logging.info("Imported ADD UV2 as vertex colors")

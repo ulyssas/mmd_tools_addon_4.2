@@ -1197,7 +1197,7 @@ class __PmxExporter:
                     loop_index = face.index * 3 + i
                     color = vertex_colors.data[loop_index].color
 
-                    # Convert vertex color to ADD UV2 data (RGBA → XYZW)
+                    # Convert vertex color to ADD UV2 data (RGBA -> XYZW)
                     vertex_color_uv = ((color[0], color[1]), (color[2], color[3]))
 
                     # Initialize add_uvs as list if needed
