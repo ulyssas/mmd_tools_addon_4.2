@@ -155,8 +155,20 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
 class MMDToolsRealignBoneIds(bpy.types.Operator):
     bl_idname = "mmd_tools.fix_bone_order"
     bl_label = "Realign Bone IDs"
-    bl_description = "Realign bone IDs to be sequential without gaps, sorted by bone_id (if valid), then by parent-child hierarchy. Then apply additional transforms again (Assembly -> Bone button)."
+    bl_description = "Realign bone IDs to be sequential without gaps. Sorted primarily by hierarchy depth (ensuring parents have lower IDs than children), then by bone_id (valid ones prioritized), then by bone name. Apply additional transforms afterward (Assembly -> Bone button)."
     bl_options = {"REGISTER", "UNDO"}
+
+    # Add sorting method property
+    sorting_method: bpy.props.EnumProperty(
+        name="Sorting Method",
+        description="Choose how to sort bones during realignment",
+        items=[
+            ("FIX-MOVE-CHILDREN", "Fix: Move Children", "Move children after parents, preserve parent positions"),
+            ("REBUILD-DEPTH", "Rebuild: Depth", "Sort by hierarchy depth (chains mixing)"),
+            ("REBUILD-PATH", "Rebuild: Path", "Sort by hierarchy path (keeps bone chains together)"),
+        ],
+        default="FIX-MOVE-CHILDREN",
+    )
 
     def execute(self, context):
         root = FnModel.find_root_object(context.object)
@@ -174,7 +186,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
             self.migrate_from_vertex_groups(bone_order_mesh_object, armature, root)
         else:
             # safe realign bone IDs
-            FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones)
+            FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones, self.sorting_method)
 
         # Apply additional transformation (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)

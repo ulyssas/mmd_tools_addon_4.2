@@ -434,23 +434,63 @@ class FnModel:
             FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
 
     @staticmethod
-    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
-        """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel.
-        New sequence starts from bone_id_offset. Sorts by bone_id if bone_id >= 0, otherwise by parent-child hierarchy."""
+    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones, sorting_method: str = "FIX-MOVE-CHILDREN"):
+        """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel."""
+
+        def get_hierarchy_depth(bone):
+            """Get the depth of bone in the hierarchy (root bones have depth 0)"""
+            depth = 0
+            while bone.parent:
+                depth += 1
+                bone = bone.parent
+            return depth
 
         def bone_hierarchy_path(bone):
-            """Build path from root to bone for hierarchy sorting"""
+            """Build path from root to bone for parent-child hierarchy sorting"""
             path = []
             while bone:
                 path.append(bone.name)
                 bone = bone.parent
             return tuple(reversed(path))
 
+        def get_fix_key_move_children(bone):
+            """Fix mode: move children after their parents (preserve parent positions)"""
+            # Find the maximum ID among ALL ancestors in the hierarchy chain
+            max_ancestor_id = -1
+            temp_parent = bone.parent
+
+            while temp_parent:
+                if hasattr(temp_parent, "is_mmd_shadow_bone") and temp_parent.is_mmd_shadow_bone:
+                    temp_parent = temp_parent.parent
+                    continue
+
+                if temp_parent.mmd_bone.bone_id >= 0:
+                    max_ancestor_id = max(max_ancestor_id, temp_parent.mmd_bone.bone_id)
+                temp_parent = temp_parent.parent
+
+            current_id = bone.mmd_bone.bone_id
+
+            if max_ancestor_id >= 0 and current_id >= 0 and max_ancestor_id >= current_id:
+                # This bone needs to be moved after ALL ancestors
+                # Use max ancestor ID + small offset + hierarchy depth for stable sorting
+                return (1, max_ancestor_id + 0.1, get_hierarchy_depth(bone), bone.name)
+            else:
+                # Keep original position
+                return (0, current_id if current_id >= 0 else float("inf"), bone.name)
+
         # Get valid bones (non-shadow bones)
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
 
-        # Sort by bone_id if bone_id >= 0, otherwise by bone name
-        valid_bones.sort(key=lambda pb: (0, pb.mmd_bone.bone_id) if pb.mmd_bone.bone_id >= 0 else (1, bone_hierarchy_path(pb), pb.name))
+        # Choose sorting method
+        if sorting_method == "REBUILD-DEPTH":
+            # Sort by hierarchy depth, then name (allows chain mixing)
+            valid_bones.sort(key=lambda pb: (get_hierarchy_depth(pb), pb.name))
+        elif sorting_method == "REBUILD-PATH":
+            # Sort by hierarchy path (keeps bone chains together)
+            valid_bones.sort(key=bone_hierarchy_path)
+        else:  # Default to "FIX-MOVE-CHILDREN"
+            # Fix mode: move children after parents (preserve parent positions)
+            valid_bones.sort(key=get_fix_key_move_children)
 
         # Reassign IDs sequentially
         for i, bone in enumerate(valid_bones):
