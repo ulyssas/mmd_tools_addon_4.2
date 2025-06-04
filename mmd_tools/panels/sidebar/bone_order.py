@@ -28,6 +28,11 @@ class MMDToolsBoneIdMoveUp(bpy.types.Operator):
         active_bone = armature.pose.bones[active_bone_index]
         active_id = active_bone.mmd_bone.bone_id
 
+        # Check if bone_id is -1 and show warning
+        if active_id == -1:
+            self.report({"WARNING"}, "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs.")
+            return {"CANCELLED"}
+
         # Find bone with smaller bone_id
         prev_bone = None
         prev_id = -1
@@ -68,6 +73,11 @@ class MMDToolsBoneIdMoveDown(bpy.types.Operator):
 
         active_bone = armature.pose.bones[active_bone_index]
         active_id = active_bone.mmd_bone.bone_id
+
+        # Check if bone_id is -1 and show warning
+        if active_id == -1:
+            self.report({"WARNING"}, "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs.")
+            return {"CANCELLED"}
 
         # Find bone with larger bone_id
         next_bone = None
