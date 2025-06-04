@@ -77,11 +77,25 @@ def get_blender_path():
     2. When launched with Python: python all_test_runner.py (uses 'blender' from PATH)
     3. When launched with Python and explicit path: python all_test_runner.py <blender.exe path>
     """
+
+    # Method 1: Check if we're running inside Blender
+    try:
+        import bpy
+
+        # If we can import bpy, we're running inside Blender
+        # Get the Blender executable path
+        blender_path = bpy.app.binary_path
+        if blender_path and os.path.exists(blender_path):
+            return blender_path
+    except ImportError:
+        # Not running inside Blender
+        pass
+
     # Method 3: Check if Blender path is provided as command-line argument
     if len(sys.argv) > 1 and os.path.exists(sys.argv[1]) and (os.path.basename(sys.argv[1]).startswith("blender") or "blender" in os.path.basename(sys.argv[1]).lower()):
         return sys.argv[1]
 
-    # Method 1 & 2: Use 'blender' from PATH
+    # Method 2: Use 'blender' from PATH
     return "blender"
 
 
@@ -254,19 +268,20 @@ def run_all_tests():
     print(f"Total execution time: {total_time_str}")
     print("=" * 80)
 
-    # Print passed tests with green color
+    print("\nPASSED TESTS:")
     if passed_tests:
-        print("\nPASSED TESTS:")
         for test, elapsed in passed_tests:
             print(f"  {GREEN}✓ {test} ({elapsed}){RESET}")
+    else:
+        print("    No tests passed!")
 
-    # Print failed tests with red color
+    print("\nFAILED TESTS:")
     if failed_tests:
-        print("\nFAILED TESTS:")
         for test, elapsed in failed_tests:
             print(f"  {RED}✗ {test} ({elapsed}){RESET}")
+    else:
+        print("    All tests passed!")
 
-    # print("\nTest run completed at", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     print("\nTest run completed at", datetime.now().strftime("%Y-%m-%d %H:%M:%S"), f"({total_time_seconds:.3f}s)")
 
 
