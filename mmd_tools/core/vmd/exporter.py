@@ -72,17 +72,18 @@ class _FCurve:
         dx, dy = p3 - p0
         x1, y1 = p1 - p0
         x2, y2 = p2 - p0
-        if abs(dx) == 0.0:
+
+        # When dy is too small, restoring (y1, y2) is impossible and the curve is meaningless in MMD
+        if abs(dy) < 1e-4:
+            return ((20, 20), (107, 107))
+        else:
+            y1 = max(0, min(127, round(y1 * 127.0 / dy)))
+            y2 = max(0, min(127, round(y2 * 127.0 / dy)))
+        if abs(dx) < 1e-4:
             (x1, x2) = (20, 107)
         else:
             x1 = max(0, min(127, round(x1 * 127.0 / dx)))
             x2 = max(0, min(127, round(x2 * 127.0 / dx)))
-        if abs(dy) == 0.0:
-            # Special mapping to maintain VMD import/export consistency
-            (y1, y2) = (x1 if x1 in [20, 40] else 0, x2 if x2 in [87, 107] else 127)
-        else:
-            y1 = max(0, min(127, round(y1 * 127.0 / dy)))
-            y2 = max(0, min(127, round(y2 * 127.0 / dy)))
         return ((x1, y1), (x2, y2))
 
     def sampleFrames(self, frame_numbers: List[int]):

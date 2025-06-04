@@ -328,16 +328,19 @@ class VMDImporter:
 
     @staticmethod
     def __setInterpolation(bezier, kp0, kp1):
-        # if bezier[0] == bezier[1] and bezier[2] == bezier[3]:
-        #     kp0.interpolation = "BEZIER"
-        # else:
-        #     kp0.interpolation = "BEZIER"
-
-        # Always use BEZIER to preserve VMD handle positions
+        # Always use BEZIER to match Blender's default behavior
         kp0.interpolation = "BEZIER"
-
         kp0.handle_right_type = "FREE"
         kp1.handle_left_type = "FREE"
+
+        d = (kp1.co - kp0.co)
+        dy = d.y
+
+        # Reset handles if the value doesn't change much (dy is small enough) or the bezier is linear
+        # When dy is small enough, the curve is meaningless and will lose data during import; there's no difference in resetting it
+        # When the bezier is linear, the resulting curve is equivalent to the original
+        if abs(dy) < 1e-4 or (bezier[0] == bezier[1] and bezier[2] == bezier[3]):
+            bezier = [20, 20, 107, 107]
 
         # Always multiply before dividing to reduce precision errors
         d = (kp1.co - kp0.co)
