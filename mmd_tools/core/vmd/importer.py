@@ -78,7 +78,26 @@ class BoneConverter:
     """
     Bone transform converter using float64 manual math.
     Avoids mathutils (float32) and numpy (overhead) for precision and speed.
+    Enhanced precision for critical transforms.
     """
+
+    # ================ ORIGINAL IMPLEMENTATION (mathutils-based) ================
+    # def __init__(self, pose_bone, scale, invert=False):
+    #     mat = pose_bone.bone.matrix_local.to_3x3()
+    #     mat[1], mat[2] = mat[2].copy(), mat[1].copy()
+    #     self.__mat = mat.transposed()
+    #     self.__scale = scale
+    #     if invert:
+    #         self.__mat.invert()
+    #     self.convert_interpolation = _InterpolationHelper(self.__mat).convert
+    # def convert_location(self, location):
+    #     return (self.__mat @ Vector(location)) * self.__scale
+    # def convert_rotation(self, rotation_xyzw):
+    #     rot = Quaternion()
+    #     rot.x, rot.y, rot.z, rot.w = rotation_xyzw
+    #     return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
+    # ===========================================================================
+
     def __init__(self, pose_bone, scale, invert=False):
         mat = pose_bone.bone.matrix_local.to_3x3()
         mat[1], mat[2] = mat[2].copy(), mat[1].copy()
