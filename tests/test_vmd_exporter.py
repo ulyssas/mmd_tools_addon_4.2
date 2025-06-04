@@ -181,6 +181,7 @@ class TestVmdExporter(unittest.TestCase):
         # Flag to track if we've already printed detailed interpolation differences
         detailed_interp_printed = False
 
+        interp_error_count = 0
         for bone_name in common_bones:
             # if bone_name != "センター":
             #     continue
@@ -228,9 +229,16 @@ class TestVmdExporter(unittest.TestCase):
                                 # [2, 3] may be related to some special bones
                                 # [31, 46, 47, 61, 62, 63] may be related to (センター, 右足IK, 左足IK) bones
                                 skip_indices = {2, 3, 31, 46, 47, 61, 62, 63}
+                                param_names = [
+                                    "x_x1", "y_x1",    "0",    "0", "x_y1", "y_y1", "z_y1", "r_y1", "x_x2", "y_x2", "z_x2", "r_x2", "x_y2", "y_y2", "z_y2", "r_y2",
+                                    "y_x1", "z_x1", "r_x1", "x_y1", "y_y1", "z_y1", "r_y1", "x_x2", "y_x2", "z_x2", "r_x2", "x_y2", "y_y2", "z_y2", "r_y2",    "0",
+                                    "z_x1", "r_x1", "x_y1", "y_y1", "z_y1", "r_y1", "x_x2", "y_x2", "z_x2", "r_x2", "x_y2", "y_y2", "z_y2", "r_y2",    "0",    "0",
+                                    "r_x1", "x_y1", "y_y1", "z_y1", "r_y1", "x_x2", "y_x2", "z_x2", "r_x2", "x_y2", "y_y2", "z_y2", "r_y2",    "0",    "0",    "0",
+                                ]
                                 for j, (s, r) in enumerate(zip(src_frame.interp, res_frame.interp)):
                                     if abs(s - r) > 0 and j not in skip_indices:
-                                        print(f"        Difference at index {j:2d}: {s:4d} ->{r:4d}, diff{abs(s - r):4d}, {msg}")
+                                        interp_error_count += 1
+                                        print(f"        Difference at index {j:2d} ({param_names[j]:>4}): {s:4d} ->{r:4d}, diff{abs(s - r):4d}, {msg}")
                                         # self.assertIn(abs(s - r), [0], f"{msg} - interpolation error: {abs(s - r)}")
                                 # detailed_interp_printed = True  # Set flag to prevent further printing
 
@@ -251,6 +259,7 @@ class TestVmdExporter(unittest.TestCase):
                 bone_interpolation_errors[bone_name] = max_interpolation_error
 
         if bone_interpolation_errors:
+            print(f"        Total {interp_error_count} errors")
             print("\n    === Bone Interpolation Error Ranking ===")
             # Sort by error size
             sorted_errors = sorted(bone_interpolation_errors.items(), key=lambda x: x[1], reverse=True)
