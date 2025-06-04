@@ -24,6 +24,7 @@ The following features are intentionally excluded from MMD Tools:
 - **PMX Editor replacement**: MMD Tools is not designed to replace PMX Editor functionality due to limited resources and to avoid reinventing the wheel
 - **Blender Link features compatibility**: Link features have known issues that need to be resolved by Blender developers, so we do not guarantee compatibility
 - **Rigify compatibility**: Complex compatibility issues and frequent Rigify updates make it difficult to maintain, so we do not support Rigify at this time
+- **Material Library system**: Implementing a full-featured material library would be equivalent to building a separate add-on, which is outside the scope of this project. Instead, users can define their own custom default materials by editing the startup file. For example, the `MMDShaderDev` Node Group can be customized and saved in the Blender startup file (`File > Defaults > Save Startup File`), allowing it to be automatically applied to new MMD models without modifying the add-on itself.
 
 ## Contributing
 MMD Tools needs contributions such as:
