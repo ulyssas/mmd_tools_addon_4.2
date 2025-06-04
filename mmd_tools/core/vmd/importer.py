@@ -50,6 +50,8 @@ class RenamedBoneMapper:
         return self
 
     def get(self, bone_name, default=None):
+        if self.__pose_bones is None:
+            return default
         bl_bone_name = bone_name
         if self.__rename_LR_bones:
             bl_bone_name = utils.convertNameToLR(bl_bone_name, self.__use_underscore)
