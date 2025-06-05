@@ -387,7 +387,7 @@ class MMDTranslator:
     def load_from_stream(self, csvfile=None):
         csvfile = csvfile or self.get_csv_text()
         if isinstance(csvfile, bpy.types.Text):
-            csvfile = (l.body + "\n" for l in csvfile.lines)
+            csvfile = (line.body + "\n" for line in csvfile.lines)
         spamreader = csv.reader(csvfile, delimiter=",", skipinitialspace=True)
         csv_tuples = [tuple(row) for row in spamreader if len(row) >= 2]
         self.__csv_tuples = csv_tuples

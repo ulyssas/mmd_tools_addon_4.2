@@ -269,7 +269,7 @@ class FnMaterial:
                 nodes, links = mat.node_tree.nodes, mat.node_tree.links
                 if sphere_texture_type == 3:
                     if obj and obj.type == "MESH" and mat in tuple(obj.data.materials):
-                        uv_layers = (l for l in obj.data.uv_layers if not l.name.startswith("_"))
+                        uv_layers = (layer for layer in obj.data.uv_layers if not layer.name.startswith("_"))
                         next(uv_layers, None)  # skip base UV
                         subtex_uv = getattr(next(uv_layers, None), "name", "")
                         if subtex_uv != "UV1":

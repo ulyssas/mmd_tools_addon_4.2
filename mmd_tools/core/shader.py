@@ -141,7 +141,7 @@ class _MaterialMorph:
     def __update_morph_links(cls, node, reset=False):
         nodes, links = node.id_data.nodes, node.id_data.links
         if reset:
-            if any(l.from_node.name.startswith("mmd_bind") for i in node.inputs for l in i.links):
+            if any(link.from_node.name.startswith("mmd_bind") for i in node.inputs for link in i.links):
                 return
 
             def __init_link(socket_morph, socket_shader):
