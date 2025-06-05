@@ -169,7 +169,6 @@ class TestBoneOrder(unittest.TestCase):
 
         # Get neck bone (currently ID 2) and change to ID 0
         neck_bone = pose_bones["neck"]
-        original_id = neck_bone.mmd_bone.bone_id
         new_id = 0
 
         # Record original bone at target ID
@@ -363,7 +362,6 @@ class TestBoneOrder(unittest.TestCase):
         # Set active bone to head
         self.root_object.mmd_root.active_bone_index = head_index
 
-        original_head_id = head_bone.mmd_bone.bone_id
 
         # Execute move to top operator
         bpy.context.view_layer.objects.active = self.root_object
@@ -443,7 +441,6 @@ class TestBoneOrder(unittest.TestCase):
         self.assertEqual(initial_ref_id, upper_body_bone.mmd_bone.bone_id, "Left arm should reference upper_body bone ID")
 
         # Change upper_body bone ID
-        old_id = upper_body_bone.mmd_bone.bone_id
         new_id = 5  # Pick an ID that should be available
 
         FnModel.safe_change_bone_id(upper_body_bone, new_id, bone_morphs, pose_bones)

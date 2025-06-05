@@ -324,7 +324,7 @@ class TestPmxExporter(unittest.TestCase):
         self.assertEqual(len(source_rigids), len(result_rigids))
 
         source_bones = source_model.bones
-        result_bones = result_model.bones
+        # result_bones = result_model.bones
 
         for rigid0, rigid1 in zip(source_rigids, result_rigids):
             msg = rigid0.name

@@ -294,9 +294,6 @@ class TestVPDExporter(unittest.TestCase):
             with open(output_path, "rb") as f:
                 binary_content = f.read()
 
-            # Convert to string for logging purposes
-            content_str = str(binary_content)
-
             # Check for morph names (ASCII strings should be preserved correctly)
             self.assertIn(b"Smile", binary_content, "Smile morph not found in VPD file")
             self.assertIn(b"Angry", binary_content, "Angry morph not found in VPD file")
@@ -473,7 +470,7 @@ class TestVPDExporter(unittest.TestCase):
                                 # Modern Blender might not use pose_markers
                                 # We can simulate them by adding a marker to the timeline
                                 if hasattr(bpy.context.scene, "timeline_markers"):
-                                    marker = bpy.context.scene.timeline_markers.new("Pose_1", frame=1)
+                                    bpy.context.scene.timeline_markers.new("Pose_1", frame=1)
 
                             # Return to object mode
                             bpy.ops.object.mode_set(mode="OBJECT")

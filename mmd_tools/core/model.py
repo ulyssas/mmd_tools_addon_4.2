@@ -558,9 +558,6 @@ class FnModel:
                 if (parent_armature_object.name in bpy.context.view_layer.objects.keys() and
                     child_armature_object.name in bpy.context.view_layer.objects.keys()):
                     try:
-                        # Store the world coordinate matrix of the child armature
-                        child_armature_matrix = child_armature_object.matrix_world.copy()
-
                         # Ensure we're in object mode
                         if bpy.context.mode != "OBJECT":
                             bpy.ops.object.mode_set(mode="OBJECT")

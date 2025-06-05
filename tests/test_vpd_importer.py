@@ -6,7 +6,6 @@ import unittest
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.vpd.importer import VPDImporter
-from mathutils import Quaternion
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -102,66 +101,6 @@ class TestVPDImporter(unittest.TestCase):
 
         return None
 
-    def __store_bone_state(self, armature):
-        """Store the current state of all bones in the armature"""
-        state = {}
-        for bone in armature.pose.bones:
-            state[bone.name] = {"location": bone.location.copy(), "rotation": None}
-
-            # Store rotation based on rotation mode
-            if bone.rotation_mode == "QUATERNION":
-                state[bone.name]["rotation"] = bone.rotation_quaternion.copy()
-            elif bone.rotation_mode == "AXIS_ANGLE":
-                state[bone.name]["rotation"] = bone.rotation_axis_angle.copy()
-            else:
-                state[bone.name]["rotation"] = bone.rotation_euler.copy()
-
-        return state
-
-    def __check_pose_library_changes(self, armature):
-        """Check if poses were added to the armature's pose library"""
-        # Try to access pose library
-        # Compatibility with different Blender versions
-        if hasattr(armature, "pose_library") and armature.pose_library:
-            # In older Blender versions
-            if hasattr(armature.pose_library, "pose_markers"):
-                return len(armature.pose_library.pose_markers)
-
-        # For newer Blender versions or if no pose library exists
-        return 0
-
-    def __compare_bone_states(self, before_state, after_state):
-        """Compare bone states before and after VPD import to check for changes"""
-        changes = 0
-        changed_bones = []
-
-        for bone_name, state_before in before_state.items():
-            if bone_name in after_state:
-                state_after = after_state[bone_name]
-
-                # Check if location changed
-                loc_changed = (
-                    state_before["location"] - state_after["location"]
-                ).length > 0.001
-
-                # Check if rotation changed
-                rot_changed = False
-                if isinstance(state_before["rotation"], Quaternion) and isinstance(
-                    state_after["rotation"], Quaternion
-                ):
-                    rot_changed = (
-                        abs(1.0 - state_before["rotation"].dot(state_after["rotation"]))
-                        > 0.001
-                    )
-                elif state_before["rotation"] != state_after["rotation"]:
-                    rot_changed = True
-
-                if loc_changed or rot_changed:
-                    changes += 1
-                    changed_bones.append(bone_name)
-
-        return changes, changed_bones
-
     def test_vpd_import(self):
         """Test VPD imports on all models and vpd files"""
         self.__enable_mmd_tools()
@@ -212,10 +151,6 @@ class TestVPDImporter(unittest.TestCase):
 
                     # Import the VPD
                     try:
-                        # Store initial state for comparison
-                        initial_pose_count = self.__check_pose_library_changes(armature)
-                        initial_bone_state = self.__store_bone_state(armature)
-
                         # Select the model root and armature, and make armature active
                         bpy.ops.object.select_all(action="DESELECT")
                         model_root.select_set(True)
