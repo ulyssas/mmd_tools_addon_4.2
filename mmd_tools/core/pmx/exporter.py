@@ -1054,7 +1054,8 @@ class __PmxExporter:
             depsgraph = bpy.context.evaluated_depsgraph_get()
             return obj.evaluated_get(depsgraph).to_mesh(depsgraph=depsgraph, preserve_all_data_layers=True)
 
-        _to_mesh_clear = lambda obj, mesh: obj.to_mesh_clear()
+        def _to_mesh_clear(obj, mesh):
+            return obj.to_mesh_clear()
 
         base_mesh = _to_mesh(meshObj)
         loop_normals, face_indices, loop_angles = self.__triangulate(base_mesh, self.__get_normals(base_mesh, normal_matrix))
@@ -1068,20 +1069,25 @@ class __PmxExporter:
 
         get_edge_scale = None
         if vg_edge_scale:
-            get_edge_scale = lambda x: _get_weight(vg_edge_scale.index, x, 1)
+            def get_edge_scale(x):
+                return _get_weight(vg_edge_scale.index, x, 1)
         else:
-            get_edge_scale = lambda x: 1
+            def get_edge_scale(x):
+                return 1
 
         get_vertex_order = None
         if self.__vertex_order_map:  # sort vertices
             mesh_id = self.__vertex_order_map.setdefault("mesh_id", 0)
             self.__vertex_order_map["mesh_id"] += 1
             if vg_vertex_order and self.__vertex_order_map["method"] == "CUSTOM":
-                get_vertex_order = lambda x: (mesh_id, _get_weight(vg_vertex_order.index, x, 2), x.index)
+                def get_vertex_order(x):
+                    return (mesh_id, _get_weight(vg_vertex_order.index, x, 2), x.index)
             else:
-                get_vertex_order = lambda x: (mesh_id, x.index)
+                def get_vertex_order(x):
+                    return (mesh_id, x.index)
         else:
-            get_vertex_order = lambda x: None
+            def get_vertex_order(x):
+                return None
 
         uv_morph_names = {g.index: (n, x) for g, n, x in FnMorph.get_uv_morph_vertex_groups(meshObj)}
 
@@ -1156,7 +1162,8 @@ class __PmxExporter:
             def __init__(self, uvs):
                 self.uv1, self.uv2, self.uv3 = (v.uv.copy() for v in uvs)
 
-        _UVWrapper = lambda x: (_DummyUV(x[i : i + 3]) for i in range(0, len(x), 3))
+        def _UVWrapper(x):
+            return (_DummyUV(x[i : i + 3]) for i in range(0, len(x), 3))
 
         material_faces = {}
         uv_data = base_mesh.uv_layers.active
@@ -1185,7 +1192,8 @@ class __PmxExporter:
         if face_indices:
             for f in material_faces.values():
                 f.sort(key=lambda x: x.index)
-        _mat_name = lambda x: x.name if x else self.__getDefaultMaterial().name
+        def _mat_name(x):
+            return x.name if x else self.__getDefaultMaterial().name
         material_names = {i: _mat_name(m) for i, m in enumerate(base_mesh.materials)}
         material_names = {i: material_names.get(i, None) or _mat_name(None) for i in material_faces.keys()}
 

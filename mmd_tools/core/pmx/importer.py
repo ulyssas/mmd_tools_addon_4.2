@@ -620,7 +620,8 @@ class PMXImporter:
         if pmxModel.header and pmxModel.header.additional_uvs:
             logging.info("Importing %d additional uvs", pmxModel.header.additional_uvs)
             zw_data_map = collections.OrderedDict()
-            split_uvzw = lambda uvi: (self.flipUV_V(uvi[:2]), uvi[2:])
+            def split_uvzw(uvi):
+                return (self.flipUV_V(uvi[:2]), uvi[2:])
             for i in range(pmxModel.header.additional_uvs):
                 add_uv = uv_layers[uv_textures.new(name="UV" + str(i + 1)).name]
                 logging.info(" - %s...(uv channels)", add_uv.name)
@@ -729,7 +730,10 @@ class PMXImporter:
         mmd_root = self.__root.mmd_root
         categories = self.CATEGORIES
         __OffsetData = collections.namedtuple("OffsetData", "index, offset")
-        __convert_offset = lambda x: (x[0], -x[1], x[2], -x[3])
+
+        def __convert_offset(x):
+            return (x[0], -x[1], x[2], -x[3])
+
         for morph in (x for x in self.__model.morphs if isinstance(x, pmx.UVMorph)):
             uv_morph = mmd_root.uv_morphs.add()
             uv_morph.name = morph.name
@@ -1015,8 +1019,10 @@ class _PMXCleaner:
             return None
 
         # clean face
-        # face_key_func = lambda f: frozenset(vertex_map[x][0] for x in f)
-        face_key_func = lambda f: frozenset({vertex_map[x][0]: tuple(pmx_vertices[x].uv) for x in f}.items())
+        # def face_key_func(f):
+        #     return frozenset(vertex_map[x][0] for x in f)
+        def face_key_func(f):
+            return frozenset({vertex_map[x][0]: tuple(pmx_vertices[x].uv) for x in f}.items())
         cls.__clean_pmx_faces(pmx_model.faces, pmx_model.materials, face_key_func)
 
         if mesh_only:

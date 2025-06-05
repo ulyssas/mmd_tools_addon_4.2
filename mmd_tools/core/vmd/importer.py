@@ -409,8 +409,13 @@ class VMDImporter:
                     return (angle, x, y, z)
 
             else:
-                convert_rotation = lambda rot: converter.convert_rotation(rot).to_euler(mode)
-                compatible_rotation = lambda prev, curr: curr.make_compatible(prev) or curr
+                @staticmethod
+                def convert_rotation(rot):
+                    return converter.convert_rotation(rot).to_euler(mode)
+
+                @staticmethod
+                def compatible_rotation(prev, curr):
+                    return curr.make_compatible(prev) or curr
 
         return _ConverterWrap
 
@@ -480,7 +485,10 @@ class VMDImporter:
         if self.__bone_mapper:
             pose_bones = self.__bone_mapper(armObj)
 
-        _loc = _rot = lambda i: i
+        def _identity(i):
+            return i
+
+        _loc = _rot = _identity
         if self.__mirror:
             pose_bones = _MirrorMapper(pose_bones)
             _loc, _rot = _MirrorMapper.get_location, _MirrorMapper.get_rotation
@@ -692,7 +700,10 @@ class VMDImporter:
         parent_action = self.__get_or_create_action(mmdCamera, action_name)
         distance_action = self.__get_or_create_action(cameraObj, action_name + "_dis")
 
-        _loc = _rot = lambda i: i
+        def _identity(i):
+            return i
+
+        _loc = _rot = _identity
         if self.__mirror:
             _loc, _rot = _MirrorMapper.get_location, _MirrorMapper.get_rotation3
 
@@ -764,7 +775,10 @@ class VMDImporter:
         color_action = self.__get_or_create_action(lampObj.data, action_name + "_color")
         location_action = self.__get_or_create_action(lampObj, action_name + "_loc")
 
-        _loc = _MirrorMapper.get_location if self.__mirror else lambda i: i
+        def _identity(i):
+            return i
+
+        _loc = _MirrorMapper.get_location if self.__mirror else _identity
         for keyFrame in lampAnim:
             frame = keyFrame.frame_number + self.__frame_start + self.__frame_margin
             self.__keyframe_insert(color_action.fcurves, "color", frame, Vector(keyFrame.color))

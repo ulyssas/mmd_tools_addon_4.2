@@ -164,11 +164,13 @@ class MMDCamera:
             if scene.camera is None:
                 scene.camera = mmd_cam
                 return MMDCamera(mmd_cam_root)
-            _camera_override_func = lambda: scene.camera
+            def _camera_override_func():
+                return scene.camera
 
         _target_override_func = None
         if cameraTarget is None:
-            _target_override_func = lambda camObj: camObj.data.dof.focus_object or camObj
+            def _target_override_func(camObj):
+                return camObj.data.dof.focus_object or camObj
 
         action_name = mmd_cam_root.name
         parent_action = bpy.data.actions.new(name=action_name)

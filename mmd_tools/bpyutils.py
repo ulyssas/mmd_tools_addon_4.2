@@ -177,8 +177,11 @@ def makeCapsule(segment=8, ring_count=2, radius=1.0, height=1.0, target_object=N
     top = (0, 0, height / 2 + radius)
     verts.new(top)
 
-    # f = lambda i: radius*i/ring_count
-    f = lambda i: radius * math.sin(0.5 * math.pi * i / ring_count)
+    # def f(i):
+    #     return radius * i / ring_count
+    def f(i):
+        return radius * math.sin(0.5 * math.pi * i / ring_count)
+
     for i in range(ring_count, 0, -1):
         z = f(i - 1)
         t = math.sqrt(radius**2 - z**2)
