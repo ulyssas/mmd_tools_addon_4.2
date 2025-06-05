@@ -746,9 +746,36 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         name="IK Angle Limits",
         description="Choose how to handle IK angle limits during export",
         items=[
-            ("EXPORT_ALL", "Export All Limits", "Export all existing IK angle limits", 0),
-            ("IGNORE_ALL", "Ignore All Limits", "Ignore all IK angle limits completely", 1),
-            ("OVERRIDE_CONTROLLED", "Override Controlled", "Only use mmd_ik_limit_override constraints to control limits", 2),
+            (
+                "EXPORT_ALL",
+                "Export All Limits",
+                "Export all existing IK angle limits using current priority system: "
+                "mmd_ik_limit_override -> Blender IK limits -> other sources. "
+                "If mmd_ik_limit_override disables an axis but Blender IK limits exist for that axis, "
+                "the Blender limits will still be exported. This maintains backward compatibility "
+                "with existing workflows",
+                0,
+            ),
+            (
+                "IGNORE_ALL",
+                "Ignore All Limits",
+                "Completely ignore all IK angle limits from any source during export. "
+                "No angle restrictions will be written to the PMX file, regardless of "
+                "mmd_ik_limit_override, Blender IK limits, or other constraint settings. "
+                "Useful when you want to rely entirely on MMD v9.19+ fixed axis feature instead",
+                1,
+            ),
+            (
+                "OVERRIDE_CONTROLLED",
+                "Override Controlled",
+                "Use mmd_ik_limit_override constraints as the sole authority for IK limits. "
+                "When mmd_ik_limit_override exists: only its enabled axes export limits, "
+                "disabled axes export no limits (ignoring Blender IK limits). "
+                "When mmd_ik_limit_override doesn't exist: fall back to Blender IK limits. "
+                "This makes mmd_ik_limit_override act as a true 'override' that completely "
+                "controls whether limits are exported, enabling fine-grained per-bone control",
+                2,
+            ),
         ],
         default="EXPORT_ALL",
     )
