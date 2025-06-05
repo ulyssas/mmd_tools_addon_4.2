@@ -450,7 +450,7 @@ class __PmxExporter:
         self.__exportIK(root, r)
         return r
 
-    def __exportIKLinks(self, pose_bone, count, bone_map, ik_links, custom_bone):
+    def __exportIKLinks(self, pose_bone, count, bone_map, ik_links, custom_bone, ik_export_option):
         if count <= 0 or pose_bone is None or pose_bone.name not in bone_map:
             return ik_links
 
@@ -462,27 +462,35 @@ class __PmxExporter:
 
         minimum, maximum = [-pi] * 3, [pi] * 3
         unused_counts = 0
-        ik_limit_custom = next((c for c in custom_bone.constraints if c.type == "LIMIT_ROTATION" and c.name == "mmd_ik_limit_custom%d" % len(ik_links)), None)
-        ik_limit_override = next((c for c in pose_bone.constraints if c.type == "LIMIT_ROTATION" and not c.mute), None)
-        for i, axis in enumerate("xyz"):
-            if ik_limit_custom:  # custom ik limits for MMD only
-                if getattr(ik_limit_custom, "use_limit_" + axis):
-                    minimum[i] = getattr(ik_limit_custom, "min_" + axis)
-                    maximum[i] = getattr(ik_limit_custom, "max_" + axis)
+
+        if ik_export_option == "IGNORE_ALL":
+            unused_counts = 3
+        else:
+            ik_limit_custom = next((c for c in custom_bone.constraints if c.type == "LIMIT_ROTATION" and c.name == "mmd_ik_limit_custom%d" % len(ik_links)), None)
+            ik_limit_override = next((c for c in pose_bone.constraints if c.type == "LIMIT_ROTATION" and not c.mute), None)
+
+            for i, axis in enumerate("xyz"):
+                if ik_limit_custom:  # custom ik limits for MMD only
+                    if getattr(ik_limit_custom, "use_limit_" + axis):
+                        minimum[i] = getattr(ik_limit_custom, "min_" + axis)
+                        maximum[i] = getattr(ik_limit_custom, "max_" + axis)
+                    else:
+                        unused_counts += 1
+                    continue
+
+                if getattr(pose_bone, "lock_ik_" + axis):
+                    minimum[i] = maximum[i] = 0
+                elif ik_limit_override is not None and getattr(ik_limit_override, "use_limit_" + axis):
+                    minimum[i] = getattr(ik_limit_override, "min_" + axis)
+                    maximum[i] = getattr(ik_limit_override, "max_" + axis)
+                elif ik_limit_override is not None and ik_export_option == "OVERRIDE_CONTROLLED":
+                    # mmd_ik_limit_override exists but axis disabled, don't check other sources
+                    unused_counts += 1
+                elif getattr(pose_bone, "use_ik_limit_" + axis):
+                    minimum[i] = getattr(pose_bone, "ik_min_" + axis)
+                    maximum[i] = getattr(pose_bone, "ik_max_" + axis)
                 else:
                     unused_counts += 1
-                continue
-
-            if getattr(pose_bone, "lock_ik_" + axis):
-                minimum[i] = maximum[i] = 0
-            elif ik_limit_override is not None and getattr(ik_limit_override, "use_limit_" + axis):
-                minimum[i] = getattr(ik_limit_override, "min_" + axis)
-                maximum[i] = getattr(ik_limit_override, "max_" + axis)
-            elif getattr(pose_bone, "use_ik_limit_" + axis):
-                minimum[i] = getattr(pose_bone, "ik_min_" + axis)
-                maximum[i] = getattr(pose_bone, "ik_max_" + axis)
-            else:
-                unused_counts += 1
 
         if unused_counts < 3:
             convertIKLimitAngles = pmx.importer.PMXImporter.convertIKLimitAngles
@@ -491,7 +499,7 @@ class __PmxExporter:
             ik_link.minimumAngle = list(minimum)
             ik_link.maximumAngle = list(maximum)
 
-        return self.__exportIKLinks(pose_bone.parent, count - 1, bone_map, ik_links + [ik_link], custom_bone)
+        return self.__exportIKLinks(pose_bone.parent, count - 1, bone_map, ik_links + [ik_link], custom_bone, ik_export_option)
 
     def __exportIK(self, root, bone_map):
         """Export IK constraints
@@ -501,6 +509,8 @@ class __PmxExporter:
         arm = self.__armature
         ik_loop_factor = root.mmd_root.ik_loop_factor
         pose_bones = arm.pose.bones
+
+        logging.info("IK angle limits handling: %s", self.__ik_angle_limits)
 
         ik_target_custom_map = {getattr(b.constraints.get("mmd_ik_target_custom", None), "subtarget", None): b for b in pose_bones if not b.is_mmd_shadow_bone}
 
@@ -544,7 +554,7 @@ class __PmxExporter:
                     else:
                         pmx_ik_bone.rotationConstraint = bone.mmd_bone.ik_rotation_constraint
                     pmx_ik_bone.target = bone_map[ik_target_bone.name]
-                    pmx_ik_bone.ik_links = self.__exportIKLinks(ik_chain0, c.chain_count, bone_map, [], ik_pose_bone)
+                    pmx_ik_bone.ik_links = self.__exportIKLinks(ik_chain0, c.chain_count, bone_map, [], ik_pose_bone, self.__ik_angle_limits)
 
     def __get_ik_control_bone(self, ik_constraint):
         arm = ik_constraint.target
@@ -1378,6 +1388,7 @@ class __PmxExporter:
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
         self.__vertex_splitting = args.get("vertex_splitting", False)
+        self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
         sort_vertices = args.get("sort_vertices", "NONE")
         if sort_vertices != "NONE":
             self.__vertex_order_map = {"method": sort_vertices}

@@ -742,6 +742,16 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         ],
         default="NONE",
     )
+    ik_angle_limits: bpy.props.EnumProperty(
+        name="IK Angle Limits",
+        description="Choose how to handle IK angle limits during export",
+        items=[
+            ("EXPORT_ALL", "Export All Limits", "Export all existing IK angle limits", 0),
+            ("IGNORE_ALL", "Ignore All Limits", "Ignore all IK angle limits completely", 1),
+            ("OVERRIDE_CONTROLLED", "Override Controlled", "Only use mmd_ik_limit_override constraints to control limits", 2),
+        ],
+        default="EXPORT_ALL",
+    )
     log_level: bpy.props.EnumProperty(
         name="Log level",
         description="Select log level",
@@ -824,6 +834,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
                 vertex_splitting=self.vertex_splitting,
+                ik_angle_limits=self.ik_angle_limits,
             )
             self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
         except Exception:
