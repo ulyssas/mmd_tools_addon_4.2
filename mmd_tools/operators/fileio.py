@@ -2,6 +2,7 @@
 # This file is part of MMD Tools.
 
 import logging
+import math
 import os
 import re
 import time
@@ -247,8 +248,23 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     )
     remove_doubles: bpy.props.BoolProperty(
         name="Remove Doubles",
-        description="Merge duplicated vertices and faces",
+        description="Merge duplicated vertices and faces.\nWarning: This will perform global vertex merging instead of per-material vertex merging which may break mesh geometry, material boundaries, and distort the UV map. Use with caution.",
         default=False,
+    )
+    mark_sharp_edges: bpy.props.BoolProperty(
+        name="Mark Sharp Edges",
+        description="Mark sharp edges when setting custom normals. Blender uses loop normals with sharp edges to control normal smoothing, which differs from traditional vertex normal approaches. This option ensures PMX normals are preserved correctly in Blender's system. Recommended to enable.",
+        default=True,
+    )
+    sharp_edge_angle: bpy.props.FloatProperty(
+        name="Sharp Edge Angle",
+        description="Angle threshold for marking sharp edges (degrees). 179° is sufficient to preserve all normals during import. However, if you need to edit the model rather than just render animations, you may need to adjust this as needed. MMD Tools cannot guarantee which editing operations in Blender require what angles. This setting has no effect if 'Mark Sharp Edges' is disabled.",
+        default=math.radians(179.0),
+        min=0.0,
+        max=math.radians(180.0),
+        step=100,
+        subtype="ANGLE",
+        unit="ROTATION",
     )
     fix_IK_links: bpy.props.BoolProperty(
         name="Fix IK Links",
@@ -327,7 +343,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                     self._do_execute(context)
             elif self.filepath:
                 self._do_execute(context)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -349,6 +365,8 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 scale=self.scale,
                 clean_model=self.clean_model,
                 remove_doubles=self.remove_doubles,
+                mark_sharp_edges=self.mark_sharp_edges,
+                sharp_edge_angle=self.sharp_edge_angle,
                 fix_IK_links=self.fix_IK_links,
                 ik_loop_factor=self.ik_loop_factor,
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,
@@ -360,7 +378,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 spa_blend_factor=self.spa_blend_factor,
             )
             self.report({"INFO"}, 'Imported MMD model from "%s"' % self.filepath)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             raise
@@ -697,6 +715,23 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Translate in presets before exporting.",
         default=False,
     )
+    vertex_splitting: bpy.props.BoolProperty(
+        name="Vertex Splitting",
+        description=(
+            "Vertex Splitting for Custom Split Normals\n"
+            "ENABLE:\n"
+            "    Split vertices when the same vertex has different normals.\n"
+            "DISABLE:\n"
+            "    Use angle * area weighted averaging for normals.\n"
+            "WARNING:\n"
+            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
+            "\n"
+            "NOTE:\n"
+            "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible."
+            "    Additionally, unreferenced vertices will not be exported (similar to Clean Model during import), so the vertex count may also decrease."
+        ),
+        default=False,
+    )
     sort_vertices: bpy.props.EnumProperty(
         name="Sort Vertices",
         description="Choose the method to sort vertices",
@@ -747,7 +782,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                     os.makedirs(model_folder, exist_ok=True)
                     self.filepath = os.path.join(model_folder, model_name + ".pmx")
                 self._do_execute(context, root)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -788,9 +823,10 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_materials=self.sort_materials,
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
+                vertex_splitting=self.vertex_splitting,
             )
             self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
-        except:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             raise
@@ -889,7 +925,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             start_time = time.time()
             vmd_exporter.VMDExporter().export(**params)
             logging.info(" Finished exporting motion in %f seconds.", time.time() - start_time)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             self.report({"ERROR"}, err_msg)
@@ -980,7 +1016,7 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
 
         try:
             vpd_exporter.VPDExporter().export(**params)
-        except Exception as e:
+        except Exception:
             err_msg = traceback.format_exc()
             logging.error(err_msg)
             self.report({"ERROR"}, err_msg)

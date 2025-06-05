@@ -178,7 +178,7 @@ class TestPmxExporter(unittest.TestCase):
             for v0, v1 in zip(seq0, seq1):
                 self.assertLess(self.__vector_error(v0.co, v1.co), 1e-6)
                 self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6)
-                # self.assertLess(self.__vector_error(v0.normal, v1.normal), 1e-3)
+                # self.assertLess(self.__vector_error(v0.normal, v1.normal), 1e-2)  # Blender normal vectors can have relatively large discrepancies, so we allow an error tolerance up to 1e-2
 
                 self.assertEqual(v0.additional_uvs, v1.additional_uvs)
                 self.assertEqual(v0.edge_scale, v1.edge_scale)
@@ -324,7 +324,7 @@ class TestPmxExporter(unittest.TestCase):
         self.assertEqual(len(source_rigids), len(result_rigids))
 
         source_bones = source_model.bones
-        result_bones = result_model.bones
+        # result_bones = result_model.bones
 
         for rigid0, rigid1 in zip(source_rigids, result_rigids):
             msg = rigid0.name
@@ -634,9 +634,11 @@ class TestPmxExporter(unittest.TestCase):
                     output_pmx = os.path.join(TESTS_DIR, "output", "%d.pmx" % test_num)
                     bpy.ops.mmd_tools.export_pmx(
                         filepath=output_pmx,
-                        scale=1,
+                        scale=1.0,
                         copy_textures=False,
                         sort_materials=False,
+                        sort_vertices="NONE",
+                        vertex_splitting=False,
                         log_level="ERROR",
                     )
                 except Exception:
@@ -646,7 +648,7 @@ class TestPmxExporter(unittest.TestCase):
 
                     try:
                         result_model = pmx.load(output_pmx)
-                    except:
+                    except Exception:
                         self.fail("Failed to load output file %s" % output_pmx)
 
                     self.__check_pmx_header_info(source_model, result_model, import_types)

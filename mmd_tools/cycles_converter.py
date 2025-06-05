@@ -91,7 +91,7 @@ def __enum_linked_nodes(node: bpy.types.Node) -> Iterable[bpy.types.Node]:
     yield node
     if node.parent:
         yield node.parent
-    for n in set(l.from_node for i in node.inputs for l in i.links):
+    for n in set(link.from_node for i in node.inputs for link in i.links):
         yield from __enum_linked_nodes(n)
 
 
@@ -171,9 +171,9 @@ def __convertToPrincipledBsdf(material: bpy.types.Material, subsurface: float):
     node_names = set()
     for s in (n for n in material.node_tree.nodes if isinstance(n, bpy.types.ShaderNodeGroup)):
         if s.node_tree.name == "MMDBasicShader":
-            l: bpy.types.NodeLink
-            for l in s.outputs[0].links:
-                to_node = l.to_node
+            link: bpy.types.NodeLink
+            for link in s.outputs[0].links:
+                to_node = link.to_node
                 # assuming there is no bpy.types.NodeReroute between MMDBasicShader and MMDAlphaShader
                 if isinstance(to_node, bpy.types.ShaderNodeGroup) and to_node.node_tree.name == "MMDAlphaShader":
                     __switchToPrincipledBsdf(material.node_tree, s, subsurface, node_alpha=to_node)
@@ -235,5 +235,5 @@ def __switchToPrincipledBsdf(node_tree: bpy.types.NodeTree, node_basic: bpy.type
                     node_tree.links.new(node_alpha.inputs[alpha_socket_name].links[0].from_socket, node_invert.inputs[1])
                     node_tree.links.new(node_invert.outputs[0], shader.inputs["Transmission"])
 
-    for l in output_links:
-        node_tree.links.new(shader.outputs[0], l.to_socket)
+    for link in output_links:
+        node_tree.links.new(shader.outputs[0], link.to_socket)

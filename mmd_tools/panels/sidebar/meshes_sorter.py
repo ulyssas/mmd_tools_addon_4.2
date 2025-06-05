@@ -53,7 +53,9 @@ class MMD_TOOLS_UL_ModelMeshes(bpy.types.UIList):
         flt_neworder = list(range(len(objects)))
 
         armature = FnModel.find_armature_object(FnModel.find_root_object(context.active_object))
-        __is_child_of_armature = lambda x: x.parent and (x.parent == armature or __is_child_of_armature(x.parent))
+
+        def __is_child_of_armature(x):
+            return x.parent and (x.parent == armature or __is_child_of_armature(x.parent))
 
         name_dict = {}
         for i, obj in enumerate(objects):

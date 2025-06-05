@@ -270,24 +270,24 @@ class FnMorph:
         """Clean duplicated material_morphs and data from mmd_root_object.mmd_root.material_morphs[].data[]"""
         mmd_root = mmd_root_object.mmd_root
 
-        def morph_data_equals(l, r) -> bool:
+        def morph_data_equals(left, right) -> bool:
             return (
-                l.related_mesh_data == r.related_mesh_data
-                and l.offset_type == r.offset_type
-                and l.material == r.material
-                and all(a == b for a, b in zip(l.diffuse_color, r.diffuse_color))
-                and all(a == b for a, b in zip(l.specular_color, r.specular_color))
-                and l.shininess == r.shininess
-                and all(a == b for a, b in zip(l.ambient_color, r.ambient_color))
-                and all(a == b for a, b in zip(l.edge_color, r.edge_color))
-                and l.edge_weight == r.edge_weight
-                and all(a == b for a, b in zip(l.texture_factor, r.texture_factor))
-                and all(a == b for a, b in zip(l.sphere_texture_factor, r.sphere_texture_factor))
-                and all(a == b for a, b in zip(l.toon_texture_factor, r.toon_texture_factor))
+                left.related_mesh_data == right.related_mesh_data
+                and left.offset_type == right.offset_type
+                and left.material == right.material
+                and all(a == b for a, b in zip(left.diffuse_color, right.diffuse_color))
+                and all(a == b for a, b in zip(left.specular_color, right.specular_color))
+                and left.shininess == right.shininess
+                and all(a == b for a, b in zip(left.ambient_color, right.ambient_color))
+                and all(a == b for a, b in zip(left.edge_color, right.edge_color))
+                and left.edge_weight == right.edge_weight
+                and all(a == b for a, b in zip(left.texture_factor, right.texture_factor))
+                and all(a == b for a, b in zip(left.sphere_texture_factor, right.sphere_texture_factor))
+                and all(a == b for a, b in zip(left.toon_texture_factor, right.toon_texture_factor))
             )
 
-        def morph_equals(l, r) -> bool:
-            return len(l.data) == len(r.data) and all(morph_data_equals(a, b) for a, b in zip(l.data, r.data))
+        def morph_equals(left, right) -> bool:
+            return len(left.data) == len(right.data) and all(morph_data_equals(a, b) for a, b in zip(left.data, right.data))
 
         # Remove duplicated mmd_root.material_morphs.data[]
         for material_morph in mmd_root.material_morphs:
@@ -526,7 +526,7 @@ class _MorphSlider:
                 shape_key_map.setdefault(name_bind, []).append((kb_bind, data_path, groups))
                 group_map.setdefault(("vertex_morphs", kb_name), []).append(groups)
 
-            uv_layers = [l.name for l in mesh_object.data.uv_layers if not l.name.startswith("_")]
+            uv_layers = [layer.name for layer in mesh_object.data.uv_layers if not layer.name.startswith("_")]
             uv_layers += [""] * (5 - len(uv_layers))
             for vg, morph_name, axis in FnMorph.get_uv_morph_vertex_groups(mesh_object):
                 morph = mmd_root.uv_morphs.get(morph_name, None)
@@ -629,7 +629,7 @@ class _MorphSlider:
             return expression
 
         # vertex morphs
-        for kb_bind, morph_data_path, groups in (i for l in shape_key_map.values() for i in l):
+        for kb_bind, morph_data_path, groups in (i for value_list in shape_key_map.values() for i in value_list):
             driver, variables = self.__driver_variables(kb_bind, "value")
             var = self.__add_single_prop(variables, obj, morph_data_path, "v")
             if kb_bind.name.startswith("mmd_bind"):
@@ -674,7 +674,7 @@ class _MorphSlider:
         b = arm.pose.bones["mmd_bind_ctrl_base"]
         b.is_mmd_shadow_bone = True
         b.mmd_shadow_bone_type = "BIND"
-        for bname, data_path, scale_path, groups in (i for l in uv_morph_map.values() for i in l):
+        for bname, data_path, scale_path, groups in (i for value_list in uv_morph_map.values() for i in value_list):
             b = arm.pose.bones[bname]
             b.is_mmd_shadow_bone = True
             b.mmd_shadow_bone_type = "BIND"

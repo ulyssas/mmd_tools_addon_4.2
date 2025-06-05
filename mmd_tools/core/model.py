@@ -40,20 +40,24 @@ class FnModel:
         return obj
 
     @staticmethod
-    def find_armature_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_armature_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
         """Find the armature object of the model.
         Args:
-            root_object (bpy.types.Object): The root object of the model.
+            root_object (Optional[bpy.types.Object]): The root object of the model.
         Returns:
             Optional[bpy.types.Object]: The armature object of the model. If the model does not have an armature, None is returned.
         """
+        if root_object is None:
+            return None
         for o in root_object.children:
             if o.type == "ARMATURE":
                 return o
         return None
 
     @staticmethod
-    def find_rigid_group_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_rigid_group_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
+        if root_object is None:
+            return None
         for o in root_object.children:
             if o.type == "EMPTY" and o.mmd_type == "RIGID_GRP_OBJ":
                 return o
@@ -71,13 +75,17 @@ class FnModel:
 
     @staticmethod
     def ensure_rigid_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
+        if root_object is None:
+            raise ValueError("root_object cannot be None")
         rigid_group_object = FnModel.find_rigid_group_object(root_object)
         if rigid_group_object is not None:
             return rigid_group_object
         return FnModel.__new_group_object(context, name="rigidbodies", mmd_type="RIGID_GRP_OBJ", parent=root_object)
 
     @staticmethod
-    def find_joint_group_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_joint_group_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
+        if root_object is None:
+            return None
         for o in root_object.children:
             if o.type == "EMPTY" and o.mmd_type == "JOINT_GRP_OBJ":
                 return o
@@ -85,13 +93,17 @@ class FnModel:
 
     @staticmethod
     def ensure_joint_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
+        if root_object is None:
+            raise ValueError("root_object cannot be None")
         joint_group_object = FnModel.find_joint_group_object(root_object)
         if joint_group_object is not None:
             return joint_group_object
         return FnModel.__new_group_object(context, name="joints", mmd_type="JOINT_GRP_OBJ", parent=root_object)
 
     @staticmethod
-    def find_temporary_group_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_temporary_group_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
+        if root_object is None:
+            return None
         for o in root_object.children:
             if o.type == "EMPTY" and o.mmd_type == "TEMPORARY_GRP_OBJ":
                 return o
@@ -99,13 +111,17 @@ class FnModel:
 
     @staticmethod
     def ensure_temporary_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
+        if root_object is None:
+            raise ValueError("root_object cannot be None")
         temporary_group_object = FnModel.find_temporary_group_object(root_object)
         if temporary_group_object is not None:
             return temporary_group_object
         return FnModel.__new_group_object(context, name="temporary", mmd_type="TEMPORARY_GRP_OBJ", parent=root_object)
 
     @staticmethod
-    def find_bone_order_mesh_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+    def find_bone_order_mesh_object(root_object: Optional[bpy.types.Object]) -> Optional[bpy.types.Object]:
+        if root_object is None:
+            return None
         armature_object = FnModel.find_armature_object(root_object)
         if armature_object is None:
             return None
@@ -116,7 +132,9 @@ class FnModel:
         return None
 
     @staticmethod
-    def find_mesh_object_by_name(root_object: bpy.types.Object, name: str) -> Optional[bpy.types.Object]:
+    def find_mesh_object_by_name(root_object: Optional[bpy.types.Object], name: str) -> Optional[bpy.types.Object]:
+        if root_object is None:
+            return None
         if not name:
             return None
 
@@ -126,7 +144,9 @@ class FnModel:
         return None
 
     @staticmethod
-    def iterate_child_objects(obj: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_child_objects(obj: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
+        if obj is None:
+            return iter(())
         for child in obj.children:
             yield child
             yield from FnModel.iterate_child_objects(child)
@@ -149,11 +169,15 @@ class FnModel:
         return FnModel.iterate_filtered_child_objects(FnModel.is_mesh_object, obj)
 
     @staticmethod
-    def iterate_mesh_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_mesh_objects(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
+        if root_object is None:
+            return iter(())
         return FnModel.__iterate_child_mesh_objects(FnModel.find_armature_object(root_object))
 
     @staticmethod
-    def iterate_rigid_body_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_rigid_body_objects(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
+        if root_object is None:
+            return iter(())
         if root_object.mmd_root.is_built:
             return itertools.chain(
                 FnModel.iterate_filtered_child_objects(FnModel.is_rigid_body_object, FnModel.find_armature_object(root_object)),
@@ -162,13 +186,17 @@ class FnModel:
         return FnModel.iterate_filtered_child_objects(FnModel.is_rigid_body_object, FnModel.find_rigid_group_object(root_object))
 
     @staticmethod
-    def iterate_joint_objects(root_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
+    def iterate_joint_objects(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Object]:
+        if root_object is None:
+            return iter(())
         return FnModel.iterate_filtered_child_objects(FnModel.is_joint_object, FnModel.find_joint_group_object(root_object))
 
     @staticmethod
-    def iterate_temporary_objects(root_object: bpy.types.Object, rigid_track_only: bool = False) -> Iterator[bpy.types.Object]:
-        rigid_body_objects = FnModel.iterate_filtered_child_objects(FnModel.is_temporary_object, FnModel.find_rigid_group_object(root_object))
+    def iterate_temporary_objects(root_object: Optional[bpy.types.Object], rigid_track_only: bool = False) -> Iterator[bpy.types.Object]:
+        if root_object is None:
+            return iter(())
 
+        rigid_body_objects = FnModel.iterate_filtered_child_objects(FnModel.is_temporary_object, FnModel.find_rigid_group_object(root_object))
         if rigid_track_only:
             return rigid_body_objects
 
@@ -178,11 +206,15 @@ class FnModel:
         return itertools.chain(rigid_body_objects, FnModel.__iterate_filtered_child_objects_internal(FnModel.is_temporary_object, temporary_group_object))
 
     @staticmethod
-    def iterate_materials(root_object: bpy.types.Object) -> Iterator[bpy.types.Material]:
+    def iterate_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
+        if root_object is None:
+            return iter(())
         return (material for mesh_object in FnModel.iterate_mesh_objects(root_object) for material in cast(bpy.types.Mesh, mesh_object.data).materials if material is not None)
 
     @staticmethod
-    def iterate_unique_materials(root_object: bpy.types.Object) -> Iterator[bpy.types.Material]:
+    def iterate_unique_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
+        if root_object is None:
+            return iter(())
         materials: Dict[bpy.types.Material, None] = {}  # use dict because set does not guarantee the order
         materials.update((material, None) for material in FnModel.iterate_materials(root_object))
         return iter(materials.keys())
@@ -295,22 +327,172 @@ class FnModel:
         id_a = bone_a.mmd_bone.bone_id
         id_b = bone_b.mmd_bone.bone_id
 
+        # Check for invalid bone IDs
+        if id_a < 0:
+            logging.warning(f"Cannot swap bone '{bone_a.name}' with invalid bone_id ({id_a})")
+            return
+        if id_b < 0:
+            logging.warning(f"Cannot swap bone '{bone_b.name}' with invalid bone_id ({id_b})")
+            return
+
+        # If both bones have the same ID, no swap needed
+        if id_a == id_b:
+            return
+
         # Use temporary ID for three-step swap
         temp_id = FnModel.get_max_bone_id(pose_bones) + 1
         FnModel.unsafe_change_bone_id(bone_a, temp_id, bone_morphs, pose_bones)
         FnModel.unsafe_change_bone_id(bone_b, id_a, bone_morphs, pose_bones)
         FnModel.unsafe_change_bone_id(bone_a, id_b, bone_morphs, pose_bones)
 
-    def realign_bone_ids(bones, bone_id_offset: int, bone_morphs, pose_bones):
-        """Realigns all bone IDs sequentially without gaps.
-        New sequence starts from bone_id_offset."""
-        # Get valid bones (non-shadow bones with valid IDs)
-        valid_bones = [pb for pb in pose_bones
-                    if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)
-                    and pb.mmd_bone.bone_id != -1]
+    @staticmethod
+    def shift_bone_id(old_bone_id: int, new_bone_id: int, bone_morphs, pose_bones):
+        """
+        Shifts a bone to a specified ID position within a fixed bone ID order structure.
+        Maintains the gap structure of bone IDs unchanged, only changes which bone corresponds to which ID.
+        Other bones shift positions to accommodate the change while preserving relative order.
+        """
+        # Check for invalid bone IDs
+        if old_bone_id < 0:
+            logging.warning(f"Cannot shift bone with invalid old_bone_id ({old_bone_id})")
+            return
+        if new_bone_id < 0:
+            logging.warning(f"Cannot shift bone to invalid new_bone_id ({new_bone_id})")
+            return
 
-        # Sort and reassign IDs sequentially
+        # If source and target IDs are the same, no operation needed
+        if old_bone_id == new_bone_id:
+            return
+
+        # Get all valid pose bones (exclude shadow bones)
+        valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone) and pb.mmd_bone.bone_id >= 0]
+
+        # Sort by bone_id
         valid_bones.sort(key=lambda pb: pb.mmd_bone.bone_id)
+
+        # Extract current bone IDs (this order structure must remain unchanged)
+        fixed_bone_ids = [pb.mmd_bone.bone_id for pb in valid_bones]
+
+        # Find the bone to move and target position
+        old_pos = None
+        new_pos = None
+        moving_bone = None
+
+        for i, bone in enumerate(valid_bones):
+            if bone.mmd_bone.bone_id == old_bone_id:
+                old_pos = i
+                moving_bone = bone
+            if bone.mmd_bone.bone_id == new_bone_id:
+                new_pos = i
+
+        # If old_bone_id doesn't exist, return directly
+        if old_pos is None or moving_bone is None:
+            logging.warning(f"Could not find bone with ID {old_bone_id}")
+            return
+
+        # If new_bone_id doesn't exist, use safe_change_bone_id instead
+        if new_pos is None:
+            FnModel.safe_change_bone_id(moving_bone, new_bone_id, bone_morphs, pose_bones)
+            return
+
+        # Create new bone order array
+        new_bone_order = valid_bones[:]
+
+        if old_pos < new_pos:
+            # Move right: shift left bones to the right by one position
+            for i in range(old_pos, new_pos):
+                new_bone_order[i] = valid_bones[i + 1]
+            new_bone_order[new_pos] = moving_bone
+        else:
+            # Move left: shift right bones to the left by one position
+            for i in range(old_pos, new_pos, -1):
+                new_bone_order[i] = valid_bones[i - 1]
+            new_bone_order[new_pos] = moving_bone
+
+        # Reassign bone IDs (using fixed ID order) with conflict resolution
+        # Use one temporary ID to perform circular shift, similar to swap_bone_ids approach
+        temp_id = FnModel.get_max_bone_id(pose_bones) + 1
+
+        # Perform circular shift using temporary ID
+        if old_pos < new_pos:
+            # Move right: shift sequence [old_pos+1, new_pos] leftward
+            # moving_bone -> temp_id, then shift others left, finally temp_id -> target
+            FnModel.unsafe_change_bone_id(moving_bone, temp_id, bone_morphs, pose_bones)
+            for i in range(old_pos, new_pos):
+                target_id = fixed_bone_ids[i]
+                source_bone = valid_bones[i + 1]
+                FnModel.unsafe_change_bone_id(source_bone, target_id, bone_morphs, pose_bones)
+            FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
+        else:
+            # Move left: shift sequence [new_pos, old_pos-1] rightward
+            # moving_bone -> temp_id, then shift others right, finally temp_id -> target
+            FnModel.unsafe_change_bone_id(moving_bone, temp_id, bone_morphs, pose_bones)
+            for i in range(old_pos, new_pos, -1):
+                target_id = fixed_bone_ids[i]
+                source_bone = valid_bones[i - 1]
+                FnModel.unsafe_change_bone_id(source_bone, target_id, bone_morphs, pose_bones)
+            FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
+
+    @staticmethod
+    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones, sorting_method: str = "FIX-MOVE-CHILDREN"):
+        """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel."""
+
+        def get_hierarchy_depth(bone):
+            """Get the depth of bone in the hierarchy (root bones have depth 0)"""
+            depth = 0
+            while bone.parent:
+                depth += 1
+                bone = bone.parent
+            return depth
+
+        def bone_hierarchy_path(bone):
+            """Build path from root to bone for parent-child hierarchy sorting"""
+            path = []
+            while bone:
+                path.append(bone.name)
+                bone = bone.parent
+            return tuple(reversed(path))
+
+        def get_fix_key_move_children(bone):
+            """Fix mode: move children after their parents (preserve parent positions)"""
+            # Find the maximum ID among ALL ancestors in the hierarchy chain
+            max_ancestor_id = -1
+            temp_parent = bone.parent
+
+            while temp_parent:
+                if hasattr(temp_parent, "is_mmd_shadow_bone") and temp_parent.is_mmd_shadow_bone:
+                    temp_parent = temp_parent.parent
+                    continue
+
+                if temp_parent.mmd_bone.bone_id >= 0:
+                    max_ancestor_id = max(max_ancestor_id, temp_parent.mmd_bone.bone_id)
+                temp_parent = temp_parent.parent
+
+            current_id = bone.mmd_bone.bone_id
+
+            if max_ancestor_id >= 0 and current_id >= 0 and max_ancestor_id >= current_id:
+                # This bone needs to be moved after ALL ancestors
+                # Use max ancestor ID + small offset + hierarchy depth for stable sorting
+                return (1, max_ancestor_id + 0.1, get_hierarchy_depth(bone), bone.name)
+            else:
+                # Keep original position
+                return (0, current_id if current_id >= 0 else float("inf"), bone.name)
+
+        # Get valid bones (non-shadow bones)
+        valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
+
+        # Choose sorting method
+        if sorting_method == "REBUILD-DEPTH":
+            # Sort by hierarchy depth, then name (allows chain mixing)
+            valid_bones.sort(key=lambda pb: (get_hierarchy_depth(pb), pb.name))
+        elif sorting_method == "REBUILD-PATH":
+            # Sort by hierarchy path (keeps bone chains together)
+            valid_bones.sort(key=bone_hierarchy_path)
+        else:  # Default to "FIX-MOVE-CHILDREN"
+            # Fix mode: move children after parents (preserve parent positions)
+            valid_bones.sort(key=get_fix_key_move_children)
+
+        # Reassign IDs sequentially
         for i, bone in enumerate(valid_bones):
             new_id = bone_id_offset + i
             if bone.mmd_bone.bone_id != new_id:
@@ -348,7 +530,7 @@ class FnModel:
             child_bone_morphs = child_root_object.mmd_root.bone_morphs
 
             # Reassign bone IDs to avoid conflicts
-            FnModel.realign_bone_ids(child_pose_bones, max_bone_id + 1, child_bone_morphs, child_pose_bones)
+            FnModel.realign_bone_ids(max_bone_id + 1, child_bone_morphs, child_pose_bones)
             max_bone_id = FnModel.get_max_bone_id(child_pose_bones)
 
             # Save material morph references
@@ -376,9 +558,6 @@ class FnModel:
                 if (parent_armature_object.name in bpy.context.view_layer.objects.keys() and
                     child_armature_object.name in bpy.context.view_layer.objects.keys()):
                     try:
-                        # Store the world coordinate matrix of the child armature
-                        child_armature_matrix = child_armature_object.matrix_world.copy()
-
                         # Ensure we're in object mode
                         if bpy.context.mode != "OBJECT":
                             bpy.ops.object.mode_set(mode="OBJECT")
@@ -1271,7 +1450,8 @@ class Model:
 
         rb.collision_shape = rigid.shape
 
-    def __getRigidRange(self, obj):
+    @staticmethod
+    def __getRigidRange(obj):
         return (Vector(obj.bound_box[0]) - Vector(obj.bound_box[6])).length
 
     def __createNonCollisionConstraint(self, nonCollisionJointTable):

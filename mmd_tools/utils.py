@@ -41,8 +41,8 @@ def setParentToBone(obj, parent, bone_name):
 def selectSingleBone(context, armature, bone_name, reset_pose=False):
     try:
         bpy.ops.object.mode_set(mode="OBJECT")
-    except:
-        pass
+    except Exception as e:
+        logging.warning(f"Failed to set object mode: {e}")
     for i in context.selected_objects:
         i.select_set(False)
     FnContext.set_active_object(context, armature)

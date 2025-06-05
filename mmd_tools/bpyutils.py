@@ -104,7 +104,10 @@ def select_object(obj: bpy.types.Object, objects: Optional[List[bpy.types.Object
        with select_object(obj):
            some functions...
     """
-    # TODO: Reimplement with bpy.context.temp_override (If it ain't broke, don't fix it.)
+    # TODO: Consider reimplementing with bpy.context.temp_override,
+    #       but note that Blender's new API has stability issues.
+    #       temp_override is prone to crashes, making the current approach safer.
+    #       If it ain't broke, don't fix it.
     return __SelectObjects(obj, objects)
 
 
@@ -174,8 +177,11 @@ def makeCapsule(segment=8, ring_count=2, radius=1.0, height=1.0, target_object=N
     top = (0, 0, height / 2 + radius)
     verts.new(top)
 
-    # f = lambda i: radius*i/ring_count
-    f = lambda i: radius * math.sin(0.5 * math.pi * i / ring_count)
+    # def f(i):
+    #     return radius * i / ring_count
+    def f(i):
+        return radius * math.sin(0.5 * math.pi * i / ring_count)
+
     for i in range(ring_count, 0, -1):
         z = f(i - 1)
         t = math.sqrt(radius**2 - z**2)

@@ -25,7 +25,7 @@ class MMDLampPanel(Panel):
 
         if MMDLamp.isMMDLamp(obj):
             mmd_lamp = MMDLamp(obj)
-            empty = mmd_lamp.object()
+            # empty = mmd_lamp.object()
             lamp = mmd_lamp.lamp()
 
             c = layout.column()

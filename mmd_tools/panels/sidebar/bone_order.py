@@ -28,6 +28,11 @@ class MMDToolsBoneIdMoveUp(bpy.types.Operator):
         active_bone = armature.pose.bones[active_bone_index]
         active_id = active_bone.mmd_bone.bone_id
 
+        # Check if bone_id is -1 and show warning
+        if active_id == -1:
+            self.report({"WARNING"}, "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs.")
+            return {"CANCELLED"}
+
         # Find bone with smaller bone_id
         prev_bone = None
         prev_id = -1
@@ -69,6 +74,11 @@ class MMDToolsBoneIdMoveDown(bpy.types.Operator):
         active_bone = armature.pose.bones[active_bone_index]
         active_id = active_bone.mmd_bone.bone_id
 
+        # Check if bone_id is -1 and show warning
+        if active_id == -1:
+            self.report({"WARNING"}, "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs.")
+            return {"CANCELLED"}
+
         # Find bone with larger bone_id
         next_bone = None
         next_id = float("inf")
@@ -108,9 +118,11 @@ class MMDToolsBoneIdMoveTop(bpy.types.Operator):
             return {"CANCELLED"}
 
         active_bone = armature.pose.bones[active_bone_index]
-
-        # Change bone ID to 0 safely
-        FnModel.safe_change_bone_id(active_bone, 0, root.mmd_root.bone_morphs, armature.pose.bones)
+        old_bone_id = active_bone.mmd_bone.bone_id
+        new_bone_id = 0
+        bone_morphs = root.mmd_root.bone_morphs
+        pose_bones = armature.pose.bones
+        FnModel.shift_bone_id(old_bone_id, new_bone_id, bone_morphs, pose_bones)
 
         # Refresh UI
         for area in context.screen.areas:
@@ -137,10 +149,11 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
             return {"CANCELLED"}
 
         active_bone = armature.pose.bones[active_bone_index]
-
-        # Get the maximum bone ID and add 1 to place at the bottom
-        max_bone_id = FnModel.get_max_bone_id(armature.pose.bones)
-        FnModel.safe_change_bone_id(active_bone, max_bone_id + 1, root.mmd_root.bone_morphs, armature.pose.bones)
+        old_bone_id = active_bone.mmd_bone.bone_id
+        new_bone_id = FnModel.get_max_bone_id(armature.pose.bones)
+        bone_morphs = root.mmd_root.bone_morphs
+        pose_bones = armature.pose.bones
+        FnModel.shift_bone_id(old_bone_id, new_bone_id, bone_morphs, pose_bones)
 
         # Refresh UI
         for area in context.screen.areas:
@@ -152,8 +165,20 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
 class MMDToolsRealignBoneIds(bpy.types.Operator):
     bl_idname = "mmd_tools.fix_bone_order"
     bl_label = "Realign Bone IDs"
-    bl_description = "Realign bone IDs to be sequential without gaps and apply additional transforms"
+    bl_description = "Realign bone IDs to be sequential without gaps. Sorted primarily by hierarchy depth (ensuring parents have lower IDs than children), then by bone_id (valid ones prioritized), then by bone name. Apply additional transforms afterward (Assembly -> Bone button)."
     bl_options = {"REGISTER", "UNDO"}
+
+    # Add sorting method property
+    sorting_method: bpy.props.EnumProperty(
+        name="Sorting Method",
+        description="Choose how to sort bones during realignment",
+        items=[
+            ("FIX-MOVE-CHILDREN", "Fix: Move Children", "Move children after parents, preserve parent positions"),
+            ("REBUILD-DEPTH", "Rebuild: Depth", "Sort by hierarchy depth (chains mixing)"),
+            ("REBUILD-PATH", "Rebuild: Path", "Sort by hierarchy path (keeps bone chains together)"),
+        ],
+        default="FIX-MOVE-CHILDREN",
+    )
 
     def execute(self, context):
         root = FnModel.find_root_object(context.object)
@@ -171,7 +196,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
             self.migrate_from_vertex_groups(bone_order_mesh_object, armature, root)
         else:
             # safe realign bone IDs
-            FnModel.realign_bone_ids(armature.pose.bones, 0, root.mmd_root.bone_morphs, armature.pose.bones)
+            FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones, self.sorting_method)
 
         # Apply additional transformation (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)

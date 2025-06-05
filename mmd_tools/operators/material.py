@@ -43,7 +43,7 @@ class ConvertMaterialsForCycles(Operator):
     def execute(self, context):
         try:
             context.scene.render.engine = "CYCLES"
-        except:
+        except Exception:
             self.report({"ERROR"}, " * Failed to change to Cycles render engine.")
             return {"CANCELLED"}
         for obj in (x for x in context.selected_objects if x.type == "MESH"):
@@ -365,8 +365,8 @@ class EdgePreviewSetup(Operator):
 
         ng = _NodeGroupUtils(shader)
 
-        node_input = ng.new_node("NodeGroupInput", (-5, 0))
-        node_output = ng.new_node("NodeGroupOutput", (3, 0))
+        ng.new_node("NodeGroupInput", (-5, 0))
+        ng.new_node("NodeGroupOutput", (3, 0))
 
         ############################################################################
         node_color = ng.new_node("ShaderNodeMixRGB", (-1, -1.5))

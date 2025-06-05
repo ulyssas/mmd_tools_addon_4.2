@@ -3,6 +3,7 @@
 
 import collections
 import logging
+import math
 import os
 import time
 from typing import TYPE_CHECKING, List, Optional
@@ -203,10 +204,8 @@ class PMXImporter:
         #            if p_bone.parent == t.parent:
         #                dependency_cycle_ik_bones.append(i)
 
-        from math import isfinite
-
         def _VectorXZY(v):
-            return Vector(v).xzy if all(isfinite(n) for n in v) else Vector((0, 0, 0))
+            return Vector(v).xzy if all(math.isfinite(n) for n in v) else Vector((0, 0, 0))
 
         with bpyutils.edit_object(obj) as data:
             for i in pmx_bones:
@@ -605,10 +604,24 @@ class PMXImporter:
             for bf, mi in zip(uv_tex.data, material_indices):
                 bf.image = self.__imageTable.get(mi, None)
 
+        # Import ADD UV2 as vertex colors
+        if pmxModel.header and pmxModel.header.additional_uvs >= 2:
+            # Create vertex color layer
+            vertex_colors = mesh.vertex_colors.new(name="Color")
+            for i, loop_index in enumerate(loop_indices_orig):
+                vertex = pmxModel.vertices[loop_index]
+                if len(vertex.additional_uvs) >= 2:
+                    uv2_data = vertex.additional_uvs[1]  # ADD UV2 data (X,Y,Z,W)
+                    # Convert UV data to vertex color (XYZW -> RGBA)
+                    color = (uv2_data[0], uv2_data[1], uv2_data[2], uv2_data[3])
+                    vertex_colors.data[i].color = color
+            logging.info("Imported ADD UV2 as vertex colors")
+
         if pmxModel.header and pmxModel.header.additional_uvs:
             logging.info("Importing %d additional uvs", pmxModel.header.additional_uvs)
             zw_data_map = collections.OrderedDict()
-            split_uvzw = lambda uvi: (self.flipUV_V(uvi[:2]), uvi[2:])
+            def split_uvzw(uvi):
+                return (self.flipUV_V(uvi[:2]), uvi[2:])
             for i in range(pmxModel.header.additional_uvs):
                 add_uv = uv_layers[uv_textures.new(name="UV" + str(i + 1)).name]
                 logging.info(" - %s...(uv channels)", add_uv.name)
@@ -717,7 +730,10 @@ class PMXImporter:
         mmd_root = self.__root.mmd_root
         categories = self.CATEGORIES
         __OffsetData = collections.namedtuple("OffsetData", "index, offset")
-        __convert_offset = lambda x: (x[0], -x[1], x[2], -x[3])
+
+        def __convert_offset(x):
+            return (x[0], -x[1], x[2], -x[3])
+
         for morph in (x for x in self.__model.morphs if isinstance(x, pmx.UVMorph)):
             uv_morph = mmd_root.uv_morphs.add()
             uv_morph.name = morph.name
@@ -784,6 +800,35 @@ class PMXImporter:
     def __assignCustomNormals(self):
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
+
+        # CRITICAL: Mark sharp edges (based on angle) BEFORE setting custom normals
+        # For mesh.normals_split_custom_set() to work as expected, two conditions must be met:
+        # 1. The normal vectors must be non-zero (mentioned in Blender documentation)
+        # 2. Some edges must be marked as sharp (NOT mentioned in Blender documentation)
+        # An angle of 179 degrees is confirmed to be sufficient to preserve all custom normals.
+        # 180 degrees does not work because it misses some sharp edges required for normals_split_custom_set to work 100% correctly.
+        current_mode = bpy.context.object.mode
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.context.view_layer.objects.active = self.__meshObj
+        # Mark sharp edges based on user settings
+        if self.__mark_sharp_edges:
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="DESELECT")
+            bpy.ops.mesh.edges_select_sharp(sharpness=self.__sharp_edge_angle)
+            bpy.ops.mesh.mark_sharp()
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+            # Logging
+            angle_degrees = math.degrees(self.__sharp_edge_angle)
+            total_edges = len(mesh.edges)
+            sharp_edges = sum(1 for edge in mesh.edges if edge.use_edge_sharp)
+            percentage = (sharp_edges / total_edges) * 100 if total_edges > 0 else 0
+            logging.info(f"   - Marked {sharp_edges}/{total_edges} ({percentage:.2f}%) sharp edges with angle: {angle_degrees:.1f} degrees")
+        else:
+            logging.info("   - Skipped marking sharp edges")
+        mesh.update()
+
         if self.__vertex_map:
             verts, faces = self.__model.vertices, self.__model.faces
             custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]
@@ -791,6 +836,9 @@ class PMXImporter:
         else:
             custom_normals = [(Vector(v.normal).xzy).normalized() for v in self.__model.vertices]
             mesh.normals_split_custom_set_from_vertices(custom_normals)
+
+        mesh.update()
+        bpy.ops.object.mode_set(mode=current_mode)
         logging.info("   - Done!!")
 
     def __renameLRBones(self, use_underscore):
@@ -820,6 +868,8 @@ class PMXImporter:
         types = args.get("types", set())
         clean_model = args.get("clean_model", False)
         remove_doubles = args.get("remove_doubles", False)
+        self.__mark_sharp_edges = args.get("mark_sharp_edges", True)
+        self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(179.0))
         self.__scale = args.get("scale", 1.0)
         self.__use_mipmap = args.get("use_mipmap", True)
         self.__sph_blend_factor = args.get("sph_blend_factor", 1.0)
@@ -969,8 +1019,10 @@ class _PMXCleaner:
             return None
 
         # clean face
-        # face_key_func = lambda f: frozenset(vertex_map[x][0] for x in f)
-        face_key_func = lambda f: frozenset({vertex_map[x][0]: tuple(pmx_vertices[x].uv) for x in f}.items())
+        # def face_key_func(f):
+        #     return frozenset(vertex_map[x][0] for x in f)
+        def face_key_func(f):
+            return frozenset({vertex_map[x][0]: tuple(pmx_vertices[x].uv) for x in f}.items())
         cls.__clean_pmx_faces(pmx_model.faces, pmx_model.materials, face_key_func)
 
         if mesh_only:

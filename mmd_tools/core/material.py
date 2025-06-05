@@ -144,8 +144,8 @@ class FnMaterial:
             # pylint: disable=bare-except
             try:
                 return os.path.samefile(img_filepath, filepath)
-            except:
-                pass
+            except Exception as e:
+                logging.warning(f"Failed to compare files '{img_filepath}' and '{filepath}': {e}")
         return False
 
     def _load_image(self, filepath):
@@ -154,7 +154,7 @@ class FnMaterial:
             # pylint: disable=bare-except
             try:
                 img = bpy.data.images.load(filepath)
-            except:
+            except Exception:
                 logging.warning("Cannot create a texture for %s. No such file.", filepath)
                 img = bpy.data.images.new(os.path.basename(filepath), 1, 1)
                 img.source = "FILE"
@@ -269,7 +269,7 @@ class FnMaterial:
                 nodes, links = mat.node_tree.nodes, mat.node_tree.links
                 if sphere_texture_type == 3:
                     if obj and obj.type == "MESH" and mat in tuple(obj.data.materials):
-                        uv_layers = (l for l in obj.data.uv_layers if not l.name.startswith("_"))
+                        uv_layers = (layer for layer in obj.data.uv_layers if not layer.name.startswith("_"))
                         next(uv_layers, None)  # skip base UV
                         subtex_uv = getattr(next(uv_layers, None), "name", "")
                         if subtex_uv != "UV1":

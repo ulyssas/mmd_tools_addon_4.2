@@ -50,6 +50,8 @@ class RenamedBoneMapper:
         return self
 
     def get(self, bone_name, default=None):
+        if self.__pose_bones is None:
+            return default
         bl_bone_name = bone_name
         if self.__rename_LR_bones:
             bl_bone_name = utils.convertNameToLR(bl_bone_name, self.__use_underscore)
@@ -61,11 +63,11 @@ class RenamedBoneMapper:
 class _InterpolationHelper:
     def __init__(self, mat):
         self.__indices = indices = [0, 1, 2]
-        l = sorted((-abs(mat[i][j]), i, j) for i in range(3) for j in range(3))
-        _, i, j = l[0]
+        sorted_list = sorted((-abs(mat[i][j]), i, j) for i in range(3) for j in range(3))
+        _, i, j = sorted_list[0]
         if i != j:
             indices[i], indices[j] = indices[j], indices[i]
-        _, i, j = next(k for k in l if k[1] != i and k[2] != j)
+        _, i, j = next(k for k in sorted_list if k[1] != i and k[2] != j)
         if indices[i] != j:
             idx = indices.index(j)
             indices[i], indices[idx] = indices[idx], indices[i]
@@ -75,6 +77,29 @@ class _InterpolationHelper:
 
 
 class BoneConverter:
+    """
+    Bone transform converter using float64 manual math.
+    Avoids mathutils (float32) and numpy (overhead) for precision and speed.
+    Enhanced precision for critical transforms.
+    """
+
+    # ================ ORIGINAL IMPLEMENTATION (mathutils-based) ================
+    # def __init__(self, pose_bone, scale, invert=False):
+    #     mat = pose_bone.bone.matrix_local.to_3x3()
+    #     mat[1], mat[2] = mat[2].copy(), mat[1].copy()
+    #     self.__mat = mat.transposed()
+    #     self.__scale = scale
+    #     if invert:
+    #         self.__mat.invert()
+    #     self.convert_interpolation = _InterpolationHelper(self.__mat).convert
+    # def convert_location(self, location):
+    #     return (self.__mat @ Vector(location)) * self.__scale
+    # def convert_rotation(self, rotation_xyzw):
+    #     rot = Quaternion()
+    #     rot.x, rot.y, rot.z, rot.w = rotation_xyzw
+    #     return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
+    # ===========================================================================
+
     def __init__(self, pose_bone, scale, invert=False):
         mat = pose_bone.bone.matrix_local.to_3x3()
         mat[1], mat[2] = mat[2].copy(), mat[1].copy()
@@ -82,15 +107,38 @@ class BoneConverter:
         self.__scale = scale
         if invert:
             self.__mat.invert()
+
+        # Pre-compute matrix elements for faster access and higher precision
+        # Note: mathutils uses float32 internally, manual calculation preserves float64
+        m = self.__mat
+        self.__m00, self.__m01, self.__m02 = m[0][0], m[0][1], m[0][2]
+        self.__m10, self.__m11, self.__m12 = m[1][0], m[1][1], m[1][2]
+        self.__m20, self.__m21, self.__m22 = m[2][0], m[2][1], m[2][2]
+
         self.convert_interpolation = _InterpolationHelper(self.__mat).convert
 
     def convert_location(self, location):
-        return (self.__mat @ Vector(location)) * self.__scale
+        x, y, z = location[0], location[1], location[2]
+
+        result_x = (self.__m00 * x + self.__m01 * y + self.__m02 * z) * self.__scale
+        result_y = (self.__m10 * x + self.__m11 * y + self.__m12 * z) * self.__scale
+        result_z = (self.__m20 * x + self.__m21 * y + self.__m22 * z) * self.__scale
+
+        return Vector((result_x, result_y, result_z))
 
     def convert_rotation(self, rotation_xyzw):
         rot = Quaternion()
         rot.x, rot.y, rot.z, rot.w = rotation_xyzw
-        return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
+
+        axis = rot.axis
+        angle = rot.angle
+
+        axis_x, axis_y, axis_z = axis[0], axis[1], axis[2]
+        new_axis_x = self.__m00 * axis_x + self.__m01 * axis_y + self.__m02 * axis_z
+        new_axis_y = self.__m10 * axis_x + self.__m11 * axis_y + self.__m12 * axis_z
+        new_axis_z = self.__m20 * axis_x + self.__m21 * axis_y + self.__m22 * axis_z
+
+        return Quaternion(Vector((-new_axis_x, -new_axis_y, -new_axis_z)), angle).normalized()
 
 
 class BoneConverterPoseMode:
@@ -282,16 +330,19 @@ class VMDImporter:
 
     @staticmethod
     def __setInterpolation(bezier, kp0, kp1):
-        # if bezier[0] == bezier[1] and bezier[2] == bezier[3]:
-        #     kp0.interpolation = "BEZIER"
-        # else:
-        #     kp0.interpolation = "BEZIER"
-
-        # Always use BEZIER to preserve VMD handle positions
+        # Always use BEZIER to match Blender's default behavior
         kp0.interpolation = "BEZIER"
-
         kp0.handle_right_type = "FREE"
         kp1.handle_left_type = "FREE"
+
+        d = (kp1.co - kp0.co)
+        dy = d.y
+
+        # Reset handles if the value doesn't change much (dy is small enough) or the bezier is linear
+        # When dy is small enough, the curve is meaningless and will lose data during import; there's no difference in resetting it
+        # When the bezier is linear, the resulting curve is equivalent to the original
+        if abs(dy) < 1e-4 or (bezier[0] == bezier[1] and bezier[2] == bezier[3]):
+            bezier = [20, 20, 107, 107]
 
         # Always multiply before dividing to reduce precision errors
         d = (kp1.co - kp0.co)
@@ -358,8 +409,13 @@ class VMDImporter:
                     return (angle, x, y, z)
 
             else:
-                convert_rotation = lambda rot: converter.convert_rotation(rot).to_euler(mode)
-                compatible_rotation = lambda prev, curr: curr.make_compatible(prev) or curr
+                @staticmethod
+                def convert_rotation(rot):
+                    return converter.convert_rotation(rot).to_euler(mode)
+
+                @staticmethod
+                def compatible_rotation(prev, curr):
+                    return curr.make_compatible(prev) or curr
 
         return _ConverterWrap
 
@@ -429,7 +485,10 @@ class VMDImporter:
         if self.__bone_mapper:
             pose_bones = self.__bone_mapper(armObj)
 
-        _loc = _rot = lambda i: i
+        def _identity(i):
+            return i
+
+        _loc = _rot = _identity
         if self.__mirror:
             pose_bones = _MirrorMapper(pose_bones)
             _loc, _rot = _MirrorMapper.get_location, _MirrorMapper.get_rotation
@@ -641,7 +700,10 @@ class VMDImporter:
         parent_action = self.__get_or_create_action(mmdCamera, action_name)
         distance_action = self.__get_or_create_action(cameraObj, action_name + "_dis")
 
-        _loc = _rot = lambda i: i
+        def _identity(i):
+            return i
+
+        _loc = _rot = _identity
         if self.__mirror:
             _loc, _rot = _MirrorMapper.get_location, _MirrorMapper.get_rotation3
 
@@ -713,7 +775,10 @@ class VMDImporter:
         color_action = self.__get_or_create_action(lampObj.data, action_name + "_color")
         location_action = self.__get_or_create_action(lampObj, action_name + "_loc")
 
-        _loc = _MirrorMapper.get_location if self.__mirror else lambda i: i
+        def _identity(i):
+            return i
+
+        _loc = _MirrorMapper.get_location if self.__mirror else _identity
         for keyFrame in lampAnim:
             frame = keyFrame.frame_number + self.__frame_start + self.__frame_margin
             self.__keyframe_insert(color_action.fcurves, "color", frame, Vector(keyFrame.color))

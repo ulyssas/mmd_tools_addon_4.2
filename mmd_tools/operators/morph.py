@@ -594,7 +594,7 @@ class ViewUVMorph(bpy.types.Operator):
             morph = mmd_root.uv_morphs[mmd_root.active_morph]
             uv_textures = mesh.uv_layers
 
-            base_uv_layers = [l for l in mesh.uv_layers if not l.name.startswith("_")]
+            base_uv_layers = [layer for layer in mesh.uv_layers if not layer.name.startswith("_")]
             if morph.uv_index >= len(base_uv_layers):
                 self.report({"ERROR"}, "Invalid uv index: %d" % morph.uv_index)
                 return {"CANCELLED"}
@@ -614,10 +614,10 @@ class ViewUVMorph(bpy.types.Operator):
             if len(offsets) > 0:
                 base_uv_data = mesh.uv_layers.active.data
                 temp_uv_data = mesh.uv_layers[uv_tex.name].data
-                for i, l in enumerate(mesh.loops):
-                    select = temp_uv_data[i].select = l.vertex_index in offsets
+                for i, loop in enumerate(mesh.loops):
+                    select = temp_uv_data[i].select = loop.vertex_index in offsets
                     if select:
-                        temp_uv_data[i].uv = base_uv_data[i].uv + offsets[l.vertex_index]
+                        temp_uv_data[i].uv = base_uv_data[i].uv + offsets[loop.vertex_index]
 
             uv_textures.active = uv_tex
             uv_tex.active_render = True
@@ -691,9 +691,9 @@ class EditUVMorph(bpy.types.Operator):
             bpy.ops.object.mode_set(mode="OBJECT")
 
             vertices = mesh.vertices
-            for l, d in zip(mesh.loops, mesh.uv_layers.active.data):
+            for loop, d in zip(mesh.loops, mesh.uv_layers.active.data):
                 if d.select:
-                    vertices[l.vertex_index].select = True
+                    vertices[loop.vertex_index].select = True
 
             polygons = mesh.polygons
             polygons.active = getattr(next((p for p in polygons if all(vertices[i].select for i in p.vertices)), None), "index", polygons.active)
@@ -742,11 +742,11 @@ class ApplyUVMorph(bpy.types.Operator):
             __OffsetData = namedtuple("OffsetData", "index, offset")
             offsets = {}
             vertices = mesh.vertices
-            for l, i0, i1 in zip(mesh.loops, base_uv_data, temp_uv_data):
-                if vertices[l.vertex_index].select and l.vertex_index not in offsets:
+            for loop, i0, i1 in zip(mesh.loops, base_uv_data, temp_uv_data):
+                if vertices[loop.vertex_index].select and loop.vertex_index not in offsets:
                     dx, dy = i1.uv - i0.uv
                     if abs(dx) > 0.0001 or abs(dy) > 0.0001:
-                        offsets[l.vertex_index] = __OffsetData(l.vertex_index, (dx, dy, dx, dy))
+                        offsets[loop.vertex_index] = __OffsetData(loop.vertex_index, (dx, dy, dx, dy))
 
             FnMorph.store_uv_morph_data(meshObj, morph, offsets.values(), axis_type)
             morph.data_type = "VERTEX_GROUP"
