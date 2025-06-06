@@ -904,7 +904,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
     )
     preserve_curves: bpy.props.BoolProperty(
         name="Preserve Animation Curves",
-        description="Add additional keyframes to preserve animation curves accurately. Blender's curves are more flexible than VMD format, which may not always preserve significant curve changes without additional keyframes.",
+        description="Add additional keyframes to accurately preserve animation curves. Blender's bezier handles are more flexible than the VMD format. Complex handle settings will be lost during export unless additional keyframes are added to approximate the original curves.",
         default=False,
     )
 
