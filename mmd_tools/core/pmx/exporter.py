@@ -76,6 +76,14 @@ class __PmxExporter:
         "MOUTH": pmx.Morph.CATEGORY_MOUTH,
     }
 
+    MORPH_TYPES = {
+        pmx.GroupMorph: "group_morphs",
+        pmx.VertexMorph: "vertex_morphs",
+        pmx.BoneMorph: "bone_morphs",
+        pmx.UVMorph: "uv_morphs",
+        pmx.MaterialMorph: "material_morphs",
+    }
+
     def __init__(self):
         self.__model = None
         self.__bone_name_table = []
@@ -784,7 +792,7 @@ class __PmxExporter:
             group_morph = pmx.GroupMorph(name=morph.name, name_e=morph.name_e, category=categories.get(morph.category, pmx.Morph.CATEGORY_OHTER))
             self.__model.morphs.append(group_morph)
 
-        morph_map = self.__get_pmx_morph_map()
+        morph_map = self.__get_pmx_morph_map(root)
         for morph, group_morph in zip(mmd_root.group_morphs, self.__model.morphs[start_index:]):
             for data in morph.data:
                 morph_index = morph_map.get((data.morph_type, data.name), -1)
@@ -798,7 +806,7 @@ class __PmxExporter:
 
     def __exportDisplayItems(self, root, bone_map):
         res = []
-        morph_map = self.__get_pmx_morph_map()
+        morph_map = self.__get_pmx_morph_map(root)
         for i in root.mmd_root.display_item_frames:
             d = pmx.Display()
             d.name = i.name
@@ -816,17 +824,35 @@ class __PmxExporter:
             res.append(d)
         self.__model.display = res
 
-    def __get_pmx_morph_map(self):
-        morph_types = {
-            pmx.GroupMorph: "group_morphs",
-            pmx.VertexMorph: "vertex_morphs",
-            pmx.BoneMorph: "bone_morphs",
-            pmx.UVMorph: "uv_morphs",
-            pmx.MaterialMorph: "material_morphs",
-        }
+    def __get_facial_frame(self, root):
+        for frame in root.mmd_root.display_item_frames:
+            if frame.name == "表情":
+                return frame
+        return None
+
+    def __get_pmx_morph_map(self, root):
+        assert root is not None, "root should not be None when this method is called"
+
         morph_map = {}
-        for i, m in enumerate(self.__model.morphs):
-            morph_map[(morph_types[type(m)], m.name)] = i
+        index = 0
+
+        # Priority: Display Panel order
+        facial_frame = self.__get_facial_frame(root)
+        if facial_frame:
+            for item in facial_frame.data:
+                if item.type == "MORPH":
+                    key = (item.morph_type, item.name)
+                    if key not in morph_map:
+                        morph_map[key] = index
+                        index += 1
+
+        # Fallback: remaining morphs in original order
+        for m in self.__model.morphs:
+            key = (self.MORPH_TYPES[type(m)], m.name)
+            if key not in morph_map:
+                morph_map[key] = index
+                index += 1
+
         return morph_map
 
     def __exportRigidBodies(self, rigid_bodies, bone_map):
@@ -1412,6 +1438,12 @@ class __PmxExporter:
             self.__export_material_morphs(root)
             self.__export_uv_morphs(root)
             self.__export_group_morphs(root)
+
+            # Sort morphs by Display Panel facial frame order for PMX export
+            # Reference: https://github.com/MMD-Blender/blender_mmd_tools/issues/77
+            morph_map = self.__get_pmx_morph_map(root)
+            self.__model.morphs.sort(key=lambda m: morph_map.get((self.MORPH_TYPES[type(m)], m.name), float("inf")))
+
             self.__exportDisplayItems(root, nameMap)
 
         rigid_map = self.__exportRigidBodies(rigids, nameMap)
