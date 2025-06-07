@@ -147,7 +147,7 @@ class RemoveDisplayItem(Operator):
 class MoveDisplayItem(Operator, ItemMoveOp):
     bl_idname = "mmd_tools.display_item_move"
     bl_label = "Move Display Item"
-    bl_description = "Move active display item up/dowm in the list"
+    bl_description = "Move active display item up/down in the list. This will also affect the morph order in exported PMX files."
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     def execute(self, context):
