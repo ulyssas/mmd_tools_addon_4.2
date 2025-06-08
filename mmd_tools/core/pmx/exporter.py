@@ -1235,11 +1235,15 @@ class __PmxExporter:
 
         # Process vertex colors as ADD UV2
         if vertex_colors:
+            loop_index = 0  # Sequential index for vertex color data
             for face in face_seq:
                 for i, vertex in enumerate(face.vertices):
-                    # Get vertex color from face loop
-                    loop_index = face.index * 3 + i
-                    color = vertex_colors.data[loop_index].color
+                    # Get vertex color using sequential index
+                    if loop_index < len(vertex_colors.data):
+                        color = vertex_colors.data[loop_index].color
+                    else:
+                        # Default to white color if index out of bounds
+                        color = (1.0, 1.0, 1.0, 1.0)
 
                     # Convert vertex color to ADD UV2 data (RGBA -> XYZW)
                     vertex_color_uv = ((color[0], color[1]), (color[2], color[3]))
@@ -1252,6 +1256,8 @@ class __PmxExporter:
 
                     # Set ADD UV2 (index 1)
                     vertex.add_uvs[1] = vertex_color_uv
+
+                    loop_index += 1  # Increment for next vertex color
 
             logging.info("Exported vertex colors as ADD UV2")
 
