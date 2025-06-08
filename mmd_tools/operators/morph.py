@@ -104,7 +104,7 @@ class RemoveMorph(bpy.types.Operator):
 class MoveMorph(bpy.types.Operator, ItemMoveOp):
     bl_idname = "mmd_tools.morph_move"
     bl_label = "Move Morph"
-    bl_description = "Move active morph item up/down in the list"
+    bl_description = "Move active morph item up/down in the list. This will not affect the morph order in exported PMX files (use Display Panel order instead)."
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     def execute(self, context):

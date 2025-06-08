@@ -58,13 +58,12 @@ class FnCamera:
                 v.targets[0].data_path = "mmd_camera.angle"
                 expression = expression.replace("$angle", v.name)
             if "$sensor_height" in expression:
-                v = d.variables.new()
-                v.name = "sensor_height"
-                v.type = "SINGLE_PROP"
-                v.targets[0].id_type = "CAMERA"
-                v.targets[0].id = camera_object.data
-                v.targets[0].data_path = "sensor_height"
-                expression = expression.replace("$sensor_height", v.name)
+                # Use fixed sensor_height instead of dynamic reference.
+                # When controlled by MMD angle, sensor_height shouldn't change.
+                # This avoids unnecessary dependency cycles.
+                # Reference: https://github.com/MMD-Blender/blender_mmd_tools/issues/227
+                current_sensor_height = camera_object.data.sensor_height
+                expression = expression.replace("$sensor_height", str(current_sensor_height))
 
             d.expression = expression
 

@@ -742,6 +742,43 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         ],
         default="NONE",
     )
+    ik_angle_limits: bpy.props.EnumProperty(
+        name="IK Angle Limits",
+        description="Choose how to handle IK angle limits during export",
+        items=[
+            (
+                "EXPORT_ALL",
+                "Export All Limits",
+                "Export all existing IK angle limits using current priority system: "
+                "mmd_ik_limit_override -> Blender IK limits -> other sources. "
+                "If mmd_ik_limit_override disables an axis but Blender IK limits exist for that axis, "
+                "the Blender limits will still be exported. This maintains backward compatibility "
+                "with existing workflows",
+                0,
+            ),
+            (
+                "IGNORE_ALL",
+                "Ignore All Limits",
+                "Completely ignore all IK angle limits from any source during export. "
+                "No angle restrictions will be written to the PMX file, regardless of "
+                "mmd_ik_limit_override, Blender IK limits, or other constraint settings. "
+                "Useful when you want to rely entirely on MMD v9.19+ fixed axis feature instead",
+                1,
+            ),
+            (
+                "OVERRIDE_CONTROLLED",
+                "Override Controlled",
+                "Use mmd_ik_limit_override constraints as the sole authority for IK limits. "
+                "When mmd_ik_limit_override exists: only its enabled axes export limits, "
+                "disabled axes export no limits (ignoring Blender IK limits). "
+                "When mmd_ik_limit_override doesn't exist: fall back to Blender IK limits. "
+                "This makes mmd_ik_limit_override act as a true 'override' that completely "
+                "controls whether limits are exported, enabling fine-grained per-bone control",
+                2,
+            ),
+        ],
+        default="EXPORT_ALL",
+    )
     log_level: bpy.props.EnumProperty(
         name="Log level",
         description="Select log level",
@@ -824,6 +861,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
                 vertex_splitting=self.vertex_splitting,
+                ik_angle_limits=self.ik_angle_limits,
             )
             self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
         except Exception:
@@ -866,7 +904,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
     )
     preserve_curves: bpy.props.BoolProperty(
         name="Preserve Animation Curves",
-        description="Add additional keyframes to preserve animation curves accurately. Blender's curves are more flexible than VMD format, which may not always preserve significant curve changes without additional keyframes.",
+        description="Add additional keyframes to accurately preserve animation curves. Blender's bezier handles are more flexible than the VMD format. Complex handle settings will be lost during export unless additional keyframes are added to approximate the original curves.",
         default=False,
     )
 
