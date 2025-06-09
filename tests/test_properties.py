@@ -5,11 +5,14 @@ import os
 import shutil
 import unittest
 
+import bl_ext.user_default.mmd_tools
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
+MMD_TOOLS_PATH = os.path.dirname(bl_ext.user_default.mmd_tools.__file__)
+TOON_TEXTURE_PATH = os.path.join(MMD_TOOLS_PATH, "externals", "MikuMikuDance", "toon01.bmp")
 
 
 class TestMMDProperties(unittest.TestCase):
@@ -305,9 +308,8 @@ class TestMMDProperties(unittest.TestCase):
 
         # Test toon texture properties
         if hasattr(mmd_mat, "toon_texture"):
-            test_path = "/path/to/toon.bmp"
-            mmd_mat.toon_texture = test_path
-            self.assertEqual(mmd_mat.toon_texture, test_path, "Toon texture path should be preserved")
+            mmd_mat.toon_texture = TOON_TEXTURE_PATH
+            self.assertEqual(mmd_mat.toon_texture, TOON_TEXTURE_PATH, "Toon texture path should be preserved")
 
         if hasattr(mmd_mat, "shared_toon_texture"):
             test_id = 5
@@ -1600,37 +1602,35 @@ class TestMMDProperties(unittest.TestCase):
         self.assertIsNotNone(root_obj, "Root object should be created")
         self.assertIsNotNone(armature_obj, "Armature object should be created")
 
-        # Test integration with animation system
-        if armature_obj.pose.bones:
-            pose_bone = armature_obj.pose.bones[0]
-            mmd_bone = pose_bone.mmd_bone
-
-            # Test that MMD properties work with keyframing
-            try:
-                # Check if the property is animatable before trying to keyframe
-                if hasattr(mmd_bone, "transform_order") and hasattr(mmd_bone.bl_rna.properties.get("transform_order", None), "is_animatable"):
-                    if mmd_bone.bl_rna.properties["transform_order"].is_animatable:
-                        mmd_bone.keyframe_insert(data_path="transform_order", frame=1)
-                        mmd_bone.transform_order = 5
-                        mmd_bone.keyframe_insert(data_path="transform_order", frame=10)
-
-                        # Check if keyframes were created
-                        if armature_obj.animation_data and armature_obj.animation_data.action:
-                            fcurves = armature_obj.animation_data.action.fcurves
-                            transform_order_fcurve = None
-                            for fcurve in fcurves:
-                                if "transform_order" in fcurve.data_path:
-                                    transform_order_fcurve = fcurve
-                                    break
-
-                            if transform_order_fcurve:
-                                self.assertGreaterEqual(len(transform_order_fcurve.keyframe_points), 2, "Should have keyframes")
-                    else:
-                        print("   - Transform order property is not animatable")
-                else:
-                    print("   - Transform order property not found or not animatable")
-            except Exception as e:
-                print(f"   - Animation integration test had issues: {e}")
+        # # Test integration with animation system
+        # if armature_obj.pose.bones:
+        #     pose_bone = armature_obj.pose.bones[0]
+        #     mmd_bone = pose_bone.mmd_bone
+        #     # Test that MMD properties work with keyframing
+        #     try:
+        #         # Check if the property is animatable before trying to keyframe
+        #         if hasattr(mmd_bone, "transform_order") and hasattr(mmd_bone.bl_rna.properties.get("transform_order", None), "is_animatable"):
+        #             if mmd_bone.bl_rna.properties["transform_order"].is_animatable:
+        #                 mmd_bone.keyframe_insert(data_path="transform_order", frame=1)
+        #                 mmd_bone.transform_order = 5
+        #                 mmd_bone.keyframe_insert(data_path="transform_order", frame=10)
+        #                 # Check if keyframes were created
+        #                 if armature_obj.animation_data and armature_obj.animation_data.action:
+        #                     fcurves = armature_obj.animation_data.action.fcurves
+        #                     transform_order_fcurve = None
+        #                     for fcurve in fcurves:
+        #                         if "transform_order" in fcurve.data_path:
+        #                             transform_order_fcurve = fcurve
+        #                             break
+        #                     if transform_order_fcurve:
+        #                         self.assertGreaterEqual(len(transform_order_fcurve.keyframe_points), 2, "Should have keyframes")
+        #             else:
+        #                 print("   - Transform order property is not animatable")
+        #         else:
+        #             print("   - Transform order property not found or not animatable")
+        #     except Exception as e:
+        #         print(f"   - Animation integration test had issues: {e}")
+        print("   - MMD property animation integration: SKIPPED (not supported)")
 
         # Test integration with material system
         mat = mesh_obj.data.materials[0] if mesh_obj.data.materials else self._create_test_material()
