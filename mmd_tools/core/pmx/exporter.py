@@ -1120,12 +1120,6 @@ class __PmxExporter:
             normal_matrix = normal_matrix @ invert_scale_matrix  # reset the scale of meshObj.matrix_world
             normal_matrix = normal_matrix @ invert_scale_matrix  # the scale transform of normals
 
-        # Extract vertex colors from triangulated mesh
-        vertex_colors = base_mesh.vertex_colors.active
-        vertex_color_data = None
-        if vertex_colors:
-            vertex_color_data = [c.color for c in vertex_colors.data]
-
         # Extract normals and angles from triangulated mesh
         loop_normals = self.__get_normals(base_mesh, normal_matrix)
         bm_temp = bmesh.new()
@@ -1135,6 +1129,17 @@ class __PmxExporter:
             for loop in face.loops:
                 loop_angles.append(loop.calc_angle())
         bm_temp.free()
+
+        # Extract vertex colors from triangulated mesh
+        vertex_colors = base_mesh.vertex_colors.active
+        vertex_color_data = None
+        if vertex_colors:
+            color_data = [c.color for c in vertex_colors.data]
+            # Check if all vertex colors are white (1.0, 1.0, 1.0, 1.0)
+            if all(color[0] == 1.0 and color[1] == 1.0 and color[2] == 1.0 and color[3] == 1.0 for color in color_data):
+                logging.info("All vertex colors are white - treating as no vertex colors")
+            else:
+                vertex_color_data = color_data
 
         # Apply transformation to triangulated mesh
         base_mesh.transform(pmx_matrix)
