@@ -380,7 +380,7 @@ class FnMaterial:
         mmd_mat = mat.mmd_material
         mat.roughness = 1 / pow(max(mmd_mat.shininess, 1), 0.37)
         if hasattr(mat, "metallic"):
-            mat.metallic = pow(1 - mat.roughness, 2.7)
+            mat.metallic = 0.0
         if hasattr(mat, "specular_hardness"):
             mat.specular_hardness = mmd_mat.shininess
         self.__update_shader_input("Reflect", mmd_mat.shininess)
