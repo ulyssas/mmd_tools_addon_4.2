@@ -720,14 +720,14 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description=(
             "Vertex Splitting for Custom Split Normals\n"
             "ENABLE:\n"
-            "    Split vertices when the same vertex has different normals.\n"
+            "    Split vertices when the same vertex has different normals or vertex colors.\n"
             "DISABLE:\n"
-            "    Use angle * area weighted averaging for normals.\n"
+            "    Use angle * area weighted averaging for normals and vertex colors.\n"
             "WARNING:\n"
-            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
+            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals or vertex colors per vertex, and can significantly increase the vertex count. Use with caution.\n"
             "\n"
             "NOTE:\n"
-            "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible."
+            "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible.\n"
             "    Additionally, unreferenced vertices will not be exported (similar to Clean Model during import), so the vertex count may also decrease."
         ),
         default=False,
