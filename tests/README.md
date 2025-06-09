@@ -21,16 +21,122 @@ If any tests FAIL, run the individual test file to see detailed error informatio
 
 Run individual test scripts directly:
 ```
-blender --background -noaudio --python tests/test_fileio_operators.py -- --verbose
-blender --background -noaudio --python tests/test_model_operators.py -- --verbose
 blender --background -noaudio --python tests/test_pmx_exporter.py -- --verbose
-blender --background -noaudio --python tests/test_utils_unit.py -- --verbose
-blender --background -noaudio --python tests/test_vpd_exporter.py -- --verbose
-blender --background -noaudio --python tests/test_vpd_importer.py -- --verbose
-blender --background -noaudio --python tests/test_model_edit.py -- --verbose
-blender --background -noaudio --python tests/test_model_debug.py -- --verbose
+blender --background -noaudio --python tests/test_vmd_exporter.py -- --verbose
+...
 ```
 
 ## Available Test Scripts
 
 Check the tests folder in the repo.
+
+## Test Coverage
+```
+C:.
+|   ✗ auto_load.py
+|   ✗ auto_scene_setup.py
+|   - blender_manifest.toml
+|   ✗ bpyutils.py
+|   ✗ cycles_converter.py
+|   ✗ handlers.py
+|   ✗ m17n.py
+|   ✗ menus.py
+|   ✗ preferences.py
+|   ✗ translations.py
+|   ✓ utils.py (test_utils_unit.py)
+|   - __init__.py
+|
++---core
+|   |   ✗ bone.py
+|   |   ✗ camera.py
+|   |   ✗ exceptions.py
+|   |   ✗ lamp.py
+|   |   ✗ material.py
+|   |   ✓ model.py (used in multiple test files)
+|   |   ✗ morph.py
+|   |   ✗ rigid_body.py
+|   |   ✗ sdef.py
+|   |   ✗ shader.py
+|   |   ✗ translations.py
+|   |   - __init__.py
+|   |
+|   +---pmd
+|   |       ✓ importer.py (used in test_pmx_exporter.py)
+|   |       - __init__.py
+|   |
+|   +---pmx
+|   |       ✓ exporter.py (test_pmx_exporter.py, test_pmx_exporter_hard.py)
+|   |       ✓ importer.py (test_pmx_importer_hard.py, multiple test files)
+|   |       - __init__.py
+|   |
+|   +---vmd
+|   |       ✓ exporter.py (test_vmd_exporter.py)
+|   |       ✓ importer.py (test_vmd_importer.py)
+|   |       - __init__.py
+|   |
+|   \---vpd
+|           ✓ exporter.py (test_vpd_exporter.py)
+|           ✓ importer.py (test_vpd_importer.py)
+|           - __init__.py
+|
++---operators
+|       ✗ animation.py
+|       ✗ camera.py
+|       ✗ display_item.py
+|       ✓ fileio.py (test_fileio_operators.py)
+|       ✗ lamp.py
+|       ✗ material.py
+|       ✗ misc.py
+|       ✓ model.py (test_model_operators.py)
+|       ✓ model_edit.py (test_model_edit.py)
+|       ✓ model_validation.py (test_model_debug.py)
+|       ✗ morph.py
+|       ✗ rigid_body.py
+|       ✗ sdef.py
+|       ✗ translations.py
+|       ✗ view.py
+|       - __init__.py
+|
++---panels
+|   |   ✗ prop_bone.py
+|   |   ✗ prop_camera.py
+|   |   ✗ prop_lamp.py
+|   |   ✗ prop_material.py
+|   |   ✗ prop_object.py
+|   |   ✗ prop_physics.py
+|   |   ✗ shading.py
+|   |   - __init__.py
+|   |
+|   \---sidebar
+|           ✓ bone_order.py (test_bone_order.py)
+|           ✗ display_panel.py
+|           ✗ joints.py
+|           ✗ material_sorter.py
+|           ✗ meshes_sorter.py
+|           ✗ model_debug.py
+|           ✗ model_production.py
+|           ✗ model_setup.py
+|           ✗ morph_tools.py
+|           ✗ rigid_bodies.py
+|           ✗ scene_setup.py
+|           - __init__.py
+|
++---properties
+|       ✓ camera.py (test_properties.py)
+|       ✓ material.py (test_properties.py)
+|       ✓ morph.py (test_properties.py)
+|       ✓ pose_bone.py (test_properties.py)
+|       ✓ rigid_body.py (test_properties.py)
+|       ✓ root.py (test_properties.py)
+|       ✓ translations.py (test_properties.py)
+|       - __init__.py
+|
+\---typings
+    \---mmd_tools
+        \---properties
+                - material.pyi
+                - morph.pyi
+                - pose_bone.pyi
+                - root.pyi
+                - translations.pyi
+```
