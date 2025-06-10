@@ -54,7 +54,7 @@ C:.
 |   |   ✗ material.py
 |   |   ✓ model.py (used in multiple test files)
 |   |   ✗ morph.py
-|   |   ✗ rigid_body.py
+|   |   ✓ rigid_body.py (test_rigid_body.py)
 |   |   ✗ sdef.py
 |   |   ✗ shader.py
 |   |   ✗ translations.py
@@ -91,7 +91,7 @@ C:.
 |       ✓ model_edit.py (test_model_edit.py)
 |       ✓ model_validation.py (test_model_debug.py)
 |       ✗ morph.py
-|       ✗ rigid_body.py
+|       ✓ rigid_body.py (test_rigid_body.py)
 |       ✗ sdef.py
 |       ✗ translations.py
 |       ✗ view.py
