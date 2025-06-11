@@ -371,6 +371,9 @@ class FnBone:
 
     @staticmethod
     def clean_additional_transformation(armature_object: bpy.types.Object):
+        if armature_object.type != "ARMATURE" or armature_object.pose is None:
+            return
+
         # clean constraints
         p_bone: bpy.types.PoseBone
         for p_bone in armature_object.pose.bones:
