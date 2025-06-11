@@ -47,7 +47,7 @@ C:.
 |   - __init__.py
 |
 +---core
-|   |   ✗ bone.py
+|   |   ✓ bone.py (test_bone.py)
 |   |   ✗ camera.py
 |   |   ✗ exceptions.py
 |   |   ✗ lamp.py
@@ -98,7 +98,7 @@ C:.
 |       - __init__.py
 |
 +---panels
-|   |   ✗ prop_bone.py
+|   |   ✓ prop_bone.py (test_bone.py)
 |   |   ✗ prop_camera.py
 |   |   ✗ prop_lamp.py
 |   |   ✗ prop_material.py
