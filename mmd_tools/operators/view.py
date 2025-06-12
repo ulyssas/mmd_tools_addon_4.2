@@ -137,7 +137,8 @@ class FlipPose(Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.active_object and context.active_object.type == "ARMATURE" and context.active_object.mode == "POSE"
+        obj = context.active_object
+        return obj is not None and obj.type == "ARMATURE" and obj.mode == "POSE"
 
     def execute(self, context):
         pose_bones = context.active_object.pose.bones

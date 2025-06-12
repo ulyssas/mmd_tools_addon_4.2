@@ -794,7 +794,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj in context.selected_objects and FnModel.find_root_object(obj)
+        return obj is not None and obj in context.selected_objects and FnModel.find_root_object(obj)
 
     def invoke(self, context, event):
         self.load_preferences_on_invoke(context, "default_pmx_export_preset")

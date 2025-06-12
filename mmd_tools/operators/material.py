@@ -33,7 +33,7 @@ class ConvertMaterialsForCycles(Operator):
 
     @classmethod
     def poll(cls, context):
-        return next((x for x in context.selected_objects if x.type == "MESH"), None)
+        return any(x.type == "MESH" for x in context.selected_objects)
 
     def draw(self, context):
         layout = self.layout
@@ -82,7 +82,7 @@ class ConvertMaterials(Operator):
 
     @classmethod
     def poll(cls, context):
-        return next((x for x in context.selected_objects if x.type == "MESH"), None)
+        return any(x.type == "MESH" for x in context.selected_objects)
 
     def execute(self, context):
         for obj in context.selected_objects:
@@ -99,7 +99,7 @@ class ConvertBSDFMaterials(Operator):
 
     @classmethod
     def poll(cls, context):
-        return next((x for x in context.selected_objects if x.type == "MESH"), None)
+        return any(x.type == "MESH" for x in context.selected_objects)
 
     def execute(self, context):
         for obj in context.selected_objects:
@@ -195,8 +195,7 @@ class MoveMaterialUp(Operator):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        valid_mesh = obj and obj.type == "MESH" and obj.mmd_type == "NONE"
-        return valid_mesh and obj.active_material_index > 0
+        return obj is not None and obj.type == "MESH" and obj.mmd_type == "NONE" and obj.active_material_index > 0
 
     def execute(self, context):
         obj = context.active_object
@@ -221,8 +220,7 @@ class MoveMaterialDown(Operator):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        valid_mesh = obj and obj.type == "MESH" and obj.mmd_type == "NONE"
-        return valid_mesh and obj.active_material_index < len(obj.material_slots) - 1
+        return obj is not None and obj.type == "MESH" and obj.mmd_type == "NONE" and obj.active_material_index < len(obj.material_slots) - 1
 
     def execute(self, context):
         obj = context.active_object

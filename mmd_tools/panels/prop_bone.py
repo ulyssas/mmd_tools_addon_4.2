@@ -13,7 +13,7 @@ class MMDBonePanel(bpy.types.Panel):
 
     @classmethod
     def poll(cls, context):
-        return context.active_bone
+        return context.active_bone is not None
 
     def __draw_ik_data(self, pose_bone):
         bones = pose_bone.id_data.pose.bones

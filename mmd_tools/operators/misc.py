@@ -57,7 +57,7 @@ class MoveObject(bpy.types.Operator, utils.ItemMoveOp):
 
     @classmethod
     def poll(cls, context):
-        return context.active_object
+        return context.active_object is not None
 
     def execute(self, context):
         obj = context.active_object
@@ -143,7 +143,7 @@ class SeparateByMaterials(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj and obj.type == "MESH"
+        return obj is not None and obj.type == "MESH"
 
     def __separate_by_materials(self, obj):
         utils.separateByMaterials(obj)
@@ -266,7 +266,8 @@ class ChangeMMDIKLoopFactor(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return FnModel.find_root_object(context.active_object) is not None
+        root = FnModel.find_root_object(context.active_object)
+        return root is not None
 
     def invoke(self, context, event):
         root_object = FnModel.find_root_object(context.active_object)
@@ -289,7 +290,7 @@ class RecalculateBoneRoll(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj and obj.type == "ARMATURE"
+        return obj is not None and obj.type == "ARMATURE"
 
     def invoke(self, context, event):
         vm = context.window_manager
