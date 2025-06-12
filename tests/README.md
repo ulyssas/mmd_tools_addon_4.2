@@ -51,12 +51,12 @@ C:.
 |   |   ✗ camera.py
 |   |   ✗ exceptions.py
 |   |   ✗ lamp.py
-|   |   ✗ material.py
+|   |   ✓ material.py (test_material_system.py)
 |   |   ✓ model.py (used in multiple test files)
 |   |   ✗ morph.py
 |   |   ✓ rigid_body.py (test_rigid_body.py)
 |   |   ✗ sdef.py
-|   |   ✗ shader.py
+|   |   ✓ shader.py (test_material_system.py)
 |   |   ✗ translations.py
 |   |   - __init__.py
 |   |
@@ -85,7 +85,7 @@ C:.
 |       ✗ display_item.py
 |       ✓ fileio.py (test_fileio_operators.py)
 |       ✗ lamp.py
-|       ✗ material.py
+|       ✓ material.py (test_material_system.py)
 |       ✗ misc.py
 |       ✓ model.py (test_model_operators.py)
 |       ✓ model_edit.py (test_model_edit.py)
@@ -101,7 +101,7 @@ C:.
 |   |   ✓ prop_bone.py (test_bone.py)
 |   |   ✗ prop_camera.py
 |   |   ✗ prop_lamp.py
-|   |   ✗ prop_material.py
+|   |   ✓ prop_material.py (test_material_system.py)
 |   |   ✗ prop_object.py
 |   |   ✗ prop_physics.py
 |   |   ✗ shading.py
