@@ -15,7 +15,7 @@ class MMDToolsBoneIdMoveUp(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        root = FnModel.find_root_object(context.object)
+        root = FnModel.find_root_object(context.active_object)
         armature = FnModel.find_armature_object(root)
 
         if not root or not armature:
@@ -61,7 +61,7 @@ class MMDToolsBoneIdMoveDown(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        root = FnModel.find_root_object(context.object)
+        root = FnModel.find_root_object(context.active_object)
         armature = FnModel.find_armature_object(root)
 
         if not root or not armature:
@@ -107,7 +107,7 @@ class MMDToolsBoneIdMoveTop(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        root = FnModel.find_root_object(context.object)
+        root = FnModel.find_root_object(context.active_object)
         armature = FnModel.find_armature_object(root)
 
         if not root or not armature:
@@ -138,7 +138,7 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        root = FnModel.find_root_object(context.object)
+        root = FnModel.find_root_object(context.active_object)
         armature = FnModel.find_armature_object(root)
 
         if not root or not armature:
@@ -181,7 +181,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
     )
 
     def execute(self, context):
-        root = FnModel.find_root_object(context.object)
+        root = FnModel.find_root_object(context.active_object)
         armature = FnModel.find_armature_object(root)
 
         if not root or not armature:

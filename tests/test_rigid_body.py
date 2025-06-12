@@ -624,7 +624,7 @@ class TestRigidBody(unittest.TestCase):
         bpy.context.view_layer.objects.active = armature
         bpy.ops.object.mode_set(mode="POSE")
         armature.data.bones["test_bone"].select = True
-        bpy.context.object.pose.bones["test_bone"].bone.select = True
+        bpy.context.active_object.pose.bones["test_bone"].bone.select = True
 
         # Test add rigid body operator
         try:

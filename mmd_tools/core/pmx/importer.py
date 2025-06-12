@@ -807,7 +807,7 @@ class PMXImporter:
         # 2. Some edges must be marked as sharp (NOT mentioned in Blender documentation)
         # An angle of 179 degrees is confirmed to be sufficient to preserve all custom normals.
         # 180 degrees does not work because it misses some sharp edges required for normals_split_custom_set to work 100% correctly.
-        current_mode = bpy.context.object.mode
+        current_mode = bpy.context.active_object.mode
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
         bpy.context.view_layer.objects.active = self.__meshObj
