@@ -53,7 +53,7 @@ C:.
 |   |   ✗ lamp.py
 |   |   ✓ material.py (test_material_system.py)
 |   |   ✓ model.py (used in multiple test files)
-|   |   ✗ morph.py
+|   |   ✓ morph.py (test_morph_system.py)
 |   |   ✓ rigid_body.py (test_rigid_body.py)
 |   |   ✗ sdef.py
 |   |   ✓ shader.py (test_material_system.py)
@@ -90,7 +90,7 @@ C:.
 |       ✓ model.py (test_model_operators.py)
 |       ✓ model_edit.py (test_model_edit.py)
 |       ✓ model_validation.py (test_model_debug.py)
-|       ✗ morph.py
+|       ✓ morph.py (test_morph_system.py)
 |       ✓ rigid_body.py (test_rigid_body.py)
 |       ✗ sdef.py
 |       ✗ translations.py
@@ -116,7 +116,7 @@ C:.
 |           ✗ model_debug.py
 |           ✗ model_production.py
 |           ✗ model_setup.py
-|           ✗ morph_tools.py
+|           ✓ morph_tools.py (test_morph_system.py)
 |           ✗ rigid_bodies.py
 |           ✗ scene_setup.py
 |           - __init__.py
