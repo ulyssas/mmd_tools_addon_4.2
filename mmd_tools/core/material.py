@@ -48,7 +48,7 @@ class FnMaterial:
         FnMaterial.__NODES_ARE_READONLY = nodes_are_readonly
 
     @classmethod
-    def from_material_id(cls, material_id: str):
+    def from_material_id(cls, material_id: int):
         for material in bpy.data.materials:
             if material.mmd_material.material_id == material_id:
                 return cls(material)
