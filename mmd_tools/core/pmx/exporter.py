@@ -1427,7 +1427,11 @@ class __PmxExporter:
         self.__model.comment_e = "exported by mmd_tools"
 
         if root is not None:
-            self.__model.name = root.mmd_root.name or root.name
+            if root.mmd_root.name:
+                self.__model.name = root.mmd_root.name
+            else:
+                logging.warning(f"Model name is empty, using root object name '{root.name}' instead")
+                self.__model.name = root.name
             self.__model.name_e = root.mmd_root.name_e
             txt = bpy.data.texts.get(root.mmd_root.comment_text, None)
             if txt:
