@@ -22,7 +22,7 @@ class MMDToolsBoneIdMoveUp(bpy.types.Operator):
             return {"CANCELLED"}
 
         active_bone_index = root.mmd_root.active_bone_index
-        if active_bone_index >= len(armature.pose.bones):
+        if active_bone_index < 0 or active_bone_index >= len(armature.pose.bones):
             return {"CANCELLED"}
 
         active_bone = armature.pose.bones[active_bone_index]
@@ -68,7 +68,7 @@ class MMDToolsBoneIdMoveDown(bpy.types.Operator):
             return {"CANCELLED"}
 
         active_bone_index = root.mmd_root.active_bone_index
-        if active_bone_index >= len(armature.pose.bones):
+        if active_bone_index < 0 or active_bone_index >= len(armature.pose.bones):
             return {"CANCELLED"}
 
         active_bone = armature.pose.bones[active_bone_index]
@@ -114,7 +114,7 @@ class MMDToolsBoneIdMoveTop(bpy.types.Operator):
             return {"CANCELLED"}
 
         active_bone_index = root.mmd_root.active_bone_index
-        if active_bone_index >= len(armature.pose.bones):
+        if active_bone_index < 0 or active_bone_index >= len(armature.pose.bones):
             return {"CANCELLED"}
 
         active_bone = armature.pose.bones[active_bone_index]
@@ -145,7 +145,7 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
             return {"CANCELLED"}
 
         active_bone_index = root.mmd_root.active_bone_index
-        if active_bone_index >= len(armature.pose.bones):
+        if active_bone_index < 0 or active_bone_index >= len(armature.pose.bones):
             return {"CANCELLED"}
 
         active_bone = armature.pose.bones[active_bone_index]
