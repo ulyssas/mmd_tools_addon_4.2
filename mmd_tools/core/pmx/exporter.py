@@ -1268,7 +1268,7 @@ class __PmxExporter:
         face_seq = []
         for face, uv in zip(base_mesh.polygons, uv_data):
             if len(face.vertices) != 3:
-                raise Exception("Face should be triangulated")
+                raise ValueError(f"Face should be triangulated. Face index: {face.index}, Mesh name: {base_mesh.name}")
             loop_indices = list(face.loop_indices)
             n1, n2, n3 = [loop_normals[idx] for idx in loop_indices]
             a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
