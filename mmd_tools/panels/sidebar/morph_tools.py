@@ -111,7 +111,7 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
         c_mat.prop_search(data, "material", related_mesh or bpy.data, "materials")
 
         base_mat_name = data.material
-        if "_temp" in base_mat_name:
+        if base_mat_name and "_temp" in base_mat_name:
             col.label(text="This is not a valid base material", icon="ERROR")
             return
 
