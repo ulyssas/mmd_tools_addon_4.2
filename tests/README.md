@@ -55,7 +55,7 @@ C:.
 |   |   ✓ model.py (used in multiple test files)
 |   |   ✓ morph.py (test_morph_system.py)
 |   |   ✓ rigid_body.py (test_rigid_body.py)
-|   |   ✗ sdef.py
+|   |   ✓ sdef.py (test_sdef_system.py)
 |   |   ✓ shader.py (test_material_system.py)
 |   |   ✗ translations.py
 |   |   - __init__.py
@@ -92,7 +92,7 @@ C:.
 |       ✓ model_validation.py (test_model_debug.py)
 |       ✓ morph.py (test_morph_system.py)
 |       ✓ rigid_body.py (test_rigid_body.py)
-|       ✗ sdef.py
+|       ✓ sdef.py (test_sdef_system.py)
 |       ✗ translations.py
 |       ✗ view.py
 |       - __init__.py
