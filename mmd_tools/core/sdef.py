@@ -80,6 +80,8 @@ class FnSDEF:
 
     @staticmethod
     def has_sdef_data(obj):
+        if obj is None or not hasattr(obj, "modifiers") or not hasattr(obj, "data") or obj.data is None:
+            return False
         mod = obj.modifiers.get("mmd_armature")
         if mod and mod.type == "ARMATURE" and mod.object:
             kb = getattr(obj.data.shape_keys, "key_blocks", None)
