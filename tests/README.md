@@ -15,6 +15,12 @@ python all_test_runner.py
 python all_test_runner.py "C:\Program Files\Blender Foundation\Blender 4.4\blender.exe"
 ```
 
+### Expected Output
+
+When all tests pass successfully, you should see output similar to this:
+
+![Test Runner Output](all_test_runner_output.png)
+
 If any tests FAIL, run the individual test file to see detailed error information.
 
 ## Running Individual Tests
