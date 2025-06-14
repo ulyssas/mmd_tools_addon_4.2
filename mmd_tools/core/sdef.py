@@ -127,12 +127,18 @@ class FnSDEF:
 
     @classmethod
     def driver_function_wrap(cls, obj_name, bulk_update, use_skip, use_scale):
+        if obj_name not in bpy.data.objects:
+            logging.warning(f"SDEF driver wrap: Object '{obj_name}' not found")
+            return 0.0
         obj = bpy.data.objects[obj_name]
         shapekey = obj.data.shape_keys.key_blocks[cls.SHAPEKEY_NAME]
         return cls.driver_function(shapekey, obj_name, bulk_update, use_skip, use_scale)
 
     @classmethod
     def driver_function(cls, shapekey, obj_name, bulk_update, use_skip, use_scale):
+        if obj_name not in bpy.data.objects:
+            logging.warning(f"SDEF driver: Object '{obj_name}' not found, driver will be inactive")
+            return 0.0
         obj = bpy.data.objects[obj_name]
         if getattr(shapekey.id_data, "is_evaluated", False):
             # For Blender 2.8x, we should use evaluated object, and the only reference is the "obj" variable of SDEF driver
