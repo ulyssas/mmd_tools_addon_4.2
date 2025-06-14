@@ -30,6 +30,16 @@ blender --background -noaudio --python tests/test_vmd_exporter.py -- --verbose
 
 Check the tests folder in the repo.
 
+## PMX Test Limitations
+
+PMX tests may fail under the following circumstances, which are considered normal behavior:
+
+1. **Model has no name** - Models without proper naming will not pass PMX export/import tests
+2. **Morph ordering mismatch** - Model morphs that are not sorted according to MMD Tools export behavior will cause test failures
+3. **NaN parameters in model data** - Models containing NaN (Not a Number) values in bone parameters, rigid body parameters, or other numerical data may fail tests.
+
+If you encounter test failures due to these conditions, please verify your model.
+
 ## Test Coverage
 ```
 C:.
