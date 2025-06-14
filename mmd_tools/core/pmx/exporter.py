@@ -861,6 +861,15 @@ class __PmxExporter:
         Vector = mathutils.Vector
         for obj in rigid_bodies:
             t, r, s = obj.matrix_world.decompose()
+            if any(math.isnan(val) for val in t):
+                logging.warning(f"Rigid body '{obj.name}' has invalid position coordinates, using default position")
+                t = mathutils.Vector((0.0, 0.0, 0.0))
+            if any(math.isnan(val) for val in r):
+                logging.warning(f"Rigid body '{obj.name}' has invalid rotation coordinates, using default rotation")
+                r = mathutils.Euler((0.0, 0.0, 0.0), "YXZ")
+            if any(math.isnan(val) for val in s):
+                logging.warning(f"Rigid body '{obj.name}' has invalid scale coordinates, using default scale")
+                s = mathutils.Vector((1.0, 1.0, 1.0))
             r = r.to_euler("YXZ")
             rb = obj.rigid_body
             if rb is None:
