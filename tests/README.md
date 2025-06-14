@@ -48,7 +48,7 @@ C:.
 |
 +---core
 |   |   ✓ bone.py (test_bone.py)
-|   |   ✗ camera.py
+|   |   ✓ camera.py (test_camera_system.py)
 |   |   ✗ exceptions.py
 |   |   ✗ lamp.py
 |   |   ✓ material.py (test_material_system.py)
@@ -81,7 +81,7 @@ C:.
 |
 +---operators
 |       ✗ animation.py
-|       ✗ camera.py
+|       ✓ camera.py (test_camera_system.py)
 |       ✗ display_item.py
 |       ✓ fileio.py (test_fileio_operators.py)
 |       ✗ lamp.py
@@ -99,7 +99,7 @@ C:.
 |
 +---panels
 |   |   ✓ prop_bone.py (test_bone.py)
-|   |   ✗ prop_camera.py
+|   |   ✓ prop_camera.py (test_camera_system.py)
 |   |   ✗ prop_lamp.py
 |   |   ✓ prop_material.py (test_material_system.py)
 |   |   ✗ prop_object.py
