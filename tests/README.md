@@ -50,7 +50,7 @@ If you encounter test failures due to these conditions, please verify your model
 ```
 C:.
 |   ✗ auto_load.py
-|   ✗ auto_scene_setup.py
+|   ✓ auto_scene_setup.py (test_scene_setup.py)
 |   - blender_manifest.toml
 |   ✗ bpyutils.py
 |   ✗ cycles_converter.py
@@ -134,7 +134,7 @@ C:.
 |           ✗ model_setup.py
 |           ✓ morph_tools.py (test_morph_system.py)
 |           ✗ rigid_bodies.py
-|           ✗ scene_setup.py
+|           ✓ scene_setup.py (test_scene_setup.py)
 |           - __init__.py
 |
 +---properties
