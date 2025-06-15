@@ -98,7 +98,7 @@ C:.
 +---operators
 |       ✗ animation.py
 |       ✓ camera.py (test_camera_system.py)
-|       ✗ display_item.py
+|       ✓ display_item.py (test_display_system.py)
 |       ✓ fileio.py (test_fileio_operators.py)
 |       ✓ lamp.py (test_lamp_system.py)
 |       ✓ material.py (test_material_system.py)
@@ -125,7 +125,7 @@ C:.
 |   |
 |   \---sidebar
 |           ✓ bone_order.py (test_bone_order.py)
-|           ✗ display_panel.py
+|           ✓ display_panel.py (test_display_system.py)
 |           ✗ joints.py
 |           ✗ material_sorter.py
 |           ✗ meshes_sorter.py
