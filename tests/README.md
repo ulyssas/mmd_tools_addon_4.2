@@ -49,12 +49,12 @@ If you encounter test failures due to these conditions, please verify your model
 ## Test Coverage
 ```
 C:.
-|   ✗ auto_load.py
+|   ✓ auto_load.py (test_utility_systems.py)
 |   ✓ auto_scene_setup.py (test_scene_setup.py)
 |   - blender_manifest.toml
-|   ✗ bpyutils.py
-|   ✗ cycles_converter.py
-|   ✗ handlers.py
+|   ✓ bpyutils.py (test_utility_systems.py)
+|   ✓ cycles_converter.py (test_utility_systems.py)
+|   ✓ handlers.py (test_utility_systems.py)
 |   ✗ m17n.py
 |   ✗ menus.py
 |   ✗ preferences.py
@@ -65,7 +65,7 @@ C:.
 +---core
 |   |   ✓ bone.py (test_bone.py)
 |   |   ✓ camera.py (test_camera_system.py)
-|   |   ✗ exceptions.py
+|   |   ✓ exceptions.py (test_utility_systems.py)
 |   |   ✓ lamp.py (test_lamp_system.py)
 |   |   ✓ material.py (test_material_system.py)
 |   |   ✓ model.py (used in multiple test files)
