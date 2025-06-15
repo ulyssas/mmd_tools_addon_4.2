@@ -682,11 +682,11 @@ class TestUtilitySystems(unittest.TestCase):
         self.assertIsInstance(empty_sort_result, list)
         self.assertEqual(len(empty_sort_result), 0)
 
-        # # Test circular dependency detection
-        # circular_deps = {"A": {"B"}, "B": {"A"}}
-        # circular_result = auto_load.toposort(circular_deps)
-        # # Should handle circular dependencies (implementation dependent)
-        # self.assertIsInstance(circular_result, list)
+        # Test circular dependency detection
+        circular_deps = {"A": {"B"}, "B": {"A"}}
+        with self.assertRaises((ValueError, RuntimeError)) as context:
+            auto_load.toposort(circular_deps)
+        self.assertIn("Circular dependency", str(context.exception))
 
         # Test bpyutils geometry creation with edge case parameters
         edge_case_tests = [
