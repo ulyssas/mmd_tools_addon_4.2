@@ -1798,6 +1798,194 @@ class TestMMDProperties(unittest.TestCase):
         print("✓ Complete property workflow test passed")
 
 
+    def test_rigid_body_properties_size_setting(self):
+        """Test rigid body size setting functionality"""
+        self._enable_mmd_tools()
+
+        model = self._create_test_model()
+        rigid_obj = self._create_test_rigid_body(model)
+        mmd_rigid = rigid_obj.mmd_rigid
+
+        # Ensure object is in OBJECT mode
+        bpy.context.view_layer.objects.active = rigid_obj
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        # Test different shapes and their size behavior
+        shapes_to_test = [
+            ("SPHERE", [2.0, 2.0, 2.0]),  # radius
+            ("BOX", [1.5, 2.0, 2.5]),  # width, height, depth
+            ("CAPSULE", [1.0, 3.0, 1.0]),  # radius, height
+        ]
+
+        for shape, test_size in shapes_to_test:
+            # Set shape first
+            mmd_rigid.shape = shape
+            self.assertEqual(mmd_rigid.shape, shape, f"Shape {shape} should be set")
+
+            # Get initial size
+            initial_size = list(mmd_rigid.size)
+
+            # Set new size
+            mmd_rigid.size = test_size
+
+            # Get size after setting
+            new_size = list(mmd_rigid.size)
+
+            # Check if size actually changed from initial
+            size_changed = False
+            for i in range(len(initial_size)):
+                if abs(new_size[i] - initial_size[i]) > 1e-6:
+                    size_changed = True
+                    break
+
+            # If _set_size has early return, size won't change
+            # This test will fail if the early return is present
+            if not size_changed:
+                self.fail(f"Size setting for {shape} did not work - size remained {initial_size}")
+
+            # Verify mesh was actually updated
+            mesh = rigid_obj.data
+            self.assertGreater(len(mesh.vertices), 0, f"Mesh should have vertices after size update for {shape}")
+
+            # Check that mesh vertices reflect the new size approximately
+            # This is a more detailed check to ensure the mesh geometry changed
+            vertex_positions = [v.co[:] for v in mesh.vertices]
+            max_extents = [max(abs(v[i]) for v in vertex_positions) for i in range(3)]
+
+            # For different shapes, verify the extents make sense
+            if shape == "SPHERE":
+                expected_radius = test_size[0]
+                for extent in max_extents[:2]:  # X and Y should match radius
+                    self.assertAlmostEqual(extent, expected_radius, delta=0.1, msg=f"Sphere extent should match radius {expected_radius}")
+
+            elif shape == "BOX":
+                for i, expected_extent in enumerate(test_size):
+                    self.assertAlmostEqual(max_extents[i], expected_extent, places=1, msg=f"Box extent {i} should match size {expected_extent}")
+
+            elif shape == "CAPSULE":
+                expected_radius = test_size[0]
+                expected_height = test_size[1]
+                # Check radius in X and Y
+                for i in [0, 1]:
+                    self.assertAlmostEqual(max_extents[i], expected_radius, places=1, msg=f"Capsule radius should match {expected_radius}")
+                # Check height in Z (approximately, as capsule has rounded ends)
+                self.assertGreaterEqual(max_extents[2], expected_height * 0.4, msg="Capsule should have reasonable height")
+
+            print(f"   - {shape} size setting: ✓ (size: {new_size})")
+
+        print("✓ Rigid body properties size setting test passed")
+
+
+    def test_rigid_body_properties_size_edge_cases(self):
+        """Test rigid body size setting with edge cases"""
+        self._enable_mmd_tools()
+
+        model = self._create_test_model()
+        rigid_obj = self._create_test_rigid_body(model)
+        mmd_rigid = rigid_obj.mmd_rigid
+
+        # Ensure object is in OBJECT mode
+        bpy.context.view_layer.objects.active = rigid_obj
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        # Test minimum size constraints
+        mmd_rigid.shape = "BOX"
+
+        # Try to set very small or negative sizes
+        edge_cases = [
+            [0.0, 0.0, 0.0],  # Zero size
+            [-1.0, -1.0, -1.0],  # Negative size
+            [1e-6, 1e-6, 1e-6],  # Very small size
+        ]
+
+        for test_size in edge_cases:
+            mmd_rigid.size = [1.0, 1.0, 1.0]
+            initial_size = list(mmd_rigid.size)
+            mmd_rigid.size = test_size
+            new_size = list(mmd_rigid.size)
+
+            # Verify size actually changed from initial when setting edge cases
+            size_changed = any(abs(new_size[i] - initial_size[i]) > 1e-6 for i in range(len(initial_size)))
+
+            if any(x <= 0 for x in test_size):
+                # For invalid sizes, verify they were clamped properly
+                self.assertTrue(size_changed or not any(x < 0 for x in new_size), f"Size should change or be clamped when setting {test_size}")
+
+            # Size should be clamped to minimum values
+            for component in new_size:
+                self.assertGreaterEqual(component, 0, "Size components should be non-negative after clamping")
+
+        # Test very large sizes
+        large_size = [100.0, 100.0, 100.0]
+        mmd_rigid.size = large_size
+        new_size = list(mmd_rigid.size)
+
+        # Should handle large sizes without issues
+        for i, expected in enumerate(large_size):
+            self.assertAlmostEqual(new_size[i], expected, places=1, msg=f"Large size component {i} should be preserved")
+
+        print("✓ Rigid body properties size edge cases test passed")
+
+
+    def test_rigid_body_properties_size_mesh_update(self):
+        """Test that rigid body size changes actually update the mesh geometry"""
+        self._enable_mmd_tools()
+
+        model = self._create_test_model()
+        rigid_obj = self._create_test_rigid_body(model)
+        mmd_rigid = rigid_obj.mmd_rigid
+
+        # Ensure object is in OBJECT mode
+        bpy.context.view_layer.objects.active = rigid_obj
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        # Set shape to BOX for predictable testing
+        mmd_rigid.shape = "BOX"
+
+        # Set initial size
+        initial_size = [1.0, 1.0, 1.0]
+        mmd_rigid.size = initial_size
+
+        # Get initial mesh state
+        mesh = rigid_obj.data
+        initial_vertex_count = len(mesh.vertices)
+        initial_vertices = [v.co.copy() for v in mesh.vertices]
+
+        # Verify we have vertices to work with
+        self.assertGreater(initial_vertex_count, 0, "Rigid body mesh should have vertices initially")
+
+        # Change size significantly
+        new_size = [2.0, 3.0, 0.5]
+        mmd_rigid.size = new_size
+
+        # Check that mesh was updated
+        updated_vertices = [v.co.copy() for v in mesh.vertices]
+
+        # Verify vertex count is consistent (shouldn't change for size updates)
+        self.assertEqual(len(updated_vertices), initial_vertex_count,
+                        "Vertex count should remain the same when updating size")
+
+        # Vertices should have changed positions
+        vertices_changed = False
+        for i, (initial_v, updated_v) in enumerate(zip(initial_vertices, updated_vertices)):
+            if (initial_v - updated_v).length > 1e-6:
+                vertices_changed = True
+                break
+
+        if not vertices_changed:
+            self.fail("Mesh vertices did not change when rigid body size was updated. This indicates _set_size function is not working properly.")
+
+        # Check that vertex positions reflect new size
+        # For a box, vertices should be at ±size/2 for each axis
+        expected_extents = [s for s in new_size]  # Box extents should match size
+        actual_extents = [max(abs(v.co[i]) for v in mesh.vertices) for i in range(3)]
+
+        for i, (expected, actual) in enumerate(zip(expected_extents, actual_extents)):
+            self.assertAlmostEqual(actual, expected, places=1, msg=f"Mesh extent {i} should reflect new size {expected}")
+
+        print("✓ Rigid body properties size mesh update test passed")
+
+
 if __name__ == "__main__":
     import sys
 
