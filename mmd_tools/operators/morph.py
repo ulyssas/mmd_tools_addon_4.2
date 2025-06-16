@@ -163,10 +163,7 @@ class OverwriteBoneMorphsFromActionPose(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         root = FnModel.find_root_object(context.active_object)
-        if root is None:
-            return False
-
-        return root.mmd_root.active_morph_type == "bone_morphs"
+        return root is not None and root.mmd_root.active_morph_type == "bone_morphs"
 
     def execute(self, context):
         root = FnModel.find_root_object(context.active_object)
@@ -672,10 +669,10 @@ class EditUVMorph(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        if obj.type != "MESH":
+        if obj is None or obj.type != "MESH":
             return False
         active_uv_layer = obj.data.uv_layers.active
-        return active_uv_layer and active_uv_layer.name.startswith("__uv.")
+        return active_uv_layer is not None and active_uv_layer.name.startswith("__uv.")
 
     def execute(self, context):
         obj = context.active_object
@@ -712,10 +709,10 @@ class ApplyUVMorph(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        if obj.type != "MESH":
+        if obj is None or obj.type != "MESH":
             return False
         active_uv_layer = obj.data.uv_layers.active
-        return active_uv_layer and active_uv_layer.name.startswith("__uv.")
+        return active_uv_layer is not None and active_uv_layer.name.startswith("__uv.")
 
     def execute(self, context):
         obj = context.active_object
@@ -763,7 +760,8 @@ class CleanDuplicatedMaterialMorphs(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return FnModel.find_root_object(context.active_object) is not None
+        root = FnModel.find_root_object(context.active_object)
+        return root is not None
 
     def execute(self, context: bpy.types.Context):
         mmd_root_object = FnModel.find_root_object(context.active_object)
@@ -780,8 +778,7 @@ class ConvertGroupMorphToVertexMorph(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnModel.find_root_object(context.active_object)
         if root is None:
             return False
         mmd_root = root.mmd_root

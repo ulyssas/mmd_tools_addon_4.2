@@ -142,6 +142,21 @@ def get_register_base_types():
 #################################################
 
 def toposort(deps_dict):
+    # Test for circular dependencies
+    if deps_dict:
+        test_deps = {k: v.copy() for k, v in deps_dict.items()}
+        for _ in range(len(deps_dict)):
+            resolved = [k for k, v in test_deps.items() if not v]
+            if not resolved:
+                raise ValueError(f"Circular dependency detected: {list(test_deps.keys())}")
+            for k in resolved:
+                del test_deps[k]
+            for v in test_deps.values():
+                v -= set(resolved)
+            if not test_deps:
+                break
+
+    # Perform topological sort
     sorted_list = []
     sorted_values = set()
     while len(deps_dict) > 0:

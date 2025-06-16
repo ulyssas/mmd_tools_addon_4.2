@@ -303,7 +303,7 @@ class ConvertToMMDModel(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj and obj.type == "ARMATURE" and obj.mode != "EDIT"
+        return obj is not None and obj.type == "ARMATURE" and obj.mode != "EDIT"
 
     def invoke(self, context, event):
         vm = context.window_manager

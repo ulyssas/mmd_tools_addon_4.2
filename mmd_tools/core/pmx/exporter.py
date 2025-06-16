@@ -861,6 +861,15 @@ class __PmxExporter:
         Vector = mathutils.Vector
         for obj in rigid_bodies:
             t, r, s = obj.matrix_world.decompose()
+            if any(math.isnan(val) for val in t):
+                logging.warning(f"Rigid body '{obj.name}' has invalid position coordinates, using default position")
+                t = mathutils.Vector((0.0, 0.0, 0.0))
+            if any(math.isnan(val) for val in r):
+                logging.warning(f"Rigid body '{obj.name}' has invalid rotation coordinates, using default rotation")
+                r = mathutils.Euler((0.0, 0.0, 0.0), "YXZ")
+            if any(math.isnan(val) for val in s):
+                logging.warning(f"Rigid body '{obj.name}' has invalid scale coordinates, using default scale")
+                s = mathutils.Vector((1.0, 1.0, 1.0))
             r = r.to_euler("YXZ")
             rb = obj.rigid_body
             if rb is None:
@@ -933,67 +942,126 @@ class __PmxExporter:
             p_joint.spring_rotation_constant = Vector(mmd_joint.spring_angular).xzy
             self.__model.joints.append(p_joint)
 
-    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area, loop_angle):
+    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area, loop_angle, vertex_color):
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
-        if self.__vertex_splitting:  # Vertex Splitting for both UV and normals
+        # Normalize vertex_color to always be a Vector (None becomes zero vector)
+        color_vec = mathutils.Vector(vertex_color) if vertex_color else mathutils.Vector((0, 0, 0, 0))
+
+        def _ensure_add_uvs(vertex):
+            """Ensure vertex has add_uvs list with at least 2 elements"""
+            if not hasattr(vertex, "add_uvs"):
+                vertex.add_uvs = [None] * 4
+            elif len(vertex.add_uvs) < 2:
+                vertex.add_uvs.extend([None] * (2 - len(vertex.add_uvs)))
+
+        def _color_to_uv(color_vector):
+            """Convert color vector to ADD UV2 format"""
+            if color_vector.length > 0:
+                return ((color_vector[0], color_vector[1]), (color_vector[2], color_vector[3]))
+            return None
+
+        def _color_diff(vertex, current_color_uv):
+            """Calculate difference between vertex's existing color and current color"""
+            # Return 0.0 if no color data exists (compatible)
+            if not hasattr(vertex, "add_uvs") or len(vertex.add_uvs) < 2:
+                return 0.0
+
+            existing_color_uv = vertex.add_uvs[1]
+
+            # Both None - perfectly compatible
+            if existing_color_uv is None and current_color_uv is None:
+                return 0.0
+
+            # One None, one not - incompatible
+            if existing_color_uv is None or current_color_uv is None:
+                return 1.0  # Large difference to force splitting
+
+            # Calculate maximum component difference
+            max_diff = 0.0
+            for j in range(2):
+                for k in range(2):
+                    diff = abs(existing_color_uv[j][k] - current_color_uv[j][k])
+                    max_diff = max(max_diff, diff)
+
+            return max_diff
+
+        # Convert current vertex color to ADD UV2 format for comparison
+        current_color_uv = _color_to_uv(color_vec)
+
+        if self.__vertex_splitting:  # Vertex splitting mode
             for i in vertices:
                 if i.uv is None:
+                    # Initialize new vertex with all attributes
+                    _ensure_add_uvs(i)
                     i.uv = uv
                     i.normal = normal
+                    i.add_uvs[1] = current_color_uv
                     return i
-                elif (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
+                elif (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01 and _color_diff(i, current_color_uv) < 0.01:
+                    # UV, normal, and vertex color are all compatible within thresholds
                     return i
-            n = copy.copy(vertices[0])  # shallow copy should be fine
+
+            # Create new vertex for different UV, normal, or vertex color
+            n = copy.copy(vertices[0])  # Shallow copy should be fine
+            _ensure_add_uvs(n)
             n.uv = uv
             n.normal = normal
+            n.add_uvs[1] = current_color_uv
             vertices.append(n)
             return n
-        else:  # UV always uses vertex splitting, normals use angle * area weighted averaging
-            # First, handle UV with vertex splitting
+
+        else:  # Non-splitting mode: UV splits, normals and colors use weighted averaging
+            # Find or create vertex based on UV compatibility only
             v = None
             for i in vertices:
                 if i.uv is None:
                     i.uv = uv
                     v = i
                     break
-                elif (i.uv - uv).length < 0.001:
+                elif (i.uv - uv).length < 0.001:  # UV requires exact matching
                     v = i
                     break
 
             if v is None:
-                # Need to create new vertex for different UV
+                # Create new vertex for different UV
                 v = copy.copy(vertices[0])
                 v.uv = uv
                 vertices.append(v)
 
-            # Handle normals with angle * area weighted averaging for the selected vertex
-            if not hasattr(v, "_normal_list"):
-                v._normal_list = []
-            if not hasattr(v, "_area_list"):
-                v._area_list = []
-            if not hasattr(v, "_angle_list"):
-                v._angle_list = []
+            # Initialize averaging lists if needed
+            for attr_name in ["_normal_list", "_color_list", "_area_list", "_angle_list"]:
+                if not hasattr(v, attr_name):
+                    setattr(v, attr_name, [])
 
+            # Append current values to averaging lists
             v._normal_list.append(normal)
+            v._color_list.append(color_vec)
             v._area_list.append(face_area)
             v._angle_list.append(loop_angle)
 
-            # Calculate angle * area weighted normal average
-            if all(normal_val == normal for normal_val in v._normal_list):  # All values are identical (including single value), skip averaging
-                v.normal = normal  # Blender's normals are already normalized
+            # Calculate angle * area weighted averages
+            weights = [angle * area for angle, area in zip(v._angle_list, v._area_list)]
+            total_weight = sum(weights) or 1.0  # Avoid division by zero
+
+            # Average normals
+            if len(set(tuple(n) for n in v._normal_list)) == 1:  # All normals identical
+                v.normal = normal
             else:
-                # Calculate weights as angle * area
-                weights = [angle * area for angle, area in zip(v._angle_list, v._area_list)]
-                total_weight = sum(weights)
+                weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights)), mathutils.Vector((0, 0, 0)))
+                v.normal = (weighted_normal_sum / total_weight).normalized()
 
-                if total_weight == 0.0:  # Fallback to arithmetic average to avoid division by zero
-                    v.normal = sum(v._normal_list, mathutils.Vector((0, 0, 0))).normalized()
-                else:  # Normal case: angle * area weighted average
-                    weighted_normal_sum = sum((normal * weight for normal, weight in zip(v._normal_list, weights)), mathutils.Vector((0, 0, 0)))
-                    v.normal = (weighted_normal_sum / total_weight).normalized()
+            # Average vertex colors and convert to ADD UV2 format
+            if len(set(tuple(c) for c in v._color_list)) == 1:  # All colors identical
+                final_color = color_vec
+            else:
+                weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights)), mathutils.Vector((0, 0, 0, 0)))
+                final_color = weighted_color_sum / total_weight
 
+            # Set averaged vertex color as ADD UV2
+            _ensure_add_uvs(v)
+            v.add_uvs[1] = _color_to_uv(final_color)
             return v
 
     def __convertAddUV(self, vert, adduv, addzw, uv_index, vertices, rip_vertices):
@@ -1015,56 +1083,6 @@ class __PmxExporter:
         return n
 
     @staticmethod
-    def __triangulate(mesh, custom_normals):
-        bm = bmesh.new()
-        bm.from_mesh(mesh)
-
-        # Calculate angles for each loop before triangulation (like normals)
-        loop_angles = []
-        for face in bm.faces:
-            for loop in face.loops:
-                loop_angles.append(loop.calc_angle())
-
-        is_triangulated = True
-        face_verts_to_loop_id_map = {}
-
-        loop_id = 0
-        for f in bm.faces:
-            vert_to_loop_id = face_verts_to_loop_id_map.setdefault(f, {})
-            if is_triangulated and len(f.verts) != 3:
-                is_triangulated = False
-            for v in f.verts:
-                vert_to_loop_id[v] = loop_id
-                loop_id += 1
-
-        loop_normals, face_indices = None, None
-        if is_triangulated:
-            loop_normals = custom_normals
-            # loop_angles already calculated above
-        else:
-            face_map = bmesh.ops.triangulate(bm, faces=bm.faces, quad_method="FIXED", ngon_method="EAR_CLIP")["face_map"]
-            logging.debug(" - Remapping custom normals and angles...")
-            loop_normals, face_indices = [], []
-            remapped_loop_angles = []
-            for f in bm.faces:
-                f_orig = face_map.get(f, f)
-                face_indices.append(f_orig.index)
-                vert_to_loop_id = face_verts_to_loop_id_map[f_orig]
-                for v in f.verts:
-                    loop_normals.append(custom_normals[vert_to_loop_id[v]])
-                    remapped_loop_angles.append(loop_angles[vert_to_loop_id[v]])
-            loop_angles = remapped_loop_angles
-            logging.debug("   - Done (faces:%d, normals:%d, angles:%d)", len(bm.faces), len(loop_normals), len(loop_angles))
-            bm.to_mesh(mesh)
-            face_map.clear()
-        face_verts_to_loop_id_map.clear()
-        bm.free()
-
-        assert len(loop_normals) == len(mesh.loops)
-        assert len(loop_angles) == len(mesh.loops)
-        return loop_normals, face_indices, loop_angles
-
-    @staticmethod
     def __get_normals(mesh, matrix):
         logging.debug(" - Get normals...")
         custom_normals = [(matrix @ cn.vector).normalized() for cn in mesh.corner_normals]
@@ -1072,10 +1090,36 @@ class __PmxExporter:
         return custom_normals
 
     def __doLoadMeshData(self, meshObj, bone_map):
+        def _to_mesh(obj):
+            bpy.context.view_layer.update()
+            depsgraph = bpy.context.evaluated_depsgraph_get()
+            return obj.evaluated_get(depsgraph).to_mesh(depsgraph=depsgraph, preserve_all_data_layers=True)
+
+        def _to_mesh_clear(obj, mesh):
+            return obj.to_mesh_clear()
+
+        # Triangulate immediately before processing any loop-based data
+        base_mesh = _to_mesh(meshObj)
+        needs_triangulation = any(len(poly.vertices) > 3 for poly in base_mesh.polygons)
+        if needs_triangulation:
+            face_count_before = len(base_mesh.polygons)
+            logging.debug(" - Triangulating mesh using Blender standard method...")
+            bm = bmesh.new()
+            bm.from_mesh(base_mesh)
+            bmesh.ops.triangulate(bm, faces=bm.faces, quad_method="BEAUTY", ngon_method="BEAUTY")
+            bm.to_mesh(base_mesh)
+            bm.free()
+            face_count_after = len(base_mesh.polygons)
+            logging.debug("   - Triangulation completed (%d -> %d faces)", face_count_before, face_count_after)
+        else:
+            logging.debug(" - Mesh already triangulated (%d triangular faces)", len(base_mesh.polygons))
+
+        # Process vertex groups after triangulation
         vg_to_bone = {i: bone_map[x.name] for i, x in enumerate(meshObj.vertex_groups) if x.name in bone_map}
         vg_edge_scale = meshObj.vertex_groups.get("mmd_edge_scale", None)
         vg_vertex_order = meshObj.vertex_groups.get("mmd_vertex_order", None)
 
+        # Setup transformation matrices
         pmx_matrix = meshObj.matrix_world * self.__scale
         pmx_matrix[1], pmx_matrix[2] = pmx_matrix[2].copy(), pmx_matrix[1].copy()
         sx, sy, sz = meshObj.matrix_world.to_scale()
@@ -1085,17 +1129,30 @@ class __PmxExporter:
             normal_matrix = normal_matrix @ invert_scale_matrix  # reset the scale of meshObj.matrix_world
             normal_matrix = normal_matrix @ invert_scale_matrix  # the scale transform of normals
 
-        def _to_mesh(obj):
-            bpy.context.view_layer.update()
-            depsgraph = bpy.context.evaluated_depsgraph_get()
-            return obj.evaluated_get(depsgraph).to_mesh(depsgraph=depsgraph, preserve_all_data_layers=True)
+        # Extract normals and angles from triangulated mesh
+        loop_normals = self.__get_normals(base_mesh, normal_matrix)
+        bm_temp = bmesh.new()
+        bm_temp.from_mesh(base_mesh)
+        loop_angles = []
+        for face in bm_temp.faces:
+            for loop in face.loops:
+                loop_angles.append(loop.calc_angle())
+        bm_temp.free()
 
-        def _to_mesh_clear(obj, mesh):
-            return obj.to_mesh_clear()
+        # Extract vertex colors from triangulated mesh
+        vertex_colors = base_mesh.vertex_colors.active
+        vertex_color_data = None
+        if vertex_colors:
+            color_data = [c.color for c in vertex_colors.data]
+            # Check if all vertex colors are white (1.0, 1.0, 1.0, 1.0)
+            if all(color[0] == 1.0 and color[1] == 1.0 and color[2] == 1.0 and color[3] == 1.0 for color in color_data):
+                logging.info("All vertex colors are white - treating as no vertex colors")
+            else:
+                vertex_color_data = color_data
 
-        base_mesh = _to_mesh(meshObj)
-        loop_normals, face_indices, loop_angles = self.__triangulate(base_mesh, self.__get_normals(base_mesh, normal_matrix))
+        # Apply transformation to triangulated mesh
         base_mesh.transform(pmx_matrix)
+        remapped_vertex_colors = vertex_color_data
 
         def _get_weight(vertex_group_index, vertex, default_weight):
             for i in vertex.groups:
@@ -1136,6 +1193,7 @@ class __PmxExporter:
                     d["XYZW".index(axis[1])] += -x.weight if axis[0] == "-" else x.weight
             return uv_offsets
 
+        # Create base vertices from triangulated mesh
         base_vertices = {}
         for v in base_mesh.vertices:
             base_vertices[v.index] = [
@@ -1149,9 +1207,8 @@ class __PmxExporter:
                 )
             ]
 
-        # Get UV layers and vertex colors
+        # Process UV layers (skip UV2 if vertex colors present)
         bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
-        vertex_colors = base_mesh.vertex_colors.active
 
         # Handle UV2 layer based on vertex color presence
         if vertex_colors:
@@ -1186,12 +1243,12 @@ class __PmxExporter:
                     logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[4:]]}")
                     bl_add_uvs = bl_add_uvs[:4]
 
-        # Set additional UV count
+        # Update additional UV count
         self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs))
         if vertex_colors:
             self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs) + 1, 2)  # Ensure at least 2 for ADD UV2
 
-        # load face data
+        # Process faces from triangulated mesh
         class _DummyUV:
             uv1 = uv2 = uv3 = mathutils.Vector((0, 1))
 
@@ -1207,55 +1264,39 @@ class __PmxExporter:
             uv_data = _UVWrapper(uv_data.data)
         else:
             uv_data = iter(lambda: _DummyUV, None)
-        face_seq = []
-        for face, uv, face_index in zip(base_mesh.polygons, uv_data, face_indices or iter(lambda: -1, None)):
-            if len(face.vertices) != 3:
-                raise Exception
-            idx = face.index * 3
-            n1, n2, n3 = loop_normals[idx : idx + 3]
-            a1, a2, a3 = loop_angles[idx : idx + 3]
-            face_area = face.area
-            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
-            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
-            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
 
-            t = _Face([v1, v2, v3], face_index)
+        face_seq = []
+        for face, uv in zip(base_mesh.polygons, uv_data):
+            if len(face.vertices) != 3:
+                raise ValueError(f"Face should be triangulated. Face index: {face.index}, Mesh name: {base_mesh.name}")
+            loop_indices = list(face.loop_indices)
+            n1, n2, n3 = [loop_normals[idx] for idx in loop_indices]
+            a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
+            if remapped_vertex_colors:
+                c1, c2, c3 = [remapped_vertex_colors[idx] for idx in loop_indices]
+            else:
+                c1 = c2 = c3 = None
+            face_area = face.area
+            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, c1)
+            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, c2)
+            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, c3)
+
+            t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)
             if face.material_index not in material_faces:
                 material_faces[face.material_index] = []
             material_faces[face.material_index].append(t)
 
-        if face_indices:
-            for f in material_faces.values():
-                f.sort(key=lambda x: x.index)
         def _mat_name(x):
             return x.name if x else self.__getDefaultMaterial().name
         material_names = {i: _mat_name(m) for i, m in enumerate(base_mesh.materials)}
         material_names = {i: material_names.get(i, None) or _mat_name(None) for i in material_faces.keys()}
 
-        # Process vertex colors as ADD UV2
+        # Vertex colors are handled directly in __convertFaceUVToVertexUV
         if vertex_colors:
-            for face in face_seq:
-                for i, vertex in enumerate(face.vertices):
-                    # Get vertex color from face loop
-                    loop_index = face.index * 3 + i
-                    color = vertex_colors.data[loop_index].color
-
-                    # Convert vertex color to ADD UV2 data (RGBA -> XYZW)
-                    vertex_color_uv = ((color[0], color[1]), (color[2], color[3]))
-
-                    # Initialize add_uvs as list if needed
-                    if not hasattr(vertex, "add_uvs"):
-                        vertex.add_uvs = [None] * 4  # Support up to 4 additional UVs
-                    elif len(vertex.add_uvs) < 2:
-                        vertex.add_uvs.extend([None] * (2 - len(vertex.add_uvs)))
-
-                    # Set ADD UV2 (index 1)
-                    vertex.add_uvs[1] = vertex_color_uv
-
             logging.info("Exported vertex colors as ADD UV2")
 
-        # export add UV
+        # Export additional UV layers
         for uv_n, uv_tex in enumerate(bl_add_uvs):
             if uv_n > 3:
                 logging.warning(" * extra addUV%d+ are not supported", uv_n + 1)
@@ -1287,7 +1328,7 @@ class __PmxExporter:
 
         _to_mesh_clear(meshObj, base_mesh)
 
-        # calculate offsets
+        # Calculate shape key offsets
         shape_key_list = []
         if meshObj.data.shape_keys:
             for i, kb in enumerate(meshObj.data.shape_keys.key_blocks):
@@ -1395,7 +1436,11 @@ class __PmxExporter:
         self.__model.comment_e = "exported by mmd_tools"
 
         if root is not None:
-            self.__model.name = root.mmd_root.name or root.name
+            if root.mmd_root.name:
+                self.__model.name = root.mmd_root.name
+            else:
+                logging.warning(f"Model name is empty, using root object name '{root.name}' instead")
+                self.__model.name = root.name
             self.__model.name_e = root.mmd_root.name_e
             txt = bpy.data.texts.get(root.mmd_root.comment_text, None)
             if txt:

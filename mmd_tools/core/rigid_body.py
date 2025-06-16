@@ -1,6 +1,7 @@
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
+import logging
 from typing import List, Optional
 
 import bpy
@@ -176,7 +177,9 @@ class FnRigidBody:
 
         x0, y0, z0 = obj.bound_box[0]
         x1, y1, z1 = obj.bound_box[6]
-        assert x1 >= x0 and y1 >= y0 and z1 >= z0
+        if not (x1 >= x0 and y1 >= y0 and z1 >= z0):
+            logging.warning(f"Rigid body '{obj.name}' has invalid bounding box coordinates, using default size")
+            return (1.0, 1.0, 1.0)
 
         shape = obj.mmd_rigid.shape
         if shape == "SPHERE":

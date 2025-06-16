@@ -159,10 +159,10 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         if self.include_descendant_bones:
             original_active_bone = context.active_bone
             for edit_bone in root_bones:
-                context.object.data.edit_bones.active = edit_bone
+                context.active_object.data.edit_bones.active = edit_bone
                 bpy.ops.armature.select_similar(type="CHILDREN", threshold=0.1)
             if original_active_bone:
-                context.object.data.edit_bones.active = original_active_bone
+                context.active_object.data.edit_bones.active = original_active_bone
 
         separate_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in context.selected_bones}
         deform_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in target_armature_object.data.edit_bones if b.use_deform}

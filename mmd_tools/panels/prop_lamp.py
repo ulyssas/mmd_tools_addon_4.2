@@ -16,7 +16,7 @@ class MMDLampPanel(Panel):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj and (MMDLamp.isLamp(obj) or MMDLamp.isMMDLamp(obj))
+        return obj is not None and (MMDLamp.isLamp(obj) or MMDLamp.isMMDLamp(obj))
 
     def draw(self, context):
         obj = context.active_object

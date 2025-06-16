@@ -467,9 +467,21 @@ class PMXImporter:
         context = FnContext.ensure_context()
         rigid_pool = FnRigidBody.new_rigid_body_objects(context, FnModel.ensure_rigid_group_object(context, self.__rig.rootObject()), len(self.__model.rigids))
         for i, (rigid, rigid_obj) in enumerate(zip(self.__model.rigids, rigid_pool)):
-            loc = Vector(rigid.location).xzy * self.__scale
-            rot = Vector(rigid.rotation).xzy * -1
-            size = Vector(rigid.size).xzy if rigid.type == pmx.Rigid.TYPE_BOX else Vector(rigid.size)
+            loc_data = rigid.location
+            rot_data = rigid.rotation
+            size_data = rigid.size
+            if any(math.isnan(val) for val in loc_data):
+                logging.warning(f"Rigid body '{rigid.name}' has invalid location data, using default location")
+                loc_data = (0.0, 0.0, 0.0)
+            if any(math.isnan(val) for val in rot_data):
+                logging.warning(f"Rigid body '{rigid.name}' has invalid rotation data, using default rotation")
+                rot_data = (0.0, 0.0, 0.0)
+            if any(math.isnan(val) for val in size_data):
+                logging.warning(f"Rigid body '{rigid.name}' has invalid size data, using default size")
+                size_data = (1.0, 1.0, 1.0)
+            loc = Vector(loc_data).xzy * self.__scale
+            rot = Vector(rot_data).xzy * -1
+            size = Vector(size_data).xzy if rigid.type == pmx.Rigid.TYPE_BOX else Vector(size_data)
 
             obj = FnRigidBody.setup_rigid_body_object(
                 obj=rigid_obj,
@@ -807,7 +819,7 @@ class PMXImporter:
         # 2. Some edges must be marked as sharp (NOT mentioned in Blender documentation)
         # An angle of 179 degrees is confirmed to be sufficient to preserve all custom normals.
         # 180 degrees does not work because it misses some sharp edges required for normals_split_custom_set to work 100% correctly.
-        current_mode = bpy.context.object.mode
+        current_mode = bpy.context.active_object.mode
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
         bpy.context.view_layer.objects.active = self.__meshObj

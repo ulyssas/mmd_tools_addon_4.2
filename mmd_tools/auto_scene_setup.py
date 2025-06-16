@@ -29,12 +29,6 @@ def setupFrameRanges():
         bpy.context.scene.rigidbody_world.point_cache.frame_end = round(e)
 
 
-def setupLighting():
-    bpy.context.scene.world.light_settings.use_ambient_occlusion = True
-    bpy.context.scene.world.light_settings.use_environment_light = True
-    bpy.context.scene.world.light_settings.use_indirect_light = True
-
-
 def setupFps():
     bpy.context.scene.render.fps = 30
     bpy.context.scene.render.fps_base = 1

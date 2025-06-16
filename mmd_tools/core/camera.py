@@ -76,7 +76,7 @@ class FnCamera:
     def remove_drivers(camera_object: bpy.types.Object):
         camera_object.data.driver_remove("ortho_scale")
         camera_object.driver_remove("rotation_euler")
-        camera_object.data.driver_remove("ortho_scale")
+        camera_object.data.driver_remove("type")
         camera_object.data.driver_remove("lens")
 
 

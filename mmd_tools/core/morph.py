@@ -158,7 +158,7 @@ class FnMorph:
         bone_morphs = mmd_root.bone_morphs
 
         utils.selectAObject(armature_object)
-        original_mode = bpy.context.object.mode
+        original_mode = bpy.context.active_object.mode
         bpy.ops.object.mode_set(mode="POSE")
         try:
             for index, pose_marker in enumerate(pose_markers):
