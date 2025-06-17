@@ -212,7 +212,7 @@ class StringTree(object):
         """
         # Stacks to hold nodes with unmatched strings
         working_stack = [self.root]
-        unmatched_stack =[]
+        unmatched_stack = []
 
         # process stack
         for test_dict in test_dict_list:

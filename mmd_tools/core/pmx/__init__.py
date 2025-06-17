@@ -191,11 +191,11 @@ class Encoding:
         self.charset = ""
         t = None
         if isinstance(arg, str):
-            t = list(filter(lambda x: x[1]==arg, self._MAP))
+            t = list(filter(lambda x: x[1] == arg, self._MAP))
             if len(t) == 0:
                 raise ValueError("invalid charset %s"%arg)
         elif isinstance(arg, int):
-            t = list(filter(lambda x: x[0]==arg, self._MAP))
+            t = list(filter(lambda x: x[0] == arg, self._MAP))
             if len(t) == 0:
                 raise ValueError("invalid index %d"%arg)
         else:
@@ -709,14 +709,14 @@ class BoneWeight:
         self.type = self.BDEF1
 
     def convertIdToName(self, type_id):
-        t = list(filter(lambda x: x[0]==type_id, self.TYPES))
+        t = list(filter(lambda x: x[0] == type_id, self.TYPES))
         if len(t) > 0:
             return t[0][1]
         else:
             return None
 
     def convertNameToId(self, type_name):
-        t = list(filter(lambda x: x[1]==type_name, self.TYPES))
+        t = list(filter(lambda x: x[1] == type_name, self.TYPES))
         if len(t) > 0:
             return t[0][0]
         else:
