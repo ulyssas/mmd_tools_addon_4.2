@@ -109,7 +109,7 @@ class FnBone:
 
     @staticmethod
     def __is_special_bone_collection(bone_collection: bpy.types.BoneCollection) -> bool:
-        return BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_SPECIAL == bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME)
+        return bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME) == BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_SPECIAL
 
     @staticmethod
     def __set_bone_collection_to_special(bone_collection: bpy.types.BoneCollection, is_visible: bool):
@@ -118,7 +118,7 @@ class FnBone:
 
     @staticmethod
     def __is_normal_bone_collection(bone_collection: bpy.types.BoneCollection) -> bool:
-        return BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_NORMAL == bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME)
+        return bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME) == BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_NORMAL
 
     @staticmethod
     def __set_bone_collection_to_normal(bone_collection: bpy.types.BoneCollection):
