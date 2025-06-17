@@ -10,7 +10,7 @@ class InvalidFileError(Exception):
     pass
 
 
-## vmd仕様の文字列をstringに変換
+# vmd仕様の文字列をstringに変換
 def _toShiftJisString(byteString):
     return byteString.split(b"\x00")[0].decode("shift_jis", errors="replace")
 
