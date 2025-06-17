@@ -794,7 +794,7 @@ class Texture:
             relPath = os.path.relpath(self.path, os.path.dirname(fs.path()))
         except ValueError:
             relPath = self.path
-        relPath = relPath.replace(os.path.sep, "\\") # always save using windows path conventions
+        relPath = relPath.replace(os.path.sep, "\\")  # always save using windows path conventions
         logging.info("writing to pmx file the relative texture path: %s", relPath)
         fs.writeStr(relPath)
 
@@ -1522,7 +1522,7 @@ class Joint:
     def load(self, fs):
         try:
             self._load(fs)
-        except struct.error: # possibly contains truncated data
+        except struct.error:  # possibly contains truncated data
             if self.src_rigid is None or self.dest_rigid is None:
                 raise
             self.location = self.location or (0, 0, 0)
@@ -1611,7 +1611,7 @@ def load(path):
 def save(path, model, add_uv_count=0):
     with FileWriteStream(path) as fs:
         header = Header(model)
-        header.additional_uvs = max(0, min(4, add_uv_count)) # UV1~UV4
+        header.additional_uvs = max(0, min(4, add_uv_count))  # UV1~UV4
         header.save(fs)
         fs.setHeader(header)
         model.save(fs)

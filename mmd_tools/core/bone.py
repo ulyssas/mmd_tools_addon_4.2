@@ -69,7 +69,7 @@ class FnBone:
     @staticmethod
     def __get_selected_pose_bones(armature_object: bpy.types.Object) -> Iterable[bpy.types.PoseBone]:
         if armature_object.mode == "EDIT":
-            bpy.ops.object.mode_set(mode="OBJECT") # update selected bones
+            bpy.ops.object.mode_set(mode="OBJECT")  # update selected bones
             bpy.ops.object.mode_set(mode="EDIT")  # back to edit mode
         context_selected_bones = bpy.context.selected_pose_bones or bpy.context.selected_bones or []
         bones = armature_object.pose.bones
