@@ -158,16 +158,16 @@ class TestVPDExporter(unittest.TestCase):
         for i in range(num_poses):
             # Create different pose for each iteration
             for j, bone in enumerate(armature.pose.bones):
-                if j % (i+1) == 0:  # Create different patterns for different poses
+                if j % (i + 1) == 0:  # Create different patterns for different poses
                     bone.location = Vector((0.1 * i, 0.2 * i, 0.3 * i))
                     bone.rotation_quaternion = Quaternion(((0.9, 0.1 * i, 0.2 * i, 0.3 * i)))
-                    bone.keyframe_insert(data_path="location", frame=i+1)
-                    bone.keyframe_insert(data_path="rotation_quaternion", frame=i+1)
+                    bone.keyframe_insert(data_path="location", frame=i + 1)
+                    bone.keyframe_insert(data_path="rotation_quaternion", frame=i + 1)
 
             # Add pose marker (if current Blender version supports it)
             if hasattr(action, "pose_markers"):
-                marker = action.pose_markers.new(f"Pose_{i+1}")
-                marker.frame = i+1
+                marker = action.pose_markers.new(f"Pose_{i + 1}")
+                marker.frame = i + 1
 
         # Return to object mode
         bpy.ops.object.mode_set(mode="OBJECT")

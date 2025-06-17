@@ -283,16 +283,16 @@ class StringTree(object):
         while test_len >= min_len:
             # Loop through trying successively smaller substrings in the dictionary
             for i in range(0, string_len - test_len + 1):
-                if string[i:i+test_len] in test_dict[2]:
+                if string[i:i + test_len] in test_dict[2]:
                     # Match found.
                     if i > 0:
                         # Put everything to the left of the match into lstring
                         lstring = string[:i]
-                    if (i+test_len) < string_len:
+                    if (i + test_len) < string_len:
                         # Put everything to the right of the match into rstring
-                        rstring = string[i+test_len:]
+                        rstring = string[i + test_len:]
                     # Save the dictionary value
-                    value = test_dict[2][string[i:i+test_len]]
+                    value = test_dict[2][string[i:i + test_len]]
                     if len(value.split(" ")) > 1:
                         # multiple mapping, use the first one for now
                         value = value.split(" ")[0]

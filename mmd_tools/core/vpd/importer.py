@@ -105,7 +105,7 @@ class VPDImporter:
 
         # Check if an action exists or create new one
         if meshObj.data.shape_keys.animation_data.action is None:
-            action = bpy.data.actions.new(name=meshObj.name+"_ShapeKeys")
+            action = bpy.data.actions.new(name=meshObj.name + "_ShapeKeys")
             meshObj.data.shape_keys.animation_data.action = action
         else:
             action = meshObj.data.shape_keys.animation_data.action

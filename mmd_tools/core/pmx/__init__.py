@@ -101,7 +101,7 @@ class FileReadStream(FileStream):
         return v
 
     def readVector(self, size):
-        return struct.unpack("<"+"f"*size, self.__fin.read(4*size))
+        return struct.unpack("<" + "f" * size, self.__fin.read(4 * size))
 
     def readByte(self):
         v, = struct.unpack("<B", self.__fin.read(1))
@@ -169,7 +169,7 @@ class FileWriteStream(FileStream):
         self.__fout.write(struct.pack("<f", float(v)))
 
     def writeVector(self, v):
-        self.__fout.write(struct.pack("<"+"f"*len(v), *v))
+        self.__fout.write(struct.pack("<" + "f" * len(v), *v))
 
     def writeByte(self, v):
         self.__fout.write(struct.pack("<B", int(v)))
@@ -245,9 +245,9 @@ class Header:
         s = 1
         if signed:
             s = 2
-        if (1<<8)/s > num:
+        if (1<<8) / s > num:
             return 1
-        elif (1<<16)/s > num:
+        elif (1<<16) / s > num:
             return 2
         else:
             return 4
@@ -380,7 +380,7 @@ class Model:
         logging.info("------------------------------")
         num_faces = fs.readInt()
         self.faces = []
-        for i in range(int(num_faces/3)):
+        for i in range(int(num_faces / 3)):
             f1 = fs.readVertexIndex()
             f2 = fs.readVertexIndex()
             f3 = fs.readVertexIndex()
@@ -583,7 +583,7 @@ comment(english):
         logging.info("finished exporting vertices.")
 
         logging.info("exporting faces... %d", len(self.faces))
-        fs.writeInt(len(self.faces)*3)
+        fs.writeInt(len(self.faces) * 3)
         for f3, f2, f1 in self.faces:
             fs.writeVertexIndex(f1)
             fs.writeVertexIndex(f2)
@@ -678,7 +678,7 @@ class Vertex:
         fs.writeVector(self.uv)
         for i in self.additional_uvs:
             fs.writeVector(i)
-        for i in range(fs.header().additional_uvs-len(self.additional_uvs)):
+        for i in range(fs.header().additional_uvs - len(self.additional_uvs)):
             fs.writeVector((0,0,0,0))
         self.weight.save(fs)
         fs.writeFloat(self.edge_scale)

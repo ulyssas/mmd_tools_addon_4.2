@@ -119,7 +119,7 @@ class TestVPDImporter(unittest.TestCase):
         # Test each VPD file with each model
         for model_num, pmx_file in enumerate(pmx_files):
             model_name = os.path.basename(pmx_file)
-            print(f"\n - {model_num+1}/{len(pmx_files)} | Model: {model_name}")
+            print(f"\n - {model_num + 1}/{len(pmx_files)} | Model: {model_name}")
 
             # Import the model
             try:
@@ -143,7 +143,7 @@ class TestVPDImporter(unittest.TestCase):
                 # Test each VPD file
                 for vpd_num, vpd_file in enumerate(vpd_files):
                     vpd_name = os.path.basename(vpd_file)
-                    print(f"   - {vpd_num+1}/{len(vpd_files)} | VPD: {vpd_name}")
+                    print(f"   - {vpd_num + 1}/{len(vpd_files)} | VPD: {vpd_name}")
 
                     # Import the VPD
                     try:
