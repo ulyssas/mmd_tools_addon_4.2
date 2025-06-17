@@ -421,7 +421,7 @@ class ClearTempMaterials(bpy.types.Operator):
         assert root is not None
         for meshObj in FnModel.iterate_mesh_objects(root):
 
-            def __pre_remove(m):
+            def __pre_remove(m, meshObj=meshObj):
                 if m and "_temp" in m.name:
                     base_mat_name = m.name.split("_temp")[0]
                     try:
