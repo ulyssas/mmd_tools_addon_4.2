@@ -16,9 +16,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 class TestVmdExporter(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         for item in os.listdir(output_dir):
             if item.endswith(".OUTPUT"):
@@ -30,9 +28,7 @@ class TestVmdExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -175,9 +171,7 @@ class TestVmdExporter(unittest.TestCase):
         return dy_values
 
     def __check_interpolation_with_dy_info(self, src_interp, res_interp, dy_values, msg):
-        """
-        Check interpolation with dy information for each axis
-        """
+        """Check interpolation with dy information for each axis"""
         # fmt: off
         param_names = [
             "x_x1", "y_x1",    "0",    "0", "x_y1", "y_y1", "z_y1", "r_y1", "x_x2", "y_x2", "z_x2", "r_x2", "x_y2", "y_y2", "z_y2", "r_y2",
@@ -410,9 +404,7 @@ class TestVmdExporter(unittest.TestCase):
     # ********************************************
 
     def test_vmd_exporter_with_pmx_model(self):
-        """
-        Test VMD export by importing the largest PMX model and testing different VMD files
-        """
+        """Test VMD export by importing the largest PMX model and testing different VMD files"""
         # Get VMD sample files
         vmd_files = self.__list_sample_files(["vmd"])
         if len(vmd_files) < 1:
@@ -513,9 +505,7 @@ class TestVmdExporter(unittest.TestCase):
         self.assertEqual(success_count, len(vmd_files), f"All direct VMD tests must pass. Success rate: {success_rate:.1%} ({success_count}/{len(vmd_files)})")
 
     def test_vmd_direct_file_operations(self):
-        """
-        Direct test of VMD file loading/saving without Blender integration
-        """
+        """Direct test of VMD file loading/saving without Blender integration"""
         vmd_files = self.__list_sample_files(["vmd"])
         if len(vmd_files) < 1:
             self.fail("No VMD sample files found")

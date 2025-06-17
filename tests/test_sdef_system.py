@@ -15,9 +15,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 class TestSDEFSystem(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         for item in os.listdir(output_dir):
             if item.endswith(".OUTPUT"):
@@ -29,9 +27,7 @@ class TestSDEFSystem(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # logger.setLevel('DEBUG')
@@ -44,9 +40,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.__enable_mmd_tools()
 
     def tearDown(self):
-        """
-        Clean up after each test
-        """
+        """Clean up after each test"""
         # Clear SDEF cache
         FnSDEF.clear_cache()
 
@@ -68,9 +62,7 @@ class TestSDEFSystem(unittest.TestCase):
         return (Vector(vec0) - Vector(vec1)).length
 
     def __create_test_armature(self, name="TestArmature"):
-        """
-        Create a test armature with bones for SDEF testing
-        """
+        """Create a test armature with bones for SDEF testing"""
         # Create armature
         armature_data = bpy.data.armatures.new(name + "_data")
         armature_obj = bpy.data.objects.new(name, armature_data)
@@ -94,9 +86,7 @@ class TestSDEFSystem(unittest.TestCase):
         return armature_obj
 
     def __create_test_mesh_with_sdef(self, name="TestMesh", armature_obj=None):
-        """
-        Create a test mesh with SDEF data
-        """
+        """Create a test mesh with SDEF data"""
         # Create mesh
         mesh_data = bpy.data.meshes.new(name + "_data")
         mesh_obj = bpy.data.objects.new(name, mesh_data)
@@ -152,9 +142,7 @@ class TestSDEFSystem(unittest.TestCase):
     # ********************************************
 
     def test_hash_function(self):
-        """
-        Test the internal _hash function
-        """
+        """Test the internal _hash function"""
         from bl_ext.user_default.mmd_tools.core.sdef import _hash
 
         # Create test objects
@@ -196,9 +184,7 @@ class TestSDEFSystem(unittest.TestCase):
             _hash("invalid_type")
 
     def test_has_sdef_data(self):
-        """
-        Test FnSDEF.has_sdef_data function
-        """
+        """Test FnSDEF.has_sdef_data function"""
         # Test with object without SDEF data
         mesh_obj = self.__create_test_mesh_with_sdef()
 
@@ -223,9 +209,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertTrue(FnSDEF.has_sdef_data(mesh_obj_with_sdef), "Should have SDEF data with all requirements")
 
     def test_mute_sdef_set(self):
-        """
-        Test FnSDEF.mute_sdef_set function
-        """
+        """Test FnSDEF.mute_sdef_set function"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -249,9 +233,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertFalse(shapekey.mute, "SDEF shape key should be unmuted")
 
     def test_driver_function_parameter_validation(self):
-        """
-        Test driver function parameter validation
-        """
+        """Test driver function parameter validation"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -279,9 +261,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertEqual(result, 1.0, "Driver function should return 1.0 on success with scale")
 
     def test_bind_unbind_cycle(self):
-        """
-        Test SDEF bind and unbind cycle
-        """
+        """Test SDEF bind and unbind cycle"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -315,9 +295,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertIsNone(mesh_obj.vertex_groups.get(FnSDEF.MASK_NAME), "SDEF mask vertex group should be removed after unbinding")
 
     def test_bind_without_sdef_data(self):
-        """
-        Test binding object without SDEF data
-        """
+        """Test binding object without SDEF data"""
         mesh_obj = self.__create_test_mesh_with_sdef()  # No armature
 
         # Validate that mesh was created without armature
@@ -330,9 +308,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertFalse(result, "SDEF bind should fail without proper SDEF data")
 
     def test_bind_with_different_modes(self):
-        """
-        Test binding with different bulk_update and use_skip modes
-        """
+        """Test binding with different bulk_update and use_skip modes"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -357,9 +333,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertIsNotNone(mesh_obj.data.shape_keys.key_blocks.get(FnSDEF.SHAPEKEY_NAME), "SDEF shape key should exist after binding")
 
     def test_cache_management(self):
-        """
-        Test SDEF cache management
-        """
+        """Test SDEF cache management"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -389,9 +363,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertEqual(len(FnSDEF.g_shapekey_data), 0, "Shape key data cache should be cleared")
 
     def test_driver_function_wrap(self):
-        """
-        Test FnSDEF.driver_function_wrap function
-        """
+        """Test FnSDEF.driver_function_wrap function"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -412,9 +384,7 @@ class TestSDEFSystem(unittest.TestCase):
     # ********************************************
 
     def test_bind_sdef_operator(self):
-        """
-        Test BindSDEF operator
-        """
+        """Test BindSDEF operator"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -431,9 +401,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertIsNotNone(mesh_obj.data.shape_keys.key_blocks.get(FnSDEF.SHAPEKEY_NAME), "SDEF shape key should exist after operator")
 
     def test_unbind_sdef_operator(self):
-        """
-        Test UnbindSDEF operator
-        """
+        """Test UnbindSDEF operator"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -453,9 +421,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertIsNone(mesh_obj.data.shape_keys.key_blocks.get(FnSDEF.SHAPEKEY_NAME), "SDEF shape key should be removed after unbind operator")
 
     def test_reset_sdef_cache_operator(self):
-        """
-        Test ResetSDEFCache operator
-        """
+        """Test ResetSDEFCache operator"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -471,9 +437,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertEqual(result, {"FINISHED"}, "Cache reset operator should succeed")
 
     def test_operator_with_no_selection(self):
-        """
-        Test operators with no objects selected
-        """
+        """Test operators with no objects selected"""
         # Test bind operator with no selection
         result = bpy.ops.mmd_tools.sdef_bind(mode="0", use_skip=True, use_scale=False)
         self.assertIn(result, [{"FINISHED"}, {"CANCELLED"}], "Bind operator should handle no selection")
@@ -487,9 +451,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertEqual(result, {"FINISHED"}, "Cache reset operator should handle no selection")
 
     def test_operator_with_invalid_object(self):
-        """
-        Test operators with invalid objects selected
-        """
+        """Test operators with invalid objects selected"""
         # Create a cube (not a valid MMD object)
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
@@ -512,9 +474,7 @@ class TestSDEFSystem(unittest.TestCase):
     # ********************************************
 
     def test_sdef_vertex_deformation(self):
-        """
-        Test that SDEF actually deforms vertices correctly
-        """
+        """Test that SDEF actually deforms vertices correctly"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -555,9 +515,7 @@ class TestSDEFSystem(unittest.TestCase):
         bpy.ops.object.mode_set(mode="OBJECT")
 
     def test_multiple_objects_sdef(self):
-        """
-        Test SDEF with multiple objects
-        """
+        """Test SDEF with multiple objects"""
         armature_obj = self.__create_test_armature()
         mesh_obj1 = self.__create_test_mesh_with_sdef("TestMesh1", armature_obj=armature_obj)
         mesh_obj2 = self.__create_test_mesh_with_sdef("TestMesh2", armature_obj=armature_obj)
@@ -589,9 +547,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertIsNone(mesh_obj2.data.shape_keys.key_blocks.get(FnSDEF.SHAPEKEY_NAME), "Second object SDEF shape key should be removed")
 
     def test_sdef_with_complex_vertex_groups(self):
-        """
-        Test SDEF with complex vertex group assignments
-        """
+        """Test SDEF with complex vertex group assignments"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -630,9 +586,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertTrue(result, "SDEF bind should succeed with complex vertex groups")
 
     def test_error_handling(self):
-        """
-        Test error handling in various scenarios
-        """
+        """Test error handling in various scenarios"""
         # Test with None object
         result = FnSDEF.has_sdef_data(None)
         self.assertFalse(result, "has_sdef_data should return False for None")
@@ -663,9 +617,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertIsInstance(e, (AttributeError, TypeError), "Should raise appropriate exception for None object")
 
     def test_sdef_constants(self):
-        """
-        Test SDEF system constants
-        """
+        """Test SDEF system constants"""
         # Validate SDEF constants are properly defined
         self.assertEqual(FnSDEF.SHAPEKEY_NAME, "mmd_sdef_skinning", "SHAPEKEY_NAME should be correct")
         self.assertEqual(FnSDEF.MASK_NAME, "mmd_sdef_mask", "MASK_NAME should be correct")
@@ -673,9 +625,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertGreater(FnSDEF.BENCH_LOOP, 0, "BENCH_LOOP should be positive")
 
     def test_register_driver_function(self):
-        """
-        Test driver function registration
-        """
+        """Test driver function registration"""
         # Clear driver namespace first
         if "mmd_sdef_driver" in bpy.app.driver_namespace:
             del bpy.app.driver_namespace["mmd_sdef_driver"]
@@ -698,9 +648,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertTrue(callable(bpy.app.driver_namespace["mmd_sdef_driver_wrap"]), "Registered driver wrap function should be callable")
 
     def test_sdef_shape_key_names(self):
-        """
-        Test SDEF required shape key names
-        """
+        """Test SDEF required shape key names"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -715,9 +663,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertEqual(len(key.data), len(mesh_obj.data.vertices), f"Shape key {key_name} should have same vertex count as mesh")
 
     def test_benchmark_functionality(self):
-        """
-        Test SDEF benchmark functionality
-        """
+        """Test SDEF benchmark functionality"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -741,9 +687,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertTrue(driver_found, "SDEF driver should be created with benchmark result")
 
     def test_vertex_group_validation(self):
-        """
-        Test vertex group validation in SDEF system
-        """
+        """Test vertex group validation in SDEF system"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -764,9 +708,7 @@ class TestSDEFSystem(unittest.TestCase):
             self.assertEqual(mask_vg.name, FnSDEF.MASK_NAME, "Mask vertex group should have correct name")
 
     def test_armature_modifier_validation(self):
-        """
-        Test armature modifier validation in SDEF system
-        """
+        """Test armature modifier validation in SDEF system"""
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
 
@@ -789,9 +731,7 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertEqual(armature_modifier.object, armature_obj, "Armature modifier object should remain unchanged")
 
     def test_cache_unused_only_cleanup(self):
-        """
-        Test cache cleanup with unused_only parameter
-        """
+        """Test cache cleanup with unused_only parameter"""
         armature_obj1 = self.__create_test_armature("TestArmature1")
         armature_obj2 = self.__create_test_armature("TestArmature2")
         mesh_obj1 = self.__create_test_mesh_with_sdef("TestMesh1", armature_obj=armature_obj1)

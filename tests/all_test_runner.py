@@ -23,9 +23,7 @@ stop_progress = None
 
 
 def animate_progress_smooth(stop_flag, test_name, start_time, current_test_num, total_tests, shared_progress):
-    """
-    Animate the progress bar while a test is running with smooth progression
-    """
+    """Animate the progress bar while a test is running with smooth progression"""
     chars = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"  # Braille spinner characters
     idx = 0
 
@@ -100,9 +98,7 @@ def get_blender_path():
 
 
 def run_test(blender_path, test_script, current_test_num, total_tests, previous_progress):
-    """
-    Run a single test script using Blender in background mode
-    """
+    """Run a single test script using Blender in background mode"""
     global test_start_time
 
     try:
@@ -188,9 +184,7 @@ def print_summary_progress(iteration, total):
 
 
 def run_all_tests():
-    """
-    Run all test scripts in the directory
-    """
+    """Run all test scripts in the directory"""
     global current_test
 
     # Get the path to the Blender executable

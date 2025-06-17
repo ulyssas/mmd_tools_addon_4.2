@@ -1175,8 +1175,7 @@ class Morph:
         return ret
 
     def load(self, fs):
-        """ Implement for loading morph data.
-        """
+        """Implement for loading morph data."""
         raise NotImplementedError
 
     def save(self, fs):

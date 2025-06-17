@@ -9,9 +9,7 @@ from bl_ext.user_default.mmd_tools.utils import ItemOp, clearUnusedMeshes, conve
 class TestUtilsUnit(unittest.TestCase):
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         # Ensure active object exists (user may have deleted the default cube)
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()
@@ -24,9 +22,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.scene = bpy.context.scene
 
     def test_selectAObject(self):
-        """
-        Test if selectAObject correctly selects and activates an object
-        """
+        """Test if selectAObject correctly selects and activates an object"""
         # Create test objects
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
@@ -54,9 +50,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertEqual(bpy.context.active_object, plane, "Plane should be the active object")
 
     def test_enterEditMode(self):
-        """
-        Test if enterEditMode correctly enters edit mode for an object
-        """
+        """Test if enterEditMode correctly enters edit mode for an object"""
         # Create a test object
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
@@ -75,9 +69,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertEqual(cube.mode, "EDIT", "Object should remain in EDIT mode")
 
     def test_setParentToBone(self):
-        """
-        Test if setParentToBone correctly sets an object's parent to a bone
-        """
+        """Test if setParentToBone correctly sets an object's parent to a bone"""
         # Create an armature
         bpy.ops.object.armature_add()
         armature = bpy.context.active_object
@@ -98,9 +90,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertEqual(cube.parent_type, "BONE", "Parent type should be BONE")
 
     def test_selectSingleBone(self):
-        """
-        Test if selectSingleBone correctly selects a single bone
-        """
+        """Test if selectSingleBone correctly selects a single bone"""
         # Create an armature with multiple bones
         bpy.ops.object.armature_add()
         armature = bpy.context.active_object
@@ -130,9 +120,7 @@ class TestUtilsUnit(unittest.TestCase):
                 self.assertFalse(armature.data.bones[bone_name].select, f"Bone {bone_name} should not be selected")
 
     def test_convertNameToLR(self):
-        """
-        Test if convertNameToLR correctly converts Japanese left/right naming to Blender's L/R convention
-        """
+        """Test if convertNameToLR correctly converts Japanese left/right naming to Blender's L/R convention"""
         # Test cases
         test_cases = [
             ("左腕", "腕.L"),  # Left arm
@@ -152,9 +140,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertEqual(convertNameToLR("右腕", True), "腕_R", "Failed to convert with underscore")
 
     def test_convertLRToName(self):
-        """
-        Test if convertLRToName correctly converts Blender's L/R convention to Japanese left/right naming
-        """
+        """Test if convertLRToName correctly converts Blender's L/R convention to Japanese left/right naming"""
         # Test cases
         test_cases = [
             ("腕.L", "左腕"),  # Left arm
@@ -171,9 +157,7 @@ class TestUtilsUnit(unittest.TestCase):
             self.assertEqual(convertLRToName(input_name), expected_output, f"Failed to convert {input_name}")
 
     def test_mergeVertexGroup(self):
-        """
-        Test if mergeVertexGroup correctly merges two vertex groups
-        """
+        """Test if mergeVertexGroup correctly merges two vertex groups"""
         # Create a mesh object with vertex groups
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
@@ -199,9 +183,7 @@ class TestUtilsUnit(unittest.TestCase):
             self.assertAlmostEqual(weight, 1.0, places=4, msg=f"Vertex {v_idx} should have weight 1.0 in DestGroup")
 
     def test_separateByMaterials(self):
-        """
-        Test if separateByMaterials correctly separates a mesh by materials
-        """
+        """Test if separateByMaterials correctly separates a mesh by materials"""
         # Create a mesh object with multiple materials
         bpy.ops.mesh.primitive_cube_add()
         cube = bpy.context.active_object
@@ -241,9 +223,7 @@ class TestUtilsUnit(unittest.TestCase):
             self.assertIn(obj.data.materials[0].name, material_names, f"Unexpected material: {obj.data.materials[0].name}")
 
     def test_clearUnusedMeshes(self):
-        """
-        Test if clearUnusedMeshes correctly removes unused meshes
-        """
+        """Test if clearUnusedMeshes correctly removes unused meshes"""
         # Create mesh with no users
         mesh1 = bpy.data.meshes.new(name="UnusedMesh")
         mesh_name = mesh1.name
@@ -262,9 +242,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertIn(mesh2.name, bpy.data.meshes, "Used mesh should still exist")
 
     def test_makePmxBoneMap(self):
-        """
-        Test if makePmxBoneMap correctly creates a mapping from Japanese bone names to pose bones
-        """
+        """Test if makePmxBoneMap correctly creates a mapping from Japanese bone names to pose bones"""
         # Create an armature
         bpy.ops.object.armature_add()
         armature = bpy.context.active_object
@@ -294,9 +272,7 @@ class TestUtilsUnit(unittest.TestCase):
             self.assertEqual(bone_map["骨"], bone, "Mapped bone should be the original bone")
 
     def test_unique_name(self):
-        """
-        Test if unique_name correctly generates unique names
-        """
+        """Test if unique_name correctly generates unique names"""
         used_names = {"test", "test.001", "other"}
 
         # Test with a name that doesn't exist yet
@@ -312,9 +288,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertEqual(unique, "test.002", "Should increment the suffix")
 
     def test_int2base(self):
-        """
-        Test if int2base correctly converts integers to different bases
-        """
+        """Test if int2base correctly converts integers to different bases"""
         # Test cases
         test_cases = [
             (10, 2, "1010"),      # Decimal to binary
@@ -332,9 +306,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertEqual(int2base(10, 16, 4), "000A", "Failed to pad with zeros")
 
     def test_saferelpath(self):
-        """
-        Test if saferelpath correctly handles relative paths across drives
-        """
+        """Test if saferelpath correctly handles relative paths across drives"""
         # Test normal relative path (same drive)
         if os.name == "posix":  # Unix-like system
             self.assertEqual(saferelpath("/a/b/c/file.txt", "/a/b"), "c/file.txt", "Failed to get relative path")
@@ -357,9 +329,7 @@ class TestUtilsUnit(unittest.TestCase):
                             "Absolute strategy should return absolute path")
 
     def test_ItemOp_get_by_index(self):
-        """
-        Test if ItemOp.get_by_index correctly retrieves items by index
-        """
+        """Test if ItemOp.get_by_index correctly retrieves items by index"""
         items = ["item1", "item2", "item3"]
 
         # Test valid indices
@@ -371,9 +341,7 @@ class TestUtilsUnit(unittest.TestCase):
         self.assertIsNone(ItemOp.get_by_index(items, 3), "Should return None for out of range index")
 
     def test_deprecated_decorator(self):
-        """
-        Test if the deprecated decorator correctly marks functions as deprecated
-        """
+        """Test if the deprecated decorator correctly marks functions as deprecated"""
         # Create a test function with the deprecated decorator
         @deprecated(deprecated_in="1.0.0", details="Use new_function instead")
         def old_function():

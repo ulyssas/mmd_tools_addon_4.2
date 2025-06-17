@@ -17,9 +17,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 class TestPmxExporter(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         for item in os.listdir(output_dir):
             if item.endswith(".OUTPUT"):
@@ -31,9 +29,7 @@ class TestPmxExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # logger.setLevel('DEBUG')
@@ -59,9 +55,7 @@ class TestPmxExporter(unittest.TestCase):
     # ********************************************
 
     def __check_pmx_header_info(self, source_model, result_model, import_types):
-        """
-        Test pmx model info, header
-        """
+        """Test pmx model info, header"""
         # Informations ================
 
         self.assertEqual(source_model.name, result_model.name)
@@ -111,9 +105,7 @@ class TestPmxExporter(unittest.TestCase):
         return tex_id if is_shared else self.__get_texture(tex_id, textures)
 
     def __check_pmx_mesh(self, source_model, result_model):
-        """
-        Test pmx textures, materials, vertices, faces
-        """
+        """Test pmx textures, materials, vertices, faces"""
         # textures ====================
         # TODO
 
@@ -211,9 +203,7 @@ class TestPmxExporter(unittest.TestCase):
         return displayConnection
 
     def __check_pmx_bones(self, source_model, result_model):
-        """
-        Test pmx bones
-        """
+        """Test pmx bones"""
         source_bones = source_model.bones
         result_bones = result_model.bones
         self.assertEqual(len(source_bones), len(result_bones))
@@ -314,9 +304,7 @@ class TestPmxExporter(unittest.TestCase):
         return rigid_id
 
     def __check_pmx_physics(self, source_model, result_model):
-        """
-        Test pmx rigids, joints
-        """
+        """Test pmx rigids, joints"""
         # rigids ======================
 
         source_rigids = source_model.rigids
@@ -401,9 +389,7 @@ class TestPmxExporter(unittest.TestCase):
         return _dummy
 
     def __check_pmx_morphs(self, source_model, result_model):
-        """
-        Test pmx morphs
-        """
+        """Test pmx morphs"""
         source_morphs = source_model.morphs
         result_morphs = result_model.morphs
         self.assertEqual(len(source_morphs), len(result_morphs))
@@ -530,9 +516,7 @@ class TestPmxExporter(unittest.TestCase):
     # ********************************************
 
     def __check_pmx_display_data(self, source_model, result_model, check_morphs):
-        """
-        Test pmx display
-        """
+        """Test pmx display"""
         source_display = source_model.display
         result_display = result_model.display
         self.assertEqual(len(source_display), len(result_display))

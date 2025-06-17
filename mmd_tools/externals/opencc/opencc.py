@@ -52,9 +52,7 @@ class OpenCC:
             self._init_dict()
 
     def convert(self, string):
-        """
-        Convert string from Simplified Chinese to Traditional Chinese or vice versa
-        """
+        """Convert string from Simplified Chinese to Traditional Chinese or vice versa"""
         if not self._dict_init_done:
             self._init_dict()
             self._dict_init_done = True

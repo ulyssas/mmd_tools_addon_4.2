@@ -12,9 +12,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 class TestSceneSetup(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         if os.path.exists(output_dir):
             for item in os.listdir(output_dir):
@@ -25,9 +23,7 @@ class TestSceneSetup(unittest.TestCase):
                     os.remove(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -42,18 +38,14 @@ class TestSceneSetup(unittest.TestCase):
     # ********************************************
 
     def __enable_mmd_tools(self):
-        """
-        Enable MMD Tools addon for testing
-        """
+        """Enable MMD Tools addon for testing"""
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
             addon_enable(module="bl_ext.user_default.mmd_tools")
 
     def __create_test_actions(self):
-        """
-        Create test actions with frame ranges for testing setupFrameRanges
-        """
+        """Create test actions with frame ranges for testing setupFrameRanges"""
         # Create first action with frame range 1-100
         action1 = bpy.data.actions.new(name="TestAction1")
         action1.frame_range = (1.0, 100.0)
@@ -72,9 +64,7 @@ class TestSceneSetup(unittest.TestCase):
         return action1, action2, action3
 
     def __create_rigidbody_world(self):
-        """
-        Create a rigid body world for testing - using direct scene property
-        """
+        """Create a rigid body world for testing - using direct scene property"""
         scene = bpy.context.scene
 
         if scene.rigidbody_world:
@@ -99,9 +89,7 @@ class TestSceneSetup(unittest.TestCase):
     # ********************************************
 
     def test_setupFrameRanges_empty_scene(self):
-        """
-        Test setupFrameRanges with no actions in the scene
-        """
+        """Test setupFrameRanges with no actions in the scene"""
         # Set initial scene frame values
         initial_current = 10
         initial_start = 5
@@ -122,9 +110,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertLessEqual(current_start, current_end)
 
     def test_setupFrameRanges_single_action(self):
-        """
-        Test setupFrameRanges with a single action
-        """
+        """Test setupFrameRanges with a single action"""
         # Set initial scene frame values
         bpy.context.scene.frame_current = 10
         bpy.context.scene.frame_start = 5
@@ -146,9 +132,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertLessEqual(final_start, final_end)
 
     def test_action_use_frame_range_behavior(self):
-        """
-        Test that we understand action.frame_range behavior correctly
-        """
+        """Test that we understand action.frame_range behavior correctly"""
         # Test use_frame_range = True behavior
         action_true = bpy.data.actions.new(name="ActionTrue")
         action_true.use_frame_range = True
@@ -171,9 +155,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertAlmostEqual(action_false.frame_range[1], 80.0)
 
     def test_setupFrameRanges_preserves_use_frame_range_states(self):
-        """
-        Test that setupFrameRanges preserves original use_frame_range states
-        """
+        """Test that setupFrameRanges preserves original use_frame_range states"""
         bpy.context.scene.frame_current = 25
         bpy.context.scene.frame_start = 10
 
@@ -232,9 +214,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertGreaterEqual(final_end, 200)  # Should include action2's range
 
     def test_setupFrameRanges_toggle_mechanism_detailed(self):
-        """
-        Test the detailed toggle mechanism of setupFrameRanges
-        """
+        """Test the detailed toggle mechanism of setupFrameRanges"""
         bpy.context.scene.frame_current = 50
         bpy.context.scene.frame_start = 30
 
@@ -288,9 +268,7 @@ class TestSceneSetup(unittest.TestCase):
         # Note: frame_range might change due to the internal logic, but use_frame_range should be restored
 
     def test_setupFrameRanges_with_empty_and_keyed_actions(self):
-        """
-        Test setupFrameRanges with mix of empty and keyed actions
-        """
+        """Test setupFrameRanges with mix of empty and keyed actions"""
         bpy.context.scene.frame_current = 20
         bpy.context.scene.frame_start = 15
 
@@ -354,9 +332,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertLessEqual(scene_start, scene_end)
 
     def test_setupFrameRanges_with_rigidbody_world(self):
-        """
-        Test setupFrameRanges updates rigid body world point cache when present
-        """
+        """Test setupFrameRanges updates rigid body world point cache when present"""
         # Create rigid body world
         rigidbody_world = self.__create_rigidbody_world()
         point_cache = rigidbody_world.point_cache
@@ -381,9 +357,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertEqual(point_cache.frame_end, scene_end)
 
     def test_setupFrameRanges_toggle_behavior(self):
-        """
-        Test that setupFrameRanges properly toggles use_frame_range to capture both VMD ranges
-        """
+        """Test that setupFrameRanges properly toggles use_frame_range to capture both VMD ranges"""
         # Create action that will be toggled
         action = bpy.data.actions.new(name="ToggleTestAction")
         action.frame_range = (30.0, 90.0)
@@ -405,9 +379,7 @@ class TestSceneSetup(unittest.TestCase):
     # ********************************************
 
     def test_setupFps_sets_correct_values(self):
-        """
-        Test that setupFps sets the correct FPS values
-        """
+        """Test that setupFps sets the correct FPS values"""
         # Set different initial values
         render = bpy.context.scene.render
         render.fps = 24
@@ -421,9 +393,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertEqual(render.fps_base, 1, "FPS base should be set to 1")
 
     def test_setupFps_idempotent(self):
-        """
-        Test that setupFps can be called multiple times without issues
-        """
+        """Test that setupFps can be called multiple times without issues"""
         # Call setupFps multiple times
         auto_scene_setup.setupFps()
         auto_scene_setup.setupFps()
@@ -439,9 +409,7 @@ class TestSceneSetup(unittest.TestCase):
     # ********************************************
 
     def test_complete_scene_setup(self):
-        """
-        Test remaining setup functions work together correctly
-        """
+        """Test remaining setup functions work together correctly"""
         # Create test actions
         action1, action2, action3 = self.__create_test_actions()
 
@@ -468,9 +436,7 @@ class TestSceneSetup(unittest.TestCase):
         self.assertEqual(render.fps_base, 1)
 
     def test_edge_case_negative_frames(self):
-        """
-        Test setupFrameRanges handles negative frame numbers correctly
-        """
+        """Test setupFrameRanges handles negative frame numbers correctly"""
         # Set scene with negative frame values
         bpy.context.scene.frame_current = -10
         bpy.context.scene.frame_start = -5
@@ -495,9 +461,7 @@ class TestSceneSetup(unittest.TestCase):
         print(f"Negative frame test: start={final_start}, end={final_end}")
 
     def test_fractional_frame_rounding(self):
-        """
-        Test that setupFrameRanges properly handles fractional frame values in actions
-        """
+        """Test that setupFrameRanges properly handles fractional frame values in actions"""
         # Set integer frame values (scene properties require integers)
         bpy.context.scene.frame_current = 10
         bpy.context.scene.frame_start = 5
@@ -523,16 +487,12 @@ class TestSceneSetup(unittest.TestCase):
     # ********************************************
 
     def test_setupLighting_function_removed(self):
-        """
-        Test that setupLighting function has been properly removed
-        """
+        """Test that setupLighting function has been properly removed"""
         # Verify function no longer exists in the module
         self.assertFalse(hasattr(auto_scene_setup, "setupLighting"), "setupLighting function should be removed for Blender 4.x compatibility")
 
     def test_action_frame_range_behavior(self):
-        """
-        Test the actual behavior of action.frame_range with use_frame_range toggle
-        """
+        """Test the actual behavior of action.frame_range with use_frame_range toggle"""
         # Create action
         action = bpy.data.actions.new(name="TestAction")
 

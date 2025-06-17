@@ -19,9 +19,7 @@ EXP_FRAME = "\u8868\u60c5"
 class ModelOperatorsTest(unittest.TestCase):
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         # Ensure active object exists (user may have deleted the default cube)
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()

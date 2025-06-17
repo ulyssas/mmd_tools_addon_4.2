@@ -110,9 +110,7 @@ class FnMaterial:
 
     @staticmethod
     def fixMaterialOrder(meshObj: bpy.types.Object, material_names: Iterable[str]):
-        """
-        This method will fix the material order. Which is lost after joining meshes.
-        """
+        """This method will fix the material order. Which is lost after joining meshes."""
         materials = cast(bpy.types.Mesh, meshObj.data).materials
         for new_idx, mat in enumerate(material_names):
             # Get the material that is currently on this index
