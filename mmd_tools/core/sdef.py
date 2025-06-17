@@ -91,6 +91,7 @@ class FnSDEF:
     @classmethod
     def __find_vertices(cls, obj):
         if not cls.has_sdef_data(obj):
+            logging.debug(f"SDEF vertex search skipped for '{obj.name}': No SDEF data found")
             return {}
 
         vertices = {}
@@ -268,6 +269,7 @@ class FnSDEF:
         # Unbind first
         cls.unbind(obj)
         if not cls.has_sdef_data(obj):
+            logging.debug(f"SDEF bind skipped for '{obj.name}': No SDEF data found")
             return False
         # Create the shapekey for the driver
         shapekey = obj.shape_key_add(name=cls.SHAPEKEY_NAME, from_mix=False)
