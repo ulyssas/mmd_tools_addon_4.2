@@ -278,9 +278,9 @@ class StringTree(object):
         string_len = len(string)
         lstring = None
         rstring = None
-        test_len = min (string_len, test_dict[0])
+        test_len = min(string_len, test_dict[0])
         if hint:
-            test_len = min (test_len, hint)
+            test_len = min(test_len, hint)
         min_len = test_dict[1]
         while test_len >= min_len:
             # Loop through trying successively smaller substrings in the dictionary
