@@ -54,7 +54,7 @@ class FileReadStream(FileStream):
         if size in typedict:
             index, = struct.unpack(typedict[size], self.__fin.read(size))
         else:
-            raise ValueError("invalid data size %s"%str(size))
+            raise ValueError("invalid data size %s" % str(size))
         return index
 
     def __readSignedIndex(self, size):
@@ -97,7 +97,7 @@ class FileReadStream(FileStream):
 
     def readStr(self):
         length = self.readInt()
-        buf, = struct.unpack("<%ds"%length, self.__fin.read(length))
+        buf, = struct.unpack("<%ds" % length, self.__fin.read(length))
         return str(buf, self.header().encoding.charset, errors="replace")
 
     def readFloat(self):
@@ -128,7 +128,7 @@ class FileWriteStream(FileStream):
         if size in typedict:
             self.__fout.write(struct.pack(typedict[size], int(index)))
         else:
-            raise ValueError("invalid data size %s"%str(size))
+            raise ValueError("invalid data size %s" % str(size))
         return
 
     def __writeSignedIndex(self, index, size):
@@ -199,11 +199,11 @@ class Encoding:
         if isinstance(arg, str):
             t = list(filter(lambda x: x[1] == arg, self._MAP))
             if len(t) == 0:
-                raise ValueError("invalid charset %s"%arg)
+                raise ValueError("invalid charset %s" % arg)
         elif isinstance(arg, int):
             t = list(filter(lambda x: x[0] == arg, self._MAP))
             if len(t) == 0:
-                raise ValueError("invalid index %d"%arg)
+                raise ValueError("invalid index %d" % arg)
         else:
             raise ValueError("invalid argument type")
         t = t[0]
@@ -211,7 +211,7 @@ class Encoding:
         self.charset  = t[1]
 
     def __repr__(self):
-        return "<Encoding charset %s>"%self.charset
+        return "<Encoding charset %s>" % self.charset
 
 
 class Coordinate:
@@ -272,7 +272,7 @@ class Header:
         logging.info("pmx format version: %f", self.version)
         if self.version != self.VERSION:
             logging.error("PMX version %.1f is unsupported", self.version)
-            raise UnsupportedVersionError("unsupported PMX version: %.1f"%self.version)
+            raise UnsupportedVersionError("unsupported PMX version: %.1f" % self.version)
         if fs.readByte() != 8 or self.sign[3] != self.PMX_SIGN[3]:
             logging.warning(" * This file might be corrupted.")
         self.encoding = Encoding(fs.readByte())
@@ -312,7 +312,7 @@ class Header:
         fs.writeByte(self.rigid_index_size)
 
     def __repr__(self):
-        return "<Header encoding %s, uvs %d, vtx %d, tex %d, mat %d, bone %d, morph %d, rigid %d>"%(
+        return "<Header encoding %s, uvs %d, vtx %d, tex %d, mat %d, bone %d, morph %d, rigid %d>" % (
             str(self.encoding),
             self.additional_uvs,
             self.vertex_index_size,
@@ -643,7 +643,7 @@ comment(english):
         logging.info("finished exporting the model.")
 
     def __repr__(self):
-        return "<Model name %s, name_e %s, comment %s, comment_e %s, textures %s>"%(
+        return "<Model name %s, name_e %s, comment %s, comment_e %s, textures %s>" % (
             self.name,
             self.name_e,
             self.comment,
@@ -662,7 +662,7 @@ class Vertex:
         self.edge_scale = 1
 
     def __repr__(self):
-        return "<Vertex co %s, normal %s, uv %s, additional_uvs %s, weight %s, edge_scale %s>"%(
+        return "<Vertex co %s, normal %s, uv %s, additional_uvs %s, weight %s, edge_scale %s>" % (
             str(self.co),
             str(self.normal),
             str(self.uv),
@@ -760,7 +760,7 @@ class BoneWeight:
             self.weights.r0 = fs.readVector(3)
             self.weights.r1 = fs.readVector(3)
         else:
-            raise ValueError("invalid weight type %s"%str(self.type))
+            raise ValueError("invalid weight type %s" % str(self.type))
 
     def save(self, fs):
         fs.writeByte(self.type)
@@ -785,7 +785,7 @@ class BoneWeight:
             fs.writeVector(self.weights.r0)
             fs.writeVector(self.weights.r1)
         else:
-            raise ValueError("invalid weight type %s"%str(self.type))
+            raise ValueError("invalid weight type %s" % str(self.type))
 
 
 class Texture:
@@ -793,7 +793,7 @@ class Texture:
         self.path = ""
 
     def __repr__(self):
-        return "<Texture path %s>"%str(self.path)
+        return "<Texture path %s>" % str(self.path)
 
     def load(self, fs):
         self.path = fs.readStr()
@@ -993,7 +993,7 @@ class Bone:
         self.ik_links = []
 
     def __repr__(self):
-        return "<Bone name %s, name_e %s>"%(
+        return "<Bone name %s, name_e %s>" % (
             self.name,
             self.name_e,)
 
@@ -1120,7 +1120,7 @@ class IKLink:
         self.minimumAngle = None
 
     def __repr__(self):
-        return "<IKLink target %s>"%(str(self.target))
+        return "<IKLink target %s>" % (str(self.target))
 
     def load(self, fs):
         self.target = fs.readBoneIndex()
@@ -1156,7 +1156,7 @@ class Morph:
         self.category = category
 
     def __repr__(self):
-        return "<Morph name %s, name_e %s>"%(self.name, self.name_e)
+        return "<Morph name %s, name_e %s>" % (self.name, self.name_e)
 
     def type_index(self):
         raise NotImplementedError
@@ -1393,7 +1393,7 @@ class Display:
         self.data = []
 
     def __repr__(self):
-        return "<Display name %s, name_e %s>"%(
+        return "<Display name %s, name_e %s>" % (
             self.name,
             self.name_e,
             )
@@ -1465,7 +1465,7 @@ class Rigid:
         self.mode = 0
 
     def __repr__(self):
-        return "<Rigid name %s, name_e %s>"%(
+        return "<Rigid name %s, name_e %s>" % (
             self.name,
             self.name_e,
             )
