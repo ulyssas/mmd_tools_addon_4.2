@@ -824,6 +824,7 @@ class TestVertexColorExporter(unittest.TestCase):
 
         return {"original_colors": original_colors, "exported_colors": exported_color_set, "vertices_with_colors": vertices_with_colors, "color_distribution": color_counts}
 
+
 if __name__ == "__main__":
     import sys
 

@@ -75,6 +75,7 @@ class TestFileIoOperators(unittest.TestCase):
                     break
             self.assertTrue(same_order, "Material order was lost")
 
+
 if __name__ == "__main__":
     import sys
     sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])

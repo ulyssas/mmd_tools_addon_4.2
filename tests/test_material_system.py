@@ -1303,6 +1303,7 @@ class TestMaterialSystem(unittest.TestCase):
 
         print("✓ Material ID uniqueness test passed")
 
+
 if __name__ == "__main__":
     import sys
 

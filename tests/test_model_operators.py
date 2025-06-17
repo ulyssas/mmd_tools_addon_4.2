@@ -55,6 +55,7 @@ class ModelOperatorsTest(unittest.TestCase):
         except IndexError:
             self.fail("Root bone not found in root frame")
 
+
 if __name__ == "__main__":
     import sys
     sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
