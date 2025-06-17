@@ -210,7 +210,6 @@ class Encoding:
         return "<Encoding charset %s>"%self.charset
 
 class Coordinate:
-    """ """
     def __init__(self, xAxis, zAxis):
         self.x_axis = xAxis
         self.z_axis = zAxis

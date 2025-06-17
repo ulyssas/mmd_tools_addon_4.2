@@ -579,7 +579,6 @@ class TestPmxExporter(unittest.TestCase):
             addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def test_pmx_exporter(self):
-        """ """
         input_files = self.__list_sample_files(("pmd", "pmx"))
         if len(input_files) < 1:
             self.fail("required PMX/PMD sample file(s)!")
