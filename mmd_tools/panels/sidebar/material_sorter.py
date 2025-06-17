@@ -33,7 +33,7 @@ class MMD_TOOLS_UL_Materials(bpy.types.UIList):
         if self.layout_type in {"DEFAULT"}:
             if item:
                 row = layout.row(align=True)
-                item_prop = getattr(item, "mmd_material")
+                item_prop = item.mmd_material
                 row.prop(item_prop, "name_j", text="", emboss=False, icon="MATERIAL")
                 row.prop(item_prop, "name_e", text="", emboss=True)
             else:
