@@ -47,17 +47,17 @@ class FileReadStream(FileStream):
 
     def __readIndex(self, size, typedict):
         index = None
-        if size in typedict :
+        if size in typedict:
             index, = struct.unpack(typedict[size], self.__fin.read(size))
         else:
             raise ValueError("invalid data size %s"%str(size))
         return index
 
     def __readSignedIndex(self, size):
-        return self.__readIndex(size, { 1 : "<b", 2 : "<h", 4 : "<i"})
+        return self.__readIndex(size, { 1: "<b", 2: "<h", 4: "<i"})
 
     def __readUnsignedIndex(self, size):
-        return self.__readIndex(size, { 1 : "<B", 2 : "<H", 4 : "<I"})
+        return self.__readIndex(size, { 1: "<B", 2: "<H", 4: "<I"})
 
     # READ methods for indexes
     def readVertexIndex(self):
@@ -120,17 +120,17 @@ class FileWriteStream(FileStream):
         FileStream.__init__(self, path, self.__fout, pmx_header)
 
     def __writeIndex(self, index, size, typedict):
-        if size in typedict :
+        if size in typedict:
             self.__fout.write(struct.pack(typedict[size], int(index)))
         else:
             raise ValueError("invalid data size %s"%str(size))
         return
 
     def __writeSignedIndex(self, index, size):
-        return self.__writeIndex(index, size, { 1 : "<b", 2 : "<h", 4 : "<i"})
+        return self.__writeIndex(index, size, { 1: "<b", 2: "<h", 4: "<i"})
 
     def __writeUnsignedIndex(self, index, size):
-        return self.__writeIndex(index, size, { 1 : "<B", 2 : "<H", 4 : "<I"})
+        return self.__writeIndex(index, size, { 1: "<B", 2: "<H", 4: "<I"})
 
     # WRITE methods for indexes
     def writeVertexIndex(self, index):
