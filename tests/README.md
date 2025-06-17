@@ -127,11 +127,11 @@ C:.
 |           ✓ bone_order.py (test_bone_order.py)
 |           ✓ display_panel.py (test_display_system.py)
 |           ✗ joints.py
-|           ✗ material_sorter.py
-|           ✗ meshes_sorter.py
-|           ✗ model_debug.py
-|           ✗ model_production.py
-|           ✗ model_setup.py
+|           ✓ material_sorter.py (test_model_management.py)
+|           ✓ meshes_sorter.py (test_model_management.py)
+|           ✓ model_debug.py (test_model_management.py)
+|           ✓ model_production.py (test_model_management.py)
+|           ✓ model_setup.py (test_model_management.py)
 |           ✓ morph_tools.py (test_morph_system.py)
 |           ✗ rigid_bodies.py
 |           ✓ scene_setup.py (test_scene_setup.py)
