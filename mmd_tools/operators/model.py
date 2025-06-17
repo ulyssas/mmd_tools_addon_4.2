@@ -448,7 +448,9 @@ class AssembleAll(bpy.types.Operator):
             rig.build()
             rig.morph_slider.bind()
 
-            with context.temp_override(selected_objects=[active_object]):
+            mesh_objects = list(FnModel.iterate_mesh_objects(root_object))
+            FnModel.attach_mesh_objects(root_object, mesh_objects, add_armature_modifier=True)
+            with context.temp_override(selected_objects=mesh_objects):
                 bpy.ops.mmd_tools.sdef_bind()
             root_object.mmd_root.use_property_driver = True
 

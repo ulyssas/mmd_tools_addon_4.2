@@ -759,9 +759,6 @@ class FnModel:
             if not FnModel.is_mesh_object(mesh_object):
                 continue
 
-            if FnModel.find_root_object(mesh_object) is not None:
-                continue
-
             mesh_root_object = __get_root_object(mesh_object)
             original_matrix_world = mesh_root_object.matrix_world
             mesh_root_object.parent_type = "OBJECT"
