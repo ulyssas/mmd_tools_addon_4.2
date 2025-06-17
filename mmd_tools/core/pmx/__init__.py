@@ -8,8 +8,11 @@ import struct
 
 class InvalidFileError(Exception):
     pass
+
+
 class UnsupportedVersionError(Exception):
     pass
+
 
 class FileStream:
     def __init__(self, path, file_obj, pmx_header):
@@ -39,6 +42,7 @@ class FileStream:
             logging.debug('close the file("%s")', self.__path)
             self.__file_obj.close()
             self.__file_obj = None
+
 
 class FileReadStream(FileStream):
     def __init__(self, path, pmx_header=None):
@@ -114,6 +118,7 @@ class FileReadStream(FileStream):
         v, = struct.unpack("<b", self.__fin.read(1))
         return v
 
+
 class FileWriteStream(FileStream):
     def __init__(self, path, pmx_header=None):
         self.__fout = open(path, "wb")
@@ -180,6 +185,7 @@ class FileWriteStream(FileStream):
     def writeSignedByte(self, v):
         self.__fout.write(struct.pack("<b", int(v)))
 
+
 class Encoding:
     _MAP = [
         (0, "utf-16-le"),
@@ -207,10 +213,12 @@ class Encoding:
     def __repr__(self):
         return "<Encoding charset %s>"%self.charset
 
+
 class Coordinate:
     def __init__(self, xAxis, zAxis):
         self.x_axis = xAxis
         self.z_axis = zAxis
+
 
 class Header:
     PMX_SIGN = b"PMX "
@@ -314,6 +322,7 @@ class Header:
             self.morph_index_size,
             self.rigid_index_size,
             )
+
 
 class Model:
     def __init__(self):
@@ -642,6 +651,7 @@ comment(english):
             str(self.textures),
             )
 
+
 class Vertex:
     def __init__(self):
         self.co = [0.0, 0.0, 0.0]
@@ -683,12 +693,14 @@ class Vertex:
         self.weight.save(fs)
         fs.writeFloat(self.edge_scale)
 
+
 class BoneWeightSDEF:
     def __init__(self, weight=0, c=None, r0=None, r1=None):
         self.weight = weight
         self.c = c
         self.r0 = r0
         self.r1 = r1
+
 
 class BoneWeight:
     BDEF1 = 0
@@ -798,10 +810,12 @@ class Texture:
         logging.info("writing to pmx file the relative texture path: %s", relPath)
         fs.writeStr(relPath)
 
+
 class SharedTexture(Texture):
     def __init__(self):
         self.number = 0
         self.prefix = ""
+
 
 class Material:
     SPHERE_MODE_OFF = 0
@@ -1127,6 +1141,7 @@ class IKLink:
         else:
             fs.writeByte(0)
 
+
 class Morph:
     CATEGORY_SYSTEM = 0
     CATEGORY_EYEBROW = 1
@@ -1182,6 +1197,7 @@ class Morph:
         for i in self.offsets:
             i.save(fs)
 
+
 class VertexMorph(Morph):
     def __init__(self, *args, **kwargs):
         Morph.__init__(self, *args, **kwargs)
@@ -1196,6 +1212,7 @@ class VertexMorph(Morph):
             t.load(fs)
             self.offsets.append(t)
 
+
 class VertexMorphOffset:
     def __init__(self):
         self.index = 0
@@ -1208,6 +1225,7 @@ class VertexMorphOffset:
     def save(self, fs):
         fs.writeVertexIndex(self.index)
         fs.writeVector(self.offset)
+
 
 class UVMorph(Morph):
     def __init__(self, *args, **kwargs):
@@ -1225,6 +1243,7 @@ class UVMorph(Morph):
             t.load(fs)
             self.offsets.append(t)
 
+
 class UVMorphOffset:
     def __init__(self):
         self.index = 0
@@ -1237,6 +1256,7 @@ class UVMorphOffset:
     def save(self, fs):
         fs.writeVertexIndex(self.index)
         fs.writeVector(self.offset)
+
 
 class BoneMorph(Morph):
     def __init__(self, *args, **kwargs):
@@ -1252,6 +1272,7 @@ class BoneMorph(Morph):
             t = BoneMorphOffset()
             t.load(fs)
             self.offsets.append(t)
+
 
 class BoneMorphOffset:
     def __init__(self):
@@ -1271,6 +1292,7 @@ class BoneMorphOffset:
         fs.writeVector(self.location_offset)
         fs.writeVector(self.rotation_offset)
 
+
 class MaterialMorph(Morph):
     def __init__(self, *args, **kwargs):
         Morph.__init__(self, *args, **kwargs)
@@ -1285,6 +1307,7 @@ class MaterialMorph(Morph):
             t = MaterialMorphOffset()
             t.load(fs)
             self.offsets.append(t)
+
 
 class MaterialMorphOffset:
     TYPE_MULT = 0
@@ -1329,6 +1352,7 @@ class MaterialMorphOffset:
         fs.writeVector(self.sphere_texture_factor)
         fs.writeVector(self.toon_texture_factor)
 
+
 class GroupMorph(Morph):
     def __init__(self, *args, **kwargs):
         Morph.__init__(self, *args, **kwargs)
@@ -1343,6 +1367,7 @@ class GroupMorph(Morph):
             t = GroupMorphOffset()
             t.load(fs)
             self.offsets.append(t)
+
 
 class GroupMorphOffset:
     def __init__(self):
@@ -1407,6 +1432,7 @@ class Display:
                 fs.writeMorphIndex(index)
             else:
                 raise Exception("invalid value.")
+
 
 class Rigid:
     TYPE_SPHERE = 0
@@ -1496,6 +1522,7 @@ class Rigid:
         fs.writeFloat(self.friction)
 
         fs.writeSignedByte(self.mode)
+
 
 class Joint:
     MODE_SPRING6DOF = 0
@@ -1607,6 +1634,7 @@ def load(path):
         logging.info(" mmd_tools.pmx module")
         logging.info("****************************************")
         return model
+
 
 def save(path, model, add_uv_count=0):
     with FileWriteStream(path) as fs:

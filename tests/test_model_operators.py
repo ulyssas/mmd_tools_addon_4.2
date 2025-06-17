@@ -16,6 +16,7 @@ ROOT_BONE = "\u5168\u3066\u306e\u89aa"
 # Facial Frame
 EXP_FRAME = "\u8868\u60c5"
 
+
 class ModelOperatorsTest(unittest.TestCase):
 
     def setUp(self):

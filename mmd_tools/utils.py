@@ -221,6 +221,7 @@ def saferelpath(path, start, strategy="inside"):
 
     return os.path.relpath(path, start)
 
+
 class ItemOp:
     @staticmethod
     def get_by_index(items, index):

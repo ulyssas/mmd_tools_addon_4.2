@@ -174,6 +174,7 @@ class OpenCC:
 
 #############################################
 
+
 class TreeNode(object):
     LEFT = 0
     RIGHT = 1
@@ -195,6 +196,7 @@ class TreeNode(object):
 
     def set_hint(self, hint):
         self.length_hint = hint
+
 
 class StringTree(object):
     def __init__(self, string):

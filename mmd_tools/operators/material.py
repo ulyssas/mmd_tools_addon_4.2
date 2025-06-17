@@ -91,6 +91,7 @@ class ConvertMaterials(Operator):
             cycles_converter.convertToBlenderShader(obj, use_principled=self.use_principled, clean_nodes=self.clean_nodes, subsurface=self.subsurface)
         return {"FINISHED"}
 
+
 class ConvertBSDFMaterials(Operator):
     bl_idname = "mmd_tools.convert_bsdf_materials"
     bl_label = "Convert Blender Materials"
@@ -107,6 +108,7 @@ class ConvertBSDFMaterials(Operator):
                 continue
             cycles_converter.convertToMMDShader(obj)
         return {"FINISHED"}
+
 
 class _OpenTextureBase:
     """Create a texture for mmd model material."""
