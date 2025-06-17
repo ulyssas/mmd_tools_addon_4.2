@@ -75,7 +75,6 @@ def get_blender_path():
     2. When launched with Python: python all_test_runner.py (uses 'blender' from PATH)
     3. When launched with Python and explicit path: python all_test_runner.py <blender.exe path>
     """
-
     # Method 1: Check if we're running inside Blender
     try:
         import bpy

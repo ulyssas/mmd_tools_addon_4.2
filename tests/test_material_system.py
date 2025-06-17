@@ -30,7 +30,6 @@ class TestMaterialSystem(unittest.TestCase):
 
     def setUp(self):
         """Start each test with a clean state"""
-
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 

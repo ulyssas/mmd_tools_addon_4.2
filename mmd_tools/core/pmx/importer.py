@@ -313,7 +313,6 @@ class PMXImporter:
         @param pmx_bone pmx.Bone
         @param pose_bones the list of PoseBones sorted by the bone index
         """
-
         # for tracking mmd ik target, simple explaination:
         # + Root
         # | + link1
