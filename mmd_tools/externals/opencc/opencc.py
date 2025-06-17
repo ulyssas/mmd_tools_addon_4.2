@@ -72,7 +72,7 @@ class OpenCC:
         # Join it all together to return a result
         return "".join(result)
 
-    def _convert(self, string, dictionary=[]):
+    def _convert(self, string, dictionary=None):
         """
         Convert string from Simplified Chinese to Traditional Chinese or vice versa
         If a dictionary is part of a group of dictionaries, stop conversion on a word
@@ -81,6 +81,8 @@ class OpenCC:
         :param dictionary: list of dictionaries to be applied against the string
         :return: converted string
         """
+        if dictionary is None:
+            dictionary = []
         tree = StringTree(string)
         for c_dict in dictionary:
             tree.create_parse_tree(c_dict)
