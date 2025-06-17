@@ -17,7 +17,7 @@ from .translations import MMDTranslation
 def __driver_variables(constraint: bpy.types.Constraint, path: str, index=-1):
     d = constraint.driver_add(path, index)
     variables = d.driver.variables
-    for x in variables:
+    for x in reversed(variables):
         variables.remove(x)
     return d.driver, variables
 

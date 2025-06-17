@@ -636,7 +636,7 @@ class ClearUVMorphView(bpy.types.Operator):
         for m in FnModel.iterate_mesh_objects(root):
             mesh = m.data
             uv_textures = getattr(mesh, "uv_textures", mesh.uv_layers)
-            for t in uv_textures:
+            for t in reversed(uv_textures):
                 if t.name.startswith("__uv."):
                     uv_textures.remove(t)
             if len(uv_textures) > 0:
@@ -646,7 +646,7 @@ class ClearUVMorphView(bpy.types.Operator):
             animation_data = mesh.animation_data
             if animation_data:
                 nla_tracks = animation_data.nla_tracks
-                for t in nla_tracks:
+                for t in reversed(nla_tracks):
                     if t.name.startswith("__uv."):
                         nla_tracks.remove(t)
                 if animation_data.action and animation_data.action.name.startswith("__uv."):
@@ -654,7 +654,7 @@ class ClearUVMorphView(bpy.types.Operator):
                 if animation_data.action is None and len(nla_tracks) == 0:
                     mesh.animation_data_clear()
 
-        for act in bpy.data.actions:
+        for act in reversed(bpy.data.actions):
             if act.name.startswith("__uv.") and act.users < 1:
                 bpy.data.actions.remove(act)
         return {"FINISHED"}

@@ -701,7 +701,7 @@ class MMDModelFixTextureIssues(Operator):
 
         # Clean up unused image blocks with missing files
         removed_images = []
-        for img in bpy.data.images:
+        for img in reversed(bpy.data.images):
             if img.users == 0 and (not os.path.exists(bpy.path.abspath(img.filepath)) and not img.packed_file):
                 removed_images.append(f"Removed unused image block: '{img.name}'")
                 bpy.data.images.remove(img)

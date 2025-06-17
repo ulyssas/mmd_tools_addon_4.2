@@ -385,7 +385,7 @@ class _MorphSlider:
     def __driver_variables(id_data, path, index=-1):
         d = id_data.driver_add(path, index)
         variables = d.driver.variables
-        for x in variables:
+        for x in reversed(variables):
             variables.remove(x)
         return d.driver, variables
 
@@ -440,7 +440,7 @@ class _MorphSlider:
                     kb.driver_remove("value")
                     kb.slider_min, kb.slider_max = min(ms.slider_min, floor(kb.value)), max(ms.slider_max, ceil(kb.value))
 
-            for m in mesh_object.modifiers:  # uv morph
+            for m in reversed(mesh_object.modifiers):  # uv morph
                 if m.name.startswith("mmd_bind") and m.name not in names_in_use:
                     mesh_object.modifiers.remove(m)
 
@@ -455,7 +455,7 @@ class _MorphSlider:
         attributes = set(TransformConstraintOp.min_max_attributes("LOCATION", "to"))
         attributes |= set(TransformConstraintOp.min_max_attributes("ROTATION", "to"))
         for b in rig.armature().pose.bones:
-            for c in b.constraints:
+            for c in reversed(b.constraints):
                 if c.name.startswith("mmd_bind") and c.name[:-4] not in names_in_use:
                     for attr in attributes:
                         c.driver_remove(attr)
@@ -591,7 +591,7 @@ class _MorphSlider:
 
             used_bone_names = bone_offset_map.keys() | uv_morph_map.keys()
             used_bone_names.add(ctrl_base.name)
-            for b in edit_bones:  # cleanup
+            for b in reversed(edit_bones):  # cleanup
                 if b.name.startswith("mmd_bind") and b.name not in used_bone_names:
                     edit_bones.remove(b)
 
