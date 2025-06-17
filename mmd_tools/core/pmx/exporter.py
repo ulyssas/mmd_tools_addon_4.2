@@ -663,7 +663,7 @@ class __PmxExporter:
             self.__model.morphs.append(mat_morph)
 
     def __sortMaterials(self):
-        """sort materials for alpha blending
+        """Sort materials for alpha blending
 
         モデル内全頂点の平均座標をモデルの中心と考えて、
         モデル中心座標とマテリアルがアサインされている全ての面の構成頂点との平均距離を算出。

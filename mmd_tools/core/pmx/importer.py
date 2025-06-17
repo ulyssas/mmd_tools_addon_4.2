@@ -190,7 +190,7 @@ class PMXImporter:
             self.__textureTable.append(bpy.path.resolve_ncase(path=i.path))
 
     def __createEditBones(self, obj, pmx_bones):
-        """create EditBones from pmx file data.
+        """Create EditBones from pmx file data.
         @return the list of bone names which can be accessed by the bone index of pmx data.
         """
         editBoneTable = []
@@ -307,7 +307,7 @@ class PMXImporter:
         return new_min_angle, new_max_angle
 
     def __applyIk(self, index, pmx_bone, pose_bones):
-        """create a IK bone constraint
+        """Create a IK bone constraint
         If the IK bone and the target bone is separated, a dummy IK target bone is created as a child of the IK bone.
         @param index the bone index
         @param pmx_bone pmx.Bone

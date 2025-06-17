@@ -1030,7 +1030,7 @@ class Model:
         FnMorph.load_morphs(self)
 
     def create_ik_constraint(self, bone, ik_target):
-        """create IK constraint
+        """Create IK constraint
 
         Args:
             bone: A pose bone to add a IK constraint

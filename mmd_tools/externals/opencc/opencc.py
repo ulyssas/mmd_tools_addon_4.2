@@ -32,7 +32,7 @@ DICT_DIR = "dictionary"
 class OpenCC:
     def __init__(self, conversion=None):
         """
-        init OpenCC
+        Init OpenCC
         :param conversion: the conversion of usage, options are
          'hk2s', 's2hk', 's2t', 's2tw', 's2twp', 't2hk', 't2s', 't2tw', 'tw2s', 'tw2sp', etc
          check the json file names in config directory
@@ -89,7 +89,7 @@ class OpenCC:
 
     def _init_dict(self):
         """
-        initialize the dict with chosen conversion
+        Initialize the dict with chosen conversion
         :return: None
         """
         if self.conversion is None:
@@ -142,7 +142,7 @@ class OpenCC:
 
     def _add_dict_chain(self, dict_chain, dict_dict):
         """
-        add dict chain
+        Add dict chain
         :param dict_chain: the dict chain to add to
         :param dict_dict: the dict to be added in
         :return: None
@@ -160,7 +160,7 @@ class OpenCC:
 
     def set_conversion(self, conversion):
         """
-        set conversion
+        Set conversion
         :param conversion: the conversion of usage, options are
          'hk2s', 's2hk', 's2t', 's2tw', 's2twp', 't2hk', 't2s', 't2tw', 'tw2s', and 'tw2sp'
          check the json file names in config directory
