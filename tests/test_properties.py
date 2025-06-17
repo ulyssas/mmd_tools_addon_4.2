@@ -1797,7 +1797,6 @@ class TestMMDProperties(unittest.TestCase):
 
         print("✓ Complete property workflow test passed")
 
-
     def test_rigid_body_properties_size_setting(self):
         """Test rigid body size setting functionality"""
         self._enable_mmd_tools()
@@ -1875,7 +1874,6 @@ class TestMMDProperties(unittest.TestCase):
 
         print("✓ Rigid body properties size setting test passed")
 
-
     def test_rigid_body_properties_size_edge_cases(self):
         """Test rigid body size setting with edge cases"""
         self._enable_mmd_tools()
@@ -1925,7 +1923,6 @@ class TestMMDProperties(unittest.TestCase):
             self.assertAlmostEqual(new_size[i], expected, places=1, msg=f"Large size component {i} should be preserved")
 
         print("✓ Rigid body properties size edge cases test passed")
-
 
     def test_rigid_body_properties_size_mesh_update(self):
         """Test that rigid body size changes actually update the mesh geometry"""

@@ -300,5 +300,3 @@ class StringTree(object):
             test_len -= 1
         # No match found
         return None, None, None, None
-
-

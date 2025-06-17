@@ -586,7 +586,6 @@ class TestPmxImporter(unittest.TestCase):
         print(f"   - Joints: {len(components['joints'])}")
         print(f"   - Materials: {len(components['materials'])}")
 
-
     def test_pmx_import_sdef_vertices(self):
         """Test PMX importing SDEF vertex weights"""
         input_files = self._list_sample_files(("pmx", "pmd"))
@@ -608,7 +607,6 @@ class TestPmxImporter(unittest.TestCase):
                     self.assertGreaterEqual(len(sdef_keys), 3, "Should have SDEF C, R0, R1 keys")
 
         print("✓ SDEF vertices test passed")
-
 
     def test_pmx_import_additional_uvs(self):
         """Test PMX importing additional UV channels"""
@@ -637,7 +635,6 @@ class TestPmxImporter(unittest.TestCase):
                 print(f"   - Found vertex color layers: {color_layers}")
 
         print("✓ Additional UVs test passed")
-
 
     def test_pmx_import_custom_properties(self):
         """Test PMX importing custom properties and metadata"""
@@ -668,7 +665,6 @@ class TestPmxImporter(unittest.TestCase):
 
         print("✓ Custom properties test passed")
 
-
     def test_pmx_import_bone_collections(self):
         """Test PMX importing bone collections from display frames"""
         input_files = self._list_sample_files(("pmx", "pmd"))
@@ -691,7 +687,6 @@ class TestPmxImporter(unittest.TestCase):
             self.assertGreater(len(bone_collections), 0, "Should have bone collections")
 
         print("✓ Bone collections test passed")
-
 
     def test_pmx_import_ik_configuration(self):
         """Test PMX importing detailed IK configuration"""
@@ -729,7 +724,6 @@ class TestPmxImporter(unittest.TestCase):
         print(f"   - Found {ik_limit_constraints_found} IK limit constraints")
         print("✓ IK configuration test passed")
 
-
     def test_pmx_import_material_textures(self):
         """Test PMX importing material texture assignments"""
         input_files = self._list_sample_files(("pmx", "pmd"))
@@ -766,7 +760,6 @@ class TestPmxImporter(unittest.TestCase):
         print(f"   - Found {sphere_texture_count} sphere textures")
         print("✓ Material textures test passed")
 
-
     def test_pmx_import_vertex_weight_distribution(self):
         """Test PMX importing vertex weight distribution accuracy"""
         input_files = self._list_sample_files(("pmx", "pmd"))
@@ -802,7 +795,6 @@ class TestPmxImporter(unittest.TestCase):
 
         print("✓ Vertex weight distribution test passed")
 
-
     def test_pmx_import_stress_testing(self):
         """Test PMX importing under stress conditions"""
         input_files = self._list_sample_files(("pmx", "pmd"))
@@ -826,7 +818,6 @@ class TestPmxImporter(unittest.TestCase):
             gc.collect()
 
         print("✓ Stress testing passed")
-
 
     def test_pmx_import_extreme_scales(self):
         """Test PMX importing with extreme scale values"""
@@ -865,7 +856,6 @@ class TestPmxImporter(unittest.TestCase):
 
         print("✓ Extreme scales test completed")
 
-
     def test_pmx_import_corrupted_data_handling(self):
         """Test PMX importing with potentially problematic data"""
         input_files = self._list_sample_files(("pmx", "pmd"))
@@ -901,7 +891,6 @@ class TestPmxImporter(unittest.TestCase):
             print(f"   - Corrupted data handling test encountered: {str(e)[:100]}")
 
         print("✓ Corrupted data handling test completed")
-
 
     def test_pmx_import_compatibility_matrix(self):
         """Test PMX importing across different model types and configurations"""

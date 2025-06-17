@@ -362,7 +362,6 @@ class TestBoneOrder(unittest.TestCase):
         # Set active bone to head
         self.root_object.mmd_root.active_bone_index = head_index
 
-
         # Execute move to top operator
         bpy.context.view_layer.objects.active = self.root_object
         result = bpy.ops.mmd_tools.bone_id_move_top()

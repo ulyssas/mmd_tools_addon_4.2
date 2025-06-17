@@ -59,7 +59,6 @@ class FileReadStream(FileStream):
     def __readUnsignedIndex(self, size):
         return self.__readIndex(size, { 1 :"<B", 2 :"<H", 4 :"<I"})
 
-
     # READ methods for indexes
     def readVertexIndex(self):
         return self.__readUnsignedIndex(self.header().vertex_index_size)
@@ -151,7 +150,6 @@ class FileWriteStream(FileStream):
 
     def writeMaterialIndex(self, index):
         return self.__writeSignedIndex(index, self.header().material_index_size)
-
 
     def writeInt(self, v):
         self.__fout.write(struct.pack("<i", int(v)))
@@ -635,7 +633,6 @@ comment(english):
         logging.info("finished exporting joints.")
         logging.info("finished exporting the model.")
 
-
     def __repr__(self):
         return "<Model name %s, name_e %s, comment %s, comment_e %s, textures %s>"%(
             self.name,
@@ -1015,7 +1012,6 @@ class Bone:
             self.additionalTransform = (t, v)
         else:
             self.additionalTransform = None
-
 
         if flags & 0x0400:
             self.axis = fs.readVector(3)
@@ -1587,7 +1583,6 @@ class Joint:
 
         fs.writeVector(self.spring_constant)
         fs.writeVector(self.spring_rotation_constant)
-
 
 
 def load(path):
