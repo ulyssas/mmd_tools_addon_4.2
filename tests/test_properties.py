@@ -1959,8 +1959,7 @@ class TestMMDProperties(unittest.TestCase):
         updated_vertices = [v.co.copy() for v in mesh.vertices]
 
         # Verify vertex count is consistent (shouldn't change for size updates)
-        self.assertEqual(len(updated_vertices), initial_vertex_count,
-                        "Vertex count should remain the same when updating size")
+        self.assertEqual(len(updated_vertices), initial_vertex_count, "Vertex count should remain the same when updating size")
 
         # Vertices should have changed positions
         vertices_changed = False
