@@ -253,9 +253,9 @@ class Header:
         s = 1
         if signed:
             s = 2
-        if (1<<8) / s > num:
+        if (1 << 8) / s > num:
             return 1
-        elif (1<<16) / s > num:
+        elif (1 << 16) / s > num:
             return 2
         else:
             return 4
