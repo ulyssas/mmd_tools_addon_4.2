@@ -1628,7 +1628,7 @@ def load(path):
             model.load(fs)
         except struct.error as e:
             logging.error(" * Corrupted file: %s", e)
-            #raise
+            # raise
         logging.info(" Finished loading.")
         logging.info("----------------------------------------")
         logging.info(" mmd_tools.pmx module")
