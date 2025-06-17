@@ -1290,7 +1290,7 @@ class __PmxExporter:
         def _mat_name(x):
             return x.name if x else self.__getDefaultMaterial().name
         material_names = {i: _mat_name(m) for i, m in enumerate(base_mesh.materials)}
-        material_names = {i: material_names.get(i, None) or _mat_name(None) for i in material_faces.keys()}
+        material_names = {i: material_names.get(i) or _mat_name(None) for i in material_faces.keys()}
 
         # Vertex colors are handled directly in __convertFaceUVToVertexUV
         if vertex_colors:
@@ -1428,7 +1428,7 @@ class __PmxExporter:
         FnTranslations.clear_data(root_object.mmd_root.translation)
 
     def execute(self, filepath, **args):
-        root = args.get("root", None)
+        root = args.get("root")
         self.__model = pmx.Model()
         self.__model.name = "test"
         self.__model.name_e = "test eng"
@@ -1449,7 +1449,7 @@ class __PmxExporter:
             if txt:
                 self.__model.comment_e = txt.as_string().replace("\n", "\r\n")
 
-        self.__armature = args.get("armature", None)
+        self.__armature = args.get("armature")
         meshes = sorted(args.get("meshes", []), key=lambda x: x.name)
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)

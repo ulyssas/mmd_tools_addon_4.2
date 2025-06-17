@@ -887,7 +887,7 @@ class PMXImporter:
         self.__spa_blend_factor = args.get("spa_blend_factor", 1.0)
         self.__fix_IK_links = args.get("fix_IK_links", False)
         self.__apply_bone_fixed_axis = args.get("apply_bone_fixed_axis", False)
-        self.__translator = args.get("translator", None)
+        self.__translator = args.get("translator")
 
         logging.info("****************************************")
         logging.info(" mmd_tools.import_pmx module")

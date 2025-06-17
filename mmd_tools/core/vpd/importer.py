@@ -57,7 +57,7 @@ class VPDImporter:
 
         # Update and keyframe only the bones affected by the current VPD file
         for bone in armObj.pose.bones:
-            vpd_pose = pose_data.get(bone, None)
+            vpd_pose = pose_data.get(bone)
             if vpd_pose:
                 bone.matrix_basis = vpd_pose
 

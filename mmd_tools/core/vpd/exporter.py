@@ -116,11 +116,11 @@ class VPDExporter:
         return vpd_morphs
 
     def export(self, **args):
-        armature = args.get("armature", None)
-        mesh = args.get("mesh", None)
+        armature = args.get("armature")
+        mesh = args.get("mesh")
         filepath = args.get("filepath", "")
         self.__scale = args.get("scale", 1.0)
-        self.__osm_name = "%s.osm" % args.get("model_name", None)
+        self.__osm_name = "%s.osm" % args.get("model_name")
 
         pose_type = args.get("pose_type", "CURRENT")
         if pose_type == "CURRENT":

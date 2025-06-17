@@ -495,10 +495,10 @@ class VMDExporter:
         return vmd_lamp_anim
 
     def export(self, **args):
-        armature = args.get("armature", None)
-        mesh = args.get("mesh", None)
-        camera = args.get("camera", None)
-        lamp = args.get("lamp", None)
+        armature = args.get("armature")
+        mesh = args.get("mesh")
+        camera = args.get("camera")
+        lamp = args.get("lamp")
         filepath = args.get("filepath", "")
 
         self.__scale = args.get("scale", 1.0)
