@@ -1165,7 +1165,7 @@ class Morph:
         logging.debug("morph: %s", name)
         category = fs.readSignedByte()
         typeIndex = fs.readSignedByte()
-        ret = _CLASSES[typeIndex](name, name_e, category, type_index = typeIndex)
+        ret = _CLASSES[typeIndex](name, name_e, category, type_index=typeIndex)
         ret.load(fs)
         return ret
 

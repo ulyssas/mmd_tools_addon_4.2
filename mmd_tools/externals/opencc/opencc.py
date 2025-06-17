@@ -72,7 +72,7 @@ class OpenCC:
         # Join it all together to return a result
         return "".join(result)
 
-    def _convert(self, string, dictionary = []):
+    def _convert(self, string, dictionary=[]):
         """
         Convert string from Simplified Chinese to Traditional Chinese or vice versa
         If a dictionary is part of a group of dictionaries, stop conversion on a word
@@ -261,7 +261,7 @@ class StringTree(object):
                 break
         return return_val
 
-    def __findMatch(self, string, test_dict, hint = None):
+    def __findMatch(self, string, test_dict, hint=None):
         """
         Compare smaller and smaller sub-strings going from left to
         right against test_dict. If an entry is found, return it as well
