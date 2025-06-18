@@ -70,7 +70,7 @@ class FileReadStream(FileStream):
 
     def readStr(self, size):
         buf = self.__fin.read(size)
-        if buf[0] == b"\xfd":
+        if not buf or buf[0] == 0xfd:
             return ""
         return buf.split(b"\x00")[0].decode("shift_jis", errors="replace")
 
