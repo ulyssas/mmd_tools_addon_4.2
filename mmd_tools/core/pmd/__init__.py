@@ -7,6 +7,8 @@ import os
 import re
 import struct
 
+from ..vmd import _toShiftJisString
+
 
 class InvalidFileError(Exception):
     pass
@@ -70,9 +72,9 @@ class FileReadStream(FileStream):
 
     def readStr(self, size):
         buf = self.__fin.read(size)
-        if not buf or buf[0] == 0xfd:
+        if not buf:
             return ""
-        return buf.split(b"\x00")[0].decode("shift_jis", errors="replace")
+        return _toShiftJisString(buf)
 
     def readFloat(self):
         (v,) = struct.unpack("<f", self.__fin.read(4))

@@ -10,13 +10,22 @@ class InvalidFileError(Exception):
     pass
 
 
-# vmd仕様の文字列をstringに変換
 def _toShiftJisString(byteString):
-    return byteString.split(b"\x00")[0].decode("shift_jis", errors="replace")
+    """Convert a VMD format byte string to a regular string."""
+    # Replace ? with � to ensure replacement character consistency between UnicodeEncodeError and Truncate
+    result = byteString.replace(b"\x00", b"").decode("shift_jis", errors="replace").replace("?", "�")
+    # If the beginning is b"\x00" but there's no � in result, it means the first character is an encoding error, so add �
+    prefix = "�" if byteString[:1] == b"\x00" and "�" not in result else ""
+    return prefix + result
 
 
 def _toShiftJisBytes(string):
-    return string.encode("shift_jis", errors="replace")
+    """Convert a regular string to a VMD format byte string."""
+    try:
+        return string.encode("shift_jis")
+    except UnicodeEncodeError:
+        # Match MikuMikuDance's behavior: replace first byte with b"\x00" to indicate encoding failures
+        return b"\x00" + string.encode("shift_jis", errors="replace")[1:]
 
 
 class Header:
