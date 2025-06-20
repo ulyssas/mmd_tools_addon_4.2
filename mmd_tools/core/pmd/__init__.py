@@ -7,7 +7,7 @@ import os
 import re
 import struct
 
-from ..vmd import _toShiftJisString
+from ..vmd import _decodeCp932String
 
 
 class InvalidFileError(Exception):
@@ -74,7 +74,7 @@ class FileReadStream(FileStream):
         buf = self.__fin.read(size)
         if not buf:
             return ""
-        return _toShiftJisString(buf)
+        return _decodeCp932String(buf)
 
     def readFloat(self):
         (v,) = struct.unpack("<f", self.__fin.read(4))

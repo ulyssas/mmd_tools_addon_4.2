@@ -10,20 +10,20 @@ class InvalidFileError(Exception):
     pass
 
 
-def _toShiftJisString(byteString):
+def _decodeCp932String(byteString):
     """Convert a VMD format byte string to a regular string."""
     # If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding.
     # Finally, replace ? with � to ensure replacement character consistency between UnicodeEncodeError and Truncate.
-    return ("�" if byteString[:1] == b"\x00" else "") + byteString.replace(b"\x00", b"").decode("shift_jis", errors="replace").replace("?", "�")
+    return ("�" if byteString[:1] == b"\x00" else "") + byteString.replace(b"\x00", b"").decode("cp932", errors="replace").replace("?", "�")
 
 
-def _toShiftJisBytes(string):
+def _encodeCp932String(string):
     """Convert a regular string to a VMD format byte string."""
     try:
-        return string.encode("shift_jis")
+        return string.encode("cp932")
     except UnicodeEncodeError:
         # Match MikuMikuDance's behavior: replace first byte with b"\x00" to indicate encoding failures
-        return b"\x00" + string.encode("shift_jis", errors="replace")[1:]
+        return b"\x00" + string.encode("cp932", errors="replace")[1:]
 
 
 class Header:
@@ -37,11 +37,11 @@ class Header:
         (self.signature,) = struct.unpack("<30s", fin.read(30))
         if self.signature[: len(self.VMD_SIGN)] != self.VMD_SIGN:
             raise InvalidFileError('File signature "%s" is invalid.' % self.signature)
-        self.model_name = _toShiftJisString(struct.unpack("<20s", fin.read(20))[0])
+        self.model_name = _decodeCp932String(struct.unpack("<20s", fin.read(20))[0])
 
     def save(self, fin):
         fin.write(struct.pack("<30s", self.VMD_SIGN))
-        fin.write(struct.pack("<20s", _toShiftJisBytes(self.model_name)))
+        fin.write(struct.pack("<20s", _encodeCp932String(self.model_name)))
 
     def __repr__(self):
         return "<Header model_name %s>" % (self.model_name)
@@ -201,7 +201,7 @@ class PropertyFrameKey:
         (self.visible,) = struct.unpack("<b", fin.read(1))
         (count,) = struct.unpack("<L", fin.read(4))
         for i in range(count):
-            ik_name = _toShiftJisString(struct.unpack("<20s", fin.read(20))[0])
+            ik_name = _decodeCp932String(struct.unpack("<20s", fin.read(20))[0])
             (state,) = struct.unpack("<b", fin.read(1))
             self.ik_states.append((ik_name, state))
 
@@ -210,7 +210,7 @@ class PropertyFrameKey:
         fin.write(struct.pack("<b", 1 if self.visible else 0))
         fin.write(struct.pack("<L", len(self.ik_states)))
         for ik_name, state in self.ik_states:
-            fin.write(struct.pack("<20s", _toShiftJisBytes(ik_name)))
+            fin.write(struct.pack("<20s", _encodeCp932String(ik_name)))
             fin.write(struct.pack("<b", 1 if state else 0))
 
     def __repr__(self):
@@ -233,7 +233,7 @@ class _AnimationBase(collections.defaultdict):
         (count,) = struct.unpack("<L", fin.read(4))
         logging.info("loading %s... %d", self.__class__.__name__, count)
         for i in range(count):
-            name = _toShiftJisString(struct.unpack("<15s", fin.read(15))[0])
+            name = _decodeCp932String(struct.unpack("<15s", fin.read(15))[0])
             cls = self.frameClass()
             frameKey = cls()
             frameKey.load(fin)
@@ -243,7 +243,7 @@ class _AnimationBase(collections.defaultdict):
         count = sum([len(i) for i in self.values()])
         fin.write(struct.pack("<L", count))
         for name, frameKeys in self.items():
-            name_data = struct.pack("<15s", _toShiftJisBytes(name))
+            name_data = struct.pack("<15s", _encodeCp932String(name))
             for frameKey in frameKeys:
                 fin.write(name_data)
                 frameKey.save(fin)
