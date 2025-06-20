@@ -14,7 +14,10 @@ def _decodeCp932String(byteString):
     """Convert a VMD format byte string to a regular string."""
     # If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding.
     # Finally, replace ? with � to ensure replacement character consistency between UnicodeEncodeError and Truncate.
-    return ("�" if byteString[:1] == b"\x00" else "") + byteString.replace(b"\x00", b"").decode("cp932", errors="replace").replace("?", "�")
+    decoded = byteString.replace(b"\x00", b"").decode("cp932", errors="replace")
+    if byteString[:1] == b"\x00":
+        decoded = "�" + decoded.replace("?", "�")
+    return decoded
 
 
 def _encodeCp932String(string):
