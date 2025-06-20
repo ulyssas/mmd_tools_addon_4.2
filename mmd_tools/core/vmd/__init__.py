@@ -12,11 +12,9 @@ class InvalidFileError(Exception):
 
 def _toShiftJisString(byteString):
     """Convert a VMD format byte string to a regular string."""
-    # Replace ? with � to ensure replacement character consistency between UnicodeEncodeError and Truncate
-    result = byteString.replace(b"\x00", b"").decode("shift_jis", errors="replace").replace("?", "�")
-    # If the beginning is b"\x00" but there's no � in result, it means the first character is an encoding error, so add �
-    prefix = "�" if byteString[:1] == b"\x00" and "�" not in result else ""
-    return prefix + result
+    # If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding.
+    # Finally, replace ? with � to ensure replacement character consistency between UnicodeEncodeError and Truncate.
+    return ("�" if byteString[:1] == b"\x00" else "") + byteString.replace(b"\x00", b"").decode("shift_jis", errors="replace").replace("?", "�")
 
 
 def _toShiftJisBytes(string):
