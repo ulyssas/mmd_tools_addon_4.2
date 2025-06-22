@@ -59,12 +59,12 @@ class VPDExporter:
 
     def __exportPoseLib(self, armObj: bpy.types.Object, pose_type, filepath, use_pose_mode=False):
         if armObj is None:
-            return None
+            return
 
         # Use animation_data and action, checking if they are available
         if armObj.animation_data is None or armObj.animation_data.action is None:
             logging.warning('[WARNING] armature "%s" has no animation data or action', armObj.name)
-            return None
+            return
 
         pose_bones = armObj.pose.bones
         converters = self.__getConverters(pose_bones)
