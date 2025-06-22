@@ -276,7 +276,7 @@ class TestVMDImporter(unittest.TestCase):
             if mmd_lamp:
                 self._create_animation_data(mmd_lamp, "location", [Vector((0, 0, 0)), Vector((1, 1, 1)), Vector((0, 0, 0))], [1, 10, 20])
 
-                if mmd_lamp.children and mmd_lamp.children[0].type in {"LIGHT"}:
+                if mmd_lamp.children and mmd_lamp.children[0].type == "LIGHT":
                     light = mmd_lamp.children[0]
                     self._create_animation_data(light.data, "color", [Vector((1, 1, 1)), Vector((1, 0, 0)), Vector((1, 1, 1))], [1, 10, 20])
 

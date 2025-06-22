@@ -424,9 +424,9 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
         return filtered_flags, ordered_indices
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
-        if self.layout_type in {"DEFAULT"}:
+        if self.layout_type == "DEFAULT":
             self._draw_bone_item(layout, item)
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon_value=icon)
 

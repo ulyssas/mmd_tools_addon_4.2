@@ -239,7 +239,7 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 class MMD_TOOLS_UL_Morphs(bpy.types.UIList):
     def draw_item(self, _context, layout, data, item, icon, _active_data, _active_propname, _index):
         mmd_root = data
-        if self.layout_type in {"DEFAULT"}:
+        if self.layout_type == "DEFAULT":
             row = layout.split(factor=0.4, align=True)
             row.prop(item, "name", text="", emboss=False, icon="SHAPEKEY_DATA")
             row = row.split(factor=0.6, align=True)
@@ -256,52 +256,52 @@ class MMD_TOOLS_UL_Morphs(bpy.types.UIList):
                 row.label(icon="BLANK1")
             if isinstance(item, MaterialMorph) and any(not d.material for d in item.data):
                 row.label(icon="TEMP")
-        elif self.layout_type in {"COMPACT"}:
+        elif self.layout_type == "COMPACT":
             pass
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon_value=icon)
 
 
 class MMD_TOOLS_UL_MaterialMorphOffsets(bpy.types.UIList):
     def draw_item(self, _context, layout, _data, item, icon, _active_data, _active_propname, _index):
-        if self.layout_type in {"DEFAULT"}:
+        if self.layout_type == "DEFAULT":
             material = item.material
             layout.label(text=material or "All Materials", translate=False, icon="MATERIAL")
-        elif self.layout_type in {"COMPACT"}:
+        elif self.layout_type == "COMPACT":
             pass
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon_value=icon)
 
 
 class MMD_TOOLS_UL_UVMorphOffsets(bpy.types.UIList):
     def draw_item(self, _context, layout, _data, item, icon, _active_data, _active_propname, _index):
-        if self.layout_type in {"DEFAULT"}:
+        if self.layout_type == "DEFAULT":
             layout.label(text=str(item.index), translate=False, icon="MESH_DATA")
             layout.prop(item, "offset", text="", emboss=False, slider=True)
-        elif self.layout_type in {"COMPACT"}:
+        elif self.layout_type == "COMPACT":
             pass
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon_value=icon)
 
 
 class MMD_TOOLS_UL_BoneMorphOffsets(bpy.types.UIList):
     def draw_item(self, _context, layout, _data, item, icon, _active_data, _active_propname, _index):
-        if self.layout_type in {"DEFAULT"}:
+        if self.layout_type == "DEFAULT":
             layout.prop(item, "bone", text="", emboss=False, icon="BONE_DATA")
             FnDraw.draw_bone_special(layout, FnModel.find_armature_object(item.id_data), item.bone)
-        elif self.layout_type in {"COMPACT"}:
+        elif self.layout_type == "COMPACT":
             pass
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon_value=icon)
 
 
 class MMD_TOOLS_UL_GroupMorphOffsets(bpy.types.UIList):
     def draw_item(self, _context, layout, _data, item, icon, _active_data, _active_propname, _index):
-        if self.layout_type in {"DEFAULT"}:
+        if self.layout_type == "DEFAULT":
             row = layout.split(factor=0.5, align=True)
             row.prop(item, "name", text="", emboss=False, icon="SHAPEKEY_DATA")
             row = row.row(align=True)
@@ -310,9 +310,9 @@ class MMD_TOOLS_UL_GroupMorphOffsets(bpy.types.UIList):
                 row.prop(item, "factor", text="", emboss=False, slider=True)
             else:
                 row.label(icon="ERROR")
-        elif self.layout_type in {"COMPACT"}:
+        elif self.layout_type == "COMPACT":
             pass
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon_value=icon)
 
