@@ -264,7 +264,7 @@ class Header:
         self.sign = fs.readBytes(4)
         logging.debug("File signature is %s", self.sign)
         if self.sign[:3] != self.PMX_SIGN[:3]:
-            logging.info("File signature is invalid")
+            logging.error("File signature is invalid")
             logging.error("This file is unsupported format, or corrupt file.")
             raise InvalidFileError("File signature is invalid.")
         self.version = fs.readFloat()
