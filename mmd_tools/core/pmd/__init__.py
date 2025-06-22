@@ -160,7 +160,7 @@ class Material:
         tex_path = fs.readStr(20)
         tex_path = tex_path.replace("\\", os.path.sep)
         t = tex_path.split("*")
-        if not re.search(r"\.sp([ha])$", t[0], flags=re.I):
+        if not re.search(r"\.sp([ha])$", t[0], flags=re.IGNORECASE):
             self.texture_path = t.pop(0)
         if len(t) > 0:
             self.sphere_path = t.pop(0)
