@@ -436,7 +436,7 @@ class VMDExporter:
             key.rotation = [rx[0], rz[0], ry[0]]  # euler
             key.angle = round(math.degrees(fov[0]))
             key.distance = distance[0] * self.__scale
-            key.persp = True if persp[0] else False
+            key.persp = bool(persp[0])
 
             # FIXME we can only choose one interpolation from (rx, ry, rz) for camera's rotation
             ir = self.__pickRotationInterpolation([rx[1], ry[1], rz[1]])
