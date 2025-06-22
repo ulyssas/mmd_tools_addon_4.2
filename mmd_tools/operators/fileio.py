@@ -974,7 +974,6 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
 class ExportVpd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
-    bl_description = "Export to VPD file(s) (.vpd)"
     bl_description = "Export active rig's Action Pose to VPD file(s) (.vpd)"
     bl_options = {"PRESET"}
 
