@@ -63,7 +63,7 @@ class __SelectObjects:
         return self.__active_object
 
     def __exit__(self, type, value, traceback):
-        for i, j in zip(self.__selected_objects, self.__hides):
+        for i, j in zip(self.__selected_objects, self.__hides, strict=False):
             try:
                 i.hide_set(j)
             except ReferenceError:

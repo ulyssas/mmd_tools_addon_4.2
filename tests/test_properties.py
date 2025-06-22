@@ -1963,7 +1963,7 @@ class TestMMDProperties(unittest.TestCase):
 
         # Vertices should have changed positions
         vertices_changed = False
-        for i, (initial_v, updated_v) in enumerate(zip(initial_vertices, updated_vertices)):
+        for i, (initial_v, updated_v) in enumerate(zip(initial_vertices, updated_vertices, strict=False)):
             if (initial_v - updated_v).length > 1e-6:
                 vertices_changed = True
                 break
@@ -1976,7 +1976,7 @@ class TestMMDProperties(unittest.TestCase):
         expected_extents = list(new_size)  # Box extents should match size
         actual_extents = [max(abs(v.co[i]) for v in mesh.vertices) for i in range(3)]
 
-        for i, (expected, actual) in enumerate(zip(expected_extents, actual_extents)):
+        for i, (expected, actual) in enumerate(zip(expected_extents, actual_extents, strict=False)):
             self.assertAlmostEqual(actual, expected, places=1, msg=f"Mesh extent {i} should reflect new size {expected}")
 
         print("✓ Rigid body properties size mesh update test passed")

@@ -165,7 +165,7 @@ class VMDExporter:
         all_frames = sorted(all_frames)
         all_keys = [i.sampleFrames(all_frames) for i in curves]
         # return zip(all_frames, *all_keys)
-        for data in zip(all_frames, *all_keys):
+        for data in zip(all_frames, *all_keys, strict=False):
             frame_number = data[0]
             if frame_number < frame_start:
                 continue
@@ -388,7 +388,7 @@ class VMDExporter:
             key = vmd.PropertyFrameKey()
             key.frame_number = data[0] - self.__frame_start
             key.visible = round(data[1][0])
-            key.ik_states = [(ik_name, round(on_off[0])) for ik_name, on_off in zip(ik_name_list, data[2:])]
+            key.ik_states = [(ik_name, round(on_off[0])) for ik_name, on_off in zip(ik_name_list, data[2:], strict=False)]
             vmd_prop_anim.append(key)
         logging.info("(property) frames:%5d  name: %s", len(vmd_prop_anim), root.name if root else armObj.name)
         return vmd_prop_anim

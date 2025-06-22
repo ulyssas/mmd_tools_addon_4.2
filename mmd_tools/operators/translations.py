@@ -164,7 +164,7 @@ class TranslateMMDModel(bpy.types.Operator):
         mmd_root = rig.rootObject().mmd_root
         attr_list = ("group", "vertex", "bone", "uv", "material")
         prefix_list = ("G_", "", "B_", "UV_", "M_")
-        for attr, prefix in zip(attr_list, prefix_list):
+        for attr, prefix in zip(attr_list, prefix_list, strict=False):
             for m in getattr(mmd_root, attr + "_morphs", []):
                 m.name_e = self.translate(m.name, m.name_e)
                 if not prefix:

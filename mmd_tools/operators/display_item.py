@@ -295,7 +295,7 @@ class DisplayItemQuickSetup(Operator):
         item_list.sort(key=lambda x: old.index(x) if x in old else len(old))
 
         ItemOp.resize(facial_items, len(item_list))
-        for item, data in zip(facial_items, item_list):
+        for item, data in zip(facial_items, item_list, strict=False):
             item.type = "MORPH"
             item.morph_type, item.name = data
         frame.active_item = 0

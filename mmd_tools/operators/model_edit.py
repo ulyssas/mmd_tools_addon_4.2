@@ -216,7 +216,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             separate_mesh_objects: List[bpy.types.Object] = [m for m in context.selected_objects if m.type == "MESH" and m not in mmd_model_mesh_objects]
             bpy.ops.object.mode_set(mode="OBJECT")
 
-            model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects))
+            model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects, strict=False))
 
         separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
 

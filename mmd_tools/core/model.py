@@ -1467,7 +1467,7 @@ class Model:
         ncc_objs = bpyutils.duplicateObject(ncc_obj, total_len)
         logging.debug(" created %d ncc.", len(ncc_objs))
 
-        for ncc_obj, pair in zip(ncc_objs, nonCollisionJointTable):
+        for ncc_obj, pair in zip(ncc_objs, nonCollisionJointTable, strict=False):
             rbc = ncc_obj.rigid_body_constraint
             rbc.object1, rbc.object2 = pair
             ncc_obj.hide_set(True)

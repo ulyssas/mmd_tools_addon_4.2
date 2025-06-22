@@ -626,7 +626,7 @@ class __PmxExporter:
             morph = pmx.VertexMorph(name=i, name_e=morph_english_names.get(i, ""), category=morph_categories.get(i, pmx.Morph.CATEGORY_OHTER))
             self.__model.morphs.append(morph)
 
-        append_table = dict(zip(shape_key_names, [m.offsets.append for m in self.__model.morphs]))
+        append_table = dict(zip(shape_key_names, [m.offsets.append for m in self.__model.morphs], strict=False))
         for v in self.__exported_vertices:
             for i, offset in v.offsets.items():
                 mo = pmx.VertexMorphOffset()
@@ -680,7 +680,7 @@ class __PmxExporter:
         faces = self.__model.faces
         offset = 0
         distances = []
-        for mat, bl_mat_name in zip(self.__model.materials, self.__material_name_table):
+        for mat, bl_mat_name in zip(self.__model.materials, self.__material_name_table, strict=False):
             d = 0
             face_num = int(mat.vertex_count / 3)
             for i in range(offset, offset + face_num):
@@ -793,7 +793,7 @@ class __PmxExporter:
             self.__model.morphs.append(group_morph)
 
         morph_map = self.__get_pmx_morph_map(root)
-        for morph, group_morph in zip(mmd_root.group_morphs, self.__model.morphs[start_index:]):
+        for morph, group_morph in zip(mmd_root.group_morphs, self.__model.morphs[start_index:], strict=False):
             for data in morph.data:
                 morph_index = morph_map.get((data.morph_type, data.name), -1)
                 if morph_index < 0:
@@ -1042,21 +1042,21 @@ class __PmxExporter:
             v._angle_list.append(loop_angle)
 
             # Calculate angle * area weighted averages
-            weights = [angle * area for angle, area in zip(v._angle_list, v._area_list)]
+            weights = [angle * area for angle, area in zip(v._angle_list, v._area_list, strict=False)]
             total_weight = sum(weights) or 1.0  # Avoid division by zero
 
             # Average normals
             if len(set(tuple(n) for n in v._normal_list)) == 1:  # All normals identical
                 v.normal = normal
             else:
-                weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights)), mathutils.Vector((0, 0, 0)))
+                weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), mathutils.Vector((0, 0, 0)))
                 v.normal = (weighted_normal_sum / total_weight).normalized()
 
             # Average vertex colors and convert to ADD UV2 format
             if len(set(tuple(c) for c in v._color_list)) == 1:  # All colors identical
                 final_color = color_vec
             else:
-                weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights)), mathutils.Vector((0, 0, 0, 0)))
+                weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights, strict=False)), mathutils.Vector((0, 0, 0, 0)))
                 final_color = weighted_color_sum / total_weight
 
             # Set averaged vertex color as ADD UV2
@@ -1266,7 +1266,7 @@ class __PmxExporter:
             uv_data = iter(lambda: _DummyUV, None)
 
         face_seq = []
-        for face, uv in zip(base_mesh.polygons, uv_data):
+        for face, uv in zip(base_mesh.polygons, uv_data, strict=False):
             if len(face.vertices) != 3:
                 raise ValueError(f"Face should be triangulated. Face index: {face.index}, Mesh name: {base_mesh.name}")
             loop_indices = list(face.loop_indices)
@@ -1319,7 +1319,7 @@ class __PmxExporter:
                 elif uv_n == 0:
                     actual_uv_index = 0  # UV1 stays at index 0
 
-            for f, face, uv, zw in zip(face_seq, base_mesh.polygons, uv_data, zw_data):
+            for f, face, uv, zw in zip(face_seq, base_mesh.polygons, uv_data, zw_data, strict=False):
                 vertices = [base_vertices[x] for x in face.vertices]
                 rip_vertices = [rip_vertices_map.setdefault(x, [x]) for x in f.vertices]
                 f.vertices[0] = self.__convertAddUV(f.vertices[0], uv.uv1, zw.uv1, actual_uv_index, vertices[0], rip_vertices[0])

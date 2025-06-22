@@ -345,7 +345,7 @@ class TestCameraSystem(unittest.TestCase):
             mmd_cameras.append(mmd_camera)
 
         # Verify all conversions
-        for i, (camera_obj, mmd_camera) in enumerate(zip(cameras, mmd_cameras)):
+        for i, (camera_obj, mmd_camera) in enumerate(zip(cameras, mmd_cameras, strict=False)):
             msg = f"Camera_{i}"
 
             # Check MMD camera validity

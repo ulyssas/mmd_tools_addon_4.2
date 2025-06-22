@@ -118,7 +118,7 @@ class FlipPose(Operator):
 
     @staticmethod
     def __cmul(vec1, vec2):
-        return type(vec1)([x * y for x, y in zip(vec1, vec2)])
+        return type(vec1)([x * y for x, y in zip(vec1, vec2, strict=False)])
 
     @staticmethod
     def __matrix_compose(loc, rot, scale):

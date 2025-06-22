@@ -153,7 +153,7 @@ class TestModelDebug(unittest.TestCase):
         img3.filepath = "/path/missing.png"
 
         # Add texture nodes
-        for mat, img in zip([mat1, mat2], [img1, img2]):
+        for mat, img in zip([mat1, mat2], [img1, img2], strict=False):
             nodes = mat.node_tree.nodes
             tex_node = nodes.new("ShaderNodeTexImage")
             tex_node.image = img

@@ -47,7 +47,7 @@ class TestVertexColorExporter(unittest.TestCase):
             raise ValueError(f"Tuple lengths mismatch: {len(tuple0)} vs {len(tuple1)}")
         if not tuple0 and not tuple1:  # Both tuples are empty
             return 0.0  # Empty tuples are considered equal
-        return max(abs(a - b) for a, b in zip(tuple0, tuple1))
+        return max(abs(a - b) for a, b in zip(tuple0, tuple1, strict=False))
 
     def __enable_mmd_tools(self):
         """Enable MMD Tools addon if not already enabled"""
@@ -705,7 +705,7 @@ class TestVertexColorExporter(unittest.TestCase):
             print(f"  Loop indices: {list(face.loop_indices)}")
 
             # Check the correspondence between loops and vertices
-            for i, (vertex_idx, loop_idx) in enumerate(zip(face.vertices, face.loop_indices)):
+            for i, (vertex_idx, loop_idx) in enumerate(zip(face.vertices, face.loop_indices, strict=False)):
                 loop = mesh_data.loops[loop_idx]
                 print(f"    Position{i}: vertex[{vertex_idx}] <-> loop[{loop_idx}], loop.vertex_index={loop.vertex_index}")
                 assert loop.vertex_index == vertex_idx, f"Loop vertex mismatch! loop.vertex_index={loop.vertex_index} != vertex_idx={vertex_idx}"

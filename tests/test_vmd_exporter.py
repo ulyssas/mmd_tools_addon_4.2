@@ -206,7 +206,7 @@ class TestVmdExporter(unittest.TestCase):
             x1, y1, x2, y2 = [src_interp[i] for i in indices]
             return x1 == y1 and x2 == y2
 
-        for j, (s, r) in enumerate(zip(src_interp, res_interp)):
+        for j, (s, r) in enumerate(zip(src_interp, res_interp, strict=False)):
             if j in skip_indices:
                 continue
 

@@ -71,7 +71,7 @@ class TestFileIoOperators(unittest.TestCase):
             result_model = pmx.load(output_pmx)
             result_material_names = [mat.name for mat in result_model.materials]
             same_order = True
-            for orig, result in zip(orig_material_names, result_material_names):
+            for orig, result in zip(orig_material_names, result_material_names, strict=False):
                 if orig != result:
                     same_order = False
                     break

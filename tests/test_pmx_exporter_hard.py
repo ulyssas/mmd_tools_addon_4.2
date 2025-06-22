@@ -53,7 +53,7 @@ class TestPmxExporter(unittest.TestCase):
             raise ValueError(f"Tuple lengths mismatch: {len(tuple0)} vs {len(tuple1)}")
         if not tuple0 and not tuple1:  # Both tuples are empty
             return 0.0  # Empty tuples are considered equal
-        return max(abs(a - b) for a, b in zip(tuple0, tuple1))
+        return max(abs(a - b) for a, b in zip(tuple0, tuple1, strict=False))
 
     def __quaternion_error(self, quat0, quat1):
         angle = quat0.rotation_difference(quat1).angle % pi
@@ -121,7 +121,7 @@ class TestPmxExporter(unittest.TestCase):
         source_textures = self.__get_pmx_textures(source_model.textures)
         result_textures = self.__get_pmx_textures(result_model.textures)
         self.assertEqual(len(source_textures), len(result_textures))
-        for tex0, tex1 in zip(sorted(source_textures), sorted(result_textures)):
+        for tex0, tex1 in zip(sorted(source_textures), sorted(result_textures), strict=False):
             self.assertEqual(tex0, tex1)
 
         # materials ===================
@@ -130,7 +130,7 @@ class TestPmxExporter(unittest.TestCase):
         result_materials = result_model.materials
         self.assertEqual(len(source_materials), len(result_materials))
 
-        for mat0, mat1 in zip(source_materials, result_materials):
+        for mat0, mat1 in zip(source_materials, result_materials, strict=False):
             msg = mat0.name
             self.assertEqual(mat0.name, mat1.name, msg)
             self.assertEqual(mat0.name_e, mat1.name_e, msg)
@@ -169,7 +169,7 @@ class TestPmxExporter(unittest.TestCase):
         self.assertEqual(len(source_vertices), len(result_vertices))
 
         # Direct vertex comparison - check each vertex individually
-        for v0, v1 in zip(source_vertices, result_vertices):
+        for v0, v1 in zip(source_vertices, result_vertices, strict=False):
             self.assertLess(self.__vector_error(v0.co, v1.co), 1e-6)
 
             # Vector difference threshold check - detects magnitude and direction changes
@@ -199,18 +199,18 @@ class TestPmxExporter(unittest.TestCase):
         self.assertEqual(len(source_faces), len(result_faces))
 
         # Basic face index comparison
-        for f0, f1 in zip(source_faces, result_faces):
+        for f0, f1 in zip(source_faces, result_faces, strict=False):
             self.assertEqual(f0, f1)
 
         # Face-vertex reference consistency check
         # This ensures that vertices referenced by faces are consistent in context
         # even if individual vertex checks pass, we need to verify correctness in face context
-        for face_idx, (f0, f1) in enumerate(zip(source_faces, result_faces)):
+        for face_idx, (f0, f1) in enumerate(zip(source_faces, result_faces, strict=False)):
             # Get vertices referenced by this face (original version logic)
             seq0 = [source_vertices[i] for i in f0]
             seq1 = [result_vertices[i] for i in f1]
 
-            for vertex_pos, (v0, v1) in enumerate(zip(seq0, seq1)):
+            for vertex_pos, (v0, v1) in enumerate(zip(seq0, seq1, strict=False)):
                 msg = f"Face {face_idx} vertex {vertex_pos}"
 
                 # These checks ensure face-referenced vertices are consistent in context
@@ -268,7 +268,7 @@ class TestPmxExporter(unittest.TestCase):
         bone_order1 = [x.name for x in result_bones]
         self.assertEqual(bone_order0, bone_order1)
 
-        for bone0, bone1 in zip(source_bones, result_bones):
+        for bone0, bone1 in zip(source_bones, result_bones, strict=False):
             msg = bone0.name
             self.assertEqual(bone0.name, bone1.name, msg)
             self.assertEqual(bone0.name_e, bone1.name_e, msg)
@@ -316,7 +316,7 @@ class TestPmxExporter(unittest.TestCase):
             self.assertEqual(bone0.loopCount, bone1.loopCount, msg)
             self.assertEqual(bone0.rotationConstraint, bone1.rotationConstraint, msg)
             self.assertEqual(len(bone0.ik_links), len(bone1.ik_links), msg)
-            for link0, link1 in zip(bone0.ik_links, bone1.ik_links):
+            for link0, link1 in zip(bone0.ik_links, bone1.ik_links, strict=False):
                 target0 = self.__get_bone_name(link0.target, source_bones)
                 target1 = self.__get_bone_name(link1.target, result_bones)
                 self.assertEqual(target0, target1, msg)
@@ -336,7 +336,7 @@ class TestPmxExporter(unittest.TestCase):
                     self.assertEqual(minimumAngle0, minimumAngle1, msg)
 
         # Check displayConnection specially since it can be either index or vector
-        for bone0, bone1 in zip(source_bones, result_bones):
+        for bone0, bone1 in zip(source_bones, result_bones, strict=False):
             msg = bone0.name
             if isinstance(bone0.displayConnection, int) and isinstance(bone1.displayConnection, int):
                 # Both are bone indices
@@ -368,7 +368,7 @@ class TestPmxExporter(unittest.TestCase):
         source_bones = source_model.bones
         result_bones = result_model.bones
 
-        for rigid0, rigid1 in zip(source_rigids, result_rigids):
+        for rigid0, rigid1 in zip(source_rigids, result_rigids, strict=False):
             msg = rigid0.name
             self.assertEqual(rigid0.name, rigid1.name, msg)
             self.assertEqual(rigid0.name_e, rigid1.name_e, msg)
@@ -402,7 +402,7 @@ class TestPmxExporter(unittest.TestCase):
         result_joints = result_model.joints
         self.assertEqual(len(source_joints), len(result_joints))
 
-        for joint0, joint1 in zip(source_joints, result_joints):
+        for joint0, joint1 in zip(source_joints, result_joints, strict=False):
             msg = joint0.name
             self.assertEqual(joint0.name, joint1.name, msg)
             self.assertEqual(joint0.name_e, joint1.name_e, msg)
@@ -459,7 +459,7 @@ class TestPmxExporter(unittest.TestCase):
         source = source_table.get(pmx.VertexMorph, [])
         result = result_table.get(pmx.VertexMorph, [])
         self.assertEqual(len(source), len(result))
-        for m0, m1 in zip(source, result):
+        for m0, m1 in zip(source, result, strict=False):
             msg = "VertexMorph %s" % m0.name
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
@@ -482,7 +482,7 @@ class TestPmxExporter(unittest.TestCase):
         source = source_table.get(pmx.UVMorph, [])
         result = result_table.get(pmx.UVMorph, [])
         self.assertEqual(len(source), len(result))
-        for m0, m1 in zip(source, result):
+        for m0, m1 in zip(source, result, strict=False):
             msg = "UVMorph %s" % m0.name
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
@@ -509,7 +509,7 @@ class TestPmxExporter(unittest.TestCase):
         source = source_table.get(pmx.BoneMorph, [])
         result = result_table.get(pmx.BoneMorph, [])
         self.assertEqual(len(source), len(result))
-        for m0, m1 in zip(source, result):
+        for m0, m1 in zip(source, result, strict=False):
             msg = "BoneMorph %s" % m0.name
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
@@ -534,7 +534,7 @@ class TestPmxExporter(unittest.TestCase):
         source = source_table.get(pmx.MaterialMorph, [])
         result = result_table.get(pmx.MaterialMorph, [])
         self.assertEqual(len(source), len(result))
-        for m0, m1 in zip(source, result):
+        for m0, m1 in zip(source, result, strict=False):
             msg = "MaterialMorph %s" % m0.name
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
@@ -566,7 +566,7 @@ class TestPmxExporter(unittest.TestCase):
         source = source_table.get(pmx.GroupMorph, [])
         result = result_table.get(pmx.GroupMorph, [])
         self.assertEqual(len(source), len(result))
-        for m0, m1 in zip(source, result):
+        for m0, m1 in zip(source, result, strict=False):
             msg = "GroupMorph %s" % m0.name
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
@@ -592,14 +592,14 @@ class TestPmxExporter(unittest.TestCase):
         result_display = result_model.display
         self.assertEqual(len(source_display), len(result_display))
 
-        for source, result in zip(source_display, result_display):
+        for source, result in zip(source_display, result_display, strict=False):
             msg = source.name
             self.assertEqual(source.name, result.name, msg)
             self.assertEqual(source.name_e, result.name_e, msg)
             self.assertEqual(source.isSpecial, result.isSpecial, msg)
 
             self.assertEqual(len(source.data), len(result.data), msg)
-            for item0, item1 in zip(source.data, result.data):
+            for item0, item1 in zip(source.data, result.data, strict=False):
                 disp_type0, index0 = item0
                 disp_type1, index1 = item1
                 self.assertEqual(disp_type0, disp_type1, msg)

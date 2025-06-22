@@ -19,7 +19,7 @@ def divide_vector_components(vec1, vec2):
     if len(vec1) != len(vec2):
         raise ValueError("Vectors should have the same number of components")
     result = []
-    for v1, v2 in zip(vec1, vec2):
+    for v1, v2 in zip(vec1, vec2, strict=False):
         if v2 == 0:
             if v1 == 0:
                 v2 = 1  # If we have a 0/0 case we change the divisor to 1
@@ -33,7 +33,7 @@ def multiply_vector_components(vec1, vec2):
     if len(vec1) != len(vec2):
         raise ValueError("Vectors should have the same number of components")
     result = []
-    for v1, v2 in zip(vec1, vec2):
+    for v1, v2 in zip(vec1, vec2, strict=False):
         result.append(v1 * v2)
     return result
 
@@ -688,7 +688,7 @@ class EditUVMorph(bpy.types.Operator):
             bpy.ops.object.mode_set(mode="OBJECT")
 
             vertices = mesh.vertices
-            for loop, d in zip(mesh.loops, mesh.uv_layers.active.data):
+            for loop, d in zip(mesh.loops, mesh.uv_layers.active.data, strict=False):
                 if d.select:
                     vertices[loop.vertex_index].select = True
 
@@ -739,7 +739,7 @@ class ApplyUVMorph(bpy.types.Operator):
             __OffsetData = namedtuple("OffsetData", "index, offset")
             offsets = {}
             vertices = mesh.vertices
-            for loop, i0, i1 in zip(mesh.loops, base_uv_data, temp_uv_data):
+            for loop, i0, i1 in zip(mesh.loops, base_uv_data, temp_uv_data, strict=False):
                 if vertices[loop.vertex_index].select and loop.vertex_index not in offsets:
                     dx, dy = i1.uv - i0.uv
                     if abs(dx) > 0.0001 or abs(dy) > 0.0001:

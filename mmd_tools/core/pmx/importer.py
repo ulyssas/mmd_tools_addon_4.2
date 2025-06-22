@@ -159,7 +159,7 @@ class PMXImporter:
                 vertex_group_table[pv_bones[0]].add(index=idx, weight=pv_weights[0], type="ADD")
                 vertex_group_table[pv_bones[1]].add(index=idx, weight=1.0 - pv_weights[0], type="ADD")
             elif len(pv_bones) == 4:
-                for bone, weight in zip(pv_bones, pv_weights):
+                for bone, weight in zip(pv_bones, pv_weights, strict=False):
                     vertex_group_table[bone].add(index=idx, weight=weight, type="ADD")
             else:
                 raise Exception("unkown bone weight type.")
@@ -215,14 +215,14 @@ class PMXImporter:
                 editBoneTable.append(bone)
                 nameTable.append(bone.name)
 
-            for i, (b_bone, m_bone) in enumerate(zip(editBoneTable, pmx_bones)):
+            for i, (b_bone, m_bone) in enumerate(zip(editBoneTable, pmx_bones, strict=False)):
                 if m_bone.parent != -1:
                     if i not in dependency_cycle_ik_bones:
                         b_bone.parent = editBoneTable[m_bone.parent]
                     else:
                         b_bone.parent = editBoneTable[m_bone.parent].parent
 
-            for b_bone, m_bone in zip(editBoneTable, pmx_bones):
+            for b_bone, m_bone in zip(editBoneTable, pmx_bones, strict=False):
                 if isinstance(m_bone.displayConnection, int):
                     if m_bone.displayConnection != -1:
                         b_bone.tail = editBoneTable[m_bone.displayConnection].head
@@ -232,7 +232,7 @@ class PMXImporter:
                     loc = _VectorXZY(m_bone.displayConnection) * self.__scale
                     b_bone.tail = b_bone.head + loc
 
-            for b_bone, m_bone in zip(editBoneTable, pmx_bones):
+            for b_bone, m_bone in zip(editBoneTable, pmx_bones, strict=False):
                 if m_bone.isIK and m_bone.target != -1:
                     logging.debug(" - checking IK links of %s", b_bone.name)
                     b_target = editBoneTable[m_bone.target]
@@ -249,7 +249,7 @@ class PMXImporter:
                                 logging.debug("   * fix IK link %s", b_bone_link.name)
                                 b_bone_link.tail = b_bone_link.head + loc
 
-            for b_bone, m_bone in zip(editBoneTable, pmx_bones):
+            for b_bone, m_bone in zip(editBoneTable, pmx_bones, strict=False):
                 # Set the length of too short bones to 1 because Blender delete them.
                 if b_bone.length < 0.001:
                     if not self.__apply_bone_fixed_axis and m_bone.axis is not None:
@@ -264,7 +264,7 @@ class PMXImporter:
                         logging.debug(" * special tip bone %s, display %s", b_bone.name, str(m_bone.displayConnection))
                         specialTipBones.append(b_bone.name)
 
-            for b_bone, m_bone in zip(editBoneTable, pmx_bones):
+            for b_bone, m_bone in zip(editBoneTable, pmx_bones, strict=False):
                 if m_bone.localCoordinate is not None:
                     FnBone.update_bone_roll(b_bone, m_bone.localCoordinate.x_axis, m_bone.localCoordinate.z_axis)
                 elif FnBone.has_auto_local_axis(m_bone.name):
@@ -339,7 +339,7 @@ class PMXImporter:
             if not is_valid_ik:
                 ik_constraint_bone = ik_constraint_bone_real
                 logging.warning(" * IK bone (%s) warning: IK target (%s) is not a child of IK link 0 (%s)", ik_bone.name, ik_target.name, ik_constraint_bone.name)
-            elif any(pose_bones[i.target].parent != pose_bones[j.target] for i, j in zip(pmx_bone.ik_links, pmx_bone.ik_links[1:])):
+            elif any(pose_bones[i.target].parent != pose_bones[j.target] for i, j in zip(pmx_bone.ik_links, pmx_bone.ik_links[1:], strict=False)):
                 logging.warning(" * Invalid IK bone (%s): IK chain does not follow parent-child relationship", ik_bone.name)
                 return
         if ik_constraint_bone is None or len(pmx_bone.ik_links) < 1:
@@ -465,7 +465,7 @@ class PMXImporter:
         self.__rigidTable = {}
         context = FnContext.ensure_context()
         rigid_pool = FnRigidBody.new_rigid_body_objects(context, FnModel.ensure_rigid_group_object(context, self.__rig.rootObject()), len(self.__model.rigids))
-        for i, (rigid, rigid_obj) in enumerate(zip(self.__model.rigids, rigid_pool)):
+        for i, (rigid, rigid_obj) in enumerate(zip(self.__model.rigids, rigid_pool, strict=False)):
             loc_data = rigid.location
             rot_data = rigid.rotation
             size_data = rigid.size
@@ -510,7 +510,7 @@ class PMXImporter:
         start_time = time.time()
         context = FnContext.ensure_context()
         joint_pool = FnRigidBody.new_joint_objects(context, FnModel.ensure_joint_group_object(context, self.__rig.rootObject()), len(self.__model.joints), FnModel.get_empty_display_size(self.__rig.rootObject()))
-        for i, (joint, joint_obj) in enumerate(zip(self.__model.joints, joint_pool)):
+        for i, (joint, joint_obj) in enumerate(zip(self.__model.joints, joint_pool, strict=False)):
             loc = Vector(joint.location).xzy * self.__scale
             rot = Vector(joint.rotation).xzy * -1
 
@@ -612,7 +612,7 @@ class PMXImporter:
         uv_layer.data.foreach_set("uv", tuple(v for i in loop_indices_orig for v in uv_table[i]))
 
         if hasattr(mesh, "uv_textures"):
-            for bf, mi in zip(uv_tex.data, material_indices):
+            for bf, mi in zip(uv_tex.data, material_indices, strict=False):
                 bf.image = self.__imageTable.get(mi, None)
 
         # Import ADD UV2 as vertex colors

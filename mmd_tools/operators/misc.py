@@ -105,7 +105,7 @@ class CleanShapeKeys(bpy.types.Operator):
     def __can_remove(key_block):
         if key_block.relative_key == key_block:
             return False  # Basis
-        for v0, v1 in zip(key_block.relative_key.data, key_block.data):
+        for v0, v1 in zip(key_block.relative_key.data, key_block.data, strict=False):
             if v0.co != v1.co:
                 return False
         return True

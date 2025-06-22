@@ -212,11 +212,11 @@ class TestVMDImporter(unittest.TestCase):
         if isinstance(keyframe_values[0], (list, tuple, Vector, Quaternion)):
             for i in range(len(keyframe_values[0])):
                 fcurve = action.fcurves.new(data_path=property_path, index=i)
-                for frame, value in zip(frames, keyframe_values):
+                for frame, value in zip(frames, keyframe_values, strict=False):
                     fcurve.keyframe_points.insert(frame, value[i])
         else:
             fcurve = action.fcurves.new(data_path=property_path)
-            for frame, value in zip(frames, keyframe_values):
+            for frame, value in zip(frames, keyframe_values, strict=False):
                 fcurve.keyframe_points.insert(frame, value)
 
         for fcurve in action.fcurves:

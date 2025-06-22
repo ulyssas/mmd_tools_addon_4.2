@@ -217,7 +217,7 @@ class FnBone:
             used_frame_index.add(display_item_frames.find(bone_collection_name))
 
             ItemOp.resize(display_item_frame.data, len(bone_collection.bones))
-            for display_item, bone in zip(display_item_frame.data, bone_collection.bones):
+            for display_item, bone in zip(display_item_frame.data, bone_collection.bones, strict=False):
                 display_item.type = "BONE"
                 display_item.name = bone.name
 
