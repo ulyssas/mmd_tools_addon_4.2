@@ -129,7 +129,7 @@ class TestPmxImporter(unittest.TestCase):
             return None
 
         model = Model(root_obj)
-        components = {
+        return {
             "root": root_obj,
             "armature": model.armature(),
             "meshes": list(model.meshes()),
@@ -137,7 +137,6 @@ class TestPmxImporter(unittest.TestCase):
             "joints": list(model.joints()),
             "materials": list(model.materials()),
         }
-        return components
 
     def _check_basic_structure(self, components):
         """Check basic MMD model structure"""

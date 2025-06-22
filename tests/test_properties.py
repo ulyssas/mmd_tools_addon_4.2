@@ -54,8 +54,7 @@ class TestMMDProperties(unittest.TestCase):
 
     def _create_test_model(self, name: str = "TestModel") -> Model:
         """Create a basic MMD model for testing"""
-        model = Model.create(name=name, name_e=f"{name}_English", add_root_bone=True)
-        return model
+        return Model.create(name=name, name_e=f"{name}_English", add_root_bone=True)
 
     def _create_test_mesh(self, model: Model, name: str = "TestMesh") -> bpy.types.Object:
         """Create a test mesh and attach it to the model"""
@@ -76,9 +75,8 @@ class TestMMDProperties(unittest.TestCase):
 
     def _create_test_material(self, name: str = "TestMaterial") -> bpy.types.Material:
         """Create a test material with MMD properties"""
-        mat = bpy.data.materials.new(name=name)
         # MMD material properties are automatically added via property registration
-        return mat
+        return bpy.data.materials.new(name=name)
 
     def _create_test_rigid_body(self, model: Model, name: str = "TestRigidBody") -> bpy.types.Object:
         """Create a test rigid body object"""
