@@ -98,7 +98,7 @@ class AddDisplayItem(Operator):
                     bone_names += [b.name for b in context.selected_editable_bones]
                 if context.selected_pose_bones:
                     bone_names += [b.name for b in context.selected_pose_bones]
-                bone_names = sorted(list(set(bone_names)))
+                bone_names = sorted(set(bone_names))
                 for bone_name in bone_names:
                     self._add_item(frame, "BONE", bone_name)
             else:

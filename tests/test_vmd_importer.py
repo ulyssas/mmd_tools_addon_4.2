@@ -443,7 +443,7 @@ class TestVMDImporter(unittest.TestCase):
                     matching_bones = target_bones & vmd_bones
                     print(f"Matching bones: {len(matching_bones)} out of {len(vmd_bones)} VMD bones")
                     if matching_bones:
-                        print(f"Sample matching bones: {sorted(list(matching_bones))[:10]}")
+                        print(f"Sample matching bones: {sorted(matching_bones)[:10]}")
 
         elif obj_type == "mesh":
             if target_obj.data.shape_keys and target_obj.data.shape_keys.animation_data:
