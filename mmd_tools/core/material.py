@@ -66,7 +66,8 @@ class FnMaterial:
     @staticmethod
     def swap_materials(mesh_object: bpy.types.Object, mat1_ref: str | int, mat2_ref: str | int, reverse=False, swap_slots=False) -> Tuple[bpy.types.Material, bpy.types.Material]:
         """
-        This method will assign the polygons of mat1 to mat2.
+        Assign the polygons of mat1 to mat2.
+
         If reverse is True it will also swap the polygons assigned to mat2 to mat1.
         The reference to materials can be indexes or names
         Finally it will also swap the material slots if the option is given.
@@ -110,7 +111,7 @@ class FnMaterial:
 
     @staticmethod
     def fixMaterialOrder(meshObj: bpy.types.Object, material_names: Iterable[str]):
-        """This method will fix the material order. Which is lost after joining meshes."""
+        """Fix the material order which is lost after joining meshes."""
         materials = cast(bpy.types.Mesh, meshObj.data).materials
         for new_idx, mat in enumerate(material_names):
             # Get the material that is currently on this index

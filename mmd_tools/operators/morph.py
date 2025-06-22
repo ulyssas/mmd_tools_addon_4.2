@@ -39,7 +39,7 @@ def multiply_vector_components(vec1, vec2):
 
 
 def special_division(n1, n2):
-    """This function returns 0 in case of 0/0. If non-zero divided by zero case is found, an Exception is raised"""
+    """Return 0 in case of 0/0. If non-zero divided by zero case is found, an Exception is raised"""
     if n2 == 0:
         if n1 == 0:
             n2 = 1

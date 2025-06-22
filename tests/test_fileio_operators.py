@@ -44,7 +44,8 @@ class TestFileIoOperators(unittest.TestCase):
 
     def test_export_shy_cube(self):
         """
-        This test will load the shy_cube.blend sample and check if it exports correctly.
+        Load the shy_cube.blend sample and check if it exports correctly.
+
         The following checks will be made:
         - The texture is properly copied to the target directory
         - The material order is kept
