@@ -1019,7 +1019,7 @@ class __PmxExporter:
                 i.uv = uv
                 v = i
                 break
-            elif (i.uv - uv).length < 0.001:  # UV requires exact matching
+            if (i.uv - uv).length < 0.001:  # UV requires exact matching
                 v = i
                 break
 
