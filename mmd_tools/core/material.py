@@ -91,10 +91,10 @@ class FnMaterial:
             mat1 = mesh.materials[mat1_ref]
             mat2 = mesh.materials[mat2_ref]
             if None in (mat1, mat2):
-                raise MaterialNotFoundError()
+                raise MaterialNotFoundError
         except (KeyError, IndexError) as exc:
             # Wrap exceptions within our custom ones
-            raise MaterialNotFoundError() from exc
+            raise MaterialNotFoundError from exc
         mat1_idx = mesh.materials.find(mat1.name)
         mat2_idx = mesh.materials.find(mat2.name)
         # Swap polygons
