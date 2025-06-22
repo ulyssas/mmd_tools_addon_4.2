@@ -64,6 +64,7 @@ class MMDDataHandlerABC(ABC):
     @abstractmethod
     def get_names(cls, mmd_translation_element: "MMDTranslationElement") -> Tuple[str, str, str]:
         """Returns (name, name_j, name_e)"""
+        pass
 
     @classmethod
     def is_restorable(cls, mmd_translation_element: "MMDTranslationElement") -> bool:
