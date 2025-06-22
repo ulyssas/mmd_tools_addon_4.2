@@ -251,7 +251,7 @@ class FnModel:
     @staticmethod
     def unsafe_change_bone_id(bone: bpy.types.PoseBone, new_bone_id: int, bone_morphs, pose_bones):
         """
-        Changes bone ID and updates all references without validating if new_bone_id is already in use.
+        Change bone ID and updates all references without validating if new_bone_id is already in use.
         If new_bone_id is already in use, it may cause conflicts and corrupt existing bone references.
         """
         # Store the original bone_id and change it
@@ -281,7 +281,7 @@ class FnModel:
     @staticmethod
     def safe_change_bone_id(bone: bpy.types.PoseBone, new_bone_id: int, bone_morphs, pose_bones):
         """
-        Changes bone ID and updates all references safely by detecting and resolving conflicts automatically.
+        Change bone ID and updates all references safely by detecting and resolving conflicts automatically.
         If new_bone_id is already in use, shifts all conflicting bone IDs sequentially until a gap is found.
         """
         # Validate new_bone_id is non-negative
@@ -1122,7 +1122,7 @@ class Model:
         return None
 
     def findMesh(self, mesh_name) -> Optional[bpy.types.Object]:
-        """Helper method to find a mesh by name"""
+        """Find the mesh by name"""
         if mesh_name == "":
             return None
         for mesh in self.meshes():
@@ -1131,7 +1131,7 @@ class Model:
         return None
 
     def findMeshByIndex(self, index: int) -> Optional[bpy.types.Object]:
-        """Helper method to find the mesh by index"""
+        """Find the mesh by index"""
         if index < 0:
             return None
         for i, mesh in enumerate(self.meshes()):
@@ -1140,7 +1140,7 @@ class Model:
         return None
 
     def getMeshIndex(self, mesh_name: str) -> int:
-        """Helper method to get the index of a mesh. Returns -1 if not found"""
+        """Get the index of a mesh. Returns -1 if not found"""
         if mesh_name == "":
             return -1
         for i, mesh in enumerate(self.meshes()):
@@ -1158,7 +1158,7 @@ class Model:
         return FnModel.iterate_temporary_objects(self.__root, rigid_track_only)
 
     def materials(self) -> Iterator[bpy.types.Material]:
-        """Helper method to list all materials in all meshes"""
+        """List all materials in all meshes"""
         materials = {}  # Use dict instead of set to guarantee preserve order
         for mesh in self.meshes():
             materials.update((slot.material, 0) for slot in mesh.material_slots if slot.material is not None)

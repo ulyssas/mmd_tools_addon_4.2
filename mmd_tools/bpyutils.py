@@ -443,7 +443,7 @@ class FnContext:
     @staticmethod
     def find_user_layer_collection_by_object(context: bpy.types.Context, target_object: bpy.types.Object) -> Optional[bpy.types.LayerCollection]:
         """
-        Finds the layer collection that contains the given target_object in the user's collections.
+        Find the layer collection that contains the given target_object in the user's collections.
 
         Args:
             context (bpy.types.Context): The Blender context.

@@ -193,14 +193,14 @@ class PreferencesMixin:
     _preferences_applied = False
 
     def load_preferences_on_invoke(self, context, preset_property_name):
-        """Helper method to load preferences on first invoke"""
+        """Load preferences on first invoke"""
         self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
         if not self._preferences_were_applied:
             if load_default_settings_from_preferences(self, context, preset_property_name):
                 self.__class__._preferences_applied = True
 
     def restore_preferences_on_cancel(self):
-        """Helper method to restore preferences state on cancel"""
+        """Restore preferences state on cancel"""
         self.__class__._preferences_applied = self._preferences_were_applied
 
 

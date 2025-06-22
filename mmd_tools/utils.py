@@ -151,7 +151,7 @@ __REMOVE_PREFIX_DIGITS_REGEXP = re.compile(r"\.\d{1,}$")
 
 
 def unique_name(name: str, used_names: Set[str]) -> str:
-    """Helper function for storing unique names.
+    """Generate a unique name from the given name.
     This function is a limited and simplified version of bpy_extras.io_utils.unique_name.
 
     Args:
@@ -173,7 +173,7 @@ def unique_name(name: str, used_names: Set[str]) -> str:
 
 def int2base(x, base, width=0):
     """
-    Method to convert an int to a base
+    Convert an int to a base
     Source: http://stackoverflow.com/questions/2267362
     """
     import string
@@ -292,7 +292,7 @@ class ItemMoveOp:
 
 
 def deprecated(deprecated_in: Optional[str] = None, details: Optional[str] = None):
-    """Decorator to mark a function as deprecated.
+    """Mark a function as deprecated.
     Args:
         deprecated_in (Optional[str]): Version in which the function was deprecated.
         details (Optional[str]): Additional details about the deprecation.
@@ -311,7 +311,7 @@ def deprecated(deprecated_in: Optional[str] = None, details: Optional[str] = Non
 
 
 def warn_deprecation(function_name: str, deprecated_in: Optional[str] = None, details: Optional[str] = None) -> None:
-    """Reports a deprecation warning.
+    """Report a deprecation warning.
     Args:
         function_name (str): Name of the deprecated function.
         deprecated_in (Optional[str]): Version in which the function was deprecated.

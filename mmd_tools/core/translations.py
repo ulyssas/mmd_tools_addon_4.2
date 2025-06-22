@@ -63,7 +63,7 @@ class MMDDataHandlerABC(ABC):
     @classmethod
     @abstractmethod
     def get_names(cls, mmd_translation_element: "MMDTranslationElement") -> Tuple[str, str, str]:
-        """Returns (name, name_j, name_e)"""
+        """Return (name, name_j, name_e)"""
         pass
 
     @classmethod
