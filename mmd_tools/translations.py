@@ -290,9 +290,9 @@ jp_to_en_tuples = [
 
 
 def translateFromJp(name):
-    for tuple in jp_to_en_tuples:
-        if tuple[0] in name:
-            name = name.replace(tuple[0], tuple[1])
+    for t in jp_to_en_tuples:
+        if t[0] in name:
+            name = name.replace(t[0], t[1])
     return name
 
 

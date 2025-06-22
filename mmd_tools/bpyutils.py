@@ -29,7 +29,7 @@ class __EditMode:
     def __enter__(self):
         return self.__obj.data
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):
         if self.__prevMode == "EDIT":
             bpy.ops.object.mode_set(mode="OBJECT")  # update edited data
         bpy.ops.object.mode_set(mode=self.__prevMode)
@@ -62,7 +62,7 @@ class __SelectObjects:
     def __enter__(self) -> bpy.types.Object:
         return self.__active_object
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):
         for i, j in zip(self.__selected_objects, self.__hides, strict=False):
             try:
                 i.hide_set(j)

@@ -211,7 +211,7 @@ class TestBoneOrder(unittest.TestCase):
         # Verify references in morphs were updated
         test_morph = bone_morphs["test_morph"]
         updated_ids = [data.bone_id for data in test_morph.data]
-        self.assertTrue(any(id in updated_ids for id in [original_neck_id, original_head_id]), "Bone morph references should be updated after swap")
+        self.assertTrue(any(bone_id in updated_ids for bone_id in [original_neck_id, original_head_id]), "Bone morph references should be updated after swap")
 
     def test_shift_bone_id(self):
         """Test shifting bone to specific position in bone order"""
