@@ -92,7 +92,7 @@ class _FCurve:
         if fcurve is None or len(fcurve.keyframe_points) == 0:  # no key frames
             return [[self.__default_value, ((20, 20), (107, 107))] for _ in frame_numbers]
 
-        result = list()
+        result = []
 
         evaluate = fcurve.evaluate
         frame_iter = iter(frame_numbers)

@@ -41,9 +41,9 @@ class OpenCC:
         self.conversion_name = ""
         self.conversion = conversion
         self._dict_init_done = False
-        self._dict_chain = list()
-        self._dict_chain_data = list()
-        self.dict_cache = dict()
+        self._dict_chain = []
+        self._dict_chain_data = []
+        self.dict_cache = {}
         # List of sentence separators from OpenCC PhraseExtract.cpp. None of these separators are allowed as
         # part of a dictionary entry
         self.split_chars_re = re.compile(
