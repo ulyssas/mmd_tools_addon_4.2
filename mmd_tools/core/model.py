@@ -1031,7 +1031,7 @@ class Model:
 
         Args:
             bone: A pose bone to add a IK constraint
-            id_target: A pose bone for IK target
+            ik_target: A pose bone for IK target
 
         Returns:
             The bpy.types.KinematicConstraint object created. It is set target
