@@ -735,10 +735,9 @@ class MigrationFnMorph:
                                 del morph_data["related_mesh"]
                             continue
 
-                        else:
-                            # Compat case. The new version mmd_tools saved. And old version mmd_tools edit. Then new version mmd_tools load again.
-                            # Go update path.
-                            pass
+                        # Compat case. The new version mmd_tools saved. And old version mmd_tools edit. Then new version mmd_tools load again.
+                        # Go update path.
+                        pass
 
                     morph_data.material_data = None
                     if "material_id" in morph_data:
