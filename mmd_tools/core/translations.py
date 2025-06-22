@@ -29,11 +29,7 @@ class MMDTranslationElementType(Enum):
 
 
 class MMDDataHandlerABC(ABC):
-    @classmethod
-    @property
-    @abstractmethod
-    def type_name(cls) -> str:
-        pass
+    type_name: str
 
     @classmethod
     @abstractmethod
@@ -97,10 +93,7 @@ class MMDDataHandlerABC(ABC):
 
 
 class MMDBoneHandler(MMDDataHandlerABC):
-    @classmethod
-    @property
-    def type_name(cls) -> str:
-        return MMDTranslationElementType.BONE.name
+    type_name = MMDTranslationElementType.BONE.name
 
     @classmethod
     def draw_item(cls, layout: bpy.types.UILayout, mmd_translation_element: "MMDTranslationElement", index: int):
@@ -173,10 +166,7 @@ class MMDBoneHandler(MMDDataHandlerABC):
 
 
 class MMDMorphHandler(MMDDataHandlerABC):
-    @classmethod
-    @property
-    def type_name(cls) -> str:
-        return MMDTranslationElementType.MORPH.name
+    type_name = MMDTranslationElementType.MORPH.name
 
     @classmethod
     def draw_item(cls, layout: bpy.types.UILayout, mmd_translation_element: "MMDTranslationElement", index: int):
@@ -255,10 +245,7 @@ class MMDMorphHandler(MMDDataHandlerABC):
 
 
 class MMDMaterialHandler(MMDDataHandlerABC):
-    @classmethod
-    @property
-    def type_name(cls) -> str:
-        return MMDTranslationElementType.MATERIAL.name
+    type_name = MMDTranslationElementType.MATERIAL.name
 
     @classmethod
     def draw_item(cls, layout: bpy.types.UILayout, mmd_translation_element: "MMDTranslationElement", index: int):
@@ -347,10 +334,7 @@ class MMDMaterialHandler(MMDDataHandlerABC):
 
 
 class MMDDisplayHandler(MMDDataHandlerABC):
-    @classmethod
-    @property
-    def type_name(cls) -> str:
-        return MMDTranslationElementType.DISPLAY.name
+    type_name = MMDTranslationElementType.DISPLAY.name
 
     @classmethod
     def draw_item(cls, layout: bpy.types.UILayout, mmd_translation_element: "MMDTranslationElement", index: int):
@@ -425,10 +409,7 @@ class MMDDisplayHandler(MMDDataHandlerABC):
 
 
 class MMDPhysicsHandler(MMDDataHandlerABC):
-    @classmethod
-    @property
-    def type_name(cls) -> str:
-        return MMDTranslationElementType.PHYSICS.name
+    type_name = MMDTranslationElementType.PHYSICS.name
 
     @classmethod
     def draw_item(cls, layout: bpy.types.UILayout, mmd_translation_element: "MMDTranslationElement", index: int):
@@ -533,10 +514,7 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
 
 
 class MMDInfoHandler(MMDDataHandlerABC):
-    @classmethod
-    @property
-    def type_name(cls) -> str:
-        return MMDTranslationElementType.INFO.name
+    type_name = MMDTranslationElementType.INFO.name
 
     TYPE_TO_ICONS = {
         "EMPTY": "EMPTY_DATA",
