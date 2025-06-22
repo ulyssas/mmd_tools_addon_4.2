@@ -60,7 +60,7 @@ class OpenCC:
         result = []
         # Separate string using the list of separators in a regular expression
         split_string_list = self.split_chars_re.split(string)
-        for i in range(0, len(split_string_list)):
+        for i in range(len(split_string_list)):
             if i % 2 == 0:
                 # Work with the text string
                 # Append converted string to result
@@ -285,7 +285,7 @@ class StringTree(object):
         min_len = test_dict[1]
         while test_len >= min_len:
             # Loop through trying successively smaller substrings in the dictionary
-            for i in range(0, string_len - test_len + 1):
+            for i in range(string_len - test_len + 1):
                 if string[i:i + test_len] in test_dict[2]:
                     # Match found.
                     if i > 0:
