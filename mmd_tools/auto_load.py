@@ -19,8 +19,7 @@ ordered_classes = None
 
 
 def init(package_name):
-    global modules
-    global ordered_classes
+    global modules, ordered_classes
 
     modules = get_all_submodules(Path(__file__).parent, package_name)
     ordered_classes = get_ordered_classes_to_register(modules)
