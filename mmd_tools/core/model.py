@@ -474,9 +474,8 @@ class FnModel:
                 # This bone needs to be moved after ALL ancestors
                 # Use max ancestor ID + small offset + hierarchy depth for stable sorting
                 return (1, max_ancestor_id + 0.1, get_hierarchy_depth(bone), bone.name)
-            else:
-                # Keep original position
-                return (0, current_id if current_id >= 0 else float("inf"), bone.name)
+            # Keep original position
+            return (0, current_id if current_id >= 0 else float("inf"), bone.name)
 
         # Get valid bones (non-shadow bones)
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]

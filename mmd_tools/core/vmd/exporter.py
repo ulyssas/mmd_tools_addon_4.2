@@ -76,9 +76,8 @@ class _FCurve:
         # When dy is too small, restoring (y1, y2) is impossible and the curve is meaningless in MMD
         if abs(dy) < 1e-4:
             return ((20, 20), (107, 107))
-        else:
-            y1 = max(0, min(127, round(y1 * 127.0 / dy)))
-            y2 = max(0, min(127, round(y2 * 127.0 / dy)))
+        y1 = max(0, min(127, round(y1 * 127.0 / dy)))
+        y2 = max(0, min(127, round(y2 * 127.0 / dy)))
         if abs(dx) < 1e-4:
             (x1, x2) = (20, 107)
         else:

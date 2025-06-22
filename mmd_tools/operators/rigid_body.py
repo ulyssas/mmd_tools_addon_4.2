@@ -517,7 +517,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
                 if obj not in group.values():
                     group.link(obj)
                 return True
-            elif obj in group.values():
+            if obj in group.values():
                 group.unlink(obj)
             return False
 

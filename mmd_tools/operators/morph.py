@@ -237,7 +237,7 @@ class RemoveMorphOffset(bpy.types.Operator):
                 for obj in FnModel.iterate_mesh_objects(root):
                     FnMorph.remove_shape_key(obj, morph.name)
                 return {"FINISHED"}
-            elif morph_type.startswith("uv"):
+            if morph_type.startswith("uv"):
                 if morph.data_type == "VERTEX_GROUP":
                     for obj in FnModel.iterate_mesh_objects(root):
                         FnMorph.store_uv_morph_data(obj, morph)

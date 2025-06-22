@@ -255,10 +255,9 @@ class Header:
             s = 2
         if (1 << 8) / s > num:
             return 1
-        elif (1 << 16) / s > num:
+        if (1 << 16) / s > num:
             return 2
-        else:
-            return 4
+        return 4
 
     def load(self, fs):
         logging.info("loading pmx header information...")
@@ -724,15 +723,13 @@ class BoneWeight:
         t = list(filter(lambda x: x[0] == type_id, self.TYPES))
         if len(t) > 0:
             return t[0][1]
-        else:
-            return None
+        return None
 
     def convertNameToId(self, type_name):
         t = list(filter(lambda x: x[1] == type_name, self.TYPES))
         if len(t) > 0:
             return t[0][0]
-        else:
-            return None
+        return None
 
     def load(self, fs):
         self.type = fs.readByte()

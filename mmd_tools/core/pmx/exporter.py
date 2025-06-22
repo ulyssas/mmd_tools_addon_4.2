@@ -338,8 +338,7 @@ class __PmxExporter:
     def __countBoneDepth(cls, bone):
         if bone.parent is None:
             return 0
-        else:
-            return cls.__countBoneDepth(bone.parent) + 1
+        return cls.__countBoneDepth(bone.parent) + 1
 
     def __exportBones(self, root, meshes):
         """Export bones.
@@ -999,7 +998,7 @@ class __PmxExporter:
                     i.normal = normal
                     i.add_uvs[1] = current_color_uv
                     return i
-                elif (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01 and _color_diff(i, current_color_uv) < 0.01:
+                if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01 and _color_diff(i, current_color_uv) < 0.01:
                     # UV, normal, and vertex color are all compatible within thresholds
                     return i
 
@@ -1012,57 +1011,57 @@ class __PmxExporter:
             vertices.append(n)
             return n
 
-        else:  # Non-splitting mode: UV splits, normals and colors use weighted averaging
-            # Find or create vertex based on UV compatibility only
-            v = None
-            for i in vertices:
-                if i.uv is None:
-                    i.uv = uv
-                    v = i
-                    break
-                elif (i.uv - uv).length < 0.001:  # UV requires exact matching
-                    v = i
-                    break
+        # Non-splitting mode: UV splits, normals and colors use weighted averaging
+        # Find or create vertex based on UV compatibility only
+        v = None
+        for i in vertices:
+            if i.uv is None:
+                i.uv = uv
+                v = i
+                break
+            elif (i.uv - uv).length < 0.001:  # UV requires exact matching
+                v = i
+                break
 
-            if v is None:
-                # Create new vertex for different UV
-                v = copy.copy(vertices[0])
-                v.uv = uv
-                vertices.append(v)
+        if v is None:
+            # Create new vertex for different UV
+            v = copy.copy(vertices[0])
+            v.uv = uv
+            vertices.append(v)
 
-            # Initialize averaging lists if needed
-            for attr_name in ["_normal_list", "_color_list", "_area_list", "_angle_list"]:
-                if not hasattr(v, attr_name):
-                    setattr(v, attr_name, [])
+        # Initialize averaging lists if needed
+        for attr_name in ["_normal_list", "_color_list", "_area_list", "_angle_list"]:
+            if not hasattr(v, attr_name):
+                setattr(v, attr_name, [])
 
-            # Append current values to averaging lists
-            v._normal_list.append(normal)
-            v._color_list.append(color_vec)
-            v._area_list.append(face_area)
-            v._angle_list.append(loop_angle)
+        # Append current values to averaging lists
+        v._normal_list.append(normal)
+        v._color_list.append(color_vec)
+        v._area_list.append(face_area)
+        v._angle_list.append(loop_angle)
 
-            # Calculate angle * area weighted averages
-            weights = [angle * area for angle, area in zip(v._angle_list, v._area_list, strict=False)]
-            total_weight = sum(weights) or 1.0  # Avoid division by zero
+        # Calculate angle * area weighted averages
+        weights = [angle * area for angle, area in zip(v._angle_list, v._area_list, strict=False)]
+        total_weight = sum(weights) or 1.0  # Avoid division by zero
 
-            # Average normals
-            if len(set(tuple(n) for n in v._normal_list)) == 1:  # All normals identical
-                v.normal = normal
-            else:
-                weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), mathutils.Vector((0, 0, 0)))
-                v.normal = (weighted_normal_sum / total_weight).normalized()
+        # Average normals
+        if len(set(tuple(n) for n in v._normal_list)) == 1:  # All normals identical
+            v.normal = normal
+        else:
+            weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), mathutils.Vector((0, 0, 0)))
+            v.normal = (weighted_normal_sum / total_weight).normalized()
 
-            # Average vertex colors and convert to ADD UV2 format
-            if len(set(tuple(c) for c in v._color_list)) == 1:  # All colors identical
-                final_color = color_vec
-            else:
-                weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights, strict=False)), mathutils.Vector((0, 0, 0, 0)))
-                final_color = weighted_color_sum / total_weight
+        # Average vertex colors and convert to ADD UV2 format
+        if len(set(tuple(c) for c in v._color_list)) == 1:  # All colors identical
+            final_color = color_vec
+        else:
+            weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights, strict=False)), mathutils.Vector((0, 0, 0, 0)))
+            final_color = weighted_color_sum / total_weight
 
-            # Set averaged vertex color as ADD UV2
-            _ensure_add_uvs(v)
-            v.add_uvs[1] = _color_to_uv(final_color)
-            return v
+        # Set averaged vertex color as ADD UV2
+        _ensure_add_uvs(v)
+        v.add_uvs[1] = _color_to_uv(final_color)
+        return v
 
     def __convertAddUV(self, vert, adduv, addzw, uv_index, vertices, rip_vertices):
         assert vertices, "Empty vertices list for additional UV processing"

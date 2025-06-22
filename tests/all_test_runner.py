@@ -147,10 +147,9 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Look for "OK" indicating all tests passed, or check for absence of FAILED/ERROR
         if "OK" in result.stdout or (result.returncode == 0 and "FAILED" not in result.stdout and "ERROR" not in result.stdout):
             return True, "", elapsed_str, final_progress
-        else:
-            # We no longer extract the detailed error message
-            # Just indicate that the test failed
-            return False, "Test failed", elapsed_str, final_progress
+        # We no longer extract the detailed error message
+        # Just indicate that the test failed
+        return False, "Test failed", elapsed_str, final_progress
 
     except Exception:
         # Calculate elapsed time in case of exception

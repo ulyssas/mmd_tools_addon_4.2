@@ -13,10 +13,9 @@ from ..bpyutils import FnObject
 def _hash(v):
     if isinstance(v, (bpy.types.Object, bpy.types.PoseBone)):
         return hash(type(v).__name__ + v.name)
-    elif isinstance(v, bpy.types.Pose):
+    if isinstance(v, bpy.types.Pose):
         return hash(type(v).__name__ + v.id_data.name)
-    else:
-        raise NotImplementedError("hash")
+    raise NotImplementedError("hash")
 
 
 class FnSDEF:

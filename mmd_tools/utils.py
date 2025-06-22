@@ -272,7 +272,7 @@ class ItemMoveOp:
         if index < index_min:
             items.move(index, index_min)
             return index_min
-        elif index > index_max:
+        if index > index_max:
             items.move(index, index_max)
             return index_max
 

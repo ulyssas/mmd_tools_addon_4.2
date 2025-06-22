@@ -170,9 +170,8 @@ class OpenCC:
         """
         if self.conversion == conversion:
             return
-        else:
-            self._dict_init_done = False
-            self.conversion = conversion
+        self._dict_init_done = False
+        self.conversion = conversion
 
 #############################################
 
