@@ -1973,7 +1973,7 @@ class TestMMDProperties(unittest.TestCase):
 
         # Check that vertex positions reflect new size
         # For a box, vertices should be at ±size/2 for each axis
-        expected_extents = [s for s in new_size]  # Box extents should match size
+        expected_extents = list(new_size)  # Box extents should match size
         actual_extents = [max(abs(v.co[i]) for v in mesh.vertices) for i in range(3)]
 
         for i, (expected, actual) in enumerate(zip(expected_extents, actual_extents)):
