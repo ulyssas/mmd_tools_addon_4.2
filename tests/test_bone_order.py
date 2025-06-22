@@ -158,7 +158,7 @@ class TestBoneOrder(unittest.TestCase):
 
         # After fix_bone_order, find the actual maximum valid bone ID
         valid_bones = [b for b in self.armature_object.pose.bones if not getattr(b, "is_mmd_shadow_bone", False) and b.mmd_bone.bone_id >= 0]
-        expected_max = max([b.mmd_bone.bone_id for b in valid_bones]) if valid_bones else -1
+        expected_max = max(b.mmd_bone.bone_id for b in valid_bones) if valid_bones else -1
 
         self.assertEqual(max_id, expected_max, f"Max bone ID should be {expected_max}, got {max_id}")
 

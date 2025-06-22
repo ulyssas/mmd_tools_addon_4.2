@@ -245,7 +245,7 @@ class _AnimationBase(collections.defaultdict):
             self[name].append(frameKey)
 
     def save(self, fin):
-        count = sum([len(i) for i in self.values()])
+        count = sum(len(i) for i in self.values())
         fin.write(struct.pack("<L", count))
         for name, frameKeys in self.items():
             name_data = struct.pack("<15s", _encodeCp932String(name))
