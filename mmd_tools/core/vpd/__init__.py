@@ -50,7 +50,7 @@ class File:
     def load(self, **args):
         path = args["filepath"]
 
-        encoding = "shift_jis"
+        encoding = "cp932"
         with open(path, "rt", encoding=encoding, errors="replace") as fin:
             self.filepath = path
             if not fin.readline().startswith("Vocaloid Pose Data file"):
@@ -93,7 +93,7 @@ class File:
     def save(self, **args):
         path = args.get("filepath", self.filepath)
 
-        encoding = "shift_jis"
+        encoding = "cp932"
         with open(path, "wt", encoding=encoding, errors="replace", newline="") as fout:
             self.filepath = path
             fout.write("Vocaloid Pose Data file\r\n")

@@ -13,10 +13,9 @@ from ..bpyutils import FnObject
 def _hash(v):
     if isinstance(v, (bpy.types.Object, bpy.types.PoseBone)):
         return hash(type(v).__name__ + v.name)
-    elif isinstance(v, bpy.types.Pose):
+    if isinstance(v, bpy.types.Pose):
         return hash(type(v).__name__ + v.id_data.name)
-    else:
-        raise NotImplementedError("hash")
+    raise NotImplementedError("hash")
 
 
 class FnSDEF:
@@ -91,6 +90,7 @@ class FnSDEF:
     @classmethod
     def __find_vertices(cls, obj):
         if not cls.has_sdef_data(obj):
+            logging.debug(f"SDEF vertex search skipped for '{obj.name}': No SDEF data found")
             return {}
 
         vertices = {}
@@ -210,7 +210,7 @@ class FnSDEF:
                         rot1 = -rot1
                     s0, s1 = mat0.to_scale(), mat1.to_scale()
 
-                    def scale(mat_rot, w0, w1):
+                    def scale(mat_rot, w0, w1, s0, s1):
                         s = s0 * w0 + s1 * w1
                         return mat_rot @ Matrix([(s[0], 0, 0), (0, s[1], 0), (0, 0, s[2])])
 
@@ -218,7 +218,7 @@ class FnSDEF:
                         delta = sum(((key.data[vid].co - key.relative_key.data[vid].co) * key.value for key in key_blocks), Vector())  # assuming key.vertex_group = ''
                         return (mat_rot @ (pos_c + delta)) - delta
 
-                    shapekey_data[vids] = [offset(scale((rot0 * w0 + rot1 * w1).normalized().to_matrix(), w0, w1), pos_c, vid) + (mat0 @ cr0) * w0 + (mat1 @ cr1) * w1 for vid, w0, w1, pos_c, cr0, cr1 in sdef_data]
+                    shapekey_data[vids] = [offset(scale((rot0 * w0 + rot1 * w1).normalized().to_matrix(), w0, w1, s0, s1), pos_c, vid) + (mat0 @ cr0) * w0 + (mat1 @ cr1) * w1 for vid, w0, w1, pos_c, cr0, cr1 in sdef_data]
             else:
                 # bulk update
                 for bone0, bone1, sdef_data, vids in cls.g_verts[_hash(obj)].values():
@@ -268,6 +268,7 @@ class FnSDEF:
         # Unbind first
         cls.unbind(obj)
         if not cls.has_sdef_data(obj):
+            logging.debug(f"SDEF bind skipped for '{obj.name}': No SDEF data found")
             return False
         # Create the shapekey for the driver
         shapekey = obj.shape_key_add(name=cls.SHAPEKEY_NAME, from_mix=False)

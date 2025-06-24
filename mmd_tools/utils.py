@@ -11,7 +11,7 @@ import bpy
 from .bpyutils import FnContext
 
 
-## 指定したオブジェクトのみを選択状態かつアクティブにする
+# 指定したオブジェクトのみを選択状態かつアクティブにする
 def selectAObject(obj):
     try:
         bpy.ops.object.mode_set(mode="OBJECT")
@@ -22,7 +22,7 @@ def selectAObject(obj):
     FnContext.set_active_object(FnContext.ensure_context(), obj)
 
 
-## 現在のモードを指定したオブジェクトのEdit Modeに変更する
+# 現在のモードを指定したオブジェクトのEdit Modeに変更する
 def enterEditMode(obj):
     selectAObject(obj)
     if obj.mode != "EDIT":
@@ -64,7 +64,7 @@ __CONVERT_NAME_TO_L_REGEXP = re.compile("^(.*)左(.*)$")
 __CONVERT_NAME_TO_R_REGEXP = re.compile("^(.*)右(.*)$")
 
 
-## 日本語で左右を命名されている名前をblender方式のL(R)に変更する
+# 日本語で左右を命名されている名前をblender方式のL(R)に変更する
 def convertNameToLR(name, use_underscore=False):
     m = __CONVERT_NAME_TO_L_REGEXP.match(name)
     delimiter = "_" if use_underscore else "."
@@ -92,7 +92,7 @@ def convertLRToName(name):
     return name
 
 
-## src_vertex_groupのWeightをdest_vertex_groupにaddする
+# src_vertex_groupのWeightをdest_vertex_groupにaddする
 def mergeVertexGroup(meshObj, src_vertex_group_name, dest_vertex_group_name):
     mesh = meshObj.data
     src_vertex_group = meshObj.vertex_groups[src_vertex_group_name]
@@ -140,7 +140,7 @@ def clearUnusedMeshes():
         bpy.data.meshes.remove(mesh)
 
 
-## Boneのカスタムプロパティにname_jが存在する場合、name_jの値を
+# Boneのカスタムプロパティにname_jが存在する場合、name_jの値を
 # それ以外の場合は通常のbone名をキーとしたpose_boneへの辞書を作成
 def makePmxBoneMap(armObj):
     # Maintain backward compatibility with mmd_tools v0.4.x or older.
@@ -151,7 +151,7 @@ __REMOVE_PREFIX_DIGITS_REGEXP = re.compile(r"\.\d{1,}$")
 
 
 def unique_name(name: str, used_names: Set[str]) -> str:
-    """Helper function for storing unique names.
+    """Generate a unique name from the given name.
     This function is a limited and simplified version of bpy_extras.io_utils.unique_name.
 
     Args:
@@ -173,7 +173,7 @@ def unique_name(name: str, used_names: Set[str]) -> str:
 
 def int2base(x, base, width=0):
     """
-    Method to convert an int to a base
+    Convert an int to a base
     Source: http://stackoverflow.com/questions/2267362
     """
     import string
@@ -220,6 +220,7 @@ def saferelpath(path, start, strategy="inside"):
             return ".." + os.sep + os.path.basename(path)
 
     return os.path.relpath(path, start)
+
 
 class ItemOp:
     @staticmethod
@@ -271,7 +272,7 @@ class ItemMoveOp:
         if index < index_min:
             items.move(index, index_min)
             return index_min
-        elif index > index_max:
+        if index > index_max:
             items.move(index, index_max)
             return index_max
 
@@ -291,7 +292,7 @@ class ItemMoveOp:
 
 
 def deprecated(deprecated_in: Optional[str] = None, details: Optional[str] = None):
-    """Decorator to mark a function as deprecated.
+    """Mark a function as deprecated.
     Args:
         deprecated_in (Optional[str]): Version in which the function was deprecated.
         details (Optional[str]): Additional details about the deprecation.
@@ -310,7 +311,7 @@ def deprecated(deprecated_in: Optional[str] = None, details: Optional[str] = Non
 
 
 def warn_deprecation(function_name: str, deprecated_in: Optional[str] = None, details: Optional[str] = None) -> None:
-    """Reports a deprecation warning.
+    """Report a deprecation warning.
     Args:
         function_name (str): Name of the deprecated function.
         deprecated_in (Optional[str]): Version in which the function was deprecated.

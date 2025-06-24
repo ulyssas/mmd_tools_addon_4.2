@@ -7,6 +7,8 @@ import os
 import re
 import struct
 
+from ..vmd import _decodeCp932String
+
 
 class InvalidFileError(Exception):
     pass
@@ -70,9 +72,9 @@ class FileReadStream(FileStream):
 
     def readStr(self, size):
         buf = self.__fin.read(size)
-        if buf[0] == b"\xfd":
+        if not buf:
             return ""
-        return buf.split(b"\x00")[0].decode("shift_jis", errors="replace")
+        return _decodeCp932String(buf)
 
     def readFloat(self):
         (v,) = struct.unpack("<f", self.__fin.read(4))
@@ -158,7 +160,7 @@ class Material:
         tex_path = fs.readStr(20)
         tex_path = tex_path.replace("\\", os.path.sep)
         t = tex_path.split("*")
-        if not re.search(r"\.sp([ha])$", t[0], flags=re.I):
+        if not re.search(r"\.sp([ha])$", t[0], flags=re.IGNORECASE):
             self.texture_path = t.pop(0)
         if len(t) > 0:
             self.sphere_path = t.pop(0)

@@ -30,7 +30,6 @@ class TestMaterialSystem(unittest.TestCase):
 
     def setUp(self):
         """Start each test with a clean state"""
-
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -1245,7 +1244,6 @@ class TestMaterialSystem(unittest.TestCase):
 
         print("✓ FnMaterial readonly mode test passed")
 
-
     def test_fn_material_image_loading_edge_cases(self):
         """Test image loading with various edge cases"""
         self._enable_mmd_tools()
@@ -1273,7 +1271,6 @@ class TestMaterialSystem(unittest.TestCase):
             self.assertIsNotNone(toon_texture.image, "Should create placeholder image for invalid path")
 
         print("✓ FnMaterial image loading edge cases test passed")
-
 
     def test_material_id_uniqueness(self):
         """Test material ID uniqueness functionality"""
@@ -1305,6 +1302,7 @@ class TestMaterialSystem(unittest.TestCase):
                 self.assertTrue(unique, f"Material {material.name} should have unique ID")
 
         print("✓ Material ID uniqueness test passed")
+
 
 if __name__ == "__main__":
     import sys

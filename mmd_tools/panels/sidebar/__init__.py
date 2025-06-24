@@ -64,7 +64,7 @@ class UL_ObjectsMixIn:
             row = row.row(align=True)
             row.prop(item_prop, "name_e", text="", emboss=True)
             self.draw_item_special(context, row, item)
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon=self.icon)
 

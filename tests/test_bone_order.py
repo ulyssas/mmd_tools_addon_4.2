@@ -158,7 +158,7 @@ class TestBoneOrder(unittest.TestCase):
 
         # After fix_bone_order, find the actual maximum valid bone ID
         valid_bones = [b for b in self.armature_object.pose.bones if not getattr(b, "is_mmd_shadow_bone", False) and b.mmd_bone.bone_id >= 0]
-        expected_max = max([b.mmd_bone.bone_id for b in valid_bones]) if valid_bones else -1
+        expected_max = max(b.mmd_bone.bone_id for b in valid_bones) if valid_bones else -1
 
         self.assertEqual(max_id, expected_max, f"Max bone ID should be {expected_max}, got {max_id}")
 
@@ -211,7 +211,7 @@ class TestBoneOrder(unittest.TestCase):
         # Verify references in morphs were updated
         test_morph = bone_morphs["test_morph"]
         updated_ids = [data.bone_id for data in test_morph.data]
-        self.assertTrue(any(id in updated_ids for id in [original_neck_id, original_head_id]), "Bone morph references should be updated after swap")
+        self.assertTrue(any(bone_id in updated_ids for bone_id in [original_neck_id, original_head_id]), "Bone morph references should be updated after swap")
 
     def test_shift_bone_id(self):
         """Test shifting bone to specific position in bone order"""
@@ -361,7 +361,6 @@ class TestBoneOrder(unittest.TestCase):
 
         # Set active bone to head
         self.root_object.mmd_root.active_bone_index = head_index
-
 
         # Execute move to top operator
         bpy.context.view_layer.objects.active = self.root_object

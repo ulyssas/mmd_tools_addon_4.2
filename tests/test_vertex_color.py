@@ -14,9 +14,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 class TestVertexColorExporter(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -30,9 +28,7 @@ class TestVertexColorExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # Clear the scene
@@ -51,7 +47,7 @@ class TestVertexColorExporter(unittest.TestCase):
             raise ValueError(f"Tuple lengths mismatch: {len(tuple0)} vs {len(tuple1)}")
         if not tuple0 and not tuple1:  # Both tuples are empty
             return 0.0  # Empty tuples are considered equal
-        return max(abs(a - b) for a, b in zip(tuple0, tuple1))
+        return max(abs(a - b) for a, b in zip(tuple0, tuple1, strict=False))
 
     def __enable_mmd_tools(self):
         """Enable MMD Tools addon if not already enabled"""
@@ -484,9 +480,7 @@ class TestVertexColorExporter(unittest.TestCase):
         print(f"✓ Basic functionality verified: {vertices_with_colors} vertices with colors, {non_zero_colors} non-zero")
 
     def test_simple_quad_mapping(self):
-        """
-        Test vertex color mapping on a simple quad - this works correctly
-        """
+        """Test vertex color mapping on a simple quad - this works correctly"""
         self.__enable_mmd_tools()
 
         root, armature, mesh_obj = self.__create_deterministic_mesh("simple_quad_correct", "simple_quad")
@@ -499,9 +493,7 @@ class TestVertexColorExporter(unittest.TestCase):
         self.__verify_mapping_correctness(analysis, "simple_quad_correct", allow_precision_errors=True)
 
     def test_complex_quad_mapping_should_fail(self):
-        """
-        Test complex quad mapping - this SHOULD FAIL until the triangulation issue is fixed
-        """
+        """Test complex quad mapping - this SHOULD FAIL until the triangulation issue is fixed"""
         self.__enable_mmd_tools()
 
         root, armature, mesh_obj = self.__create_deterministic_mesh("complex_quad_should_fail", "complex_quad")
@@ -526,9 +518,7 @@ class TestVertexColorExporter(unittest.TestCase):
             print("✓ Complex quad mapping works correctly - bug has been fixed!")
 
     def test_no_vertex_colors_edge_case(self):
-        """
-        Test that meshes without vertex colors export correctly without crashing
-        """
+        """Test that meshes without vertex colors export correctly without crashing"""
         self.__enable_mmd_tools()
 
         root, armature, mesh_obj = self.__create_deterministic_mesh("no_colors", "simple_quad")
@@ -557,9 +547,7 @@ class TestVertexColorExporter(unittest.TestCase):
             self.fail(f"Export should not fail when no vertex colors are present: {str(e)}")
 
     def test_issue_summary_with_failures(self):
-        """
-        Test that shows the real status - some tests SHOULD FAIL to indicate bugs
-        """
+        """Test that shows the real status - some tests SHOULD FAIL to indicate bugs"""
         self.__enable_mmd_tools()
 
         print("\nVERTEX COLOR MAPPING BUG VERIFICATION:")
@@ -702,9 +690,7 @@ class TestVertexColorExporter(unittest.TestCase):
         return {"original_face_loops": original_face_loops, "exported_faces": [list(face) for face in result_model.faces]}
 
     def test_diagnosis_loop_vertex_mapping(self):
-        """
-        Diagnose the correspondence between loop indices and vertex indices
-        """
+        """Diagnose the correspondence between loop indices and vertex indices"""
         self.__enable_mmd_tools()
 
         root, armature, mesh_obj = self.__create_deterministic_mesh("diagnosis", "simple_quad")
@@ -719,7 +705,7 @@ class TestVertexColorExporter(unittest.TestCase):
             print(f"  Loop indices: {list(face.loop_indices)}")
 
             # Check the correspondence between loops and vertices
-            for i, (vertex_idx, loop_idx) in enumerate(zip(face.vertices, face.loop_indices)):
+            for i, (vertex_idx, loop_idx) in enumerate(zip(face.vertices, face.loop_indices, strict=False)):
                 loop = mesh_data.loops[loop_idx]
                 print(f"    Position{i}: vertex[{vertex_idx}] <-> loop[{loop_idx}], loop.vertex_index={loop.vertex_index}")
                 assert loop.vertex_index == vertex_idx, f"Loop vertex mismatch! loop.vertex_index={loop.vertex_index} != vertex_idx={vertex_idx}"
@@ -837,6 +823,7 @@ class TestVertexColorExporter(unittest.TestCase):
                 self.fail(f"Color {original_color} not found in exported vertices")
 
         return {"original_colors": original_colors, "exported_colors": exported_color_set, "vertices_with_colors": vertices_with_colors, "color_distribution": color_counts}
+
 
 if __name__ == "__main__":
     import sys

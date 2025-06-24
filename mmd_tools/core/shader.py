@@ -99,7 +99,7 @@ class _NodeGroupUtils(_NodeTreeUtils):
             if not min_max:
                 if idname.endswith("Factor") or io_name.endswith("Alpha"):
                     interface_socket.min_value, interface_socket.max_value = 0, 1
-                elif idname.endswith("Float") or idname.endswith("Vector"):
+                elif idname.endswith(("Float", "Vector")):
                     interface_socket.min_value, interface_socket.max_value = -10, 10
         if socket is not None:
             self.links.new(io_sockets[io_name], socket)

@@ -13,9 +13,7 @@ TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 class TestDisplaySystem(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         if os.path.exists(output_dir):
             for item in os.listdir(output_dir):
@@ -28,9 +26,7 @@ class TestDisplaySystem(unittest.TestCase):
                     shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # logger.setLevel('DEBUG')
@@ -46,9 +42,7 @@ class TestDisplaySystem(unittest.TestCase):
         self.__create_test_model()
 
     def tearDown(self):
-        """
-        Clean up after each test
-        """
+        """Clean up after each test"""
         # Clear scene
         bpy.ops.wm.read_homefile(use_empty=True)
 

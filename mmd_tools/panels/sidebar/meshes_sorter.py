@@ -35,11 +35,11 @@ class MMDMeshSorter(PT_ProductionPanelBase, bpy.types.Panel):
 
 class MMD_TOOLS_UL_ModelMeshes(bpy.types.UIList):
     def draw_item(self, _context, layout, _data, item, icon, _active_data, _active_propname, _index):
-        if self.layout_type in {"DEFAULT"}:
+        if self.layout_type == "DEFAULT":
             layout.label(text=item.name, translate=False, icon="OBJECT_DATA")
-        elif self.layout_type in {"COMPACT"}:
+        elif self.layout_type == "COMPACT":
             pass
-        elif self.layout_type in {"GRID"}:
+        elif self.layout_type == "GRID":
             layout.alignment = "CENTER"
             layout.label(text="", icon_value=icon)
 

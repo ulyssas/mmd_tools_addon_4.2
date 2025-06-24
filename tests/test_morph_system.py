@@ -16,9 +16,7 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 class TestMorphSystem(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         for item in os.listdir(output_dir):
             if item.endswith(".OUTPUT"):
@@ -30,9 +28,7 @@ class TestMorphSystem(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 

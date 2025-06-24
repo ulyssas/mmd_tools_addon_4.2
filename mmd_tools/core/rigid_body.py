@@ -185,16 +185,15 @@ class FnRigidBody:
         if shape == "SPHERE":
             radius = (z1 - z0) / 2
             return (radius, 0.0, 0.0)
-        elif shape == "BOX":
+        if shape == "BOX":
             x, y, z = (x1 - x0) / 2, (y1 - y0) / 2, (z1 - z0) / 2
             return (x, y, z)
-        elif shape == "CAPSULE":
+        if shape == "CAPSULE":
             diameter = x1 - x0
             radius = diameter / 2
             height = abs((z1 - z0) - diameter)
             return (radius, height, 0.0)
-        else:
-            raise ValueError(f"Invalid shape type: {shape}")
+        raise ValueError(f"Invalid shape type: {shape}")
 
     @staticmethod
     def new_joint_object(context: bpy.types.Context, parent_object: bpy.types.Object, empty_display_size: float) -> bpy.types.Object:

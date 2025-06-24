@@ -212,11 +212,11 @@ class TestVMDImporter(unittest.TestCase):
         if isinstance(keyframe_values[0], (list, tuple, Vector, Quaternion)):
             for i in range(len(keyframe_values[0])):
                 fcurve = action.fcurves.new(data_path=property_path, index=i)
-                for frame, value in zip(frames, keyframe_values):
+                for frame, value in zip(frames, keyframe_values, strict=False):
                     fcurve.keyframe_points.insert(frame, value[i])
         else:
             fcurve = action.fcurves.new(data_path=property_path)
-            for frame, value in zip(frames, keyframe_values):
+            for frame, value in zip(frames, keyframe_values, strict=False):
                 fcurve.keyframe_points.insert(frame, value)
 
         for fcurve in action.fcurves:
@@ -276,7 +276,7 @@ class TestVMDImporter(unittest.TestCase):
             if mmd_lamp:
                 self._create_animation_data(mmd_lamp, "location", [Vector((0, 0, 0)), Vector((1, 1, 1)), Vector((0, 0, 0))], [1, 10, 20])
 
-                if mmd_lamp.children and mmd_lamp.children[0].type in {"LIGHT"}:
+                if mmd_lamp.children and mmd_lamp.children[0].type == "LIGHT":
                     light = mmd_lamp.children[0]
                     self._create_animation_data(light.data, "color", [Vector((1, 1, 1)), Vector((1, 0, 0)), Vector((1, 1, 1))], [1, 10, 20])
 
@@ -443,7 +443,7 @@ class TestVMDImporter(unittest.TestCase):
                     matching_bones = target_bones & vmd_bones
                     print(f"Matching bones: {len(matching_bones)} out of {len(vmd_bones)} VMD bones")
                     if matching_bones:
-                        print(f"Sample matching bones: {sorted(list(matching_bones))[:10]}")
+                        print(f"Sample matching bones: {sorted(matching_bones)[:10]}")
 
         elif obj_type == "mesh":
             if target_obj.data.shape_keys and target_obj.data.shape_keys.animation_data:

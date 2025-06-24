@@ -137,7 +137,6 @@ class TestModelEdit(unittest.TestCase):
 
     def __test_joined_model(self, joined_model_path, model_order_str):
         """Test the exported joined model for validity"""
-
         # Clear the scene
         bpy.ops.wm.read_homefile(use_empty=True)
 

@@ -98,7 +98,7 @@ class AddDisplayItem(Operator):
                     bone_names += [b.name for b in context.selected_editable_bones]
                 if context.selected_pose_bones:
                     bone_names += [b.name for b in context.selected_pose_bones]
-                bone_names = sorted(list(set(bone_names)))
+                bone_names = sorted(set(bone_names))
                 for bone_name in bone_names:
                     self._add_item(frame, "BONE", bone_name)
             else:
@@ -295,7 +295,7 @@ class DisplayItemQuickSetup(Operator):
         item_list.sort(key=lambda x: old.index(x) if x in old else len(old))
 
         ItemOp.resize(facial_items, len(item_list))
-        for item, data in zip(facial_items, item_list):
+        for item, data in zip(facial_items, item_list, strict=False):
             item.type = "MORPH"
             item.morph_type, item.name = data
         frame.active_item = 0

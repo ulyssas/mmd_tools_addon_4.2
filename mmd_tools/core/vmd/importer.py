@@ -539,7 +539,7 @@ class VMDImporter:
             prev_rot = bone_rotation if extra_frame else None
             prev_kps, indices = None, tuple(converter.convert_interpolation((0, 16, 32))) + (48,) * len(bone_rotation)
             keyFrames.sort(key=lambda x: x.frame_number)
-            for k, x, y, z, r0, r1, r2, r3 in zip(keyFrames, *fcurves):
+            for k, x, y, z, r0, r1, r2, r3 in zip(keyFrames, *fcurves, strict=False):
                 frame = k.frame_number + self.__frame_start + self.__frame_margin
                 loc = converter.convert_location(_loc(k.location))
                 curr_rot = converter.convert_rotation(_rot(k.rotation))
@@ -561,7 +561,7 @@ class VMDImporter:
                 curr_kps = (x, y, z, r0, r1, r2, r3)
                 if prev_kps is not None:
                     interp = k.interp
-                    for idx, prev_kp, kp in zip(indices, prev_kps, curr_kps):
+                    for idx, prev_kp, kp in zip(indices, prev_kps, curr_kps, strict=False):
                         self.__setInterpolation(interp[idx : idx + 16 : 4], prev_kp, kp)
                 prev_kps = curr_kps
 
@@ -591,14 +591,10 @@ class VMDImporter:
             first_frame = float("inf")
             for keyFrame in propertyAnim:
                 frame_num = keyFrame.frame_number
-                if frame_num < first_frame:
+                if frame_num <= first_frame:
                     first_frame = frame_num
                     for ikName, enable in keyFrame.ik_states:
                         first_frame_ik_states[ikName] = enable
-                elif frame_num == first_frame:
-                    for ikName, enable in keyFrame.ik_states:
-                        if ikName not in first_frame_ik_states:
-                            first_frame_ik_states[ikName] = enable
             # Set the mmd_ik_toggle property for each bone based on the collected first frame IK states
             for ikName, enable in first_frame_ik_states.items():
                 bone = pose_bones.get(ikName, None)
@@ -651,7 +647,7 @@ class VMDImporter:
             new_keyframes = fcurve.keyframe_points[original_count:]
 
             keyFrames.sort(key=lambda x: x.frame_number)
-            for k, v in zip(keyFrames, new_keyframes):
+            for k, v in zip(keyFrames, new_keyframes, strict=False):
                 v.co = (k.frame_number + self.__frame_start + self.__frame_margin, k.weight)
                 v.interpolation = "LINEAR"
             weights = tuple(i.weight for i in keyFrames)
@@ -725,7 +721,7 @@ class VMDImporter:
 
         prev_kps, indices = None, (0, 8, 4, 12, 12, 12, 16, 20)  # x, z, y, rx, ry, rz, dis, fov
         cameraAnim.sort(key=lambda x: x.frame_number)
-        for k, x, y, z, rx, ry, rz, fov, persp, dis in zip(cameraAnim, *new_keyframe_iterators):
+        for k, x, y, z, rx, ry, rz, fov, persp, dis in zip(cameraAnim, *new_keyframe_iterators, strict=False):
             frame = k.frame_number + self.__frame_start + self.__frame_margin
             x.co, z.co, y.co = ((frame, val * self.__scale) for val in _loc(k.location))
             rx.co, rz.co, ry.co = ((frame, val) for val in _rot(k.rotation))
@@ -737,7 +733,7 @@ class VMDImporter:
             curr_kps = (x, y, z, rx, ry, rz, dis, fov)
             if prev_kps is not None:
                 interp = k.interp
-                for idx, prev_kp, kp in zip(indices, prev_kps, curr_kps):
+                for idx, prev_kp, kp in zip(indices, prev_kps, curr_kps, strict=False):
                     self.__setInterpolation(interp[idx : idx + 4 : 2] + interp[idx + 1 : idx + 4 : 2], prev_kp, kp)
             prev_kps = curr_kps
 

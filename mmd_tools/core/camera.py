@@ -199,7 +199,7 @@ class MMDCamera:
         for c in fcurves:
             c.keyframe_points.add(frame_count)
 
-        for f, x, y, z, rx, ry, rz, fov, persp, dis in zip(frames, *(c.keyframe_points for c in fcurves)):
+        for f, x, y, z, rx, ry, rz, fov, persp, dis in zip(frames, *(c.keyframe_points for c in fcurves), strict=False):
             scene.frame_set(f)
             if _camera_override_func:
                 cameraObj = _camera_override_func()

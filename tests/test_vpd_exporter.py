@@ -17,9 +17,7 @@ class TestVPDExporter(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         for item in os.listdir(output_dir):
             if item.endswith(".OUTPUT"):
@@ -31,9 +29,7 @@ class TestVPDExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -162,16 +158,16 @@ class TestVPDExporter(unittest.TestCase):
         for i in range(num_poses):
             # Create different pose for each iteration
             for j, bone in enumerate(armature.pose.bones):
-                if j % (i+1) == 0:  # Create different patterns for different poses
+                if j % (i + 1) == 0:  # Create different patterns for different poses
                     bone.location = Vector((0.1 * i, 0.2 * i, 0.3 * i))
                     bone.rotation_quaternion = Quaternion(((0.9, 0.1 * i, 0.2 * i, 0.3 * i)))
-                    bone.keyframe_insert(data_path="location", frame=i+1)
-                    bone.keyframe_insert(data_path="rotation_quaternion", frame=i+1)
+                    bone.keyframe_insert(data_path="location", frame=i + 1)
+                    bone.keyframe_insert(data_path="rotation_quaternion", frame=i + 1)
 
             # Add pose marker (if current Blender version supports it)
             if hasattr(action, "pose_markers"):
-                marker = action.pose_markers.new(f"Pose_{i+1}")
-                marker.frame = i+1
+                marker = action.pose_markers.new(f"Pose_{i + 1}")
+                marker.frame = i + 1
 
         # Return to object mode
         bpy.ops.object.mode_set(mode="OBJECT")
@@ -494,7 +490,7 @@ class TestVPDExporter(unittest.TestCase):
                                        f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
 
                         # Check content (without assuming Japanese characters work correctly)
-                        with open(output_path, "r", encoding="shift_jis", errors="replace") as f:
+                        with open(output_path, "r", encoding="cp932", errors="replace") as f:
                             content = f.read()
                             # Check for markers that should be present in any VPD file
                             self.assertIn("Vocaloid Pose Data file", content,
@@ -602,7 +598,7 @@ class TestVPDExporter(unittest.TestCase):
             self.assertTrue(os.path.getsize(output_path) > 0, "VPD file for real model is empty")
 
             # Simple verification by checking file content
-            with open(output_path, "r", encoding="shift_jis", errors="replace") as f:
+            with open(output_path, "r", encoding="cp932", errors="replace") as f:
                 content = f.read()
                 # The file should contain the model name in OSM format
                 self.assertIn(f"{model_name}.osm", content, "Model name not found in VPD file")

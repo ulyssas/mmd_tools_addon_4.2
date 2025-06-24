@@ -32,7 +32,7 @@ DICT_DIR = "dictionary"
 class OpenCC:
     def __init__(self, conversion=None):
         """
-        init OpenCC
+        Init OpenCC
         :param conversion: the conversion of usage, options are
          'hk2s', 's2hk', 's2t', 's2tw', 's2twp', 't2hk', 't2s', 't2tw', 'tw2s', 'tw2sp', etc
          check the json file names in config directory
@@ -41,9 +41,9 @@ class OpenCC:
         self.conversion_name = ""
         self.conversion = conversion
         self._dict_init_done = False
-        self._dict_chain = list()
-        self._dict_chain_data = list()
-        self.dict_cache = dict()
+        self._dict_chain = []
+        self._dict_chain_data = []
+        self.dict_cache = {}
         # List of sentence separators from OpenCC PhraseExtract.cpp. None of these separators are allowed as
         # part of a dictionary entry
         self.split_chars_re = re.compile(
@@ -52,9 +52,7 @@ class OpenCC:
             self._init_dict()
 
     def convert(self, string):
-        """
-        Convert string from Simplified Chinese to Traditional Chinese or vice versa
-        """
+        """Convert string from Simplified Chinese to Traditional Chinese or vice versa"""
         if not self._dict_init_done:
             self._init_dict()
             self._dict_init_done = True
@@ -62,7 +60,7 @@ class OpenCC:
         result = []
         # Separate string using the list of separators in a regular expression
         split_string_list = self.split_chars_re.split(string)
-        for i in range(0, len(split_string_list)):
+        for i in range(len(split_string_list)):
             if i % 2 == 0:
                 # Work with the text string
                 # Append converted string to result
@@ -74,7 +72,7 @@ class OpenCC:
         # Join it all together to return a result
         return "".join(result)
 
-    def _convert(self, string, dictionary = []):
+    def _convert(self, string, dictionary=None):
         """
         Convert string from Simplified Chinese to Traditional Chinese or vice versa
         If a dictionary is part of a group of dictionaries, stop conversion on a word
@@ -83,6 +81,8 @@ class OpenCC:
         :param dictionary: list of dictionaries to be applied against the string
         :return: converted string
         """
+        if dictionary is None:
+            dictionary = []
         tree = StringTree(string)
         for c_dict in dictionary:
             tree.create_parse_tree(c_dict)
@@ -91,7 +91,7 @@ class OpenCC:
 
     def _init_dict(self):
         """
-        initialize the dict with chosen conversion
+        Initialize the dict with chosen conversion
         :return: None
         """
         if self.conversion is None:
@@ -112,8 +112,8 @@ class OpenCC:
         self._add_dictionaries(self._dict_chain, self._dict_chain_data)
         # Make sure all dictionaries are in a list
         for index, c_dict in enumerate(self._dict_chain_data):
-           if isinstance(c_dict, tuple):
-               self._dict_chain_data[index] = [c_dict]
+            if isinstance(c_dict, tuple):
+                self._dict_chain_data[index] = [c_dict]
         self._dict_init_done = True
 
     def _add_dictionaries(self, chain_list, chain_data):
@@ -144,7 +144,7 @@ class OpenCC:
 
     def _add_dict_chain(self, dict_chain, dict_dict):
         """
-        add dict chain
+        Add dict chain
         :param dict_chain: the dict chain to add to
         :param dict_dict: the dict to be added in
         :return: None
@@ -162,7 +162,7 @@ class OpenCC:
 
     def set_conversion(self, conversion):
         """
-        set conversion
+        Set conversion
         :param conversion: the conversion of usage, options are
          'hk2s', 's2hk', 's2t', 's2tw', 's2twp', 't2hk', 't2s', 't2tw', 'tw2s', and 'tw2sp'
          check the json file names in config directory
@@ -170,11 +170,11 @@ class OpenCC:
         """
         if self.conversion == conversion:
             return
-        else:
-            self._dict_init_done = False
-            self.conversion = conversion
+        self._dict_init_done = False
+        self.conversion = conversion
 
 #############################################
+
 
 class TreeNode(object):
     LEFT = 0
@@ -198,6 +198,7 @@ class TreeNode(object):
     def set_hint(self, hint):
         self.length_hint = hint
 
+
 class StringTree(object):
     def __init__(self, string):
         self.root = TreeNode(string)
@@ -214,7 +215,7 @@ class StringTree(object):
         """
         # Stacks to hold nodes with unmatched strings
         working_stack = [self.root]
-        unmatched_stack =[]
+        unmatched_stack = []
 
         # process stack
         for test_dict in test_dict_list:
@@ -263,7 +264,7 @@ class StringTree(object):
                 break
         return return_val
 
-    def __findMatch(self, string, test_dict, hint = None):
+    def __findMatch(self, string, test_dict, hint=None):
         """
         Compare smaller and smaller sub-strings going from left to
         right against test_dict. If an entry is found, return it as well
@@ -278,23 +279,23 @@ class StringTree(object):
         string_len = len(string)
         lstring = None
         rstring = None
-        test_len = min (string_len, test_dict[0])
+        test_len = min(string_len, test_dict[0])
         if hint:
-            test_len = min (test_len, hint)
+            test_len = min(test_len, hint)
         min_len = test_dict[1]
         while test_len >= min_len:
             # Loop through trying successively smaller substrings in the dictionary
-            for i in range(0, string_len - test_len + 1):
-                if string[i:i+test_len] in test_dict[2]:
+            for i in range(string_len - test_len + 1):
+                if string[i:i + test_len] in test_dict[2]:
                     # Match found.
                     if i > 0:
                         # Put everything to the left of the match into lstring
                         lstring = string[:i]
-                    if (i+test_len) < string_len:
+                    if (i + test_len) < string_len:
                         # Put everything to the right of the match into rstring
-                        rstring = string[i+test_len:]
+                        rstring = string[i + test_len:]
                     # Save the dictionary value
-                    value = test_dict[2][string[i:i+test_len]]
+                    value = test_dict[2][string[i:i + test_len]]
                     if len(value.split(" ")) > 1:
                         # multiple mapping, use the first one for now
                         value = value.split(" ")[0]
@@ -302,5 +303,3 @@ class StringTree(object):
             test_len -= 1
         # No match found
         return None, None, None, None
-
-

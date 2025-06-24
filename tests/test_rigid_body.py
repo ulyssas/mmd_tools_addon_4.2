@@ -31,7 +31,6 @@ class TestRigidBody(unittest.TestCase):
 
     def setUp(self):
         """Start each test with a clean state"""
-
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -1002,7 +1001,7 @@ class TestRigidBody(unittest.TestCase):
         model = self._create_test_model()
 
         # Create rigid body with specific properties
-        test_properties = {"name_j": "テストリジッド保存", "name_e": "test_rigid_save", "collision_group_number": 5, "mass": 3.14, "friction": 0.87, "bone": "test_bone"}
+        test_properties = {"name_j": "テストリジッド保存", "name_e": "test_rigid_save", "collision_group_number": 5, "mass": 3.45, "friction": 0.87, "bone": "test_bone"}
 
         rigid_obj = self._create_rigid_body_object(model, bone_name=test_properties["bone"])
 

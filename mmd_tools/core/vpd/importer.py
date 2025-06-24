@@ -57,7 +57,7 @@ class VPDImporter:
 
         # Update and keyframe only the bones affected by the current VPD file
         for bone in armObj.pose.bones:
-            vpd_pose = pose_data.get(bone, None)
+            vpd_pose = pose_data.get(bone)
             if vpd_pose:
                 bone.matrix_basis = vpd_pose
 
@@ -105,7 +105,7 @@ class VPDImporter:
 
         # Check if an action exists or create new one
         if meshObj.data.shape_keys.animation_data.action is None:
-            action = bpy.data.actions.new(name=meshObj.name+"_ShapeKeys")
+            action = bpy.data.actions.new(name=meshObj.name + "_ShapeKeys")
             meshObj.data.shape_keys.animation_data.action = action
         else:
             action = meshObj.data.shape_keys.animation_data.action

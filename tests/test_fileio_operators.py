@@ -10,13 +10,12 @@ from bl_ext.user_default.mmd_tools.core.model import Model
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 
+
 class TestFileIoOperators(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         for item in os.listdir(output_dir):
             if item.endswith(".OUTPUT"):
@@ -28,9 +27,7 @@ class TestFileIoOperators(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -47,7 +44,8 @@ class TestFileIoOperators(unittest.TestCase):
 
     def test_export_shy_cube(self):
         """
-        This test will load the shy_cube.blend sample and check if it exports correctly.
+        Load the shy_cube.blend sample and check if it exports correctly.
+
         The following checks will be made:
         - The texture is properly copied to the target directory
         - The material order is kept
@@ -73,11 +71,12 @@ class TestFileIoOperators(unittest.TestCase):
             result_model = pmx.load(output_pmx)
             result_material_names = [mat.name for mat in result_model.materials]
             same_order = True
-            for orig, result in zip(orig_material_names, result_material_names):
+            for orig, result in zip(orig_material_names, result_material_names, strict=False):
                 if orig != result:
                     same_order = False
                     break
             self.assertTrue(same_order, "Material order was lost")
+
 
 if __name__ == "__main__":
     import sys

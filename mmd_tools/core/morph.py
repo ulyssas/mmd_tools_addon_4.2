@@ -215,7 +215,7 @@ class FnMorph:
             for val in morph.data:
                 i = val.index
                 if i in offset_map:
-                    offset_map[i] = [a + b for a, b in zip(offset_map[i], val.offset)]
+                    offset_map[i] = [a + b for a, b in zip(offset_map[i], val.offset, strict=False)]
                 else:
                     offset_map[i] = val.offset
         return offset_map
@@ -240,7 +240,7 @@ class FnMorph:
         max_value = max(max(abs(x) for x in v) for v in offset_map.values() or ([0],))
         scale = morph.vertex_group_scale = max(abs(morph.vertex_group_scale), max_value)
         for idx, offset in offset_map.items():
-            for val, axis in zip(offset, "XYZW"):
+            for val, axis in zip(offset, "XYZW", strict=False):
                 if abs(val) > 1e-4:
                     vg_name = "UV_{0}{1}{2}".format(morph_name, "-" if val < 0 else "+", axis)
                     vg = vertex_groups.get(vg_name, None) or vertex_groups.new(name=vg_name)
@@ -275,19 +275,19 @@ class FnMorph:
                 left.related_mesh_data == right.related_mesh_data
                 and left.offset_type == right.offset_type
                 and left.material == right.material
-                and all(a == b for a, b in zip(left.diffuse_color, right.diffuse_color))
-                and all(a == b for a, b in zip(left.specular_color, right.specular_color))
+                and all(a == b for a, b in zip(left.diffuse_color, right.diffuse_color, strict=False))
+                and all(a == b for a, b in zip(left.specular_color, right.specular_color, strict=False))
                 and left.shininess == right.shininess
-                and all(a == b for a, b in zip(left.ambient_color, right.ambient_color))
-                and all(a == b for a, b in zip(left.edge_color, right.edge_color))
+                and all(a == b for a, b in zip(left.ambient_color, right.ambient_color, strict=False))
+                and all(a == b for a, b in zip(left.edge_color, right.edge_color, strict=False))
                 and left.edge_weight == right.edge_weight
-                and all(a == b for a, b in zip(left.texture_factor, right.texture_factor))
-                and all(a == b for a, b in zip(left.sphere_texture_factor, right.sphere_texture_factor))
-                and all(a == b for a, b in zip(left.toon_texture_factor, right.toon_texture_factor))
+                and all(a == b for a, b in zip(left.texture_factor, right.texture_factor, strict=False))
+                and all(a == b for a, b in zip(left.sphere_texture_factor, right.sphere_texture_factor, strict=False))
+                and all(a == b for a, b in zip(left.toon_texture_factor, right.toon_texture_factor, strict=False))
             )
 
         def morph_equals(left, right) -> bool:
-            return len(left.data) == len(right.data) and all(morph_data_equals(a, b) for a, b in zip(left.data, right.data))
+            return len(left.data) == len(right.data) and all(morph_data_equals(a, b) for a, b in zip(left.data, right.data, strict=False))
 
         # Remove duplicated mmd_root.material_morphs.data[]
         for material_morph in mmd_root.material_morphs:
@@ -385,7 +385,7 @@ class _MorphSlider:
     def __driver_variables(id_data, path, index=-1):
         d = id_data.driver_add(path, index)
         variables = d.driver.variables
-        for x in variables:
+        for x in reversed(variables):
             variables.remove(x)
         return d.driver, variables
 
@@ -440,7 +440,7 @@ class _MorphSlider:
                     kb.driver_remove("value")
                     kb.slider_min, kb.slider_max = min(ms.slider_min, floor(kb.value)), max(ms.slider_max, ceil(kb.value))
 
-            for m in mesh_object.modifiers:  # uv morph
+            for m in reversed(mesh_object.modifiers):  # uv morph
                 if m.name.startswith("mmd_bind") and m.name not in names_in_use:
                     mesh_object.modifiers.remove(m)
 
@@ -455,7 +455,7 @@ class _MorphSlider:
         attributes = set(TransformConstraintOp.min_max_attributes("LOCATION", "to"))
         attributes |= set(TransformConstraintOp.min_max_attributes("ROTATION", "to"))
         for b in rig.armature().pose.bones:
-            for c in b.constraints:
+            for c in reversed(b.constraints):
                 if c.name.startswith("mmd_bind") and c.name[:-4] not in names_in_use:
                     for attr in attributes:
                         c.driver_remove(attr)
@@ -591,7 +591,7 @@ class _MorphSlider:
 
             used_bone_names = bone_offset_map.keys() | uv_morph_map.keys()
             used_bone_names.add(ctrl_base.name)
-            for b in edit_bones:  # cleanup
+            for b in reversed(edit_bones):  # cleanup
                 if b.name.startswith("mmd_bind") and b.name not in used_bone_names:
                     edit_bones.remove(b)
 
@@ -690,7 +690,7 @@ class _MorphSlider:
 
         def __config_material_morph(mat, morph_list):
             nodes = _MaterialMorph.setup_morph_nodes(mat, tuple(x[1] for x in morph_list))
-            for (morph_name, data, name_bind), node in zip(morph_list, nodes):
+            for (morph_name, data, name_bind), node in zip(morph_list, nodes, strict=False):
                 node.label, node.name = morph_name, name_bind
                 data_path, groups = group_dict[morph_name]
                 driver, variables = self.__driver_variables(mat.node_tree, node.inputs[0].path_from_id("default_value"))
@@ -735,10 +735,9 @@ class MigrationFnMorph:
                                 del morph_data["related_mesh"]
                             continue
 
-                        else:
-                            # Compat case. The new version mmd_tools saved. And old version mmd_tools edit. Then new version mmd_tools load again.
-                            # Go update path.
-                            pass
+                        # Compat case. The new version mmd_tools saved. And old version mmd_tools edit. Then new version mmd_tools load again.
+                        # Go update path.
+                        pass
 
                     morph_data.material_data = None
                     if "material_id" in morph_data:

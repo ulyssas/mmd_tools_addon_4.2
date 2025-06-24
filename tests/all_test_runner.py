@@ -23,9 +23,7 @@ stop_progress = None
 
 
 def animate_progress_smooth(stop_flag, test_name, start_time, current_test_num, total_tests, shared_progress):
-    """
-    Animate the progress bar while a test is running with smooth progression
-    """
+    """Animate the progress bar while a test is running with smooth progression"""
     chars = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"  # Braille spinner characters
     idx = 0
 
@@ -77,7 +75,6 @@ def get_blender_path():
     2. When launched with Python: python all_test_runner.py (uses 'blender' from PATH)
     3. When launched with Python and explicit path: python all_test_runner.py <blender.exe path>
     """
-
     # Method 1: Check if we're running inside Blender
     try:
         import bpy
@@ -100,9 +97,7 @@ def get_blender_path():
 
 
 def run_test(blender_path, test_script, current_test_num, total_tests, previous_progress):
-    """
-    Run a single test script using Blender in background mode
-    """
+    """Run a single test script using Blender in background mode"""
     global test_start_time
 
     try:
@@ -152,10 +147,9 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Look for "OK" indicating all tests passed, or check for absence of FAILED/ERROR
         if "OK" in result.stdout or (result.returncode == 0 and "FAILED" not in result.stdout and "ERROR" not in result.stdout):
             return True, "", elapsed_str, final_progress
-        else:
-            # We no longer extract the detailed error message
-            # Just indicate that the test failed
-            return False, "Test failed", elapsed_str, final_progress
+        # We no longer extract the detailed error message
+        # Just indicate that the test failed
+        return False, "Test failed", elapsed_str, final_progress
 
     except Exception:
         # Calculate elapsed time in case of exception
@@ -188,9 +182,7 @@ def print_summary_progress(iteration, total):
 
 
 def run_all_tests():
-    """
-    Run all test scripts in the directory
-    """
+    """Run all test scripts in the directory"""
     global current_test
 
     # Get the path to the Blender executable

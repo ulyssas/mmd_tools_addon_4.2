@@ -17,9 +17,7 @@ TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 class TestLampSystem(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         if os.path.exists(output_dir):
             for item in os.listdir(output_dir):
@@ -32,9 +30,7 @@ class TestLampSystem(unittest.TestCase):
                     shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # logger.setLevel('DEBUG')
@@ -45,9 +41,7 @@ class TestLampSystem(unittest.TestCase):
         self.__enable_mmd_tools()
 
     def tearDown(self):
-        """
-        Clean up after each test
-        """
+        """Clean up after each test"""
         # Clear scene objects
         bpy.ops.wm.read_homefile(use_empty=True)
 
@@ -59,18 +53,14 @@ class TestLampSystem(unittest.TestCase):
         return (Vector(vec0) - Vector(vec1)).length
 
     def __enable_mmd_tools(self):
-        """
-        Enable MMD tools addon
-        """
+        """Enable MMD tools addon"""
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
             addon_enable(module="bl_ext.user_default.mmd_tools")
 
     def __create_lamp_object(self, name="TestLamp", lamp_type="SUN", location=(0, 0, 0)):
-        """
-        Create a lamp object for testing
-        """
+        """Create a lamp object for testing"""
         lamp_data = bpy.data.lights.new(name=name + "_Data", type=lamp_type)
         lamp_obj = bpy.data.objects.new(name=name, object_data=lamp_data)
         bpy.context.collection.objects.link(lamp_obj)
@@ -82,16 +72,12 @@ class TestLampSystem(unittest.TestCase):
     # ********************************************
 
     def test_isLamp_valid_lamp(self):
-        """
-        Test MMDLamp.isLamp() with valid lamp object
-        """
+        """Test MMDLamp.isLamp() with valid lamp object"""
         lamp_obj = self.__create_lamp_object()
         self.assertTrue(MMDLamp.isLamp(lamp_obj))
 
     def test_isLamp_invalid_object(self):
-        """
-        Test MMDLamp.isLamp() with invalid object types
-        """
+        """Test MMDLamp.isLamp() with invalid object types"""
         # Test with empty object
         empty_obj = bpy.data.objects.new(name="TestEmpty", object_data=None)
         bpy.context.collection.objects.link(empty_obj)
@@ -107,16 +93,12 @@ class TestLampSystem(unittest.TestCase):
         self.assertFalse(MMDLamp.isLamp(None))
 
     def test_isMMDLamp_non_mmd_lamp(self):
-        """
-        Test MMDLamp.isMMDLamp() with regular lamp
-        """
+        """Test MMDLamp.isMMDLamp() with regular lamp"""
         lamp_obj = self.__create_lamp_object()
         self.assertFalse(MMDLamp.isMMDLamp(lamp_obj))
 
     def test_isMMDLamp_invalid_object(self):
-        """
-        Test MMDLamp.isMMDLamp() with invalid objects
-        """
+        """Test MMDLamp.isMMDLamp() with invalid objects"""
         # Test with regular empty object
         empty_obj = bpy.data.objects.new(name="TestEmpty", object_data=None)
         bpy.context.collection.objects.link(empty_obj)
@@ -130,9 +112,7 @@ class TestLampSystem(unittest.TestCase):
     # ********************************************
 
     def test_convertToMMDLamp_basic_conversion(self):
-        """
-        Test basic conversion of lamp to MMD lamp
-        """
+        """Test basic conversion of lamp to MMD lamp"""
         # Create a regular lamp
         lamp_obj = self.__create_lamp_object(location=(1, 2, 3))
         original_color = (1.0, 1.0, 1.0)
@@ -196,9 +176,7 @@ class TestLampSystem(unittest.TestCase):
         self.assertEqual(constraint.up_axis, "UP_Y")
 
     def test_convertToMMDLamp_already_mmd_lamp(self):
-        """
-        Test conversion when object is already MMD lamp
-        """
+        """Test conversion when object is already MMD lamp"""
         # Create and convert a lamp
         lamp_obj = self.__create_lamp_object()
         mmd_lamp1 = MMDLamp.convertToMMDLamp(lamp_obj, scale=0.5)
@@ -210,9 +188,7 @@ class TestLampSystem(unittest.TestCase):
         self.assertEqual(mmd_lamp1.object(), mmd_lamp2.object())
 
     def test_convertToMMDLamp_different_scales(self):
-        """
-        Test conversion with different scale values
-        """
+        """Test conversion with different scale values"""
         scales = [0.01, 0.1, 0.5, 1.0, 2.0, 10.0]
 
         for scale in scales:
@@ -239,9 +215,7 @@ class TestLampSystem(unittest.TestCase):
     # ********************************************
 
     def test_mmd_lamp_init_valid(self):
-        """
-        Test MMDLamp initialization with valid objects
-        """
+        """Test MMDLamp initialization with valid objects"""
         # Create MMD lamp
         lamp_obj = self.__create_lamp_object()
         mmd_lamp_converted = MMDLamp.convertToMMDLamp(lamp_obj)
@@ -256,9 +230,7 @@ class TestLampSystem(unittest.TestCase):
         self.assertEqual(mmd_lamp2.object(), empty_obj)
 
     def test_mmd_lamp_init_invalid(self):
-        """
-        Test MMDLamp initialization with invalid objects
-        """
+        """Test MMDLamp initialization with invalid objects"""
         # Test with regular empty object
         empty_obj = bpy.data.objects.new(name="TestEmpty", object_data=None)
         bpy.context.collection.objects.link(empty_obj)
@@ -285,9 +257,7 @@ class TestLampSystem(unittest.TestCase):
             MMDLamp(mesh_obj)
 
     def test_mmd_lamp_methods(self):
-        """
-        Test MMDLamp instance methods
-        """
+        """Test MMDLamp instance methods"""
         # Create MMD lamp
         lamp_obj = self.__create_lamp_object()
         mmd_lamp = MMDLamp.convertToMMDLamp(lamp_obj)
@@ -303,9 +273,7 @@ class TestLampSystem(unittest.TestCase):
         self.assertTrue(MMDLamp.isLamp(retrieved_lamp))
 
     def test_mmd_lamp_no_child_lamp(self):
-        """
-        Test MMDLamp.lamp() when no child lamp exists
-        """
+        """Test MMDLamp.lamp() when no child lamp exists"""
         # Create MMD lamp structure manually without lamp child
         empty_obj = bpy.data.objects.new(name="MMD_Light", object_data=None)
         bpy.context.collection.objects.link(empty_obj)
@@ -322,9 +290,7 @@ class TestLampSystem(unittest.TestCase):
     # ********************************************
 
     def test_convert_operator_poll(self):
-        """
-        Test ConvertToMMDLamp operator poll method
-        """
+        """Test ConvertToMMDLamp operator poll method"""
         # Create lamp object
         lamp_obj = self.__create_lamp_object()
 
@@ -347,9 +313,7 @@ class TestLampSystem(unittest.TestCase):
     # ********************************************
 
     def test_lamp_panel_poll(self):
-        """
-        Test MMDLampPanel poll method
-        """
+        """Test MMDLampPanel poll method"""
         # Test with regular lamp
         lamp_obj = self.__create_lamp_object()
         bpy.context.view_layer.objects.active = lamp_obj
@@ -379,9 +343,7 @@ class TestLampSystem(unittest.TestCase):
     # ********************************************
 
     def test_lamp_system_integration(self):
-        """
-        Test complete lamp system integration
-        """
+        """Test complete lamp system integration"""
         # Create multiple lamps with different types
         lamp_types = ["SUN", "POINT", "SPOT", "AREA"]
         created_lamps = []
@@ -411,9 +373,7 @@ class TestLampSystem(unittest.TestCase):
                 self.assertTrue(ConvertToMMDLamp.poll(bpy.context))  # Should be True since it's still a lamp
 
     def test_parameter_validation(self):
-        """
-        Test parameter validation for various edge cases
-        """
+        """Test parameter validation for various edge cases"""
         # Test scale parameter validation
         lamp_obj = self.__create_lamp_object()
 
@@ -434,9 +394,7 @@ class TestLampSystem(unittest.TestCase):
         self.assertLess(self.__vector_error(empty_obj.location, expected_location), 1e-6)
 
     def test_object_hierarchy_consistency(self):
-        """
-        Test object hierarchy consistency after conversion
-        """
+        """Test object hierarchy consistency after conversion"""
         # Create lamp and convert
         lamp_obj = self.__create_lamp_object(name="HierarchyTest")
         original_name = lamp_obj.name

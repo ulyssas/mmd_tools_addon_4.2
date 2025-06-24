@@ -202,7 +202,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         model2separate_mesh_objects: Dict[bpy.types.Object, bpy.types.Object]
         if len(mmd_model_mesh_objects) == 0:
             separate_mesh_objects = set()
-            model2separate_mesh_objects = dict()
+            model2separate_mesh_objects = {}
         else:
             # select meshes
             obj: bpy.types.Object
@@ -216,7 +216,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             separate_mesh_objects: List[bpy.types.Object] = [m for m in context.selected_objects if m.type == "MESH" and m not in mmd_model_mesh_objects]
             bpy.ops.object.mode_set(mode="OBJECT")
 
-            model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects))
+            model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects, strict=False))
 
         separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
 
@@ -271,7 +271,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         FnContext.set_active_and_select_single_object(context, separate_root_object)
 
     def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
-        mesh2selected_vertex_count: Dict[bpy.types.Object, int] = dict()
+        mesh2selected_vertex_count: Dict[bpy.types.Object, int] = {}
         target_bmesh: bmesh.types.BMesh = bmesh.new()
         for mesh_object in mmd_model_mesh_objects:
             vertex_groups: bpy.types.VertexGroups = mesh_object.vertex_groups

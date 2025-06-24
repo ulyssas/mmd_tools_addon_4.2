@@ -76,9 +76,8 @@ class _FCurve:
         # When dy is too small, restoring (y1, y2) is impossible and the curve is meaningless in MMD
         if abs(dy) < 1e-4:
             return ((20, 20), (107, 107))
-        else:
-            y1 = max(0, min(127, round(y1 * 127.0 / dy)))
-            y2 = max(0, min(127, round(y2 * 127.0 / dy)))
+        y1 = max(0, min(127, round(y1 * 127.0 / dy)))
+        y2 = max(0, min(127, round(y2 * 127.0 / dy)))
         if abs(dx) < 1e-4:
             (x1, x2) = (20, 107)
         else:
@@ -92,7 +91,7 @@ class _FCurve:
         if fcurve is None or len(fcurve.keyframe_points) == 0:  # no key frames
             return [[self.__default_value, ((20, 20), (107, 107))] for _ in frame_numbers]
 
-        result = list()
+        result = []
 
         evaluate = fcurve.evaluate
         frame_iter = iter(frame_numbers)
@@ -165,7 +164,7 @@ class VMDExporter:
         all_frames = sorted(all_frames)
         all_keys = [i.sampleFrames(all_frames) for i in curves]
         # return zip(all_frames, *all_keys)
-        for data in zip(all_frames, *all_keys):
+        for data in zip(all_frames, *all_keys, strict=False):
             frame_number = data[0]
             if frame_number < frame_start:
                 continue
@@ -198,7 +197,7 @@ class VMDExporter:
         #    z_x1, 0, 0, 0, z_y1, 0, 0, 0, z_x2, 0, 0, 0, z_y2, 0, 0, 0,
         #    r_x1, 0, 0, 0, r_y1, 0, 0, 0, r_x2, 0, 0, 0, r_y2, 0, 0, 0,
         #    ]
-        return [ # full data, indices in [2, 3, 31, 46, 47, 61, 62, 63] are unclear
+        return [  # full data, indices in [2, 3, 31, 46, 47, 61, 62, 63] are unclear
             x_x1, y_x1,    0,    0, x_y1, y_y1, z_y1, r_y1, x_x2, y_x2, z_x2, r_x2, x_y2, y_y2, z_y2, r_y2,
             y_x1, z_x1, r_x1, x_y1, y_y1, z_y1, r_y1, x_x2, y_x2, z_x2, r_x2, x_y2, y_y2, z_y2, r_y2,    0,
             z_x1, r_x1, x_y1, y_y1, z_y1, r_y1, x_x2, y_x2, z_x2, r_x2, x_y2, y_y2, z_y2, r_y2,    0,    0,
@@ -388,7 +387,7 @@ class VMDExporter:
             key = vmd.PropertyFrameKey()
             key.frame_number = data[0] - self.__frame_start
             key.visible = round(data[1][0])
-            key.ik_states = [(ik_name, round(on_off[0])) for ik_name, on_off in zip(ik_name_list, data[2:])]
+            key.ik_states = [(ik_name, round(on_off[0])) for ik_name, on_off in zip(ik_name_list, data[2:], strict=False)]
             vmd_prop_anim.append(key)
         logging.info("(property) frames:%5d  name: %s", len(vmd_prop_anim), root.name if root else armObj.name)
         return vmd_prop_anim
@@ -437,7 +436,7 @@ class VMDExporter:
             key.rotation = [rx[0], rz[0], ry[0]]  # euler
             key.angle = round(math.degrees(fov[0]))
             key.distance = distance[0] * self.__scale
-            key.persp = True if persp[0] else False
+            key.persp = bool(persp[0])
 
             # FIXME we can only choose one interpolation from (rx, ry, rz) for camera's rotation
             ir = self.__pickRotationInterpolation([rx[1], ry[1], rz[1]])
@@ -495,10 +494,10 @@ class VMDExporter:
         return vmd_lamp_anim
 
     def export(self, **args):
-        armature = args.get("armature", None)
-        mesh = args.get("mesh", None)
-        camera = args.get("camera", None)
-        lamp = args.get("lamp", None)
+        armature = args.get("armature")
+        mesh = args.get("mesh")
+        camera = args.get("camera")
+        lamp = args.get("lamp")
         filepath = args.get("filepath", "")
 
         self.__scale = args.get("scale", 1.0)

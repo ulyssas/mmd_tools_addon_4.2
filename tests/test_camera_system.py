@@ -14,9 +14,7 @@ TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 class TestCameraSystem(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        """
-        Clean up output from previous tests
-        """
+        """Clean up output from previous tests"""
         output_dir = os.path.join(TESTS_DIR, "output")
         if os.path.exists(output_dir):
             for item in os.listdir(output_dir):
@@ -29,9 +27,7 @@ class TestCameraSystem(unittest.TestCase):
                     shutil.rmtree(item_fp)
 
     def setUp(self):
-        """
-        We should start each test with a clean state
-        """
+        """We should start each test with a clean state"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # Clear all objects from scene
@@ -349,7 +345,7 @@ class TestCameraSystem(unittest.TestCase):
             mmd_cameras.append(mmd_camera)
 
         # Verify all conversions
-        for i, (camera_obj, mmd_camera) in enumerate(zip(cameras, mmd_cameras)):
+        for i, (camera_obj, mmd_camera) in enumerate(zip(cameras, mmd_cameras, strict=False)):
             msg = f"Camera_{i}"
 
             # Check MMD camera validity

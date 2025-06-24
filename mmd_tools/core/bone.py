@@ -69,7 +69,7 @@ class FnBone:
     @staticmethod
     def __get_selected_pose_bones(armature_object: bpy.types.Object) -> Iterable[bpy.types.PoseBone]:
         if armature_object.mode == "EDIT":
-            bpy.ops.object.mode_set(mode="OBJECT") # update selected bones
+            bpy.ops.object.mode_set(mode="OBJECT")  # update selected bones
             bpy.ops.object.mode_set(mode="EDIT")  # back to edit mode
         context_selected_bones = bpy.context.selected_pose_bones or bpy.context.selected_bones or []
         bones = armature_object.pose.bones
@@ -109,7 +109,7 @@ class FnBone:
 
     @staticmethod
     def __is_special_bone_collection(bone_collection: bpy.types.BoneCollection) -> bool:
-        return BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_SPECIAL == bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME)
+        return bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME) == BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_SPECIAL
 
     @staticmethod
     def __set_bone_collection_to_special(bone_collection: bpy.types.BoneCollection, is_visible: bool):
@@ -118,7 +118,7 @@ class FnBone:
 
     @staticmethod
     def __is_normal_bone_collection(bone_collection: bpy.types.BoneCollection) -> bool:
-        return BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_NORMAL == bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME)
+        return bone_collection.get(BONE_COLLECTION_CUSTOM_PROPERTY_NAME) == BONE_COLLECTION_CUSTOM_PROPERTY_VALUE_NORMAL
 
     @staticmethod
     def __set_bone_collection_to_normal(bone_collection: bpy.types.BoneCollection):
@@ -217,7 +217,7 @@ class FnBone:
             used_frame_index.add(display_item_frames.find(bone_collection_name))
 
             ItemOp.resize(display_item_frame.data, len(bone_collection.bones))
-            for display_item, bone in zip(display_item_frame.data, bone_collection.bones):
+            for display_item, bone in zip(display_item_frame.data, bone_collection.bones, strict=False):
                 display_item.type = "BONE"
                 display_item.name = bone.name
 

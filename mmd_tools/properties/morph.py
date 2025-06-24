@@ -138,7 +138,6 @@ def _bone_morph_data_update_location_or_rotation(prop: "BoneMorphData", _context
 
 
 class BoneMorphData(bpy.types.PropertyGroup):
-    """ """
 
     bone: bpy.props.StringProperty(
         name="Bone",
@@ -231,7 +230,6 @@ def _material_morph_data_update_modifiable_values(prop: "MaterialMorphData", _co
 
 
 class MaterialMorphData(bpy.types.PropertyGroup):
-    """ """
 
     related_mesh: bpy.props.StringProperty(
         name="Related Mesh",

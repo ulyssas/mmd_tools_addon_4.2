@@ -193,14 +193,14 @@ class PreferencesMixin:
     _preferences_applied = False
 
     def load_preferences_on_invoke(self, context, preset_property_name):
-        """Helper method to load preferences on first invoke"""
+        """Load preferences on first invoke"""
         self._preferences_were_applied = getattr(self.__class__, "_preferences_applied", False)
         if not self._preferences_were_applied:
             if load_default_settings_from_preferences(self, context, preset_property_name):
                 self.__class__._preferences_applied = True
 
     def restore_preferences_on_cancel(self):
-        """Helper method to restore preferences state on cancel"""
+        """Restore preferences state on cancel"""
         self.__class__._preferences_applied = self._preferences_were_applied
 
 
@@ -356,7 +356,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             logger.addHandler(handler)
         try:
             importer_cls = pmx_importer.PMXImporter
-            if re.search("\.pmd$", self.filepath, flags=re.I):
+            if re.search(r"\.pmd$", self.filepath, flags=re.IGNORECASE):
                 importer_cls = pmd_importer.PMDImporter
 
             importer_cls().execute(
@@ -974,7 +974,6 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
 class ExportVpd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
-    bl_description = "Export to VPD file(s) (.vpd)"
     bl_description = "Export active rig's Action Pose to VPD file(s) (.vpd)"
     bl_options = {"PRESET"}
 

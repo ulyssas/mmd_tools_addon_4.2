@@ -19,16 +19,12 @@ class TestUtilitySystems(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """
-        Set up test environment
-        """
+        """Set up test environment"""
         # Enable MMD Tools addon
         cls.__enable_mmd_tools()
 
     def setUp(self):
-        """
-        Clean state for each test
-        """
+        """Clean state for each test"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # Start with clean scene
