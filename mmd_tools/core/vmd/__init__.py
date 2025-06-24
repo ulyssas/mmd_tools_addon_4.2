@@ -15,10 +15,10 @@ def _decodeCp932String(byteString):
     # If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding
     # and replace ? with � to ensure replacement character consistency between UnicodeEncodeError and UnicodeDecodeError.
     # UnicodeEncodeError: Bone/Morph name has characters not supported by cp932 encoding. Default replacement character: ?
-    # UnicodeDecodeError: Bone/Morph name was truncated at 15 bytes, breaking character boundaries. Default replacement character: �
+    # UnicodeDecodeError: Bone/Morph name was truncated at 15 bytes, breaking character boundaries. Default replacement character: �(U+FFFD)
     decoded = byteString.replace(b"\x00", b"").decode("cp932", errors="replace")
     if byteString[:1] == b"\x00":
-        decoded = "�" + decoded.replace("?", "�")
+        decoded = "\ufffd" + decoded.replace("?", "\ufffd")
     return decoded
 
 
