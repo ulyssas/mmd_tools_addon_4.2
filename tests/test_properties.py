@@ -820,6 +820,7 @@ class TestMMDProperties(unittest.TestCase):
         # Test size property
         test_size = [2.0, 3.0, 4.0]
         mmd_rigid.size = test_size
+        bpy.context.view_layer.update()
 
         # Size property has custom getter/setter, so we check if it was applied
         current_size = list(mmd_rigid.size)
@@ -1824,6 +1825,7 @@ class TestMMDProperties(unittest.TestCase):
 
             # Set new size
             mmd_rigid.size = test_size
+            bpy.context.view_layer.update()
 
             # Get size after setting
             new_size = list(mmd_rigid.size)
@@ -1896,8 +1898,11 @@ class TestMMDProperties(unittest.TestCase):
 
         for test_size in edge_cases:
             mmd_rigid.size = [1.0, 1.0, 1.0]
+            bpy.context.view_layer.update()
             initial_size = list(mmd_rigid.size)
+
             mmd_rigid.size = test_size
+            bpy.context.view_layer.update()
             new_size = list(mmd_rigid.size)
 
             # Verify size actually changed from initial when setting edge cases
@@ -1914,6 +1919,7 @@ class TestMMDProperties(unittest.TestCase):
         # Test very large sizes
         large_size = [100.0, 100.0, 100.0]
         mmd_rigid.size = large_size
+        bpy.context.view_layer.update()
         new_size = list(mmd_rigid.size)
 
         # Should handle large sizes without issues
@@ -1940,6 +1946,7 @@ class TestMMDProperties(unittest.TestCase):
         # Set initial size
         initial_size = [1.0, 1.0, 1.0]
         mmd_rigid.size = initial_size
+        bpy.context.view_layer.update()
 
         # Get initial mesh state
         mesh = rigid_obj.data
@@ -1952,6 +1959,7 @@ class TestMMDProperties(unittest.TestCase):
         # Change size significantly
         new_size = [2.0, 3.0, 0.5]
         mmd_rigid.size = new_size
+        bpy.context.view_layer.update()
 
         # Check that mesh was updated
         updated_vertices = [v.co.copy() for v in mesh.vertices]
