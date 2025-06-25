@@ -211,7 +211,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     bl_options = {"REGISTER", "UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
-    directory: bpy.props.StringProperty(maxlen=1024, subtype="FILE_PATH", options={"HIDDEN", "SKIP_SAVE"})
+    directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
 
     filename_ext = ".pmx"
     filter_glob: bpy.props.StringProperty(default="*.pmx;*.pmd", options={"HIDDEN"})
@@ -395,6 +395,9 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     bl_description = "Import a VMD file to selected objects (.vmd)"
     bl_options = {"REGISTER", "UNDO", "PRESET"}
 
+    files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
+    directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
+
     filename_ext = ".vmd"
     filter_glob: bpy.props.StringProperty(default="*.vmd", options={"HIDDEN"})
 
@@ -477,10 +480,6 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
         default=True,
     )
-    files: bpy.props.CollectionProperty(
-        type=OperatorFileListElement,
-    )
-    directory: bpy.props.StringProperty(subtype="DIR_PATH")
 
     @classmethod
     def poll(cls, context):
@@ -570,7 +569,7 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
     bl_options = {"REGISTER", "UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
-    directory: bpy.props.StringProperty(maxlen=1024, subtype="FILE_PATH", options={"HIDDEN", "SKIP_SAVE"})
+    directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
 
     filename_ext = ".vpd"
     filter_glob: bpy.props.StringProperty(default="*.vpd", options={"HIDDEN"})
