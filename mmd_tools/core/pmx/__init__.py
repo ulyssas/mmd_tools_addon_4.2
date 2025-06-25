@@ -260,19 +260,19 @@ class Header:
         return 4
 
     def load(self, fs):
-        logging.info("loading pmx header information...")
+        logging.debug("loading pmx header information...")
         self.sign = fs.readBytes(4)
         logging.debug("File signature is %s", self.sign)
         if self.sign[:3] != self.PMX_SIGN[:3]:
-            logging.error("File signature is invalid")
+            logging.error("File signature is invalid: %s", self.sign)
             logging.error("This file is unsupported format, or corrupt file.")
             raise InvalidFileError("File signature is invalid.")
         self.version = fs.readFloat()
-        logging.info("pmx format version: %f", self.version)
+        logging.debug("pmx format version: %f", self.version)
         if self.version != self.VERSION:
             logging.error("PMX version %.1f is unsupported", self.version)
             raise UnsupportedVersionError("unsupported PMX version: %.1f" % self.version)
-        if fs.readByte() != 8 or self.sign[3] != self.PMX_SIGN[3]:
+        if fs.readByte() != 8:
             logging.warning(" * This file might be corrupted.")
         self.encoding = Encoding(fs.readByte())
         self.additional_uvs = fs.readByte()

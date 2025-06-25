@@ -619,13 +619,16 @@ class PMXImporter:
         if pmxModel.header and pmxModel.header.additional_uvs >= 2:
             # Create vertex color layer
             vertex_colors = mesh.vertex_colors.new(name="Color")
-            for i, loop_index in enumerate(loop_indices_orig):
+            color_data = []
+            for loop_index in loop_indices_orig:
                 vertex = pmxModel.vertices[loop_index]
                 if len(vertex.additional_uvs) >= 2:
                     uv2_data = vertex.additional_uvs[1]  # ADD UV2 data (X,Y,Z,W)
                     # Convert UV data to vertex color (XYZW -> RGBA)
-                    color = (uv2_data[0], uv2_data[1], uv2_data[2], uv2_data[3])
-                    vertex_colors.data[i].color = color
+                    color_data.extend([uv2_data[0], uv2_data[1], uv2_data[2], uv2_data[3]])
+                else:
+                    color_data.extend([1.0, 1.0, 1.0, 1.0])
+            vertex_colors.data.foreach_set("color", color_data)
             logging.info("Imported ADD UV2 as vertex colors")
 
         if pmxModel.header and pmxModel.header.additional_uvs:
@@ -685,15 +688,36 @@ class PMXImporter:
         mmd_root = self.__root.mmd_root
         categories = self.CATEGORIES
         self.__createBasisShapeKey()
+
+        # Pre-fetch basis coordinates for batch processing
+        basis_coords = []
+        shape_keys = self.__meshObj.data.shape_keys
+        if shape_keys and shape_keys.key_blocks:
+            basis_shape = shape_keys.key_blocks[0]
+            basis_coords = [0.0] * (len(basis_shape.data) * 3)
+            basis_shape.data.foreach_get("co", basis_coords)
+
         for morph in (x for x in self.__model.morphs if isinstance(x, pmx.VertexMorph)):
             shapeKey = self.__meshObj.shape_key_add(name=morph.name)
             vtx_morph = mmd_root.vertex_morphs.add()
             vtx_morph.name = morph.name
             vtx_morph.name_e = morph.name_e
             vtx_morph.category = categories.get(morph.category, "OTHER")
-            for md in morph.offsets:
-                shapeKeyPoint = shapeKey.data[md.index]
-                shapeKeyPoint.co += Vector(md.offset).xzy * self.__scale
+
+            if morph.offsets and basis_coords:
+                # Copy basis coordinates as starting point
+                shape_coords = basis_coords.copy()
+
+                # Apply morphing offsets to specific vertices
+                for md in morph.offsets:
+                    offset = Vector(md.offset).xzy * self.__scale
+                    base_idx = md.index * 3
+                    shape_coords[base_idx] += offset[0]
+                    shape_coords[base_idx + 1] += offset[1]
+                    shape_coords[base_idx + 2] += offset[2]
+
+                # Batch set all coordinates at once
+                shapeKey.data.foreach_set("co", shape_coords)
 
     def __importMaterialMorphs(self):
         mmd_root = self.__root.mmd_root

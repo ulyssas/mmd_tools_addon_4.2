@@ -141,10 +141,6 @@ def _set_size(prop, value):
                 v.co = [x0, y0, z0]
         mesh.update()
 
-    # IMPORTANT: Update view layer AFTER geometry changes are complete
-    # This ensures bounding box is current for subsequent getter calls
-    bpy.context.view_layer.update()
-
 
 def _get_rigid_name(prop):
     return prop.get("name", "")

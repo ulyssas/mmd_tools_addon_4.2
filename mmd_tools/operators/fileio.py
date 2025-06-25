@@ -211,7 +211,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     bl_options = {"REGISTER", "UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
-    directory: bpy.props.StringProperty(maxlen=1024, subtype="FILE_PATH", options={"HIDDEN", "SKIP_SAVE"})
+    directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
 
     filename_ext = ".pmx"
     filter_glob: bpy.props.StringProperty(default="*.pmx;*.pmd", options={"HIDDEN"})
@@ -392,8 +392,11 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
 class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vmd"
     bl_label = "Import VMD File (.vmd)"
-    bl_description = "Import a VMD file to selected objects (.vmd)"
+    bl_description = "Import a VMD file to selected objects (.vmd)\nBehavior varies depending on the selected object:\n- Select the root (cross under the model): imports both armature and morph animations\n- Select the model: imports only morph animation\n- Select the armature: imports only armature animation"
     bl_options = {"REGISTER", "UNDO", "PRESET"}
+
+    files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
+    directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
 
     filename_ext = ".vmd"
     filter_glob: bpy.props.StringProperty(default="*.vmd", options={"HIDDEN"})
@@ -477,10 +480,6 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
         default=True,
     )
-    files: bpy.props.CollectionProperty(
-        type=OperatorFileListElement,
-    )
-    directory: bpy.props.StringProperty(subtype="DIR_PATH")
 
     @classmethod
     def poll(cls, context):
@@ -566,11 +565,11 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 class ImportVpd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vpd"
     bl_label = "Import VPD File (.vpd)"
-    bl_description = "Import VPD file(s) to selected rig's Action Pose (.vpd)"
+    bl_description = "Import VPD file(s) to selected rig's Action Pose (.vpd)\nBehavior varies depending on the selected object:\n- Select the root (cross under the model): applies both armature pose and morphs\n- Select the model: applies only morphs\n- Select the armature: applies only armature pose"
     bl_options = {"REGISTER", "UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
-    directory: bpy.props.StringProperty(maxlen=1024, subtype="FILE_PATH", options={"HIDDEN", "SKIP_SAVE"})
+    directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
 
     filename_ext = ".vpd"
     filter_glob: bpy.props.StringProperty(default="*.vpd", options={"HIDDEN"})
@@ -880,7 +879,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
 class ExportVmd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vmd"
     bl_label = "Export VMD File (.vmd)"
-    bl_description = "Export motion data of active object to a VMD file (.vmd)"
+    bl_description = "Export motion data of active object to a VMD file (.vmd)\nBehavior varies depending on the active object:\n- Active object is the root (cross under the model): exports both armature and morph animations\n- Active object is the model: exports only morph animation\n- Active object is the armature: exports only armature animation"
     bl_options = {"PRESET"}
 
     filename_ext = ".vmd"
@@ -974,7 +973,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
 class ExportVpd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
-    bl_description = "Export active rig's Action Pose to VPD file(s) (.vpd)"
+    bl_description = "Export active rig's Action Pose to VPD file(s) (.vpd)\nBehavior varies depending on the active object:\n- Active object is the root (cross under the model): exports both armature pose and morphs\n- Active object is the model: exports only morphs\n- Active object is the armature: exports only armature pose"
     bl_options = {"PRESET"}
 
     filename_ext = ".vpd"
