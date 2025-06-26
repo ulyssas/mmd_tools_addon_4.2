@@ -54,7 +54,7 @@ class __SelectObjects:
             i.select_set(False)
 
         self.__active_object = active_object
-        self.__selected_objects = tuple(set(selected_objects) | set([active_object])) if selected_objects else (active_object,)
+        self.__selected_objects = tuple(set(selected_objects) | {active_object}) if selected_objects else (active_object,)
 
         self.__hides: List[bool] = []
         for i in self.__selected_objects:
