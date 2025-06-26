@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 ##########################################################
 # Author: Yichen Huang (Eugene)
 # GitHub: https://github.com/yichen0831/opencc-python
