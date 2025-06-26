@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import argparse
-import io
 import sys
 
 from opencc import OpenCC
@@ -29,7 +28,7 @@ def main():
     cc = OpenCC(args.config)
 
     if args.input:
-        with io.open(args.input, encoding=args.in_enc) as f:
+        with open(args.input, encoding=args.in_enc) as f:
             input_str = f.read()
     else:
         input_str = sys.stdin.read()
@@ -37,7 +36,7 @@ def main():
     output_str = cc.convert(input_str)
 
     if args.output:
-        with io.open(args.output, "w", encoding=args.out_enc) as f:
+        with open(args.output, "w", encoding=args.out_enc) as f:
             f.write(output_str)
     else:
         sys.stdout.write(output_str)

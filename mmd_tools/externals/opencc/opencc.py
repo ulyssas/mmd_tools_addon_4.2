@@ -20,7 +20,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # - Use "from __future__ import" to allow support for both Python 2.7
 #   and Python >3.2
 ##########################################################
-import io
 import json
 import os
 import re
@@ -128,7 +127,7 @@ class OpenCC:
                 max_len = 1
                 # Default min key length to very large value
                 min_len = 1000
-                with io.open(item, "r", encoding="utf-8") as f:
+                with open(item, "r", encoding="utf-8") as f:
                     for line in f:
                         key, value = line.strip().split("\t")
                         map_dict[key] = value
