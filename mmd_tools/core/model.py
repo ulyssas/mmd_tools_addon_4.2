@@ -396,7 +396,7 @@ class FnModel:
             return
 
         # Create new bone order array
-        new_bone_order = valid_bones[:]
+        new_bone_order = valid_bones.copy()
 
         if old_pos < new_pos:
             # Move right: shift left bones to the right by one position
