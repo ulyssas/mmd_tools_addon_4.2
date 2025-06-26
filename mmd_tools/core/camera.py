@@ -2,7 +2,6 @@
 # This file is part of MMD Tools.
 
 import math
-from math import atan
 from typing import Optional
 
 import bpy
@@ -230,7 +229,7 @@ class MMDCamera:
             x.co, y.co, z.co = ((f, i) for i in cam_target_loc)
             rx.co, ry.co, rz.co = ((f, i) for i in cam_rotation)
             dis.co = (f, cam_dis)
-            fov.co = (f, 2 * atan(tan_val))
+            fov.co = (f, 2 * math.atan(tan_val))
             persp.co = (f, cameraObj.data.type != "ORTHO")
             persp.interpolation = "CONSTANT"
             for kp in (x, y, z, rx, ry, rz, fov, dis):

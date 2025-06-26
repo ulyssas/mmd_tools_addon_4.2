@@ -1,9 +1,9 @@
 import logging
+import math
 import os
 import shutil
 import unittest
 from collections import namedtuple
-from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
@@ -78,8 +78,8 @@ class TestMorphSystem(unittest.TestCase):
 
     def __quaternion_error(self, quat0, quat1):
         """Calculate quaternion error"""
-        angle = quat0.rotation_difference(quat1).angle % pi
-        return min(angle, pi - angle)
+        angle = quat0.rotation_difference(quat1).angle % math.pi
+        return min(angle, math.pi - angle)
 
     def __list_sample_files(self, file_types):
         """List sample files for testing"""

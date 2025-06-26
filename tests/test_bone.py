@@ -1,8 +1,8 @@
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 
@@ -238,7 +238,7 @@ class TestBone(unittest.TestCase):
 
         # The roll might change based on local axes - verify the change is reasonable
         roll_difference = abs(new_roll - original_roll)
-        self.assertLessEqual(roll_difference, 2 * pi, "Roll change should be within reasonable bounds")
+        self.assertLessEqual(roll_difference, 2 * math.pi, "Roll change should be within reasonable bounds")
 
         # Verify that the bone is still valid after local axes application
         bone = self.test_armature.data.bones["左腕"]

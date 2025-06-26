@@ -3,9 +3,9 @@
 
 import copy
 import logging
+import math
 import os
 import re
-from math import radians
 
 import mathutils
 
@@ -168,8 +168,8 @@ def import_pmd_to_pmx(filepath):
             ik_link = pmx.IKLink()
             ik_link.target = i
             if i in knee_bones:
-                ik_link.maximumAngle = [radians(-0.5), 0.0, 0.0]
-                ik_link.minimumAngle = [radians(-180.0), 0.0, 0.0]
+                ik_link.maximumAngle = [math.radians(-0.5), 0.0, 0.0]
+                ik_link.minimumAngle = [math.radians(-180.0), 0.0, 0.0]
                 logging.info("  Add knee constraints to %s", i)
             logging.debug("  IKLink: %s(index: %d)", pmx_model.bones[i].name, i)
             pmx_bone.ik_links.append(ik_link)

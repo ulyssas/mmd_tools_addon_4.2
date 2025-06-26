@@ -4,7 +4,6 @@
 import logging
 import math
 import os
-from math import ceil, floor
 from typing import Union
 
 import bpy
@@ -650,8 +649,8 @@ class VMDImporter:
                 v.co = (k.frame_number + self.__frame_start + self.__frame_margin, k.weight)
                 v.interpolation = "LINEAR"
             weights = tuple(i.weight for i in keyFrames)
-            shapeKey.slider_min = min(shapeKey.slider_min, floor(min(weights)))
-            shapeKey.slider_max = max(shapeKey.slider_max, ceil(max(weights)))
+            shapeKey.slider_min = min(shapeKey.slider_min, math.floor(min(weights)))
+            shapeKey.slider_max = max(shapeKey.slider_max, math.ceil(max(weights)))
 
         self.__assign_action(meshObj.data.shape_keys, action)
 

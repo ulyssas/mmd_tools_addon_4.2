@@ -2,8 +2,8 @@
 # This file is part of MMD Tools.
 
 import logging
+import math
 import re
-from math import ceil, floor, pi
 from typing import TYPE_CHECKING, Tuple, cast
 
 import bpy
@@ -429,7 +429,7 @@ class _MorphSlider:
                 if kb.name.startswith("mmd_bind"):
                     kb.driver_remove("value")
                     ms = morph_sliders[kb.relative_key.name]
-                    kb.relative_key.slider_min, kb.relative_key.slider_max = min(ms.slider_min, floor(ms.value)), max(ms.slider_max, ceil(ms.value))
+                    kb.relative_key.slider_min, kb.relative_key.slider_max = min(ms.slider_min, math.floor(ms.value)), max(ms.slider_max, math.ceil(ms.value))
                     kb.relative_key.value = ms.value
                     kb.relative_key.mute = False
                     FnObject.mesh_remove_shape_key(mesh_object, kb)
@@ -437,7 +437,7 @@ class _MorphSlider:
                 elif kb.name in morph_sliders and self.__shape_key_driver_check(kb):
                     ms = morph_sliders[kb.name]
                     kb.driver_remove("value")
-                    kb.slider_min, kb.slider_max = min(ms.slider_min, floor(kb.value)), max(ms.slider_max, ceil(kb.value))
+                    kb.slider_min, kb.slider_max = min(ms.slider_min, math.floor(kb.value)), max(ms.slider_max, math.ceil(kb.value))
 
             for m in reversed(mesh_object.modifiers):  # uv morph
                 if m.name.startswith("mmd_bind") and m.name not in names_in_use:
@@ -662,7 +662,7 @@ class _MorphSlider:
             b.is_mmd_shadow_bone = True
             b.mmd_shadow_bone_type = "BIND"
             pb = armObj.pose.bones[data.bone]
-            __config_bone_morph(pb.constraints, "ROTATION", attributes_rot, pi, "pi")
+            __config_bone_morph(pb.constraints, "ROTATION", attributes_rot, math.pi, "pi")
             __config_bone_morph(pb.constraints, "LOCATION", attributes_loc, 100, "100")
 
         # uv morphs

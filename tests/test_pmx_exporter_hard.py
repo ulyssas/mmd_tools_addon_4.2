@@ -1,8 +1,8 @@
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core import pmx
@@ -56,9 +56,9 @@ class TestPmxExporter(unittest.TestCase):
         return max(abs(a - b) for a, b in zip(tuple0, tuple1, strict=False))
 
     def __quaternion_error(self, quat0, quat1):
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     # ********************************************
     # Header & Informations
