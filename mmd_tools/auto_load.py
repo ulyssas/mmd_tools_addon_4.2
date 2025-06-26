@@ -129,8 +129,7 @@ def iter_my_classes(modules):
 def get_classes_in_modules(modules):
     classes = set()
     for module in modules:
-        for cls in iter_classes_in_module(module):
-            classes.add(cls)
+        classes.update(iter_classes_in_module(module))
     return classes
 
 

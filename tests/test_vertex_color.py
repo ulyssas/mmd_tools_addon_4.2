@@ -353,9 +353,7 @@ class TestVertexColorExporter(unittest.TestCase):
 
         # Check for precision vs mapping errors
         expected_color_set = set()
-        for expected_color in expected_mapping.values():
-            # Convert to tuple for set operations
-            expected_color_set.add(tuple(expected_color))
+        expected_color_set.update(tuple(expected_color) for expected_color in expected_mapping.values())
 
         for vertex_idx, exported_color in exported_vertex_colors:
             # Find closest expected color
@@ -777,8 +775,7 @@ class TestVertexColorExporter(unittest.TestCase):
                 exported_colors.append(color_tuple)
 
         original_colors = set()
-        for color in original_loop_colors.values():
-            original_colors.add(tuple(round(c, 3) for c in color))
+        original_colors.update(tuple(round(c, 3) for c in color) for color in original_loop_colors.values())
 
         exported_color_set = set(exported_colors)
 

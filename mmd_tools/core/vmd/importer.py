@@ -621,8 +621,7 @@ class VMDImporter:
             mmd_root = root_object.mmd_root
             # Check all types of morphs in the model
             for morph_type in ["vertex_morphs", "uv_morphs", "bone_morphs", "material_morphs", "group_morphs"]:
-                for morph in getattr(mmd_root, morph_type, []):
-                    model_morph_names.add(morph.name)
+                model_morph_names.update(morph.name for morph in getattr(mmd_root, morph_type, []))
 
         for name, keyFrames in shapeKeyAnim.items():
             if name not in shapeKeyDict:

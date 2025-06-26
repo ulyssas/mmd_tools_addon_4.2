@@ -54,8 +54,7 @@ class _FCurve:
                     result.add(max(0, round(kp1.co[0]) - 1))
                 elif kp0.interpolation == "BEZIER":
                     bz = _FnBezier.from_fcurve(kp0, kp1)
-                    for t in bz.find_critical():
-                        result.add(round(bz.evaluate(t).x))
+                    result.update(round(bz.evaluate(t).x) for t in bz.find_critical())
             kp0 = kp1
 
         return result
