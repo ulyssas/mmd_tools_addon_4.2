@@ -617,8 +617,8 @@ def load(path):
         model = Model()
         try:
             model.load(fs)
-        except struct.error as e:
-            logging.error(" * Corrupted file: %s", e)
+        except struct.error:
+            logging.exception(" * Corrupted file")
             # raise
 
         logging.info(" Finish loading.")

@@ -344,6 +344,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             elif self.filepath:
                 self._do_execute(context)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -379,8 +380,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             )
             self.report({"INFO"}, 'Imported MMD model from "%s"' % self.filepath)
         except Exception:
-            err_msg = traceback.format_exc()
-            logging.error(err_msg)
+            logging.exception("Error occurred")
             raise
         finally:
             if self.save_log:
@@ -819,6 +819,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                     self.filepath = os.path.join(model_folder, model_name + ".pmx")
                 self._do_execute(context, root)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -864,8 +865,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
             )
             self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
         except Exception:
-            err_msg = traceback.format_exc()
-            logging.error(err_msg)
+            logging.exception("Error occurred")
             raise
         finally:
             if orig_pose_position:
@@ -963,10 +963,9 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             vmd_exporter.VMDExporter().export(**params)
             logging.info(" Finished exporting motion in %f seconds.", time.time() - start_time)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
-            logging.error(err_msg)
             self.report({"ERROR"}, err_msg)
-
         return {"FINISHED"}
 
 
@@ -1053,7 +1052,7 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
         try:
             vpd_exporter.VPDExporter().export(**params)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
-            logging.error(err_msg)
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
