@@ -160,7 +160,7 @@ class TestVPDExporter(unittest.TestCase):
             for j, bone in enumerate(armature.pose.bones):
                 if j % (i + 1) == 0:  # Create different patterns for different poses
                     bone.location = Vector((0.1 * i, 0.2 * i, 0.3 * i))
-                    bone.rotation_quaternion = Quaternion(((0.9, 0.1 * i, 0.2 * i, 0.3 * i)))
+                    bone.rotation_quaternion = Quaternion((0.9, 0.1 * i, 0.2 * i, 0.3 * i))
                     bone.keyframe_insert(data_path="location", frame=i + 1)
                     bone.keyframe_insert(data_path="rotation_quaternion", frame=i + 1)
 
