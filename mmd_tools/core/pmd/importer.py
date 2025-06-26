@@ -93,7 +93,7 @@ def import_pmd_to_pmx(filepath):
         pmx_bone.name_e = bone.name_e
         pmx_bone.location = bone.position
         pmx_bone.parent = bone.parent
-        if bone.type != 9 and bone.type != 8 and bone.tail_bone > 0:
+        if bone.type not in {9, 8} and bone.tail_bone > 0:
             pmx_bone.displayConnection = bone.tail_bone  # Corresponds to 'BONE' type
         else:
             pmx_bone.displayConnection = -1  # Corresponds to 'NONE' type

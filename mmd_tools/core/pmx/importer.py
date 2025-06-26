@@ -260,7 +260,7 @@ class PMXImporter:
                             b_bone.tail = b_bone.head + Vector((0, 0, 1)) * self.__scale
                     else:
                         b_bone.tail = b_bone.head + Vector((0, 0, 1)) * self.__scale
-                    if m_bone.displayConnection != -1 and m_bone.displayConnection != [0.0, 0.0, 0.0]:
+                    if m_bone.displayConnection not in (-1, (0.0, 0.0, 0.0), [0.0, 0.0, 0.0]):
                         logging.debug(" * special tip bone %s, display %s", b_bone.name, str(m_bone.displayConnection))
                         specialTipBones.append(b_bone.name)
 
@@ -421,7 +421,7 @@ class PMXImporter:
             else:  # vector offset
                 mmd_bone.display_connection_type = "OFFSET"
 
-            if pmx_bone.displayConnection == -1 or pmx_bone.displayConnection == (0.0, 0.0, 0.0):
+            if pmx_bone.displayConnection in (-1, (0.0, 0.0, 0.0), [0.0, 0.0, 0.0]):
                 mmd_bone.is_tip = True
             elif b_bone.name in specialTipBones:
                 mmd_bone.is_tip = True

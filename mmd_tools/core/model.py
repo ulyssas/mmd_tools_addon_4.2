@@ -1125,7 +1125,7 @@ class Model:
         if mesh_name == "":
             return None
         for mesh in self.meshes():
-            if mesh.name == mesh_name or mesh.data.name == mesh_name:
+            if mesh_name in (mesh.name, mesh.data.name):
                 return mesh
         return None
 
@@ -1143,7 +1143,7 @@ class Model:
         if mesh_name == "":
             return -1
         for i, mesh in enumerate(self.meshes()):
-            if mesh.name == mesh_name or mesh.data.name == mesh_name:
+            if mesh_name in (mesh.name, mesh.data.name):
                 return i
         return -1
 
