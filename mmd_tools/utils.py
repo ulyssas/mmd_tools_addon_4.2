@@ -61,8 +61,8 @@ def selectSingleBone(context, armature, bone_name, reset_pose=False):
             i.hide = False
 
 
-__CONVERT_NAME_TO_L_REGEXP = re.compile("^(.*)左(.*)$")
-__CONVERT_NAME_TO_R_REGEXP = re.compile("^(.*)右(.*)$")
+__CONVERT_NAME_TO_L_REGEXP = re.compile(r"^(.*)左(.*)$")
+__CONVERT_NAME_TO_R_REGEXP = re.compile(r"^(.*)右(.*)$")
 
 
 # 日本語で左右を命名されている名前をblender方式のL(R)に変更する

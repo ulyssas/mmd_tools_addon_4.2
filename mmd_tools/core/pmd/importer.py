@@ -134,7 +134,7 @@ def import_pmd_to_pmx(filepath):
 
         pmx_model.bones.append(pmx_bone)
 
-        if re.search("ひざ$", pmx_bone.name):
+        if re.search(r"ひざ$", pmx_bone.name):
             knee_bones.append(i)
 
     for i in pmx_model.bones:
