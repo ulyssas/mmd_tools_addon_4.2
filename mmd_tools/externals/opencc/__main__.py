@@ -1,3 +1,6 @@
+# Copyright (C) 2016 Yichen Huang (Eugene)
+# Licensed under the Apache License, Version 2.0
+
 import argparse
 import sys
 

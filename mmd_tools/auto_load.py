@@ -1,3 +1,6 @@
+# Copyright 2021 MMD Tools authors
+# This file is part of MMD Tools.
+
 import importlib
 import inspect
 import pkgutil
