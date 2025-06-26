@@ -129,7 +129,6 @@ class FileWriteStream(FileStream):
             self.__fout.write(struct.pack(typedict[size], int(index)))
         else:
             raise ValueError("invalid data size %s" % str(size))
-        return
 
     def __writeSignedIndex(self, index, size):
         return self.__writeIndex(index, size, {1: "<b", 2: "<h", 4: "<i"})
