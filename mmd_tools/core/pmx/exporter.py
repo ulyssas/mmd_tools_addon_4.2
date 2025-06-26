@@ -813,7 +813,7 @@ class __PmxExporter:
                 if j.type == "BONE" and j.name in bone_map:
                     items.append((0, bone_map[j.name]))
                 elif j.type == "MORPH" and (j.morph_type, j.name) in morph_map:
-                    items.append((1, morph_map[(j.morph_type, j.name)]))
+                    items.append((1, morph_map[j.morph_type, j.name]))
                 else:
                     logging.warning("Display item (%s, %s) was not found.", j.type, j.name)
             d.data = items
