@@ -128,6 +128,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
             text=True,
             encoding="utf-8",
             errors="replace",  # Handle Unicode decode errors gracefully
+            check=True,
         )
 
         # Calculate total execution time
