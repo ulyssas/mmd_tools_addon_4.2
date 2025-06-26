@@ -5,6 +5,7 @@ import logging
 import time
 
 import bpy
+import numpy as np
 from mathutils import Matrix, Vector
 
 from ..bpyutils import FnObject
@@ -190,8 +191,6 @@ class FnSDEF:
         else:  # bulk update
             shapekey_data = cls.g_shapekey_data[_hash(obj)]
             if shapekey_data is None:
-                import numpy as np
-
                 shapekey_data = np.zeros(len(shapekey.data) * 3, dtype=np.float32)
                 shapekey.data.foreach_get("co", shapekey_data)
                 shapekey_data = cls.g_shapekey_data[_hash(obj)] = shapekey_data.reshape(len(shapekey.data), 3)

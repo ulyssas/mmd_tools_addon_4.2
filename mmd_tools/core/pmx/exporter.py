@@ -8,6 +8,7 @@ import os
 import shutil
 import time
 from collections import OrderedDict
+from math import pi
 
 import bmesh
 import bpy
@@ -464,8 +465,6 @@ class __PmxExporter:
         logging.debug("    Create IK Link for %s", pose_bone.name)
         ik_link = pmx.IKLink()
         ik_link.target = bone_map[pose_bone.name]
-
-        from math import pi
 
         minimum, maximum = [-pi] * 3, [pi] * 3
         unused_counts = 0

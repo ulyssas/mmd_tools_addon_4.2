@@ -2,6 +2,7 @@ import logging
 import math
 import os
 import shutil
+import traceback
 import unittest
 
 import bpy
@@ -493,8 +494,6 @@ class TestVmdExporter(unittest.TestCase):
             except Exception as e:
                 print(f"    ✗ VMD test failed: {e}")
                 # Don't fail the entire test, just log the error
-                import traceback
-
                 traceback.print_exc()
 
         print("\n=== VMD Export Test Results ===")

@@ -1,5 +1,7 @@
 import logging
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 import bpy
@@ -70,9 +72,6 @@ class TestUtilitySystems(unittest.TestCase):
     def test_auto_load_module_discovery(self):
         """Test auto_load module discovery functions"""
         # Test iter_submodule_names with a mock directory structure
-        import tempfile
-        from pathlib import Path
-
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
 
@@ -578,9 +577,6 @@ class TestUtilitySystems(unittest.TestCase):
             self.assertIsNotNone(test_obj)
 
             # Test auto_load module functions integration
-            import tempfile
-            from pathlib import Path
-
             with tempfile.TemporaryDirectory() as temp_dir:
                 temp_path = Path(temp_dir)
 

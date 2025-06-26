@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import traceback
 import unittest
 
 import bpy
@@ -174,8 +175,6 @@ class TestVPDImporter(unittest.TestCase):
 
                     except Exception as e:
                         print(f"   * Exception during VPD import: {str(e)}")
-                        import traceback
-
                         print(traceback.format_exc())
                         self.fail(
                             f"Exception importing VPD {vpd_name} to model {model_name}: {str(e)}"
@@ -183,8 +182,6 @@ class TestVPDImporter(unittest.TestCase):
 
             except Exception as e:
                 print(f"   * Exception during model import: {str(e)}")
-                import traceback
-
                 print(traceback.format_exc())
                 self.fail(f"Exception importing model {model_name}: {str(e)}")
 

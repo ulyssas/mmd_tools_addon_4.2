@@ -4,6 +4,7 @@
 import logging
 import math
 import os
+from math import ceil, floor
 from typing import Union
 
 import bpy
@@ -624,8 +625,6 @@ class VMDImporter:
             for morph_type in ["vertex_morphs", "uv_morphs", "bone_morphs", "material_morphs", "group_morphs"]:
                 for morph in getattr(mmd_root, morph_type, []):
                     model_morph_names.add(morph.name)
-
-        from math import ceil, floor
 
         for name, keyFrames in shapeKeyAnim.items():
             if name not in shapeKeyDict:

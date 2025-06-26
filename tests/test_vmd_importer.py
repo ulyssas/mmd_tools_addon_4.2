@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import unittest
@@ -27,8 +28,6 @@ class TestVMDImporter(unittest.TestCase):
 
     def setUp(self):
         """Start each test with a clean state"""
-        import logging
-
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 

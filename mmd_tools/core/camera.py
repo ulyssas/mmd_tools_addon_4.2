@@ -2,9 +2,11 @@
 # This file is part of MMD Tools.
 
 import math
+from math import atan
 from typing import Optional
 
 import bpy
+from mathutils import Matrix, Vector
 
 from ..bpyutils import FnContext, Props
 
@@ -175,10 +177,6 @@ class MMDCamera:
         parent_action = bpy.data.actions.new(name=action_name)
         distance_action = bpy.data.actions.new(name=action_name + "_dis")
         FnCamera.remove_drivers(mmd_cam)
-
-        from math import atan
-
-        from mathutils import Matrix, Vector
 
         render = scene.render
         factor = (render.resolution_y * render.pixel_aspect_y) / (render.resolution_x * render.pixel_aspect_x)

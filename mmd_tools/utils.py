@@ -4,6 +4,7 @@
 import logging
 import os
 import re
+import string
 from typing import Callable, Optional, Set
 
 import bpy
@@ -176,8 +177,6 @@ def int2base(x, base, width=0):
     Convert an int to a base
     Source: http://stackoverflow.com/questions/2267362
     """
-    import string
-
     digs = string.digits + string.ascii_uppercase
     assert 2 <= base <= len(digs)
     digits, negtive = "", False

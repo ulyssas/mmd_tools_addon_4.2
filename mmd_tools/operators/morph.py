@@ -1,6 +1,7 @@
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
+from collections import namedtuple
 from typing import Optional, cast
 
 import bpy
@@ -733,8 +734,6 @@ class ApplyUVMorph(bpy.types.Operator):
             base_uv_data = mesh.uv_layers[base_uv_name].data
             temp_uv_data = mesh.uv_layers.active.data
             axis_type = "ZW" if base_uv_name.startswith("_") else "XY"
-
-            from collections import namedtuple
 
             __OffsetData = namedtuple("OffsetData", "index, offset")
             offsets = {}

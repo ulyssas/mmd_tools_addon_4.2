@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import sys
+import traceback
 import unittest
 
 import bpy
@@ -196,8 +197,6 @@ class TestModelEdit(unittest.TestCase):
             return True
 
         except Exception as e:
-            import traceback
-
             traceback.print_exc()
             self.fail(f"Joined model testing failed with error: {e}")
             return False
@@ -555,8 +554,6 @@ class TestModelEdit(unittest.TestCase):
             self.assertTrue(os.path.isfile(output_pmx), f"Exported PMX file ({model_order_str} order) was not created")
 
         except Exception as e:
-            import traceback
-
             traceback.print_exc()
             self.fail(f"Test failed with error: {e}")
 

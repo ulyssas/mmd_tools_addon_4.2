@@ -2,11 +2,12 @@ import logging
 import os
 import shutil
 import unittest
+from collections import namedtuple
 from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.morph import FnMorph
+from bl_ext.user_default.mmd_tools.core.morph import FnMorph, MigrationFnMorph
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -440,8 +441,6 @@ class TestMorphSystem(unittest.TestCase):
         self.assertEqual(uv_morph.uv_index, 0, "UV morph should have correct UV index")
 
         # Test storing UV morph data
-        from collections import namedtuple
-
         OffsetData = namedtuple("OffsetData", "index offset")
         offsets = [
             OffsetData(0, (0.1, 0.2, 0.0, 0.0)),
@@ -545,8 +544,6 @@ class TestMorphSystem(unittest.TestCase):
 
     def test_migration_functions(self):
         """Test migration functions for compatibility"""
-        from bl_ext.user_default.mmd_tools.core.morph import MigrationFnMorph
-
         # Test migration functions don't crash on empty scene
         MigrationFnMorph.update_mmd_morph()  # Should not crash
         MigrationFnMorph.ensure_material_id_not_conflict()  # Should not crash

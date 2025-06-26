@@ -3,6 +3,7 @@
 
 import logging
 import re
+from math import ceil, floor, pi
 from typing import TYPE_CHECKING, Tuple, cast
 
 import bpy
@@ -416,8 +417,6 @@ class _MorphSlider:
         return not d or d.driver.expression == "".join(("*w", "+g", "v")[-1 if i < 1 else i % 2] + str(i + 1) for i in range(len(d.driver.variables)))
 
     def __cleanup(self, names_in_use=None):
-        from math import ceil, floor
-
         names_in_use = names_in_use or {}
         rig = self.__rig
         morph_sliders = self.placeholder()
@@ -653,8 +652,6 @@ class _MorphSlider:
                 expression = __config_groups(variables, var.name, groups)
                 sign = "-" if attr.startswith("to_min") else ""
                 driver.expression = f"{sign}{val_str}*({expression})"
-
-        from math import pi
 
         attributes_rot = TransformConstraintOp.min_max_attributes("ROTATION", "to")
         attributes_loc = TransformConstraintOp.min_max_attributes("LOCATION", "to")

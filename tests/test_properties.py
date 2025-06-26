@@ -3,11 +3,13 @@ import logging
 import math
 import os
 import shutil
+import time
 import unittest
 
 import bl_ext.user_default.mmd_tools
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.user_default.mmd_tools.properties.camera import MMDCamera
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -150,8 +152,6 @@ class TestMMDProperties(unittest.TestCase):
         self.assertTrue(hasattr(camera_obj, "mmd_camera"), "Camera should have mmd_camera property")
 
         # Test property type
-        from bl_ext.user_default.mmd_tools.properties.camera import MMDCamera
-
         self.assertIsInstance(camera_obj.mmd_camera, MMDCamera, "mmd_camera should be MMDCamera type")
 
         print("✓ Camera properties registration test passed")
@@ -1486,8 +1486,6 @@ class TestMMDProperties(unittest.TestCase):
     def test_property_performance(self):
         """Test property performance with many objects"""
         self._enable_mmd_tools()
-
-        import time
 
         start_time = time.time()
 

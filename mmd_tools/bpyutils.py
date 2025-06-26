@@ -2,9 +2,12 @@
 # This file is part of MMD Tools.
 
 import contextlib
+import math
 from typing import Generator, List, Optional, TypeVar
 
+import bmesh
 import bpy
+from mathutils import Matrix
 
 
 class Props:  # For API changes of only name changed properties
@@ -121,8 +124,6 @@ def createObject(name="Object", object_data=None, target_scene=None):
 
 
 def makeSphere(segment=8, ring_count=5, radius=1.0, target_object=None):
-    import bmesh
-
     if target_object is None:
         mesh_data = bpy.data.meshes.new("Sphere")
         target_object = createObject(name="Sphere", object_data=mesh_data)
@@ -143,9 +144,6 @@ def makeSphere(segment=8, ring_count=5, radius=1.0, target_object=None):
 
 
 def makeBox(size=(1, 1, 1), target_object=None):
-    import bmesh
-    from mathutils import Matrix
-
     if target_object is None:
         mesh_data = bpy.data.meshes.new("Box")
         target_object = createObject(name="Box", object_data=mesh_data)
@@ -165,10 +163,6 @@ def makeBox(size=(1, 1, 1), target_object=None):
 
 
 def makeCapsule(segment=8, ring_count=2, radius=1.0, height=1.0, target_object=None):
-    import math
-
-    import bmesh
-
     if target_object is None:
         mesh_data = bpy.data.meshes.new("Capsule")
         target_object = createObject(name="Capsule", object_data=mesh_data)
