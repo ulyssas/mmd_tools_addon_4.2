@@ -1230,12 +1230,11 @@ class __PmxExporter:
                     logging.warning(f"Keeping vertex colors and first {max_other_uvs} UV layers.")
                     logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[max_other_uvs:]]}")
                     bl_add_uvs = bl_add_uvs[:max_other_uvs]
-            else:
-                # No vertex colors, limit to 4 UV layers maximum
-                if len(bl_add_uvs) > 4:
-                    logging.warning(f"Keeping first 4 UV layers out of {len(bl_add_uvs)}.")
-                    logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[4:]]}")
-                    bl_add_uvs = bl_add_uvs[:4]
+            # No vertex colors, limit to 4 UV layers maximum
+            elif len(bl_add_uvs) > 4:
+                logging.warning(f"Keeping first 4 UV layers out of {len(bl_add_uvs)}.")
+                logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[4:]]}")
+                bl_add_uvs = bl_add_uvs[:4]
 
         # Update additional UV count
         self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs))

@@ -122,25 +122,24 @@ class OpenCC:
                 chain = []
                 self._add_dictionaries(item, chain)
                 chain_data.append(chain)
+            elif item not in self.dict_cache:
+                map_dict = {}
+                # Default max key length to smallest possible value
+                max_len = 1
+                # Default min key length to very large value
+                min_len = 1000
+                with io.open(item, "r", encoding="utf-8") as f:
+                    for line in f:
+                        key, value = line.strip().split("\t")
+                        map_dict[key] = value
+                        if len(key) > max_len:
+                            max_len = len(key)
+                        if len(key) < min_len:
+                            min_len = len(key)
+                chain_data.append((max_len, min_len, map_dict))
+                self.dict_cache[item] = (max_len, min_len, map_dict)
             else:
-                if item not in self.dict_cache:
-                    map_dict = {}
-                    # Default max key length to smallest possible value
-                    max_len = 1
-                    # Default min key length to very large value
-                    min_len = 1000
-                    with io.open(item, "r", encoding="utf-8") as f:
-                        for line in f:
-                            key, value = line.strip().split("\t")
-                            map_dict[key] = value
-                            if len(key) > max_len:
-                                max_len = len(key)
-                            if len(key) < min_len:
-                                min_len = len(key)
-                    chain_data.append((max_len, min_len, map_dict))
-                    self.dict_cache[item] = (max_len, min_len, map_dict)
-                else:
-                    chain_data.append(self.dict_cache[item])
+                chain_data.append(self.dict_cache[item])
 
     def _add_dict_chain(self, dict_chain, dict_dict):
         """

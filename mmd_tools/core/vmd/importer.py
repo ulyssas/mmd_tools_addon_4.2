@@ -455,18 +455,17 @@ class VMDImporter:
 
         if fcurve is None:
             fcurve = action.fcurves.new(data_path=data_path, index=index, action_group=action_group_name)
-        else:
-            # Ensure F-Curve belongs to the correct action group
-            if action_group_name and (fcurve.group is None or fcurve.group.name != action_group_name):
-                # Find or create the action group
-                group = None
-                for g in action.groups:
-                    if g.name == action_group_name:
-                        group = g
-                        break
-                if group is None:
-                    group = action.groups.new(action_group_name)
-                fcurve.group = group
+        # Ensure F-Curve belongs to the correct action group
+        elif action_group_name and (fcurve.group is None or fcurve.group.name != action_group_name):
+            # Find or create the action group
+            group = None
+            for g in action.groups:
+                if g.name == action_group_name:
+                    group = g
+                    break
+            if group is None:
+                group = action.groups.new(action_group_name)
+            fcurve.group = group
 
         return fcurve
 
