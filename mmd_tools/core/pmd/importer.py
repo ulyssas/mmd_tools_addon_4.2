@@ -7,7 +7,7 @@ import math
 import os
 import re
 
-import mathutils
+from mathutils import Vector
 
 from .. import pmd, pmx
 from ..pmx import importer as import_pmx
@@ -121,8 +121,8 @@ def import_pmd_to_pmx(filepath):
             pmx_bone.isMovable = False
         elif bone.type == 8:
             pmx_bone.isMovable = False
-            tail_loc = mathutils.Vector(pmd_model.bones[bone.tail_bone].position)
-            loc = mathutils.Vector(bone.position)
+            tail_loc = Vector(pmd_model.bones[bone.tail_bone].position)
+            loc = Vector(bone.position)
             vec = tail_loc - loc
             vec.normalize()
             pmx_bone.axis = list(vec)
@@ -312,7 +312,7 @@ def import_pmd_to_pmx(filepath):
             t = 0
         else:
             t = rigid.bone
-        pmx_rigid.location = mathutils.Vector(pmx_model.bones[t].location) + mathutils.Vector(rigid.location)
+        pmx_rigid.location = Vector(pmx_model.bones[t].location) + Vector(rigid.location)
         pmx_rigid.rotation = rigid.rotation
 
         pmx_rigid.mass = rigid.mass

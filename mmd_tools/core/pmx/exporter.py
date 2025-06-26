@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 import bmesh
 import bpy
-import mathutils
+from mathutils import Euler, Matrix, Vector
 
 from ...bpyutils import FnContext
 from ...operators.misc import MoveObject
@@ -357,7 +357,6 @@ class __PmxExporter:
 
         sorted_bones = sorted(pose_bones, key=lambda x: x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"))
 
-        Vector = mathutils.Vector
         pmx_matrix = world_mat * self.__scale
         pmx_matrix[1], pmx_matrix[2] = pmx_matrix[2].copy(), pmx_matrix[1].copy()
 
@@ -668,11 +667,11 @@ class __PmxExporter:
         モデル中心座標から離れている位置で使用されているマテリアルほどリストの後ろ側にくるように。
         かなりいいかげんな実装
         """
-        center = mathutils.Vector([0, 0, 0])
+        center = Vector([0, 0, 0])
         vertices = self.__model.vertices
         vert_num = len(vertices)
         for v in self.__model.vertices:
-            center += mathutils.Vector(v.co) / vert_num
+            center += Vector(v.co) / vert_num
 
         faces = self.__model.faces
         offset = 0
@@ -682,9 +681,9 @@ class __PmxExporter:
             face_num = int(mat.vertex_count / 3)
             for i in range(offset, offset + face_num):
                 face = faces[i]
-                d += (mathutils.Vector(vertices[face[0]].co) - center).length
-                d += (mathutils.Vector(vertices[face[1]].co) - center).length
-                d += (mathutils.Vector(vertices[face[2]].co) - center).length
+                d += (Vector(vertices[face[0]].co) - center).length
+                d += (Vector(vertices[face[1]].co) - center).length
+                d += (Vector(vertices[face[2]].co) - center).length
             distances.append((d / mat.vertex_count, mat, offset, face_num, bl_mat_name))
             offset += face_num
         sorted_faces = []
@@ -855,18 +854,17 @@ class __PmxExporter:
     def __exportRigidBodies(self, rigid_bodies, bone_map):
         rigid_map = {}
         rigid_cnt = 0
-        Vector = mathutils.Vector
         for obj in rigid_bodies:
             t, r, s = obj.matrix_world.decompose()
             if any(math.isnan(val) for val in t):
                 logging.warning(f"Rigid body '{obj.name}' has invalid position coordinates, using default position")
-                t = mathutils.Vector((0.0, 0.0, 0.0))
+                t = Vector((0.0, 0.0, 0.0))
             if any(math.isnan(val) for val in r):
                 logging.warning(f"Rigid body '{obj.name}' has invalid rotation coordinates, using default rotation")
-                r = mathutils.Euler((0.0, 0.0, 0.0), "YXZ")
+                r = Euler((0.0, 0.0, 0.0), "YXZ")
             if any(math.isnan(val) for val in s):
                 logging.warning(f"Rigid body '{obj.name}' has invalid scale coordinates, using default scale")
-                s = mathutils.Vector((1.0, 1.0, 1.0))
+                s = Vector((1.0, 1.0, 1.0))
             r = r.to_euler("YXZ")
             rb = obj.rigid_body
             if rb is None:
@@ -914,7 +912,6 @@ class __PmxExporter:
         return rigid_map
 
     def __exportJoints(self, joints, rigid_map):
-        Vector = mathutils.Vector
         for joint in joints:
             t, r, s = joint.matrix_world.decompose()
             r = r.to_euler("YXZ")
@@ -944,7 +941,7 @@ class __PmxExporter:
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
         # Normalize vertex_color to always be a Vector (None becomes zero vector)
-        color_vec = mathutils.Vector(vertex_color) if vertex_color else mathutils.Vector((0, 0, 0, 0))
+        color_vec = Vector(vertex_color) if vertex_color else Vector((0, 0, 0, 0))
 
         def _ensure_add_uvs(vertex):
             """Ensure vertex has add_uvs list with at least 2 elements"""
@@ -1046,14 +1043,14 @@ class __PmxExporter:
         if len(set(tuple(n) for n in v._normal_list)) == 1:  # All normals identical
             v.normal = normal
         else:
-            weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), mathutils.Vector((0, 0, 0)))
+            weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
             v.normal = (weighted_normal_sum / total_weight).normalized()
 
         # Average vertex colors and convert to ADD UV2 format
         if len(set(tuple(c) for c in v._color_list)) == 1:  # All colors identical
             final_color = color_vec
         else:
-            weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights, strict=False)), mathutils.Vector((0, 0, 0, 0)))
+            weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights, strict=False)), Vector((0, 0, 0, 0)))
             final_color = weighted_color_sum / total_weight
 
         # Set averaged vertex color as ADD UV2
@@ -1122,7 +1119,7 @@ class __PmxExporter:
         sx, sy, sz = meshObj.matrix_world.to_scale()
         normal_matrix = pmx_matrix.to_3x3()
         if not (sx == sy == sz):
-            invert_scale_matrix = mathutils.Matrix([[1.0 / sx, 0, 0], [0, 1.0 / sy, 0], [0, 0, 1.0 / sz]])
+            invert_scale_matrix = Matrix([[1.0 / sx, 0, 0], [0, 1.0 / sy, 0], [0, 0, 1.0 / sz]])
             normal_matrix = normal_matrix @ invert_scale_matrix  # reset the scale of meshObj.matrix_world
             normal_matrix = normal_matrix @ invert_scale_matrix  # the scale transform of normals
 
@@ -1247,7 +1244,7 @@ class __PmxExporter:
 
         # Process faces from triangulated mesh
         class _DummyUV:
-            uv1 = uv2 = uv3 = mathutils.Vector((0, 1))
+            uv1 = uv2 = uv3 = Vector((0, 1))
 
             def __init__(self, uvs):
                 self.uv1, self.uv2, self.uv3 = (v.uv.copy() for v in uvs)

@@ -7,7 +7,7 @@ import re
 from typing import List, Optional, Set
 
 import bpy
-import mathutils
+from mathutils import Euler, Quaternion
 
 from .. import vmd
 from ..camera import MMDCamera
@@ -220,13 +220,13 @@ class VMDExporter:
         if mode == "AXIS_ANGLE":
 
             def __xyzw_from_axis_angle(xyzw):
-                q = mathutils.Quaternion(xyzw[:3], xyzw[3])
+                q = Quaternion(xyzw[:3], xyzw[3])
                 return [q.x, q.y, q.z, q.w]
 
             return __xyzw_from_axis_angle
 
         def __xyzw_from_euler(xyzw):
-            q = mathutils.Euler(xyzw[:3], xyzw[3]).to_quaternion()
+            q = Euler(xyzw[:3], xyzw[3]).to_quaternion()
             return [q.x, q.y, q.z, q.w]
 
         return __xyzw_from_euler
