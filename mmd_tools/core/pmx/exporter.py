@@ -1040,14 +1040,14 @@ class __PmxExporter:
         total_weight = sum(weights) or 1.0  # Avoid division by zero
 
         # Average normals
-        if len(set(tuple(n) for n in v._normal_list)) == 1:  # All normals identical
+        if len({tuple(n) for n in v._normal_list}) == 1:  # All normals identical
             v.normal = normal
         else:
             weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
             v.normal = (weighted_normal_sum / total_weight).normalized()
 
         # Average vertex colors and convert to ADD UV2 format
-        if len(set(tuple(c) for c in v._color_list)) == 1:  # All colors identical
+        if len({tuple(c) for c in v._color_list}) == 1:  # All colors identical
             final_color = color_vec
         else:
             weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights, strict=False)), Vector((0, 0, 0, 0)))

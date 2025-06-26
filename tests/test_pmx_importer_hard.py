@@ -381,7 +381,7 @@ class TestPmxImporter(unittest.TestCase):
 
             # Verify that display frames reference existing bones
             mmd_root = root_obj.mmd_root
-            bone_names = set(bone.name for bone in armature.pose.bones)
+            bone_names = {bone.name for bone in armature.pose.bones}
 
             for frame in mmd_root.display_item_frames:
                 for item in frame.data:
@@ -881,7 +881,7 @@ class TestPmxImporter(unittest.TestCase):
                     degenerate_faces = 0
                     for poly in mesh_data.polygons:
                         vertices = [mesh_data.vertices[i].co for i in poly.vertices]
-                        if len(set(tuple(v) for v in vertices)) < 3:
+                        if len({tuple(v) for v in vertices}) < 3:
                             degenerate_faces += 1
 
                     print(f"   - Found {degenerate_faces} potentially degenerate faces")

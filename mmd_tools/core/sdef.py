@@ -290,7 +290,7 @@ class FnSDEF:
             use_skip = False
         mod = obj.modifiers.get("mmd_armature")
         variables = f.driver.variables
-        for name in set(data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)):  # add required bones for dependency graph
+        for name in {data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)}:  # add required bones for dependency graph
             var = variables.new()
             var.type = "TRANSFORMS"
             var.targets[0].id = mod.object
@@ -317,7 +317,7 @@ class FnSDEF:
     @classmethod
     def clear_cache(cls, obj=None, unused_only=False):
         if unused_only:
-            valid_keys = set(_hash(i) for i in bpy.data.objects if i.type == "MESH" and i != obj)
+            valid_keys = {_hash(i) for i in bpy.data.objects if i.type == "MESH" and i != obj}
             for key in cls.g_verts.keys() - valid_keys:
                 del cls.g_verts[key]
             for key in cls.g_shapekey_data.keys() - cls.g_verts.keys():

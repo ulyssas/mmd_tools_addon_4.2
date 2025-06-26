@@ -437,7 +437,7 @@ class TestVMDImporter(unittest.TestCase):
 
                 # Show bone matching info
                 if vmd_analysis["bone_animation"]:
-                    target_bones = set(bone.name for bone in target_obj.pose.bones)
+                    target_bones = {bone.name for bone in target_obj.pose.bones}
                     vmd_bones = set(vmd_analysis["bone_animation"].keys())
                     matching_bones = target_bones & vmd_bones
                     print(f"Matching bones: {len(matching_bones)} out of {len(vmd_bones)} VMD bones")
@@ -453,7 +453,7 @@ class TestVMDImporter(unittest.TestCase):
 
                     # Show shape key matching info
                     if vmd_analysis["shape_key_animation"]:
-                        target_shapes = set(key.name for key in target_obj.data.shape_keys.key_blocks if key.name != "Basis")
+                        target_shapes = {key.name for key in target_obj.data.shape_keys.key_blocks if key.name != "Basis"}
                         vmd_shapes = set(vmd_analysis["shape_key_animation"].keys())
                         matching_shapes = target_shapes & vmd_shapes
                         print(f"Matching shape keys: {matching_shapes}")
