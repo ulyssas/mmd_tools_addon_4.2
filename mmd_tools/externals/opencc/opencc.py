@@ -132,10 +132,8 @@ class OpenCC:
                     for line in f:
                         key, value = line.strip().split("\t")
                         map_dict[key] = value
-                        if len(key) > max_len:
-                            max_len = len(key)
-                        if len(key) < min_len:
-                            min_len = len(key)
+                        max_len = max(max_len, len(key))
+                        min_len = min(min_len, len(key))
                 chain_data.append((max_len, min_len, map_dict))
                 self.dict_cache[item] = (max_len, min_len, map_dict)
             else:
