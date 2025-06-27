@@ -53,6 +53,9 @@ class Header:
 
 
 class BoneFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "location", "rotation", "interp")
+
     def __init__(self):
         self.frame_number = 0
         self.location = []
@@ -82,6 +85,9 @@ class BoneFrameKey:
 
 
 class ShapeKeyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "weight")
+
     def __init__(self):
         self.frame_number = 0
         self.weight = 0.0
@@ -102,6 +108,9 @@ class ShapeKeyFrameKey:
 
 
 class CameraKeyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "distance", "location", "rotation", "interp", "angle", "persp")
+
     def __init__(self):
         self.frame_number = 0
         self.distance = 0.0
@@ -142,6 +151,9 @@ class CameraKeyFrameKey:
 
 
 class LampKeyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "color", "direction")
+
     def __init__(self):
         self.frame_number = 0
         self.color = []
@@ -166,6 +178,9 @@ class LampKeyFrameKey:
 
 
 class SelfShadowFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "mode", "distance")
+
     def __init__(self):
         self.frame_number = 0
         self.mode = 0  # 0: none, 1: mode1, 2: mode2
@@ -196,6 +211,9 @@ class SelfShadowFrameKey:
 
 
 class PropertyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "visible", "ik_states")
+
     def __init__(self):
         self.frame_number = 0
         self.visible = True
