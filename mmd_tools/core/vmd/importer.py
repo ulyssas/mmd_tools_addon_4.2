@@ -514,7 +514,7 @@ class VMDImporter:
             fcurves = [dummy_keyframe_points] * 7  # x, y, z, r0, r1, r2, (r3)
             data_path_rot = prop_rot_map.get(bone.rotation_mode, "rotation_euler")
             bone_rotation = getattr(bone, data_path_rot)
-            default_values = list(bone.location) + list(bone_rotation)
+            default_values = tuple(bone.location) + tuple(bone_rotation)
             data_path = 'pose.bones["%s"].location' % bone.name
             for axis_i in range(3):
                 fcurves[axis_i] = self.__get_or_create_fcurve(action, data_path, axis_i, bone.name)

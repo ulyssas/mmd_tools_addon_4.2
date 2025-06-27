@@ -61,11 +61,11 @@ class BoneFrameKey:
 
     def load(self, fin):
         (self.frame_number,) = struct.unpack("<L", fin.read(4))
-        self.location = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.rotation = list(struct.unpack("<ffff", fin.read(4 * 4)))
+        self.location = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.rotation = tuple(struct.unpack("<ffff", fin.read(4 * 4)))
         if not any(self.rotation):
             self.rotation = (0, 0, 0, 1)
-        self.interp = list(struct.unpack("<64b", fin.read(64)))
+        self.interp = tuple(struct.unpack("<64b", fin.read(64)))
 
     def save(self, fin):
         fin.write(struct.pack("<L", self.frame_number))
@@ -114,9 +114,9 @@ class CameraKeyFrameKey:
     def load(self, fin):
         (self.frame_number,) = struct.unpack("<L", fin.read(4))
         (self.distance,) = struct.unpack("<f", fin.read(4))
-        self.location = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.rotation = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.interp = list(struct.unpack("<24b", fin.read(24)))
+        self.location = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.rotation = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.interp = tuple(struct.unpack("<24b", fin.read(24)))
         (self.angle,) = struct.unpack("<L", fin.read(4))
         (self.persp,) = struct.unpack("<b", fin.read(1))
         self.persp = self.persp == 0
@@ -149,8 +149,8 @@ class LampKeyFrameKey:
 
     def load(self, fin):
         (self.frame_number,) = struct.unpack("<L", fin.read(4))
-        self.color = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.direction = list(struct.unpack("<fff", fin.read(4 * 3)))
+        self.color = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.direction = tuple(struct.unpack("<fff", fin.read(4 * 3)))
 
     def save(self, fin):
         fin.write(struct.pack("<L", self.frame_number))
