@@ -729,6 +729,7 @@ class VMDImporter:
             if prev_kps is not None:
                 interp = k.interp
                 for idx, prev_kp, kp in zip(indices, prev_kps, curr_kps, strict=False):
+                    # TODO: Optimize this bottleneck: __setInterpolation is called per keypoint; should batch set interpolation instead
                     self.__setInterpolation(interp[idx : idx + 4 : 2] + interp[idx + 1 : idx + 4 : 2], prev_kp, kp)
             prev_kps = curr_kps
 

@@ -53,6 +53,12 @@ class Header:
 
 
 class BoneFrameKey:
+    """
+    VMD bone keyframe data structure.
+
+    TODO: Optimize this bottleneck. Large VMD files may instantiate millions of BoneFrameKey objects, significantly impacting performance.
+    """
+
     # Use __slots__ for better performance
     __slots__ = ("frame_number", "location", "rotation", "interp")
 
