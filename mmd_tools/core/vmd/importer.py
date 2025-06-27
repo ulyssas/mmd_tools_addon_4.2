@@ -345,7 +345,6 @@ class VMDImporter:
             bezier = [20, 20, 107, 107]
 
         # Always multiply before dividing to reduce precision errors
-        d = (kp1.co - kp0.co)
         kp0.handle_right = kp0.co + Vector((d.x * bezier[0] / 127.0, d.y * bezier[1] / 127.0))
         kp1.handle_left = kp0.co + Vector((d.x * bezier[2] / 127.0, d.y * bezier[3] / 127.0))
 
