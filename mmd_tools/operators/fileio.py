@@ -267,8 +267,8 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         unit="ROTATION",
     )
     import_adduv2_as_vertex_colors: bpy.props.BoolProperty(
-        name="Import ADD UV2 as Vertex Colors",
-        description="Import ADD UV2 data as vertex colors in addition to additional UV layers",
+        name="Import Vertex Colors",
+        description="Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created.",
         default=False,
     )
     fix_IK_links: bpy.props.BoolProperty(
@@ -748,7 +748,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         default="NONE",
     )
     export_vertex_colors_as_adduv2: bpy.props.BoolProperty(
-        name="Export Vertex Colors as ADD UV2",
+        name="Export Vertex Colors",
         description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
         default=False,
     )
