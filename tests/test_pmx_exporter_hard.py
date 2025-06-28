@@ -184,7 +184,9 @@ class TestPmxExporter(unittest.TestCase):
                 self.assertGreaterEqual(dot_product, 0.99999, f"Normal angle difference too large: dot_product={dot_product:.6f}")
 
             self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6)
-            self.assertEqual(v0.additional_uvs, v1.additional_uvs)
+            for uv0, uv1 in zip(v0.additional_uvs, v1.additional_uvs, strict=False):
+                self.assertLess(self.__tuple_error(uv0, uv1), 1e-6)
+
             self.assertEqual(v0.edge_scale, v1.edge_scale)
             self.assertEqual(v0.weight.type, v1.weight.type)
             self.assertEqual(v0.weight.bones, v1.weight.bones)

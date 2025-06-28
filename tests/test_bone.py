@@ -106,14 +106,6 @@ class TestBone(unittest.TestCase):
 
         return armature_object
 
-    def __vector_error(self, vec0, vec1):
-        """Calculate vector difference"""
-        return (Vector(vec0) - Vector(vec1)).length
-
-    def __axis_error(self, axis0, axis1):
-        """Calculate axis difference"""
-        return (Vector(axis0).normalized() - Vector(axis1).normalized()).length
-
     # ********************************************
     # Bone ID Tests
     # ********************************************

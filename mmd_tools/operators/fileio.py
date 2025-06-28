@@ -725,11 +725,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description=(
             "Vertex Splitting for Custom Split Normals\n"
             "ENABLE:\n"
-            "    Split vertices when the same vertex has different normals or vertex colors.\n"
+            "    Split vertices when the same vertex has different normals.\n"
             "DISABLE:\n"
-            "    Use angle * area weighted averaging for normals and vertex colors.\n"
+            "    Use angle * area weighted averaging for normals.\n"
             "WARNING:\n"
-            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals or vertex colors per vertex, and can significantly increase the vertex count. Use with caution.\n"
+            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
             "\n"
             "NOTE:\n"
             "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible.\n"
@@ -746,6 +746,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
             ("CUSTOM", "Custom", 'Use custom vertex weight of vertex group "mmd_vertex_order"', 2),
         ],
         default="NONE",
+    )
+    export_vertex_colors_as_adduv2: bpy.props.BoolProperty(
+        name="Export Vertex Colors as ADD UV2",
+        description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
+        default=False,
     )
     ik_angle_limits: bpy.props.EnumProperty(
         name="IK Angle Limits",
@@ -867,6 +872,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
                 vertex_splitting=self.vertex_splitting,
+                export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 ik_angle_limits=self.ik_angle_limits,
             )
             self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
