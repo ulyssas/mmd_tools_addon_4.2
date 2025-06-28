@@ -266,6 +266,11 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         subtype="ANGLE",
         unit="ROTATION",
     )
+    import_adduv2_as_vertex_colors: bpy.props.BoolProperty(
+        name="Import ADD UV2 as Vertex Colors",
+        description="Import ADD UV2 data as vertex colors in addition to additional UV layers",
+        default=False,
+    )
     fix_IK_links: bpy.props.BoolProperty(
         name="Fix IK Links",
         description="Fix IK links to be blender suitable",
@@ -368,6 +373,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 remove_doubles=self.remove_doubles,
                 mark_sharp_edges=self.mark_sharp_edges,
                 sharp_edge_angle=self.sharp_edge_angle,
+                import_adduv2_as_vertex_colors=self.import_adduv2_as_vertex_colors,
                 fix_IK_links=self.fix_IK_links,
                 ik_loop_factor=self.ik_loop_factor,
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,

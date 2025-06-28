@@ -616,7 +616,7 @@ class PMXImporter:
                 bf.image = self.__imageTable.get(mi, None)
 
         # Import ADD UV2 as vertex colors
-        if pmxModel.header and pmxModel.header.additional_uvs >= 2:
+        if self.__import_adduv2_as_vertex_colors and pmxModel.header and pmxModel.header.additional_uvs >= 2:
             # Create vertex color layer
             vertex_colors = mesh.vertex_colors.new(name="Color")
             color_data = []
@@ -905,6 +905,7 @@ class PMXImporter:
         remove_doubles = args.get("remove_doubles", False)
         self.__mark_sharp_edges = args.get("mark_sharp_edges", True)
         self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(179.0))
+        self.__import_adduv2_as_vertex_colors = args.get("import_adduv2_as_vertex_colors", False)
         self.__scale = args.get("scale", 1.0)
         self.__use_mipmap = args.get("use_mipmap", True)
         self.__sph_blend_factor = args.get("sph_blend_factor", 1.0)
