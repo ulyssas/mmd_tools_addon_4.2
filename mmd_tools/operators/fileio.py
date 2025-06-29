@@ -697,7 +697,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     )
     sort_materials: bpy.props.BoolProperty(
         name="Sort Materials",
-        description=("Sort materials for alpha blending. " "WARNING: Will not work if you have " + "transparent meshes inside the model. " + "E.g. blush meshes"),
+        description="Sort materials for alpha blending. WARNING: Will not work if you have transparent meshes inside the model. E.g. blush meshes",
         default=False,
     )
     disable_specular: bpy.props.BoolProperty(
