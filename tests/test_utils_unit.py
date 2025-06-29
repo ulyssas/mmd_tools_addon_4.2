@@ -131,7 +131,7 @@ class TestUtilsUnit(unittest.TestCase):
             ("左足首", "足首.L"),  # Left ankle
             ("右足首", "足首.R"),  # Right ankle
             ("胴体", "胴体"),  # Torso (no conversion needed)
-            ("頭", "頭")       # Head (no conversion needed)
+            ("頭", "頭"),       # Head (no conversion needed)
         ]
 
         # Test with default delimiter (dot)
@@ -153,7 +153,7 @@ class TestUtilsUnit(unittest.TestCase):
             ("腕_L", "左腕"),  # Left arm with underscore
             ("腕_R", "右腕"),  # Right arm with underscore
             ("胴体", "胴体"),  # Torso (no conversion needed)
-            ("頭", "頭")       # Head (no conversion needed)
+            ("頭", "頭"),       # Head (no conversion needed)
         ]
 
         for input_name, expected_output in test_cases:

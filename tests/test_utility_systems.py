@@ -138,7 +138,7 @@ class TestUtilitySystems(unittest.TestCase):
                     "TestPropGroup": test_prop_group,
                     "NotAClass": "string value",
                     "MockPanel": MockPanel,
-                }
+                },
             },
         )()
 

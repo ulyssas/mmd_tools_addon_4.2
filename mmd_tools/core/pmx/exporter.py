@@ -1111,7 +1111,7 @@ class __PmxExporter:
                     get_edge_scale(v),
                     get_vertex_order(v),
                     get_uv_offsets(v),
-                )
+                ),
             ]
 
         # Extract vertex colors as ADD UV2

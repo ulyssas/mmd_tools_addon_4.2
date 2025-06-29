@@ -71,7 +71,7 @@ class TestVPDExporter(unittest.TestCase):
                 else bpy.ops.preferences.addon_enable
             )
             addon_enable(
-                module="bl_ext.user_default.mmd_tools"
+                module="bl_ext.user_default.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
 
     def __create_model_from_pmx(self, pmx_file):
@@ -281,7 +281,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify file was created
@@ -330,7 +330,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=active_pose_path,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="ACTIVE"
+                pose_type="ACTIVE",
             )
 
             # Verify active pose file was created
@@ -344,7 +344,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=all_poses_path,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="ALL"
+                pose_type="ALL",
             )
 
             # Verify all pose files were created
@@ -379,7 +379,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path_1x,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Export with scale 2.0
@@ -389,7 +389,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path_2x,
                 scale=2.0,
                 model_name="TestModel",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify both files were created
@@ -482,7 +482,7 @@ class TestVPDExporter(unittest.TestCase):
                         scale=1.0,
                         model_name="TestModel",
                         pose_type=pose_type,
-                        use_pose_mode=use_pose_mode
+                        use_pose_mode=use_pose_mode,
                     )
 
                     # Check output for CURRENT pose type
@@ -593,7 +593,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path,
                 scale=1.0,
                 model_name=model_name,
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify export succeeded
@@ -629,7 +629,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path,
                 scale=1.0,
                 model_name="TestDirectAPI",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify export succeeded
@@ -650,7 +650,7 @@ class TestVPDExporter(unittest.TestCase):
             exporter.export(
                 armature=armature,
                 filepath=output_path,
-                pose_type="INVALID_TYPE"  # This should raise ValueError
+                pose_type="INVALID_TYPE",  # This should raise ValueError
             )
 
 

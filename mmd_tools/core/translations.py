@@ -659,7 +659,7 @@ class FnTranslations:
                         "org_name_j": org_name_j,
                         "org_name_e": org_name_e,
                     },
-                )
+                ),
             )
 
             if batch_operation_target == "BLENDER":
