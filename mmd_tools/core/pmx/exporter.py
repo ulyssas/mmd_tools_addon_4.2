@@ -1407,12 +1407,12 @@ class __PmxExporter:
 
 def export(filepath, **kwargs):
     logging.info("****************************************")
-    logging.info(" %s module" % __name__)
+    logging.info(" %s module", __name__)
     logging.info("----------------------------------------")
     start_time = time.time()
     exporter = __PmxExporter()
     exporter.execute(filepath, **kwargs)
     logging.info(" Finished exporting the model in %f seconds.", time.time() - start_time)
     logging.info("----------------------------------------")
-    logging.info(" %s module" % __name__)
+    logging.info(" %s module", __name__)
     logging.info("****************************************")
