@@ -11,11 +11,16 @@ class InvalidFileError(Exception):
 
 
 def _decodeCp932String(byteString):
-    """Convert a VMD format byte string to a regular string."""
-    # If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding
-    # and replace ? with � to ensure replacement character consistency between UnicodeEncodeError and UnicodeDecodeError.
-    # UnicodeEncodeError: Bone/Morph name has characters not supported by cp932 encoding. Default replacement character: ?
-    # UnicodeDecodeError: Bone/Morph name was truncated at 15 bytes, breaking character boundaries. Default replacement character: �(U+FFFD)
+    r"""Convert a VMD format byte string to a regular string.
+    If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding
+    and replace ? with � to ensure replacement character consistency between UnicodeEncodeError and UnicodeDecodeError.
+    - UnicodeEncodeError: Bone/Morph name has characters not supported by cp932 encoding. Default replacement character: ?
+    - UnicodeDecodeError: Bone/Morph name was truncated at 15 bytes, breaking character boundaries. Default replacement character: �(U+FFFD)
+    Example:
+        original = "左带_0_1調整"
+        byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae\x00\x00\x00\x00"
+        decoded = "�ｶ�_0_1調整"
+    """
     decoded = byteString.replace(b"\x00", b"").decode("cp932", errors="replace")
     if byteString[:1] == b"\x00":
         decoded = "\ufffd" + decoded.replace("?", "\ufffd")
