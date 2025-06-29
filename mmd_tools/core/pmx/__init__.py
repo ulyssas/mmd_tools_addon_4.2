@@ -991,7 +991,7 @@ class Bone:
     def __repr__(self):
         return "<Bone name %s, name_e %s>" % (
             self.name,
-            self.name_e,)
+            self.name_e)
 
     def load(self, fs):
         self.name = fs.readStr()
