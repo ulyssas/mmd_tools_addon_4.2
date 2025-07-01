@@ -9,7 +9,6 @@ import shutil
 import time
 from collections import OrderedDict
 
-import bmesh
 import bpy
 from mathutils import Euler, Matrix, Vector
 
@@ -60,11 +59,11 @@ class _DefaultMaterial:
         # mat.mmd_material.specular_color = (0, 0, 0)
         # mat.mmd_material.ambient_color = (0, 0, 0)
         self.material = mat
-        logging.debug("create default material: %s", str(self.material))
+        logging.debug("create default material: %s", self.material.name)
 
     def __del__(self):
         if self.material:
-            logging.debug("remove default material: %s", str(self.material))
+            logging.debug("remove default material: %s", self.material.name)
             bpy.data.materials.remove(self.material)
 
 
@@ -921,71 +920,24 @@ class __PmxExporter:
             p_joint.spring_rotation_constant = Vector(mmd_joint.spring_angular).xzy
             self.__model.joints.append(p_joint)
 
-    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area, loop_angle):
+    @staticmethod
+    def __convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map):
         vertices = vertices_map[vert_index]
-        assert vertices, f"Empty vertices list for vertex index {vert_index}"
-
-        if self.__vertex_splitting:  # Vertex splitting mode
-            for i in vertices:
-                if i.uv is None:
-                    # Initialize new vertex with all attributes
-                    i.uv = uv
-                    i.normal = normal
-                    return i
-                if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
-                    # UV, normal are all compatible within thresholds
-                    return i
-
-            # Create new vertex for different UV, normal
-            n = copy.copy(vertices[0])  # Shallow copy should be fine
-            n.uv = uv
-            n.normal = normal
-            vertices.append(n)
-            return n
-
-        # Non-splitting mode: UV splits, normals use weighted averaging
-        # Find or create vertex based on UV compatibility only
-        v = None
         for i in vertices:
             if i.uv is None:
                 i.uv = uv
-                v = i
-                break
-            if (i.uv - uv).length < 0.001:  # UV requires exact matching
-                v = i
-                break
+                i.normal = normal
+                return i
+            if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
+                return i
+        n = copy.copy(i)  # shallow copy should be fine
+        n.uv = uv
+        n.normal = normal
+        vertices.append(n)
+        return n
 
-        if v is None:
-            # Create new vertex for different UV
-            v = copy.copy(vertices[0])
-            v.uv = uv
-            vertices.append(v)
-
-        # Initialize averaging lists if needed
-        for attr_name in ["_normal_list", "_area_list", "_angle_list"]:
-            if not hasattr(v, attr_name):
-                setattr(v, attr_name, [])
-
-        # Append current values to averaging lists
-        v._normal_list.append(normal)
-        v._area_list.append(face_area)
-        v._angle_list.append(loop_angle)
-
-        # Calculate angle * area weighted averages
-        weights = [angle * area for angle, area in zip(v._angle_list, v._area_list, strict=False)]
-        total_weight = sum(weights) or 1.0  # Avoid division by zero
-
-        # Average normals
-        if len({tuple(n) for n in v._normal_list}) == 1:  # All normals identical
-            v.normal = normal
-        else:
-            weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
-            v.normal = (weighted_normal_sum / total_weight).normalized()
-        return v
-
-    def __convertAddUV(self, vert, adduv, addzw, uv_index, vertices, rip_vertices):
-        assert vertices, "Empty vertices list for additional UV processing"
-
+    @staticmethod
+    def __convertAddUV(vert, adduv, addzw, uv_index, vertices, rip_vertices):
         if vert.add_uvs[uv_index] is None:
             vert.add_uvs[uv_index] = (adduv, addzw)
             return vert
@@ -1017,21 +969,54 @@ class __PmxExporter:
         def _to_mesh_clear(obj, mesh):
             return obj.to_mesh_clear()
 
-        # Triangulate immediately before processing any loop-based data
-        base_mesh = _to_mesh(meshObj)
-        needs_triangulation = any(len(poly.vertices) > 3 for poly in base_mesh.polygons)
-        if needs_triangulation:
-            face_count_before = len(base_mesh.polygons)
-            logging.debug(" - Triangulating mesh using Blender standard method...")
-            bm = bmesh.new()
-            bm.from_mesh(base_mesh)
-            bmesh.ops.triangulate(bm, faces=bm.faces, quad_method="BEAUTY", ngon_method="BEAUTY")
-            bm.to_mesh(base_mesh)
-            bm.free()
-            face_count_after = len(base_mesh.polygons)
-            logging.debug("   - Triangulation completed (%d -> %d faces)", face_count_before, face_count_after)
-        else:
-            logging.debug(" - Mesh already triangulated (%d triangular faces)", len(base_mesh.polygons))
+        base_mesh = None
+        temp_wn_mod = None
+        temp_tri_mod = None
+        try:
+            # Apply weighted normal modifier when vertex splitting is disabled
+            if not self.__vertex_splitting:
+                logging.debug(" - Vertex Splitting is disabled")
+                logging.debug("   - Apply weighted normal modifier for smooth normals")
+
+                temp_wn_mod = meshObj.modifiers.new(name="temp_weighted_normal_modifier", type="WEIGHTED_NORMAL")
+                temp_wn_mod.mode = "FACE_AREA_WITH_ANGLE"
+                temp_wn_mod.weight = 50
+                temp_wn_mod.thresh = 0.01
+                temp_wn_mod.keep_sharp = False
+                temp_wn_mod.use_face_influence = False
+            else:
+                logging.debug(" - Vertex Splitting is enabled")
+                logging.debug("   - Skip adding weighted normal modifier")
+
+            # Check if triangulation is needed
+            base_mesh = _to_mesh(meshObj)
+            needs_triangulation = any(len(poly.vertices) > 3 for poly in base_mesh.polygons)
+
+            if needs_triangulation:
+                logging.debug(" - Mesh needs triangulation")
+                _to_mesh_clear(meshObj, base_mesh)
+
+                face_count_before = len(meshObj.data.polygons)
+
+                temp_tri_mod = meshObj.modifiers.new(name="temp_triangulate_modifier", type="TRIANGULATE")
+                temp_tri_mod.quad_method = "BEAUTY"
+                temp_tri_mod.ngon_method = "BEAUTY"
+                temp_tri_mod.keep_custom_normals = True
+
+                # Re-evaluate mesh with all modifiers applied
+                base_mesh = _to_mesh(meshObj)
+                face_count_after = len(base_mesh.polygons)
+                logging.debug("   - Triangulation completed using modifier (%d -> %d faces)", face_count_before, face_count_after)
+            else:
+                logging.debug(" - Mesh does not need triangulation")
+        except Exception:
+            logging.exception("Error occurred while applying mesh modifiers")
+            raise
+        finally:
+            if temp_wn_mod:
+                meshObj.modifiers.remove(temp_wn_mod)
+            if temp_tri_mod:
+                meshObj.modifiers.remove(temp_tri_mod)
 
         # Process vertex groups after triangulation
         vg_to_bone = {i: bone_map[x.name] for i, x in enumerate(meshObj.vertex_groups) if x.name in bone_map}
@@ -1048,16 +1033,8 @@ class __PmxExporter:
             normal_matrix = normal_matrix @ invert_scale_matrix  # reset the scale of meshObj.matrix_world
             normal_matrix = normal_matrix @ invert_scale_matrix  # the scale transform of normals
 
-        # Extract normals and angles from triangulated mesh
+        # Extract normals before apply transformation
         loop_normals = self.__get_normals(base_mesh, normal_matrix)
-        bm_temp = bmesh.new()
-        bm_temp.from_mesh(base_mesh)
-        loop_angles = []
-        for face in bm_temp.faces:
-            for loop in face.loops:
-                loop_angles.append(loop.calc_angle())
-        bm_temp.free()
-
         # Apply transformation to triangulated mesh
         base_mesh.transform(pmx_matrix)
 
@@ -1169,11 +1146,9 @@ class __PmxExporter:
                 raise ValueError(f"Face should be triangulated. Face index: {face.index}, Mesh name: {base_mesh.name}")
             loop_indices = list(face.loop_indices)
             n1, n2, n3 = [loop_normals[idx] for idx in loop_indices]
-            a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
-            face_area = face.area
-            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
-            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
-            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
+            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
+            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
+            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
 
             t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)
