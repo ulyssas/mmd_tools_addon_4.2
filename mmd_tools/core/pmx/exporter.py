@@ -1020,6 +1020,7 @@ class __PmxExporter:
         def _to_mesh_clear(obj, mesh):
             return obj.to_mesh_clear()
 
+        # Use try-finally pattern to guarantee temporary modifier cleanup, preventing scene pollution
         base_mesh = None
         temp_tri_mod = None
         try:
