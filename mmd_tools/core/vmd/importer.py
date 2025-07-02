@@ -313,7 +313,7 @@ class VMDImporter:
         self.__bone_mapper = bone_mapper
         self.__bone_util_cls = BoneConverterPoseMode if use_pose_mode else BoneConverter
         self.__frame_start = bpy.context.scene.frame_current
-        self.__frame_margin = frame_margin if self.__frame_start == 1 else 0  # Ignore margin if current frame is not 1
+        self.__frame_margin = frame_margin if self.__frame_start in {0, 1} else 0  # only applies if current frame is 0 or 1
         self.__mirror = use_mirror
         self.__always_create_new_action = always_create_new_action
         self.__use_NLA = use_NLA
@@ -529,8 +529,8 @@ class VMDImporter:
                 kp_iter = iter(new_keyframes)
                 if extra_frame:
                     kp = next(kp_iter)
-                    kp.co = (1, default_values[i])
-                    kp.interpolation = "LINEAR"
+                    kp.co = (self.__frame_start, default_values[i])
+                    kp.interpolation = "BEZIER"
                 fcurves[i] = kp_iter
 
             converter = self.__getBoneConverter(bone)

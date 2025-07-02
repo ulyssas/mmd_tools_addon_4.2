@@ -414,7 +414,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     )
     margin: bpy.props.IntProperty(
         name="Margin",
-        description="Number of frames to add before the motion starts (only applies if current frame is 1)",
+        description="Number of frames to add before the motion starts (only applies if current frame is 0 or 1)",
         min=0,
         default=0,
     )
