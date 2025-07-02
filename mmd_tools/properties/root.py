@@ -163,7 +163,7 @@ def _getVisibilityOfMMDRigArmature(prop: "MMDRoot"):
     if prop.id_data.mmd_type != "ROOT":
         return False
     arm = FnModel.find_armature_object(prop.id_data)
-    return arm and not arm.hide_get()
+    return arm is not None and not arm.hide_get()
 
 
 def _setActiveRigidbodyObject(prop: "MMDRoot", v: int):
