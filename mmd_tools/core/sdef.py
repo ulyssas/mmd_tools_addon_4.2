@@ -286,8 +286,6 @@ class FnSDEF:
         ov.type = "SINGLE_PROP"
         ov.targets[0].id = obj
         ov.targets[0].data_path = "name"
-        if not bulk_update and use_skip:  # FIXME: force disable use_skip=True for bulk_update=False on 2.8
-            use_skip = False
         mod = obj.modifiers.get("mmd_armature")
         variables = f.driver.variables
         for name in {data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)}:  # add required bones for dependency graph
