@@ -460,8 +460,8 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         default=True,
     )
     always_create_new_action: bpy.props.BoolProperty(
-        name="Always Create New Action",
-        description="Always create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
+        name="Create New Action",
+        description="Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         default=False,
     )
     use_NLA: bpy.props.BoolProperty(
