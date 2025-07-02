@@ -1125,7 +1125,7 @@ class Model:
         if mesh_name == "":
             return None
         for mesh in self.meshes():
-            if mesh_name in (mesh.name, mesh.data.name):
+            if mesh_name in {mesh.name, mesh.data.name}:
                 return mesh
         return None
 
@@ -1143,7 +1143,7 @@ class Model:
         if mesh_name == "":
             return -1
         for i, mesh in enumerate(self.meshes()):
-            if mesh_name in (mesh.name, mesh.data.name):
+            if mesh_name in {mesh.name, mesh.data.name}:
                 return i
         return -1
 
@@ -1225,7 +1225,7 @@ class Model:
             if rigid_type == rigid_body.MODE_STATIC:
                 i.parent_type = "OBJECT"
                 i.parent = self.rigidGroupObject()
-            elif rigid_type in [rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE]:
+            elif rigid_type in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
                 arm = relation.target
                 bone_name = relation.subtarget
                 if arm is not None and bone_name != "":
@@ -1283,7 +1283,7 @@ class Model:
             relation = i.constraints["mmd_tools_rigid_parent"]
             relation.mute = True
             # mute IK
-            if int(i.mmd_rigid.type) in [rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE]:
+            if int(i.mmd_rigid.type) in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
                 arm = relation.target
                 bone_name = relation.subtarget
                 if arm is not None and bone_name != "":
@@ -1387,7 +1387,7 @@ class Model:
                         fake_child.location = t
                         fake_child.rotation_euler = r.to_euler(fake_child.rotation_mode)
 
-            elif rigid_type in [rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE]:
+            elif rigid_type in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
                 m = target_bone.matrix @ target_bone.bone.matrix_local.inverted()
                 self.__rigid_body_matrix_map[rigid_obj] = m
                 t, r, s = (m @ rigid_obj.matrix_local).decompose()

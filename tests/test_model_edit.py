@@ -323,8 +323,8 @@ class TestModelEdit(unittest.TestCase):
             armatures_with_bone_info = []
             for arm in all_armatures:
                 # Count bones with specific names
-                head_bones = [b for b in arm.pose.bones if b.name in ["頭", "head", "Head"]]
-                neck_bones = [b for b in arm.pose.bones if b.name in ["首", "neck", "Neck"]]
+                head_bones = [b for b in arm.pose.bones if b.name in {"頭", "head", "Head"}]
+                neck_bones = [b for b in arm.pose.bones if b.name in {"首", "neck", "Neck"}]
 
                 print(f"Armature: {arm.name}")
                 print(f"    Total bones: {len(arm.pose.bones)}")
@@ -453,9 +453,10 @@ class TestModelEdit(unittest.TestCase):
             # First, collect the objects to be removed
             objects_to_remove = []
             for obj in bpy.data.objects:
-                if obj.type == "ARMATURE" and obj not in (first_model_arm, second_model_arm_with_head):
+                print("??????????????????????")
+                if obj.type == "ARMATURE" and obj not in {first_model_arm, second_model_arm_with_head}:
                     objects_to_remove.append(obj)
-                elif obj.mmd_type == "ROOT" and obj not in (first_model_root, second_model_root):
+                elif obj.mmd_type == "ROOT" and obj not in {first_model_root, second_model_root}:
                     objects_to_remove.append(obj)
             # Then remove them in a separate loop
             for obj in objects_to_remove:
@@ -470,8 +471,8 @@ class TestModelEdit(unittest.TestCase):
             context.view_layer.objects.active = first_model_arm
 
             for arm in [first_model_arm, second_model_arm_with_head]:
-                head_bones = [b for b in arm.pose.bones if b.name in ["頭", "head", "Head"]]
-                neck_bones = [b for b in arm.pose.bones if b.name in ["首", "neck", "Neck"]]
+                head_bones = [b for b in arm.pose.bones if b.name in {"頭", "head", "Head"}]
+                neck_bones = [b for b in arm.pose.bones if b.name in {"首", "neck", "Neck"}]
                 print(f"Armature: {arm.name}")
                 print(f"    Total bones: {len(arm.pose.bones)}")
                 print(f"    Has head bones: {[b.name for b in head_bones]}")
@@ -519,8 +520,8 @@ class TestModelEdit(unittest.TestCase):
             joined_model_armature = FnModel.find_armature_object(joined_model_root)
 
             arm = joined_model_armature
-            head_bones = [b for b in arm.pose.bones if b.name in ["頭", "head", "Head"]]
-            neck_bones = [b for b in arm.pose.bones if b.name in ["首", "neck", "Neck"]]
+            head_bones = [b for b in arm.pose.bones if b.name in {"頭", "head", "Head"}]
+            neck_bones = [b for b in arm.pose.bones if b.name in {"首", "neck", "Neck"}]
             print(f"Armature: {arm.name}")
             print(f"    Total bones: {len(arm.pose.bones)}")
             print(f"    Has head bones: {[b.name for b in head_bones]}")

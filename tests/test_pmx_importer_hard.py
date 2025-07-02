@@ -792,7 +792,7 @@ class TestPmxImporter(unittest.TestCase):
                 self.assertTrue(vertex_order_vg.lock_weight, "Vertex order group should be locked")
 
             # Count bone vertex groups
-            bone_vgs = [vg for vg in vertex_groups if vg.name not in ["mmd_edge_scale", "mmd_vertex_order"]]
+            bone_vgs = [vg for vg in vertex_groups if vg.name not in {"mmd_edge_scale", "mmd_vertex_order"}]
             print(f"   - Found {len(bone_vgs)} bone vertex groups")
 
         print("✓ Vertex weight distribution test passed")

@@ -86,7 +86,7 @@ class TestBoneOrder(unittest.TestCase):
 
                 # Set some bones with additional transform properties for testing
                 # Use bone names that exist and find their IDs after fix
-                if bone_name in ["left_arm", "right_arm"]:
+                if bone_name in {"left_arm", "right_arm"}:
                     pose_bone.mmd_bone.has_additional_rotation = True
                     pose_bone.mmd_bone.additional_transform_bone = "upper_body"
                     # Note: additional_transform_bone_id will be set properly after fix_bone_order

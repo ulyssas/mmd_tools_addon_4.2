@@ -235,16 +235,16 @@ class TestVmdExporter(unittest.TestCase):
                 # x2, y2 parameters allow == 107
                 is_valid = s == r  # Always allow source == result
 
-                if param_type in ["x1", "y1"]:
+                if param_type in {"x1", "y1"}:
                     is_valid = is_valid or (r == 20)
-                elif param_type in ["x2", "y2"]:
+                elif param_type in {"x2", "y2"}:
                     is_valid = is_valid or (r == 107)
 
                 if not is_valid:
                     expected_values = ["same as source"]
-                    if param_type in ["x1", "y1"]:
+                    if param_type in {"x1", "y1"}:
                         expected_values.append("20")
-                    elif param_type in ["x2", "y2"]:
+                    elif param_type in {"x2", "y2"}:
                         expected_values.append("107")
 
                     error_count += 1
@@ -255,17 +255,17 @@ class TestVmdExporter(unittest.TestCase):
                 # For linear interpolation, allow result to be 20, 107 for corresponding positions
                 is_valid = s == r  # Always allow source == result
 
-                if param_type in ["x1", "y1"]:
+                if param_type in {"x1", "y1"}:
                     is_valid = is_valid or (r == 20)
-                elif param_type in ["x2", "y2"]:
+                elif param_type in {"x2", "y2"}:
                     is_valid = is_valid or (r == 107)
 
                 if not is_valid:
                     error_count += 1
                     expected_values = ["same as source"]
-                    if param_type in ["x1", "y1"]:
+                    if param_type in {"x1", "y1"}:
                         expected_values.append("20")
-                    elif param_type in ["x2", "y2"]:
+                    elif param_type in {"x2", "y2"}:
                         expected_values.append("107")
                     print(f"        Invalid for linear interp at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d} (expected: {' or '.join(expected_values)}), {msg}")
                     max_error = max(max_error, abs(s - r))

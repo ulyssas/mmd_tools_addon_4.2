@@ -439,7 +439,7 @@ class TestVPDExporter(unittest.TestCase):
                     exporter = VPDExporter()
 
                     # For ACTIVE and ALL pose types, we need animation data
-                    if pose_type in ["ACTIVE", "ALL"]:
+                    if pose_type in {"ACTIVE", "ALL"}:
                         # Ensure armature has animation data
                         if armature.animation_data is None:
                             armature.animation_data_create()
@@ -526,7 +526,7 @@ class TestVPDExporter(unittest.TestCase):
 
                 except Exception as e:
                     # For older Blender versions, pose_library might not be available
-                    if "pose_library" in str(e) and pose_type in ["ACTIVE", "ALL"]:
+                    if "pose_library" in str(e) and pose_type in {"ACTIVE", "ALL"}:
                         print(f"!! Skipped pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
                         print("   This is normal if your Blender version doesn't support pose libraries")
                     else:

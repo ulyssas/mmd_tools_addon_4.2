@@ -90,7 +90,7 @@ class FnMaterial:
             # Try to find the materials
             mat1 = mesh.materials[mat1_ref]
             mat2 = mesh.materials[mat2_ref]
-            if None in (mat1, mat2):
+            if None in {mat1, mat2}:
                 raise MaterialNotFoundError
         except (KeyError, IndexError) as exc:
             # Wrap exceptions within our custom ones
@@ -250,7 +250,7 @@ class FnMaterial:
         sphere_texture_type = int(self.material.mmd_material.sphere_texture_type)
         is_sph_add = sphere_texture_type == 2
 
-        if sphere_texture_type not in (1, 2, 3):
+        if sphere_texture_type not in {1, 2, 3}:
             self.__update_shader_input("Sphere Tex Fac", 0)
         else:
             self.__update_shader_input("Sphere Tex Fac", 1)
