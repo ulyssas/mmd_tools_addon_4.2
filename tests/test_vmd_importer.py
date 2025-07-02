@@ -502,7 +502,7 @@ class TestVMDImporter(unittest.TestCase):
         self.assertFalse(importer._VMDImporter__bone_util_cls == BoneConverterPoseMode)
         self.assertTrue(importer._VMDImporter__convert_mmd_camera)
         self.assertTrue(importer._VMDImporter__convert_mmd_lamp)
-        expected_margin = 5 if importer._VMDImporter__frame_start == 1 else 0
+        expected_margin = 5 if importer._VMDImporter__frame_start in {0, 1} else 0
         self.assertEqual(importer._VMDImporter__frame_margin, expected_margin)
         self.assertFalse(importer._VMDImporter__mirror)
 
@@ -512,7 +512,7 @@ class TestVMDImporter(unittest.TestCase):
         self.assertTrue(importer._VMDImporter__bone_util_cls == BoneConverterPoseMode)
         self.assertFalse(importer._VMDImporter__convert_mmd_camera)
         self.assertFalse(importer._VMDImporter__convert_mmd_lamp)
-        expected_custom_margin = 10 if importer._VMDImporter__frame_start == 1 else 0
+        expected_custom_margin = 10 if importer._VMDImporter__frame_start in {0, 1} else 0
         self.assertEqual(importer._VMDImporter__frame_margin, expected_custom_margin)
         self.assertTrue(importer._VMDImporter__mirror)
 
