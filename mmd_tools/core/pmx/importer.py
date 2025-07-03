@@ -990,7 +990,7 @@ class _PMXCleaner:
         pmx_vertices = pmx_model.vertices
 
         # clean face/vertex
-        cls.__clean_pmx_faces(pmx_faces, pmx_model.materials, lambda f: frozenset(f))
+        cls.__clean_pmx_faces(pmx_faces, pmx_model.materials, frozenset)
 
         index_map = {v: v for f in pmx_faces for v in f}
         is_index_clean = len(index_map) == len(pmx_vertices)

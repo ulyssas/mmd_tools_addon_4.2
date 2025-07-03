@@ -601,7 +601,7 @@ class __PmxExporter:
             for vtx_morph in root.mmd_root.vertex_morphs:
                 morph_english_names[vtx_morph.name] = vtx_morph.name_e
                 morph_categories[vtx_morph.name] = categories.get(vtx_morph.category, pmx.Morph.CATEGORY_OHTER)
-            shape_key_names.sort(key=lambda x: root.mmd_root.vertex_morphs.find(x))
+            shape_key_names.sort(key=root.mmd_root.vertex_morphs.find)
 
         for i in shape_key_names:
             morph = pmx.VertexMorph(name=i, name_e=morph_english_names.get(i, ""), category=morph_categories.get(i, pmx.Morph.CATEGORY_OHTER))
