@@ -591,8 +591,7 @@ class VMDImporter:
                 frame_num = keyFrame.frame_number
                 if frame_num <= first_frame:
                     first_frame = frame_num
-                    for ikName, enable in keyFrame.ik_states:
-                        first_frame_ik_states[ikName] = enable
+                    first_frame_ik_states.update(keyFrame.ik_states)
             # Set the mmd_ik_toggle property for each bone based on the collected first frame IK states
             for ikName, enable in first_frame_ik_states.items():
                 bone = pose_bones.get(ikName, None)
