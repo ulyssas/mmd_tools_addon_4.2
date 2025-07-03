@@ -99,7 +99,7 @@ class OpenCC:
         self._dict_chain = []
         config = self.conversion + ".json"
         config_file = os.path.join(os.path.dirname(__file__), CONFIG_DIR, config)
-        with open(config_file) as f:
+        with open(config_file, encoding="utf-8") as f:
             setting_json = json.load(f)
 
         self.conversion_name = setting_json.get("name")
