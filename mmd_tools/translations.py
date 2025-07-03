@@ -406,13 +406,13 @@ class MMDTranslator:
     def load(self, filepath=None):
         filepath = filepath or self.default_csv_filepath()
         logging.info("Loading csv file:\t%s", filepath)
-        with open(filepath, "rt", encoding="utf-8", newline="") as csvfile:
+        with open(filepath, encoding="utf-8", newline="") as csvfile:
             self.load_from_stream(csvfile)
 
     def save(self, filepath=None):
         filepath = filepath or self.default_csv_filepath()
         logging.info("Saving csv file:\t%s", filepath)
-        with open(filepath, "wt", encoding="utf-8", newline="") as csvfile:
+        with open(filepath, "w", encoding="utf-8", newline="") as csvfile:
             self.save_to_stream(csvfile)
 
 

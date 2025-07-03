@@ -124,7 +124,7 @@ def apply_operator_preset(operator, preset_name):
         # Execute preset with proper context
         with bpy.context.temp_override(active_operator=operator):
             try:
-                with open(preset_file, "r", encoding="utf-8") as f:
+                with open(preset_file, encoding="utf-8") as f:
                     preset_code = f.read()
 
                 namespace = {"bpy": bpy}
