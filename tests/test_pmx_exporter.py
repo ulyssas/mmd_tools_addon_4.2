@@ -428,7 +428,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.VertexMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "VertexMorph %s" % m0.name
+            msg = f"VertexMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -441,7 +441,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.UVMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "UVMorph %s" % m0.name
+            msg = f"UVMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -459,7 +459,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.BoneMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "BoneMorph %s" % m0.name
+            msg = f"BoneMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -483,7 +483,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.MaterialMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "MaterialMorph %s" % m0.name
+            msg = f"MaterialMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -511,7 +511,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.GroupMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "GroupMorph %s" % m0.name
+            msg = f"GroupMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -607,7 +607,7 @@ class TestPmxExporter(unittest.TestCase):
 
         import_types = self.__get_import_types(check_types)
 
-        print("\n    Check: %s | Import: %s" % (str(check_types), str(import_types)))
+        print(f"\n    Check: {str(check_types)} | Import: {str(import_types)}")
 
         for test_num, filepath in enumerate(input_files):
             print("\n     - %2d/%d | filepath: %s" % (test_num + 1, len(input_files), filepath))
@@ -626,7 +626,7 @@ class TestPmxExporter(unittest.TestCase):
                 # bpy.context.scene.update()
                 bpy.context.scene.frame_set(bpy.context.scene.frame_current)
             except Exception:
-                self.fail("Exception happened during import %s" % filepath)
+                self.fail(f"Exception happened during import {filepath}")
             else:
                 try:
                     output_pmx = os.path.join(TESTS_DIR, "output", "%d.pmx" % test_num)
@@ -640,14 +640,14 @@ class TestPmxExporter(unittest.TestCase):
                         log_level="ERROR",
                     )
                 except Exception:
-                    self.fail("Exception happened during export %s" % output_pmx)
+                    self.fail(f"Exception happened during export {output_pmx}")
                 else:
                     self.assertTrue(os.path.isfile(output_pmx), "File was not created")  # Is this a race condition?
 
                     try:
                         result_model = pmx.load(output_pmx)
                     except Exception:
-                        self.fail("Failed to load output file %s" % output_pmx)
+                        self.fail(f"Failed to load output file {output_pmx}")
 
                     self.__check_pmx_header_info(source_model, result_model, import_types)
 

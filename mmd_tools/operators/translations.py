@@ -84,7 +84,7 @@ class TranslateMMDModel(bpy.types.Operator):
         try:
             self.__translator = DictionaryEnum.get_translator(self.dictionary)
         except Exception as e:
-            self.report({"ERROR"}, "Failed to load dictionary: %s" % e)
+            self.report({"ERROR"}, f"Failed to load dictionary: {e}")
             return {"CANCELLED"}
 
         obj = context.active_object
@@ -93,7 +93,7 @@ class TranslateMMDModel(bpy.types.Operator):
 
         if "MMD" in self.modes:
             for i in self.types:
-                getattr(self, "translate_%s" % i.lower())(rig)
+                getattr(self, f"translate_{i.lower()}")(rig)
 
         if "BLENDER" in self.modes:
             self.translate_blender_names(rig)

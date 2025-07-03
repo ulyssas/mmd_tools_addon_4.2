@@ -514,10 +514,10 @@ class VMDImporter:
             data_path_rot = prop_rot_map.get(bone.rotation_mode, "rotation_euler")
             bone_rotation = getattr(bone, data_path_rot)
             default_values = tuple(bone.location) + tuple(bone_rotation)
-            data_path = 'pose.bones["%s"].location' % bone.name
+            data_path = f'pose.bones["{bone.name}"].location'
             for axis_i in range(3):
                 fcurves[axis_i] = self.__get_or_create_fcurve(action, data_path, axis_i, bone.name)
-            data_path = 'pose.bones["%s"].%s' % (bone.name, data_path_rot)
+            data_path = f'pose.bones["{bone.name}"].{data_path_rot}'
             for axis_i in range(len(bone_rotation)):
                 fcurves[3 + axis_i] = self.__get_or_create_fcurve(action, data_path, axis_i, bone.name)
 
@@ -634,7 +634,7 @@ class VMDImporter:
                 continue
             logging.info("(mesh) frames:%5d  name: %s", len(keyFrames), name)
             shapeKey = shapeKeyDict[name]
-            data_path = 'key_blocks["%s"].value' % shapeKey.name
+            data_path = f'key_blocks["{shapeKey.name}"].value'
             fcurve = self.__get_or_create_fcurve(action, data_path, 0)
 
             original_count = len(fcurve.keyframe_points)

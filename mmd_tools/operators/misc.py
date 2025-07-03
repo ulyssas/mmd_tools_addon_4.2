@@ -42,7 +42,7 @@ class MoveObject(bpy.types.Operator, utils.ItemMoveOp):
     def set_index(cls, obj, index):
         m = cls.__PREFIX_REGEXP.match(obj.name)
         name = m.group("name") if m else obj.name
-        obj.name = "%s_%s" % (utils.int2base(index, 36, 3), name)
+        obj.name = f"{utils.int2base(index, 36, 3)}_{name}"
 
     @classmethod
     def get_name(cls, obj, prefix=None):
@@ -63,7 +63,7 @@ class MoveObject(bpy.types.Operator, utils.ItemMoveOp):
         obj = context.active_object
         objects = self.__get_objects(obj)
         if obj not in objects:
-            self.report({"ERROR"}, 'Can not move object "%s"' % obj.name)
+            self.report({"ERROR"}, f'Can not move object "{obj.name}"')
             return {"CANCELLED"}
 
         objects.sort(key=lambda x: x.name)

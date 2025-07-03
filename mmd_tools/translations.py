@@ -433,7 +433,7 @@ class DictionaryEnum:
         items.append(("INTERNAL", "Internal Dictionary", "The dictionary defined in " + __name__, len(items)))
 
         for txt_name in sorted(x.name for x in bpy.data.texts if x.name.lower().endswith(".csv")):
-            items.append((txt_name, txt_name, "bpy.data.texts['%s']" % txt_name, "TEXT", len(items)))
+            items.append((txt_name, txt_name, f"bpy.data.texts['{txt_name}']", "TEXT", len(items)))
 
         folder = FnContext.get_addon_preferences_attribute(context, "dictionary_folder", "")
         if os.path.isdir(folder):

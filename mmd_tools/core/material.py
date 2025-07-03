@@ -550,7 +550,7 @@ class FnMaterial:
             links.new(node_shader.outputs["Shader"], node_output.inputs["Surface"])
 
         for name_id in ("Base", "Toon", "Sphere"):
-            texture = self.__get_texture_node("mmd_%s_tex" % name_id.lower())
+            texture = self.__get_texture_node(f"mmd_{name_id.lower()}_tex")
             if texture:
                 name_tex_in, name_alpha_in, name_uv_out = (name_id + x for x in (" Tex", " Alpha", " UV"))
                 if not node_shader.inputs.get(name_tex_in, _Dummy).is_linked:

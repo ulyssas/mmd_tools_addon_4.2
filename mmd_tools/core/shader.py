@@ -263,8 +263,8 @@ class _MaterialMorph:
             # https://github.com/blender/blender/blob/594f47ecd2d5367ca936cf6fc6ec8168c2b360d0/source/blender/blenkernel/intern/material.c#L1400
             node_mix = ng.new_mix_node("MULTIPLY" if use_mul else "ADD", (pos[0] + 1, pos[1]))
             links.new(node_input.outputs["Fac"], node_mix.inputs["Fac"])
-            ng.new_input_socket("%s1" % id_name + tag, node_mix.inputs["Color1"])
-            ng.new_input_socket("%s2" % id_name + tag, node_mix.inputs["Color2"], socket_type="NodeSocketVector")
+            ng.new_input_socket(f"{id_name}1" + tag, node_mix.inputs["Color1"])
+            ng.new_input_socket(f"{id_name}2" + tag, node_mix.inputs["Color2"], socket_type="NodeSocketVector")
             ng.new_output_socket(id_name + tag, node_mix.outputs["Color"])
             return node_mix
 

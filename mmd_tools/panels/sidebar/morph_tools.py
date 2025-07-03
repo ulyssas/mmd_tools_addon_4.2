@@ -59,7 +59,7 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
             )
             row.label(text="Morph Settings")
             if mmd_root.morph_panel_show_settings:
-                draw_func = getattr(self, "_draw_%s_data" % morph_type[:-7], None)
+                draw_func = getattr(self, f"_draw_{morph_type[:-7]}_data", None)
                 if draw_func:
                     draw_func(context, rig, col, morph)
 

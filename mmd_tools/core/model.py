@@ -1258,7 +1258,7 @@ class Model:
 
     def __restoreTransforms(self, obj):
         for attr in ("location", "rotation_euler"):
-            attr_name = "__backup_%s__" % attr
+            attr_name = f"__backup_{attr}__"
             val = obj.get(attr_name, None)
             if val is not None:
                 setattr(obj, attr, val)
@@ -1266,7 +1266,7 @@ class Model:
 
     def __backupTransforms(self, obj):
         for attr in ("location", "rotation_euler"):
-            attr_name = "__backup_%s__" % attr
+            attr_name = f"__backup_{attr}__"
             if attr_name in obj:  # should not happen in normal build/clean cycle
                 continue
             obj[attr_name] = getattr(obj, attr, None)

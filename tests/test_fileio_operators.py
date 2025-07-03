@@ -55,7 +55,7 @@ class TestFileIoOperators(unittest.TestCase):
         """
         input_blend = os.path.join(SAMPLES_DIR, "blends", "shy_cube", "shy_cube.blend")
         if not os.path.isfile(input_blend):
-            self.fail("required sample file %s not found. Please download it" % input_blend)
+            self.fail(f"required sample file {input_blend} not found. Please download it")
         output_pmx = os.path.join(TESTS_DIR, "output", "shy_cube.pmx")
         bpy.ops.wm.open_mainfile(filepath=input_blend)
         root = Model.findRoot(self.context.active_object)

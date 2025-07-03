@@ -101,7 +101,7 @@ class MMDCamera:
     def __init__(self, obj):
         root_object = FnCamera.find_root(obj)
         if root_object is None:
-            raise ValueError("%s is not MMDCamera" % str(obj))
+            raise ValueError(f"{str(obj)} is not MMDCamera")
 
         self.__emptyObj = getattr(root_object, "original", obj)
 

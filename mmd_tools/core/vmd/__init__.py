@@ -46,7 +46,7 @@ class Header:
     def load(self, fin):
         (self.signature,) = struct.unpack("<30s", fin.read(30))
         if self.signature[: len(self.VMD_SIGN)] != self.VMD_SIGN:
-            raise InvalidFileError('File signature "%s" is invalid.' % self.signature)
+            raise InvalidFileError(f'File signature "{self.signature}" is invalid.')
         self.model_name = _decodeCp932String(struct.unpack("<20s", fin.read(20))[0])
 
     def save(self, fin):
@@ -54,7 +54,7 @@ class Header:
         fin.write(struct.pack("<20s", _encodeCp932String(self.model_name)))
 
     def __repr__(self):
-        return "<Header model_name %s>" % (self.model_name)
+        return f"<Header model_name {self.model_name}>"
 
 
 class BoneFrameKey:
@@ -88,11 +88,7 @@ class BoneFrameKey:
         fin.write(struct.pack("<64b", *self.interp))
 
     def __repr__(self):
-        return "<BoneFrameKey frame %s, loa %s, rot %s>" % (
-            str(self.frame_number),
-            str(self.location),
-            str(self.rotation),
-        )
+        return f"<BoneFrameKey frame {str(self.frame_number)}, loa {str(self.location)}, rot {str(self.rotation)}>"
 
 
 class ShapeKeyFrameKey:
@@ -112,10 +108,7 @@ class ShapeKeyFrameKey:
         fin.write(struct.pack("<f", self.weight))
 
     def __repr__(self):
-        return "<ShapeKeyFrameKey frame %s, weight %s>" % (
-            str(self.frame_number),
-            str(self.weight),
-        )
+        return f"<ShapeKeyFrameKey frame {str(self.frame_number)}, weight {str(self.weight)}>"
 
 
 class CameraKeyFrameKey:
@@ -151,14 +144,7 @@ class CameraKeyFrameKey:
         fin.write(struct.pack("<b", 0 if self.persp else 1))
 
     def __repr__(self):
-        return "<CameraKeyFrameKey frame %s, distance %s, loc %s, rot %s, angle %s, persp %s>" % (
-            str(self.frame_number),
-            str(self.distance),
-            str(self.location),
-            str(self.rotation),
-            str(self.angle),
-            str(self.persp),
-        )
+        return f"<CameraKeyFrameKey frame {str(self.frame_number)}, distance {str(self.distance)}, loc {str(self.location)}, rot {str(self.rotation)}, angle {str(self.angle)}, persp {str(self.persp)}>"
 
 
 class LampKeyFrameKey:
@@ -181,11 +167,7 @@ class LampKeyFrameKey:
         fin.write(struct.pack("<fff", *self.direction))
 
     def __repr__(self):
-        return "<LampKeyFrameKey frame %s, color %s, direction %s>" % (
-            str(self.frame_number),
-            str(self.color),
-            str(self.direction),
-        )
+        return f"<LampKeyFrameKey frame {str(self.frame_number)}, color {str(self.color)}, direction {str(self.direction)}>"
 
 
 class SelfShadowFrameKey:
@@ -214,11 +196,7 @@ class SelfShadowFrameKey:
         fin.write(struct.pack("<f", distance))
 
     def __repr__(self):
-        return "<SelfShadowFrameKey frame %s, mode %s, distance %s>" % (
-            str(self.frame_number),
-            str(self.mode),
-            str(self.distance),
-        )
+        return f"<SelfShadowFrameKey frame {str(self.frame_number)}, mode {str(self.mode)}, distance {str(self.distance)}>"
 
 
 class PropertyFrameKey:
@@ -248,11 +226,7 @@ class PropertyFrameKey:
             fin.write(struct.pack("<b", 1 if state else 0))
 
     def __repr__(self):
-        return "<PropertyFrameKey frame %s, visible %s, ik_states %s>" % (
-            str(self.frame_number),
-            str(self.visible),
-            str(self.ik_states),
-        )
+        return f"<PropertyFrameKey frame {str(self.frame_number)}, visible {str(self.visible)}, ik_states {str(self.ik_states)}>"
 
 
 class _AnimationBase(collections.defaultdict):

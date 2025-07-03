@@ -138,7 +138,7 @@ class CopyMorph(bpy.types.Operator):
         if morph is None:
             return {"CANCELLED"}
 
-        name_orig, name_tmp = morph.name, "_tmp%s" % str(morph.as_pointer())
+        name_orig, name_tmp = morph.name, f"_tmp{str(morph.as_pointer())}"
 
         if morph_type.startswith("vertex"):
             for obj in FnModel.iterate_mesh_objects(root):
@@ -365,12 +365,12 @@ class CreateWorkMaterial(bpy.types.Operator):
 
         base_mat = meshObj.data.materials.get(mat_data.material, None)
         if base_mat is None:
-            self.report({"ERROR"}, 'Material "%s" not found' % mat_data.material)
+            self.report({"ERROR"}, f'Material "{mat_data.material}" not found')
             return {"CANCELLED"}
 
         work_mat_name = base_mat.name + "_temp"
         if work_mat_name in bpy.data.materials:
-            self.report({"ERROR"}, 'Temporary material "%s" is in use' % work_mat_name)
+            self.report({"ERROR"}, f'Temporary material "{work_mat_name}" is in use')
             return {"CANCELLED"}
 
         work_mat = base_mat.copy()
@@ -429,7 +429,7 @@ class ClearTempMaterials(bpy.types.Operator):
                         FnMaterial.swap_materials(meshObj, m.name, base_mat_name)
                         return True
                     except MaterialNotFoundError:
-                        self.report({"WARNING"}, "Base material for %s was not found" % m.name)
+                        self.report({"WARNING"}, f"Base material for {m.name} was not found")
                 return False
 
             FnMaterial.clean_materials(meshObj, can_remove=__pre_remove)
@@ -602,7 +602,7 @@ class ViewUVMorph(bpy.types.Operator):
                 uv_textures.active = uv_textures[uv_layer_name]
 
             uv_layer_name = uv_textures.active.name
-            uv_tex = uv_textures.new(name="__uv.%s" % uv_layer_name)
+            uv_tex = uv_textures.new(name=f"__uv.{uv_layer_name}")
             if uv_tex is None:
                 self.report({"ERROR"}, "Failed to create a temporary uv layer")
                 return {"CANCELLED"}
@@ -728,7 +728,7 @@ class ApplyUVMorph(bpy.types.Operator):
 
             base_uv_name = mesh.uv_layers.active.name[5:]
             if base_uv_name not in mesh.uv_layers:
-                self.report({"ERROR"}, ' * UV map "%s" not found' % base_uv_name)
+                self.report({"ERROR"}, f' * UV map "{base_uv_name}" not found')
                 return {"CANCELLED"}
 
             base_uv_data = mesh.uv_layers[base_uv_name].data

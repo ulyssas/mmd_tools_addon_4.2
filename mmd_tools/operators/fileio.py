@@ -384,7 +384,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 sph_blend_factor=self.sph_blend_factor,
                 spa_blend_factor=self.spa_blend_factor,
             )
-            self.report({"INFO"}, 'Imported MMD model from "%s"' % self.filepath)
+            self.report({"INFO"}, f'Imported MMD model from "{self.filepath}"')
         except Exception:
             logging.exception("Error occurred")
             raise
@@ -844,7 +844,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
 
         arm = FnModel.find_armature_object(root)
         if arm is None:
-            self.report({"ERROR"}, '[Skipped] The armature object of MMD model "%s" can\'t be found' % root.name)
+            self.report({"ERROR"}, f'[Skipped] The armature object of MMD model "{root.name}" can\'t be found')
             return {"CANCELLED"}
         orig_pose_position = None
         if not root.mmd_root.is_built:  # use 'REST' pose when the model is not built
@@ -875,7 +875,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 ik_angle_limits=self.ik_angle_limits,
             )
-            self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
+            self.report({"INFO"}, f'Exported MMD model "{root.name}" to "{self.filepath}"')
         except Exception:
             logging.exception("Error occurred")
             raise

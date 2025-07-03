@@ -465,7 +465,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.VertexMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "VertexMorph %s" % m0.name
+            msg = f"VertexMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -488,7 +488,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.UVMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "UVMorph %s" % m0.name
+            msg = f"UVMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -515,7 +515,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.BoneMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "BoneMorph %s" % m0.name
+            msg = f"BoneMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -540,7 +540,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.MaterialMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "MaterialMorph %s" % m0.name
+            msg = f"MaterialMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -572,7 +572,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.GroupMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "GroupMorph %s" % m0.name
+            msg = f"GroupMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -655,7 +655,7 @@ class TestPmxExporter(unittest.TestCase):
             "DISPLAY": True,  # Check display frames
         }
 
-        print("\n    Check: %s" % str(check_types.keys()))
+        print(f"\n    Check: {str(check_types.keys())}")
 
         for test_num, filepath in enumerate(input_files):
             print("\n     - %2d/%d | filepath: %s" % (test_num + 1, len(input_files), filepath))
@@ -667,7 +667,7 @@ class TestPmxExporter(unittest.TestCase):
                     file_loader = import_pmd_to_pmx
                 source_model = file_loader(filepath)
             except Exception as e:
-                self.fail("Exception happened during loading %s: %s" % (filepath, str(e)))
+                self.fail(f"Exception happened during loading {filepath}: {str(e)}")
 
             # Enable MMD tools and export to temporary file
             try:
@@ -677,16 +677,16 @@ class TestPmxExporter(unittest.TestCase):
                 output_pmx = os.path.join(TESTS_DIR, "output", "%d.pmx" % test_num)
                 bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=1.0, copy_textures=False, sort_materials=False, sort_vertices="NONE", vertex_splitting=False, log_level="ERROR")
             except Exception as e:
-                self.fail("Exception happened during export %s: %s" % (output_pmx, str(e)))
+                self.fail(f"Exception happened during export {output_pmx}: {str(e)}")
 
             # Verify the file was created
-            self.assertTrue(os.path.isfile(output_pmx), "File was not created: %s" % output_pmx)
+            self.assertTrue(os.path.isfile(output_pmx), f"File was not created: {output_pmx}")
 
             # Load the exported PMX file and compare with source
             try:
                 result_model = pmx.load(output_pmx)
             except Exception as e:
-                self.fail("Failed to load output file %s: %s" % (output_pmx, str(e)))
+                self.fail(f"Failed to load output file {output_pmx}: {str(e)}")
 
             # Run all the comparison tests
             self.__check_pmx_header_info(source_model, result_model, check_types.keys())
