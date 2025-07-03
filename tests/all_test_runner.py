@@ -126,8 +126,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Run the test
         result = subprocess.run(
             cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             text=True,
             encoding="utf-8",
             errors="replace",  # Handle Unicode decode errors gracefully
@@ -199,7 +198,7 @@ def run_all_tests():
     # If blender_path is just "blender", check if it's in PATH by running a simple command
     if blender_path == "blender":
         try:
-            subprocess.run([blender_path, "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+            subprocess.run([blender_path, "--version"], capture_output=True, check=False)
         except FileNotFoundError:
             print("Error: 'blender' executable not found in PATH.")
             print("Please either:")
