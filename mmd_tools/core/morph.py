@@ -243,7 +243,7 @@ class FnMorph:
         for idx, offset in offset_map.items():
             for val, axis in zip(offset, "XYZW", strict=False):
                 if abs(val) > 1e-4:
-                    vg_name = "UV_{0}{1}{2}".format(morph_name, "-" if val < 0 else "+", axis)
+                    vg_name = f"UV_{morph_name}{'-' if val < 0 else '+'}{axis}"
                     vg = vertex_groups.get(vg_name, None) or vertex_groups.new(name=vg_name)
                     vg.add(index=[idx], weight=abs(val) / scale, type="REPLACE")
 

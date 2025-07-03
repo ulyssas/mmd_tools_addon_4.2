@@ -294,8 +294,7 @@ class FnSDEF:
             var.targets[0].id = mod.object
             var.targets[0].bone_target = name
         f.driver.use_self = True
-        param = (bulk_update, use_skip, use_scale)
-        f.driver.expression = "mmd_sdef_driver(self, obj, bulk_update={}, use_skip={}, use_scale={})".format(*param)
+        f.driver.expression = f"mmd_sdef_driver(self, obj, bulk_update={bulk_update}, use_skip={use_skip}, use_scale={use_scale})"
         return True
 
     @classmethod

@@ -635,9 +635,9 @@ class TestMaterialSystem(unittest.TestCase):
         self.assertAlmostEqual(mmd_mat2.ambient_color[1], expected_ambient2[1], places=6, msg="Material2 ambient G should be half of BSDF-set diffuse G")
         self.assertAlmostEqual(mmd_mat2.ambient_color[2], expected_ambient2[2], places=6, msg="Material2 ambient B should be half of BSDF-set diffuse B")
 
-        print("   - Converted diffuse color (with texture): ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat.diffuse_color))
-        print("   - Converted diffuse color (no texture): ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat2.diffuse_color))
-        print("   - Calculated ambient color: ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat.ambient_color))
+        print(f"   - Converted diffuse color (with texture): {mmd_mat.diffuse_color}")
+        print(f"   - Converted diffuse color (no texture): {mmd_mat2.diffuse_color}")
+        print(f"   - Calculated ambient color: {mmd_mat.ambient_color}")
         print(f"   - Calculated shininess: {mmd_mat.shininess:.1f}")
         print("✓ Convert to MMD material test passed")
 
