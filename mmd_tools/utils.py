@@ -132,10 +132,7 @@ def separateByMaterials(meshObj: bpy.types.Object):
 
 
 def clearUnusedMeshes():
-    meshes_to_delete = []
-    for mesh in bpy.data.meshes:
-        if mesh.users == 0:
-            meshes_to_delete.append(mesh)
+    meshes_to_delete = [mesh for mesh in bpy.data.meshes if mesh.users == 0]
 
     for mesh in meshes_to_delete:
         bpy.data.meshes.remove(mesh)

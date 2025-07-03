@@ -111,8 +111,8 @@ class _FCurve:
                     break
             assert len(frames) >= 1 and frames[-1] == i
             if prev_kp is None:
-                for f in frames:  # starting key frames
-                    result.append([kp.co[1], ((20, 20), (107, 107))])
+                # starting key frames
+                result.extend([kp.co[1], ((20, 20), (107, 107))] for f in frames)
             elif len(frames) == 1:
                 result.append([kp.co[1], self.getVMDControlPoints(prev_kp, kp)])
             elif prev_kp.interpolation == "BEZIER":
@@ -122,8 +122,7 @@ class _FCurve:
                     result.append([pt.y, self.__toVMDControlPoints(b1)])
                 result.append([bz.points[-1].y, self.__toVMDControlPoints(bz)])
             else:
-                for f in frames:
-                    result.append([evaluate(f), ((20, 20), (107, 107))])
+                result.extend([evaluate(f), ((20, 20), (107, 107))] for f in frames)
             prev_kp = kp
 
         prev_kp_co_1 = prev_kp.co[1]

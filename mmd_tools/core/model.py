@@ -609,10 +609,7 @@ class FnModel:
                 parent_rigid_group_object = FnModel.find_rigid_group_object(parent_root_object)
                 if parent_rigid_group_object and parent_rigid_group_object.name in bpy.context.view_layer.objects.keys():
                     # Safely handle each rigid body
-                    rigid_objects = []
-                    for obj in FnModel.iterate_rigid_body_objects(child_root_object):
-                        if obj.name in bpy.context.view_layer.objects.keys():
-                            rigid_objects.append(obj)
+                    rigid_objects = [obj for obj in FnModel.iterate_rigid_body_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if rigid_objects:
                         # Ensure we're in object mode
@@ -642,10 +639,7 @@ class FnModel:
             if child_joint_group_object and child_joint_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_joint_group_object = FnModel.find_joint_group_object(parent_root_object)
                 if parent_joint_group_object and parent_joint_group_object.name in bpy.context.view_layer.objects.keys():
-                    joint_objects = []
-                    for obj in FnModel.iterate_joint_objects(child_root_object):
-                        if obj.name in bpy.context.view_layer.objects.keys():
-                            joint_objects.append(obj)
+                    joint_objects = [obj for obj in FnModel.iterate_joint_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if joint_objects:
                         # Ensure we're in object mode
@@ -675,10 +669,7 @@ class FnModel:
             if child_temporary_group_object and child_temporary_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_temporary_group_object = FnModel.find_temporary_group_object(parent_root_object)
                 if parent_temporary_group_object and parent_temporary_group_object.name in bpy.context.view_layer.objects.keys():
-                    temp_objects = []
-                    for obj in FnModel.iterate_temporary_objects(child_root_object):
-                        if obj.name in bpy.context.view_layer.objects.keys():
-                            temp_objects.append(obj)
+                    temp_objects = [obj for obj in FnModel.iterate_temporary_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if temp_objects:
                         # Ensure we're in object mode
@@ -698,10 +689,7 @@ class FnModel:
 
                     # Safely remove child objects and groups
                     try:
-                        child_objects = []
-                        for obj in FnModel.iterate_child_objects(child_temporary_group_object):
-                            if obj.name in bpy.data.objects:
-                                child_objects.append(obj)
+                        child_objects = [obj for obj in FnModel.iterate_child_objects(child_temporary_group_object) if obj.name in bpy.data.objects]
                         for obj in child_objects:
                             bpy.data.objects.remove(obj)
 

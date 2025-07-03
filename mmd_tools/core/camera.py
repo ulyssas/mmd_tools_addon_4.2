@@ -185,11 +185,8 @@ class MMDCamera:
         frame_count = frame_end - frame_start
         frames = range(frame_start, frame_end)
 
-        fcurves = []
-        for i in range(3):
-            fcurves.append(parent_action.fcurves.new(data_path="location", index=i))  # x, y, z
-        for i in range(3):
-            fcurves.append(parent_action.fcurves.new(data_path="rotation_euler", index=i))  # rx, ry, rz
+        fcurves = [parent_action.fcurves.new(data_path="location", index=i) for i in range(3)]  # x, y, z
+        fcurves.extend(parent_action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3))  # rx, ry, rz
         fcurves.append(parent_action.fcurves.new(data_path="mmd_camera.angle"))  # fov
         fcurves.append(parent_action.fcurves.new(data_path="mmd_camera.is_perspective"))  # persp
         fcurves.append(distance_action.fcurves.new(data_path="location", index=1))  # dis

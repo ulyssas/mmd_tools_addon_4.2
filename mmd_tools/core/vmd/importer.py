@@ -698,11 +698,8 @@ class VMDImporter:
         if self.__mirror:
             _loc, _rot = _MirrorMapper.get_location, _MirrorMapper.get_rotation3
 
-        fcurves = []
-        for i in range(3):
-            fcurves.append(self.__get_or_create_fcurve(parent_action, "location", i))  # x, y, z
-        for i in range(3):
-            fcurves.append(self.__get_or_create_fcurve(parent_action, "rotation_euler", i))  # rx, ry, rz
+        fcurves = [self.__get_or_create_fcurve(parent_action, "location", i) for i in range(3)]  # x, y, z
+        fcurves.extend(self.__get_or_create_fcurve(parent_action, "rotation_euler", i) for i in range(3))  # rx, ry, rz
         fcurves.append(self.__get_or_create_fcurve(parent_action, "mmd_camera.angle", 0))  # fov
         fcurves.append(self.__get_or_create_fcurve(parent_action, "mmd_camera.is_perspective", 0))  # persp
         fcurves.append(self.__get_or_create_fcurve(distance_action, "location", 1))  # dis

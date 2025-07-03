@@ -248,9 +248,7 @@ def import_pmd_to_pmx(filepath):
     else:
         if len(t) > 1:
             logging.warning("Found two or more base morphs.")
-        vertex_map = []
-        for i in t[0].data:
-            vertex_map.append(i.index)
+        vertex_map = [i.index for i in t[0].data]
 
         for morph in pmd_model.morphs:
             logging.debug("Vertex Morph: %s", morph.name)

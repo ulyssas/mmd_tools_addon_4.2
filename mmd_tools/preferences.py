@@ -13,8 +13,7 @@ def get_preset_items_for_operator(operator_bl_idname):
         from .operators import fileio
 
         presets = fileio.get_available_presets(operator_bl_idname)
-        for preset in presets:
-            items.append((preset, preset, f"Use preset: {preset}"))
+        items.extend((preset, preset, f"Use preset: {preset}") for preset in presets)
     except Exception:
         pass
     return items

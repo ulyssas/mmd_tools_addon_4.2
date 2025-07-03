@@ -64,9 +64,7 @@ class TestModelEdit(unittest.TestCase):
         for file_type in file_types:
             file_ext = "." + file_type
             for root, dirs, files in os.walk(os.path.join(SAMPLES_DIR, file_type)):
-                for name in files:
-                    if name.lower().endswith(file_ext):
-                        ret.append(os.path.join(root, name))
+                ret.extend(os.path.join(root, name) for name in files if name.lower().endswith(file_ext))
         return ret
 
     def __enable_mmd_tools(self):
@@ -248,10 +246,7 @@ class TestModelEdit(unittest.TestCase):
             self.assertEqual(len(pmx_models), 2, "Failed to import two models")
 
             # Keep track of all model roots in our collection before separation
-            existing_roots = []
-            for obj in test_collection.objects:
-                if obj.mmd_type == "ROOT":
-                    existing_roots.append(obj)
+            existing_roots = [obj for obj in test_collection.objects if obj.mmd_type == "ROOT"]
 
             print(f"\nBefore separation - Model roots: {[root.name for root in existing_roots]}")
 
@@ -304,10 +299,7 @@ class TestModelEdit(unittest.TestCase):
                         self.__move_children_to_collection(obj, test_collection)
 
             # After separation, find all the armatures and roots in our collection
-            all_roots = []
-            for obj in test_collection.objects:
-                if obj.mmd_type == "ROOT":
-                    all_roots.append(obj)
+            all_roots = [obj for obj in test_collection.objects if obj.mmd_type == "ROOT"]
 
             all_armatures = []
             for obj in bpy.data.objects:
@@ -505,10 +497,7 @@ class TestModelEdit(unittest.TestCase):
             bpy.ops.object.mode_set(mode="OBJECT")
 
             # Check the result - get all roots in our collection
-            final_roots = []
-            for obj in test_collection.objects:
-                if obj.mmd_type == "ROOT":
-                    final_roots.append(obj)
+            final_roots = [obj for obj in test_collection.objects if obj.mmd_type == "ROOT"]
 
             print(f"\nAfter joining - Model roots: {[root.name for root in final_roots]}")
 

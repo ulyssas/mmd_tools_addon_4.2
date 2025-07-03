@@ -273,9 +273,7 @@ class PMXImporter:
         return nameTable, specialTipBones
 
     def __sortPoseBonesByBoneIndex(self, pose_bones: List[bpy.types.PoseBone], bone_names):
-        r: List[bpy.types.PoseBone] = []
-        for i in bone_names:
-            r.append(pose_bones[i])
+        r: List[bpy.types.PoseBone] = [pose_bones[i] for i in bone_names]
         return r
 
     @staticmethod

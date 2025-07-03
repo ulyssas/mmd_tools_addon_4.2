@@ -1072,8 +1072,7 @@ class __PmxExporter:
         bm_temp.from_mesh(base_mesh)
         loop_angles = []
         for face in bm_temp.faces:
-            for loop in face.loops:
-                loop_angles.append(loop.calc_angle())
+            loop_angles.extend(loop.calc_angle() for loop in face.loops)
         bm_temp.free()
         # Apply transformation to triangulated mesh
         base_mesh.transform(pmx_matrix)

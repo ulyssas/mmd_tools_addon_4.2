@@ -54,9 +54,7 @@ class TestVMDImporter(unittest.TestCase):
 
         ret = []
         for root, dirs, files in os.walk(directory):
-            for name in files:
-                if name.lower().endswith("." + extension.lower()):
-                    ret.append(os.path.join(root, name))
+            ret.extend(os.path.join(root, name) for name in files if name.lower().endswith("." + extension.lower()))
         return ret
 
     def _enable_mmd_tools(self):
