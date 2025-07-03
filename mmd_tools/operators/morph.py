@@ -588,7 +588,7 @@ class ViewUVMorph(bpy.types.Operator):
 
         selected = meshObj.select_get()
         with bpyutils.select_object(meshObj):
-            mesh = cast(bpy.types.Mesh, meshObj.data)
+            mesh = cast("bpy.types.Mesh", meshObj.data)
             morph = mmd_root.uv_morphs[mmd_root.active_morph]
             uv_textures = mesh.uv_layers
 
@@ -681,7 +681,7 @@ class EditUVMorph(bpy.types.Operator):
 
         selected = meshObj.select_get()
         with bpyutils.select_object(meshObj):
-            mesh = cast(bpy.types.Mesh, meshObj.data)
+            mesh = cast("bpy.types.Mesh", meshObj.data)
             bpy.ops.object.mode_set(mode="EDIT")
             bpy.ops.mesh.select_mode(type="VERT", action="ENABLE")
             bpy.ops.mesh.reveal()  # unhide all vertices
@@ -723,7 +723,7 @@ class ApplyUVMorph(bpy.types.Operator):
 
         selected = meshObj.select_get()
         with bpyutils.select_object(meshObj):
-            mesh = cast(bpy.types.Mesh, meshObj.data)
+            mesh = cast("bpy.types.Mesh", meshObj.data)
             morph = mmd_root.uv_morphs[mmd_root.active_morph]
 
             base_uv_name = mesh.uv_layers.active.name[5:]

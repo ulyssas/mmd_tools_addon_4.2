@@ -422,7 +422,7 @@ class _MorphSlider:
         morph_sliders = self.placeholder()
         morph_sliders = morph_sliders.data.shape_keys.key_blocks if morph_sliders else {}
         for mesh_object in rig.meshes():
-            for kb in getattr(mesh_object.data.shape_keys, "key_blocks", cast(Tuple[bpy.types.ShapeKey], ())):
+            for kb in getattr(mesh_object.data.shape_keys, "key_blocks", cast("Tuple[bpy.types.ShapeKey]", ())):
                 if kb.name in names_in_use:
                     continue
 

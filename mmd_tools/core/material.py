@@ -85,7 +85,7 @@ class FnMaterial:
         Raises:
             MaterialNotFoundError: If one of the materials is not found
         """
-        mesh = cast(bpy.types.Mesh, mesh_object.data)
+        mesh = cast("bpy.types.Mesh", mesh_object.data)
         try:
             # Try to find the materials
             mat1 = mesh.materials[mat1_ref]
@@ -112,7 +112,7 @@ class FnMaterial:
     @staticmethod
     def fixMaterialOrder(meshObj: bpy.types.Object, material_names: Iterable[str]):
         """Fix the material order which is lost after joining meshes."""
-        materials = cast(bpy.types.Mesh, meshObj.data).materials
+        materials = cast("bpy.types.Mesh", meshObj.data).materials
         for new_idx, mat in enumerate(material_names):
             # Get the material that is currently on this index
             other_mat = materials[new_idx]

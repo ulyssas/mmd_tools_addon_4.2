@@ -252,7 +252,7 @@ class MMDBone(bpy.types.PropertyGroup):
 
 def _pose_bone_update_mmd_ik_toggle(prop: bpy.types.PoseBone, _context):
     v = prop.mmd_ik_toggle
-    armature_object = cast(bpy.types.Object, prop.id_data)
+    armature_object = cast("bpy.types.Object", prop.id_data)
     for b in armature_object.pose.bones:
         for c in b.constraints:
             if c.type == "IK" and c.subtarget == prop.name:

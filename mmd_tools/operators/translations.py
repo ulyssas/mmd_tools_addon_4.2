@@ -127,7 +127,7 @@ class TranslateMMDModel(bpy.types.Operator):
 
         if "DISPLAY" in self.types:
             g: bpy.types.BoneCollection
-            for g in cast(bpy.types.Armature, rig.armature().data).collections:
+            for g in cast("bpy.types.Armature", rig.armature().data).collections:
                 g.name = self.translate(g.name, g.name)
 
         if "PHYSICS" in self.types:

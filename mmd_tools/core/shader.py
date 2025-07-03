@@ -64,13 +64,13 @@ class _NodeGroupUtils(_NodeTreeUtils):
     @property
     def node_input(self) -> bpy.types.NodeGroupInput:
         if not self.__node_input:
-            self.__node_input = cast(bpy.types.NodeGroupInput, self._find_node("NodeGroupInput") or self.new_node("NodeGroupInput", (-2, 0)))
+            self.__node_input = cast("bpy.types.NodeGroupInput", self._find_node("NodeGroupInput") or self.new_node("NodeGroupInput", (-2, 0)))
         return self.__node_input
 
     @property
     def node_output(self) -> bpy.types.NodeGroupOutput:
         if not self.__node_output:
-            self.__node_output = cast(bpy.types.NodeGroupOutput, self._find_node("NodeGroupOutput") or self.new_node("NodeGroupOutput", (2, 0)))
+            self.__node_output = cast("bpy.types.NodeGroupOutput", self._find_node("NodeGroupOutput") or self.new_node("NodeGroupOutput", (2, 0)))
         return self.__node_output
 
     def hide_nodes(self, hide_sockets=True):

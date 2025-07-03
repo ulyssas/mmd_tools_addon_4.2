@@ -209,7 +209,7 @@ class FnModel:
     def iterate_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
         if root_object is None:
             return iter(())
-        return (material for mesh_object in FnModel.iterate_mesh_objects(root_object) for material in cast(bpy.types.Mesh, mesh_object.data).materials if material is not None)
+        return (material for mesh_object in FnModel.iterate_mesh_objects(root_object) for material in cast("bpy.types.Mesh", mesh_object.data).materials if material is not None)
 
     @staticmethod
     def iterate_unique_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
@@ -722,9 +722,9 @@ class FnModel:
             if m.type != "ARMATURE":
                 continue
             # already has armature modifier.
-            return cast(bpy.types.ArmatureModifier, m)
+            return cast("bpy.types.ArmatureModifier", m)
 
-        modifier = cast(bpy.types.ArmatureModifier, mesh_object.modifiers.new(name="Armature", type="ARMATURE"))
+        modifier = cast("bpy.types.ArmatureModifier", mesh_object.modifiers.new(name="Armature", type="ARMATURE"))
         modifier.object = armature_object
         modifier.use_vertex_groups = True
         modifier.name = "mmd_armature"
@@ -790,7 +790,7 @@ class FnModel:
 
         armature_object = FnModel.find_armature_object(root_object)
         for pose_bone in armature_object.pose.bones:
-            for constraint in (cast(bpy.types.KinematicConstraint, c) for c in pose_bone.constraints if c.type == "IK"):
+            for constraint in (cast("bpy.types.KinematicConstraint", c) for c in pose_bone.constraints if c.type == "IK"):
                 iterations = int(constraint.iterations * new_ik_loop_factor / old_ik_loop_factor)
                 logging.info("Update %s of %s: %d -> %d", constraint.name, pose_bone.name, constraint.iterations, iterations)
                 constraint.iterations = iterations
