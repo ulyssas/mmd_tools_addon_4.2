@@ -255,7 +255,7 @@ class _FnBezier:
                 D = c * c - 4 * b * d
                 if D < 0:
                     return
-                D = D**0.5
+                D **= 0.5
                 b2 = 2 * b
                 t = (-c + D) / b2
                 if 0 <= t <= 1:
@@ -274,7 +274,7 @@ class _FnBezier:
         D = A * A + B * B * B
 
         if D > 0:
-            D = D**0.5
+            D **= 0.5
             t = b_3a + _sqrt3(A + D) + _sqrt3(A - D)
             if 0 <= t <= 1:
                 yield t

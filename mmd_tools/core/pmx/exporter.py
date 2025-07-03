@@ -1063,8 +1063,8 @@ class __PmxExporter:
         normal_matrix = pmx_matrix.to_3x3()
         if not (sx == sy == sz):
             invert_scale_matrix = Matrix([[1.0 / sx, 0, 0], [0, 1.0 / sy, 0], [0, 0, 1.0 / sz]])
-            normal_matrix = normal_matrix @ invert_scale_matrix  # reset the scale of meshObj.matrix_world
-            normal_matrix = normal_matrix @ invert_scale_matrix  # the scale transform of normals
+            normal_matrix @= invert_scale_matrix  # reset the scale of meshObj.matrix_world
+            normal_matrix @= invert_scale_matrix  # the scale transform of normals
 
         # Extract normals and angles before apply transformation
         loop_normals = self.__get_normals(base_mesh, normal_matrix)
