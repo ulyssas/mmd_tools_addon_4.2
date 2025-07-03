@@ -638,7 +638,7 @@ class TestMaterialSystem(unittest.TestCase):
         print("   - Converted diffuse color (with texture): ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat.diffuse_color))
         print("   - Converted diffuse color (no texture): ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat2.diffuse_color))
         print("   - Calculated ambient color: ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat.ambient_color))
-        print("   - Calculated shininess: {:.1f}".format(mmd_mat.shininess))
+        print(f"   - Calculated shininess: {mmd_mat.shininess:.1f}")
         print("✓ Convert to MMD material test passed")
 
     # ********************************************

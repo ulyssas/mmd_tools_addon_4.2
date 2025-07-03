@@ -375,7 +375,7 @@ class VMDImporter:
             VMDImporter.__keyframe_insert_inner(fcurves, path, 2, frame, value[2])
 
         else:
-            raise TypeError("Unsupported type: {0}".format(type(value)))
+            raise TypeError(f"Unsupported type: {type(value)}")
 
     def __getBoneConverter(self, bone):
         converter = self.__bone_util_cls(bone, self.__scale)

@@ -179,7 +179,7 @@ def print_summary_progress(iteration, total):
     """Print a simple progress bar for the overall progress"""
     progress_percent = iteration / float(total)
 
-    percent = ("{0:.1f}").format(100 * progress_percent)
+    percent = (f"{100 * progress_percent:.1f}")
     length = 30
     filled_length = int(length * progress_percent)
     bar = "█" * filled_length + "-" * (length - filled_length)
