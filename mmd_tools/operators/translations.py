@@ -199,7 +199,7 @@ DEFAULT_SHOW_ROW_COUNT = 20
 
 class MMD_TOOLS_UL_MMDTranslationElementIndex(bpy.types.UIList):
     def draw_item(self, context, layout: bpy.types.UILayout, data, mmd_translation_element_index: "MMDTranslationElementIndex", icon, active_data, active_propname, index: int):
-        mmd_translation_element: "MMDTranslationElement" = data.translation_elements[mmd_translation_element_index.value]
+        mmd_translation_element: MMDTranslationElement = data.translation_elements[mmd_translation_element_index.value]
         MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type].draw_item(layout, mmd_translation_element, index)
 
 
@@ -298,7 +298,7 @@ class GlobalTranslationPopup(bpy.types.Operator):
         if root_object is None:
             return {"CANCELLED"}
 
-        mmd_translation: "MMDTranslation" = root_object.mmd_root.translation
+        mmd_translation: MMDTranslation = root_object.mmd_root.translation
         self._mmd_translation = mmd_translation
         FnTranslations.clear_data(mmd_translation)
         FnTranslations.collect_data(mmd_translation)
