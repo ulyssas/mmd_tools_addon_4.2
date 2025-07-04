@@ -9,8 +9,8 @@ import unittest
 from collections import namedtuple
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.morph import FnMorph, MigrationFnMorph
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.morph import FnMorph, MigrationFnMorph
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,7 +49,7 @@ class TestMorphSystem(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __create_test_model(self, name="TestModel"):
         """Create a simple test model with armature and mesh"""

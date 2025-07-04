@@ -4,7 +4,7 @@
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.model import Model
 
 # Usage: blender --background -noaudio --python tests/test_model_operators.py -- --verbose
 

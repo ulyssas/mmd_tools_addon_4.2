@@ -9,14 +9,14 @@ import shutil
 import time
 import unittest
 
-import bl_ext.user_default.mmd_tools
+import bl_ext.blender_org.mmd_tools
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.properties.camera import MMDCamera
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.properties.camera import MMDCamera
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
-MMD_TOOLS_PATH = os.path.dirname(bl_ext.user_default.mmd_tools.__file__)
+MMD_TOOLS_PATH = os.path.dirname(bl_ext.blender_org.mmd_tools.__file__)
 TOON_TEXTURE_PATH = os.path.join(MMD_TOOLS_PATH, "externals", "MikuMikuDance", "toon01.bmp")
 
 
@@ -53,9 +53,9 @@ class TestMMDProperties(unittest.TestCase):
         """Make sure mmd_tools addon is enabled"""
         bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
-        if not pref.addons.get("bl_ext.user_default.mmd_tools", None):
+        if not pref.addons.get("bl_ext.blender_org.mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def _create_test_model(self, name: str = "TestModel") -> Model:
         """Create a basic MMD model for testing"""

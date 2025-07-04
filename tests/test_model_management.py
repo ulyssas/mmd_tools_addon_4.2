@@ -8,8 +8,8 @@ import unittest
 
 import bmesh
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
-from bl_ext.user_default.mmd_tools.core.sdef import FnSDEF
+from bl_ext.blender_org.mmd_tools.core.model import FnModel, Model
+from bl_ext.blender_org.mmd_tools.core.sdef import FnSDEF
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -46,7 +46,7 @@ class TestModelManagement(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
+            addon_enable(module="bl_ext.blender_org.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def __list_sample_files(self, file_types):
         ret = []

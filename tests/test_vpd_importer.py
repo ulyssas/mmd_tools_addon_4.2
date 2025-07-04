@@ -8,8 +8,8 @@ import traceback
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.vpd.importer import VPDImporter
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.vpd.importer import VPDImporter
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -68,7 +68,7 @@ class TestVPDImporter(unittest.TestCase):
                 else bpy.ops.preferences.addon_enable
             )
             addon_enable(
-                module="bl_ext.user_default.mmd_tools",
+                module="bl_ext.blender_org.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
 
     def __create_model_from_pmx(self, pmx_file):

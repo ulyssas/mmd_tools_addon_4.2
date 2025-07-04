@@ -10,8 +10,8 @@ import unittest
 import bpy
 
 # Import the modules to test
-from bl_ext.user_default.mmd_tools.core.bone import FnBone, MigrationFnBone
-from bl_ext.user_default.mmd_tools.core.model import FnModel
+from bl_ext.blender_org.mmd_tools.core.bone import FnBone, MigrationFnBone
+from bl_ext.blender_org.mmd_tools.core.model import FnModel
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +55,7 @@ class TestBone(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __create_test_armature(self):
         """Create a test armature with some bones for testing"""

@@ -9,8 +9,8 @@ import traceback
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core import vmd
-from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core import vmd
+from bl_ext.blender_org.mmd_tools.core.model import Model
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -75,7 +75,7 @@ class TestVmdExporter(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
+            addon_enable(module="bl_ext.blender_org.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def __get_largest_pmx_file(self):
         """Get the largest PMX file from samples"""

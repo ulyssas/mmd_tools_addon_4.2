@@ -7,8 +7,8 @@ import shutil
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.vpd.exporter import VPDExporter
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.vpd.exporter import VPDExporter
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -69,7 +69,7 @@ class TestVPDExporter(unittest.TestCase):
                 else bpy.ops.preferences.addon_enable
             )
             addon_enable(
-                module="bl_ext.user_default.mmd_tools",
+                module="bl_ext.blender_org.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
 
     def __create_model_from_pmx(self, pmx_file):

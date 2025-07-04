@@ -8,7 +8,7 @@ import unittest
 
 import bmesh
 import bpy
-from bl_ext.user_default.mmd_tools.core.sdef import FnSDEF, _hash
+from bl_ext.blender_org.mmd_tools.core.sdef import FnSDEF, _hash
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -59,7 +59,7 @@ class TestSDEFSystem(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __vector_error(self, vec0, vec1):
         return (Vector(vec0) - Vector(vec1)).length

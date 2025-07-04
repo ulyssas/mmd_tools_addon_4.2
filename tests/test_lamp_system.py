@@ -9,9 +9,9 @@ import unittest
 import bpy
 
 # Import the lamp system components
-from bl_ext.user_default.mmd_tools.core.lamp import MMDLamp
-from bl_ext.user_default.mmd_tools.operators.lamp import ConvertToMMDLamp
-from bl_ext.user_default.mmd_tools.panels.prop_lamp import MMDLampPanel
+from bl_ext.blender_org.mmd_tools.core.lamp import MMDLamp
+from bl_ext.blender_org.mmd_tools.operators.lamp import ConvertToMMDLamp
+from bl_ext.blender_org.mmd_tools.panels.prop_lamp import MMDLampPanel
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,7 +60,7 @@ class TestLampSystem(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __create_lamp_object(self, name="TestLamp", lamp_type="SUN", location=(0, 0, 0)):
         """Create a lamp object for testing"""

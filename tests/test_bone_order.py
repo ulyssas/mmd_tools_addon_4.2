@@ -4,8 +4,8 @@
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
-from bl_ext.user_default.mmd_tools.panels.sidebar.bone_order import MMD_TOOLS_UL_ModelBones
+from bl_ext.blender_org.mmd_tools.core.model import FnModel, Model
+from bl_ext.blender_org.mmd_tools.panels.sidebar.bone_order import MMD_TOOLS_UL_ModelBones
 from mathutils import Vector
 
 

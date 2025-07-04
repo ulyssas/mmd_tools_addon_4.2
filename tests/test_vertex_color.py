@@ -8,7 +8,7 @@ import unittest
 
 import bmesh
 import bpy
-from bl_ext.user_default.mmd_tools.core import pmx
+from bl_ext.blender_org.mmd_tools.core import pmx
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -57,7 +57,7 @@ class TestVertexColorExporter(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
+            addon_enable(module="bl_ext.blender_org.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def __create_mmd_model(self, name):
         """

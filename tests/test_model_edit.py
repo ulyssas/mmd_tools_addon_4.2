@@ -9,9 +9,9 @@ import traceback
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core import pmx
-from bl_ext.user_default.mmd_tools.core.model import FnModel
-from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
+from bl_ext.blender_org.mmd_tools.core import pmx
+from bl_ext.blender_org.mmd_tools.core.model import FnModel
+from bl_ext.blender_org.mmd_tools.core.pmx.importer import PMXImporter
 
 context = bpy.context
 
@@ -72,7 +72,7 @@ class TestModelEdit(unittest.TestCase):
         pref = getattr(context, "preferences", None) or context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
+            addon_enable(module="bl_ext.blender_org.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def __is_object_in_collection(self, obj, collection):
         """Safely check if an object is in a collection"""
