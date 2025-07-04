@@ -12,8 +12,8 @@ from ..bpyutils import FnContext, select_object
 from ..core.model import FnModel, Model
 
 
-class MessageException(Exception):
-    """Class for error with message."""
+class NoModelSelectedError(Exception):
+    """Raised when no MMD model is selected."""
 
 
 class ModelJoinByBonesOperator(bpy.types.Operator):
@@ -54,7 +54,7 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
     def execute(self, context: bpy.types.Context):
         try:
             self.join(context)
-        except MessageException as ex:
+        except NoModelSelectedError as ex:
             self.report(type={"ERROR"}, message=str(ex))
             return {"CANCELLED"}
 
@@ -68,7 +68,7 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
         child_root_objects.remove(parent_root_object)
 
         if parent_root_object is None or len(child_root_objects) == 0:
-            raise MessageException("No MMD Models selected")
+            raise NoModelSelectedError("No MMD Models selected")
 
         # Save original active_layer_collection
         orig_active_layer_collection = context.view_layer.active_layer_collection
@@ -141,7 +141,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
     def execute(self, context: bpy.types.Context):
         try:
             self.separate(context)
-        except MessageException as ex:
+        except NoModelSelectedError as ex:
             self.report(type={"ERROR"}, message=str(ex))
             return {"CANCELLED"}
 
