@@ -29,7 +29,7 @@ class TestUtilitySystems(unittest.TestCase):
         cls.__enable_mmd_tools()
 
     def setUp(self):
-        """Clean state for each test"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # Start with clean scene

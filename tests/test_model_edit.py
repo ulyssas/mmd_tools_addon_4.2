@@ -37,6 +37,7 @@ class TestModelEdit(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 

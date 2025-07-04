@@ -33,11 +33,9 @@ class TestBone(unittest.TestCase):
                     shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
-        # logger.setLevel('DEBUG')
-        # logger.setLevel('INFO')
 
         # Start with a clean Blender scene
         bpy.ops.wm.read_homefile(use_empty=True)

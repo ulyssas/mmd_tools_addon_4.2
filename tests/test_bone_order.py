@@ -13,7 +13,7 @@ class TestBoneOrder(unittest.TestCase):
     """Test suite for bone order operations and bone ID management"""
 
     def setUp(self):
-        """Set up test environment with MMD model and bones"""
+        """Set up testing environment"""
         # Clear existing mesh objects to start clean
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete(use_global=False)
