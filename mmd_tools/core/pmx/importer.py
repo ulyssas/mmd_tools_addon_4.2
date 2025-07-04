@@ -238,7 +238,7 @@ class PMXImporter:
                     b_target = editBoneTable[m_bone.target]
                     for i in range(len(m_bone.ik_links)):
                         b_bone_link = editBoneTable[m_bone.ik_links[i].target]
-                        if self.__fix_IK_links or b_bone_link.length < 0.001:
+                        if self.__fix_ik_links or b_bone_link.length < 0.001:
                             b_bone_tail = b_target if i == 0 else editBoneTable[m_bone.ik_links[i - 1].target]
                             loc = b_bone_tail.head - b_bone_link.head
                             if loc.length < 0.001:
@@ -908,7 +908,7 @@ class PMXImporter:
         self.__use_mipmap = args.get("use_mipmap", True)
         self.__sph_blend_factor = args.get("sph_blend_factor", 1.0)
         self.__spa_blend_factor = args.get("spa_blend_factor", 1.0)
-        self.__fix_IK_links = args.get("fix_IK_links", False)
+        self.__fix_ik_links = args.get("fix_ik_links", False)
         self.__apply_bone_fixed_axis = args.get("apply_bone_fixed_axis", False)
         self.__translator = args.get("translator")
 

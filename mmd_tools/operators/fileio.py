@@ -271,7 +271,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created.",
         default=False,
     )
-    fix_IK_links: bpy.props.BoolProperty(
+    fix_ik_links: bpy.props.BoolProperty(
         name="Fix IK Links",
         description="Fix IK links to be blender suitable",
         default=False,
@@ -374,7 +374,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 mark_sharp_edges=self.mark_sharp_edges,
                 sharp_edge_angle=self.sharp_edge_angle,
                 import_adduv2_as_vertex_colors=self.import_adduv2_as_vertex_colors,
-                fix_IK_links=self.fix_IK_links,
+                fix_ik_links=self.fix_ik_links,
                 ik_loop_factor=self.ik_loop_factor,
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,
                 rename_LR_bones=self.rename_bones,
@@ -464,7 +464,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         default=False,
     )
-    use_NLA: bpy.props.BoolProperty(
+    use_nla: bpy.props.BoolProperty(
         name="Use NLA",
         description="Import the motion as NLA strips",
         default=False,
@@ -504,7 +504,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout.prop(self, "scale")
         layout.prop(self, "margin")
         layout.prop(self, "always_create_new_action")
-        layout.prop(self, "use_NLA")
+        layout.prop(self, "use_nla")
 
         layout.prop(self, "bone_mapper")
         if self.bone_mapper == "RENAMED_BONES":
@@ -552,7 +552,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                 frame_margin=self.margin,
                 use_mirror=self.use_mirror,
                 always_create_new_action=self.always_create_new_action,
-                use_NLA=self.use_NLA,
+                use_nla=self.use_nla,
                 detect_camera_changes=self.detect_camera_changes,
                 detect_lamp_changes=self.detect_lamp_changes,
             )

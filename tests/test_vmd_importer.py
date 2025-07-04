@@ -969,15 +969,15 @@ class TestVMDImporter(unittest.TestCase):
         except AssertionError:
             self.fail("Plugin has assertion issues with custom bone mappers - this is a plugin bug")
 
-    def test_vmd_import_use_NLA(self):
-        """Test VMD importing with use_NLA option"""
+    def test_vmd_import_use_nla(self):
+        """Test VMD importing with use_nla option"""
         vmd_files = self._list_sample_files("vmd", "vmd")
         if not vmd_files:
             self.fail("No VMD sample files found for NLA test")
 
         armature = self._create_standard_mmd_armature()
 
-        importer = VMDImporter(filepath=vmd_files[0], use_NLA=True)
+        importer = VMDImporter(filepath=vmd_files[0], use_nla=True)
         importer.assign(armature)
 
         self.assertIsNotNone(armature.animation_data, "Animation data should be created")

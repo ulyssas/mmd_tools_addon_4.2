@@ -303,7 +303,7 @@ class HasAnimationData:
 
 
 class VMDImporter:
-    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, always_create_new_action=False, use_NLA=False, detect_camera_changes=True, detect_lamp_changes=True):
+    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, always_create_new_action=False, use_nla=False, detect_camera_changes=True, detect_lamp_changes=True):
         self.__vmdFile = vmd.File()
         self.__vmdFile.load(filepath=filepath)
         logging.debug(str(self.__vmdFile.header))
@@ -316,7 +316,7 @@ class VMDImporter:
         self.__frame_margin = frame_margin if self.__frame_start in {0, 1} else 0  # only applies if current frame is 0 or 1
         self.__mirror = use_mirror
         self.__always_create_new_action = always_create_new_action
-        self.__use_NLA = use_NLA
+        self.__use_nla = use_nla
         self.__detect_camera_changes = detect_camera_changes
         self.__detect_lamp_changes = detect_lamp_changes
 
@@ -422,7 +422,7 @@ class VMDImporter:
         if target.animation_data is None:
             target.animation_data_create()
 
-        if not self.__use_NLA:
+        if not self.__use_nla:
             if not self.__always_create_new_action and target.animation_data.action:
                 return target.animation_data.action
             target.animation_data.action = action

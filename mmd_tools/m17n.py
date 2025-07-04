@@ -1778,13 +1778,13 @@ translations_tuple = (
     ),
     (
         ("*", "Fix IK Links"),
-        (("bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links",), ()),
+        (("bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links",), ()),
         ("ja_JP", "IKリンクを修正", (False, ())),
         ("zh_HANS", "修复IK关联", (False, ())),
     ),
     (
         ("*", "Fix IK links to be blender suitable"),
-        (("bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links",), ()),
+        (("bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "修复逆向运动学关联，使其适合被 Blender 处理", (False, ())),
     ),
@@ -2057,13 +2057,13 @@ translations_tuple = (
     ),
     (
         ("*", "Use NLA"),
-        (("bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA",), ()),
+        (("bpy.types.MMD_TOOLS_OT_import_vmd.use_nla",), ()),
         ("ja_JP", "NLAを使用", (False, ())),
         ("zh_HANS", "使用NLA", (False, ())),
     ),
     (
         ("*", "Import the motion as NLA strips"),
-        (("bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA",), ()),
+        (("bpy.types.MMD_TOOLS_OT_import_vmd.use_nla",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将动作导入为非线性动作片段", (False, ())),
     ),

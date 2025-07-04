@@ -104,7 +104,7 @@ class TestPmxImporter(unittest.TestCase):
             "clean_model": False,
             "remove_doubles": False,
             "mark_sharp_edges": True,
-            "fix_IK_links": False,
+            "fix_ik_links": False,
             "apply_bone_fixed_axis": False,
             "rename_LR_bones": False,
             "use_underscore": False,
@@ -491,12 +491,12 @@ class TestPmxImporter(unittest.TestCase):
         # Some models might not have bones that can be renamed
         print(f"   - Found L/R suffixed bones: {has_lr_suffix}")
 
-        # Test fix_IK_links option
+        # Test fix_ik_links option
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete()
 
-        root_obj = self._import_pmx_model(filepath, fix_IK_links=True, types={"ARMATURE"})
-        self.assertIsNotNone(root_obj, "Failed to import with fix_IK_links=True")
+        root_obj = self._import_pmx_model(filepath, fix_ik_links=True, types={"ARMATURE"})
+        self.assertIsNotNone(root_obj, "Failed to import with fix_ik_links=True")
 
         print("✓ Bone options test passed")
 
