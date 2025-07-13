@@ -129,7 +129,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
             capture_output=True,
             text=True,
             encoding="utf-8",
-            errors="replace",  # Handle Unicode decode errors gracefully
+            errors="replace",
             check=True,
         )
 
@@ -148,8 +148,8 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
 
         # Check if the test passed - specifically for unittest output
         output = result.stdout + result.stderr
-        success_indicators = ["OK"]
-        failure_indicators = ["FAILED", "ERROR", "failures=", "errors=", "skipped="]
+        success_indicators = {"OK"}
+        failure_indicators = {"FAIL\n", "FAIL:", "ERROR\n", "ERROR:", "skipped", "FAILED", "failures=", "errors=", "skipped="}
 
         has_success = any(indicator in output for indicator in success_indicators)
         has_failure = any(indicator in output for indicator in failure_indicators)
