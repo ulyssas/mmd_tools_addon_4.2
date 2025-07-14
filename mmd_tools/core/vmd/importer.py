@@ -546,6 +546,20 @@ class VMDImporter:
                     # FIXME the rotation interpolation has slightly different result
                     #   Blender: rot(x) = prev_rot*(1 - bezier(t)) + curr_rot*bezier(t)
                     #       MMD: rot(x) = prev_rot.slerp(curr_rot, factor=bezier(t))
+                    # To match MMD's Slerp behavior in Blender, set bone rotation mode to XYZ Euler before importing VMD motions.
+                    # Observed behavior in Blender:
+                    #     In Quaternion mode:
+                    #          0    1    2    3    4    5    6    7    8    9   10
+                    #     W  1.0  0.9  0.8  0.7  0.6  0.5  0.4  0.3  0.2  0.1  0.0
+                    #     X  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+                    #     Y  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+                    #     Z  0.0  0.1  0.2  0.3  0.4  0.5  0.6  0.7  0.8  0.9  1.0
+                    #     In XYZ Euler mode:
+                    #          0    1    2    3    4    5    6    7    8    9   10
+                    #     X   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d
+                    #     Y   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d
+                    #     Z   0d  18d  36d  54d  72d  90d 108d 126d 144d 162d 180d
+                    # This suggests that Euler mode in Blender approximates MMD's use of Slerp during Bezier-driven interpolation.
                 prev_rot = curr_rot
 
                 x.co = (frame, loc[0])
