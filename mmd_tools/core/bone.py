@@ -456,7 +456,7 @@ class FnBone:
             # FIXME: Some bones require specific rotation modes to match MMD behavior.
             # Currently using hardcoded bone names as a temporary solution.
             # See https://github.com/MMD-Blender/blender_mmd_tools/issues/242
-            if bone_name in {"左肩C", "右肩C"}:
+            if bone_name in {"左肩C", "右肩C", "肩C.L", "肩C.R"}:
                 c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for shoulder bones
             c.target = p_bone.id_data
             shadow_bone.add_constraint(c)
