@@ -107,7 +107,7 @@ def mergeVertexGroup(meshObj, src_vertex_group_name, dest_vertex_group_name):
             pass
 
 
-def separateByMaterials(meshObj: bpy.types.Object):
+def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
     if len(meshObj.data.materials) < 2:
         selectAObject(meshObj)
         return
@@ -118,7 +118,14 @@ def separateByMaterials(meshObj: bpy.types.Object):
     meshObj.active_shape_key_index = 0
     try:
         enterEditMode(meshObj)
-        bpy.ops.mesh.select_all(action="SELECT")
+        if keep_normals:
+            for mat_slot in meshObj.material_slots.items():
+                meshObj.active_material_index = mat_slot[1].slot_index
+                bpy.ops.mesh.select_all(action="DESELECT")
+                bpy.ops.object.material_slot_select()
+                bpy.ops.mesh.split()
+        else:
+            bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.mesh.separate(type="MATERIAL")
     finally:
         bpy.ops.object.mode_set(mode="OBJECT")

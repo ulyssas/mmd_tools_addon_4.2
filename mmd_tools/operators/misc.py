@@ -131,12 +131,17 @@ class CleanShapeKeys(bpy.types.Operator):
 class SeparateByMaterials(bpy.types.Operator):
     bl_idname = "mmd_tools.separate_by_materials"
     bl_label = "Separate By Materials"
-    bl_description = "Separate the mesh into multiple objects based on materials.\nWARNING: This operation is not reversible. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nBlender also recalculates normals during separation, which may modify existing normal data.\nThere may be other issues as well. Use with caution."
+    bl_description = "Separate the mesh into multiple objects based on materials.\nWARNING: This operation is not reversible. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nThere may be other issues as well. Use with caution."
     bl_options = {"REGISTER", "UNDO"}
 
     clean_shape_keys: bpy.props.BoolProperty(
         name="Clean Shape Keys",
         description="Remove unused shape keys of separated objects",
+        default=True,
+    )
+
+    keep_normals: bpy.props.BoolProperty(
+        name="Keep Normals",
         default=True,
     )
 
@@ -146,7 +151,7 @@ class SeparateByMaterials(bpy.types.Operator):
         return obj is not None and obj.type == "MESH"
 
     def __separate_by_materials(self, obj):
-        utils.separateByMaterials(obj)
+        utils.separateByMaterials(obj, self.keep_normals)
         if self.clean_shape_keys:
             bpy.ops.mmd_tools.clean_shape_keys()
 
