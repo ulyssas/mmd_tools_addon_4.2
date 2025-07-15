@@ -543,10 +543,21 @@ class VMDImporter:
                 curr_rot = converter.convert_rotation(_rot(k.rotation))
                 if prev_rot is not None:
                     curr_rot = converter.compatible_rotation(prev_rot, curr_rot)
-                    # FIXME the rotation interpolation has slightly different result
+                    # NOTE the rotation interpolation has slightly different result
                     #   Blender: rot(x) = prev_rot*(1 - bezier(t)) + curr_rot*bezier(t)
                     #       MMD: rot(x) = prev_rot.slerp(curr_rot, factor=bezier(t))
-                    # To match MMD's Slerp behavior in Blender, set bone rotation mode to XYZ Euler before importing VMD motions.
+                    #
+                    # Technical details:
+                    # - MMD internally uses quaternions with Slerp interpolation (Quaternion + Slerp)
+                    # - Blender supports either:
+                    #   * Quaternion mode with Nlerp interpolation (Quaternion + Nlerp)
+                    #   * Euler mode with Slerp interpolation (Euler + Slerp)
+                    # - Blender does NOT support Quaternion + Slerp combination, which is exactly what MMD uses
+                    #
+                    # Since the quaternion vs euler difference has a much larger impact than the Slerp vs Nlerp difference,
+                    # MMD Tools chooses to use Quaternion + Nlerp to prioritize quaternion accuracy over interpolation method.
+                    # This is why we cannot perfectly match MMD's rotation behavior in Blender.
+                    #
                     # Observed behavior in Blender:
                     #     In Quaternion mode:
                     #          0    1    2    3    4    5    6    7    8    9   10
@@ -559,7 +570,6 @@ class VMDImporter:
                     #     X   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d
                     #     Y   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d
                     #     Z   0d  18d  36d  54d  72d  90d 108d 126d 144d 162d 180d
-                    # This suggests that Euler mode in Blender approximates MMD's use of Slerp during Bezier-driven interpolation.
                 prev_rot = curr_rot
 
                 x.co = (frame, loc[0])
