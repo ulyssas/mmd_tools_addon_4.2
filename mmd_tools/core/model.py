@@ -209,7 +209,7 @@ class FnModel:
     def iterate_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
         if root_object is None:
             return iter(())
-        return (material for mesh_object in FnModel.iterate_mesh_objects(root_object) for material in cast(bpy.types.Mesh, mesh_object.data).materials if material is not None)
+        return (material for mesh_object in FnModel.iterate_mesh_objects(root_object) for material in cast("bpy.types.Mesh", mesh_object.data).materials if material is not None)
 
     @staticmethod
     def iterate_unique_materials(root_object: Optional[bpy.types.Object]) -> Iterator[bpy.types.Material]:
@@ -396,7 +396,7 @@ class FnModel:
             return
 
         # Create new bone order array
-        new_bone_order = valid_bones[:]
+        new_bone_order = valid_bones.copy()
 
         if old_pos < new_pos:
             # Move right: shift left bones to the right by one position
@@ -574,8 +574,8 @@ class FnModel:
                         # Execute the join - after merging, objects will remain at the parent armature's position
                         bpy.ops.object.join()
 
-                    except Exception as e:
-                        logging.error(f"Error joining armatures: {e}")
+                    except Exception:
+                        logging.exception("Error joining armatures")
                         # Ensure we exit special modes regardless of what happened
                         if bpy.context.mode != "OBJECT":
                             bpy.ops.object.mode_set(mode="OBJECT")
@@ -609,10 +609,7 @@ class FnModel:
                 parent_rigid_group_object = FnModel.find_rigid_group_object(parent_root_object)
                 if parent_rigid_group_object and parent_rigid_group_object.name in bpy.context.view_layer.objects.keys():
                     # Safely handle each rigid body
-                    rigid_objects = []
-                    for obj in FnModel.iterate_rigid_body_objects(child_root_object):
-                        if obj.name in bpy.context.view_layer.objects.keys():
-                            rigid_objects.append(obj)
+                    rigid_objects = [obj for obj in FnModel.iterate_rigid_body_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if rigid_objects:
                         # Ensure we're in object mode
@@ -634,18 +631,15 @@ class FnModel:
                     try:
                         if child_rigid_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_rigid_group_object)
-                    except Exception as e:
-                        logging.error(f"Error removing rigid group: {e}")
+                    except Exception:
+                        logging.exception("Error removing rigid group")
 
             # Handle joints - similar to the rigid body approach
             child_joint_group_object = FnModel.find_joint_group_object(child_root_object)
             if child_joint_group_object and child_joint_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_joint_group_object = FnModel.find_joint_group_object(parent_root_object)
                 if parent_joint_group_object and parent_joint_group_object.name in bpy.context.view_layer.objects.keys():
-                    joint_objects = []
-                    for obj in FnModel.iterate_joint_objects(child_root_object):
-                        if obj.name in bpy.context.view_layer.objects.keys():
-                            joint_objects.append(obj)
+                    joint_objects = [obj for obj in FnModel.iterate_joint_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if joint_objects:
                         # Ensure we're in object mode
@@ -667,18 +661,15 @@ class FnModel:
                     try:
                         if child_joint_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_joint_group_object)
-                    except Exception as e:
-                        logging.error(f"Error removing joint group: {e}")
+                    except Exception:
+                        logging.exception("Error removing joint group")
 
             # Handle temporary objects - similar approach
             child_temporary_group_object = FnModel.find_temporary_group_object(child_root_object)
             if child_temporary_group_object and child_temporary_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_temporary_group_object = FnModel.find_temporary_group_object(parent_root_object)
                 if parent_temporary_group_object and parent_temporary_group_object.name in bpy.context.view_layer.objects.keys():
-                    temp_objects = []
-                    for obj in FnModel.iterate_temporary_objects(child_root_object):
-                        if obj.name in bpy.context.view_layer.objects.keys():
-                            temp_objects.append(obj)
+                    temp_objects = [obj for obj in FnModel.iterate_temporary_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if temp_objects:
                         # Ensure we're in object mode
@@ -698,31 +689,28 @@ class FnModel:
 
                     # Safely remove child objects and groups
                     try:
-                        child_objects = []
-                        for obj in FnModel.iterate_child_objects(child_temporary_group_object):
-                            if obj.name in bpy.data.objects:
-                                child_objects.append(obj)
+                        child_objects = [obj for obj in FnModel.iterate_child_objects(child_temporary_group_object) if obj.name in bpy.data.objects]
                         for obj in child_objects:
                             bpy.data.objects.remove(obj)
 
                         if child_temporary_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_temporary_group_object)
-                    except Exception as e:
-                        logging.error(f"Error removing temporary objects: {e}")
+                    except Exception:
+                        logging.exception("Error removing temporary objects")
 
             # Copy MMD root properties
             try:
                 FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
-            except Exception as e:
-                logging.error(f"Error copying MMD root: {e}")
+            except Exception:
+                logging.exception("Error copying MMD root")
 
             # Safely remove empty child root objects
             try:
                 if child_root_object and len(child_root_object.children) == 0:
                     if child_root_object.name in bpy.data.objects:
                         bpy.data.objects.remove(child_root_object)
-            except Exception as e:
-                logging.error(f"Error removing child root object: {e}")
+            except Exception:
+                logging.exception("Error removing child root object")
 
         # Clean and reapply additional transformations to properly set up all bones and constraints
         bpy.ops.mmd_tools.clean_additional_transform()
@@ -734,9 +722,9 @@ class FnModel:
             if m.type != "ARMATURE":
                 continue
             # already has armature modifier.
-            return cast(bpy.types.ArmatureModifier, m)
+            return cast("bpy.types.ArmatureModifier", m)
 
-        modifier = cast(bpy.types.ArmatureModifier, mesh_object.modifiers.new(name="Armature", type="ARMATURE"))
+        modifier = cast("bpy.types.ArmatureModifier", mesh_object.modifiers.new(name="Armature", type="ARMATURE"))
         modifier.object = armature_object
         modifier.use_vertex_groups = True
         modifier.name = "mmd_armature"
@@ -802,7 +790,7 @@ class FnModel:
 
         armature_object = FnModel.find_armature_object(root_object)
         for pose_bone in armature_object.pose.bones:
-            for constraint in (cast(bpy.types.KinematicConstraint, c) for c in pose_bone.constraints if c.type == "IK"):
+            for constraint in (cast("bpy.types.KinematicConstraint", c) for c in pose_bone.constraints if c.type == "IK"):
                 iterations = int(constraint.iterations * new_ik_loop_factor / old_ik_loop_factor)
                 logging.info("Update %s of %s: %d -> %d", constraint.name, pose_bone.name, constraint.iterations, iterations)
                 constraint.iterations = iterations
@@ -1125,7 +1113,7 @@ class Model:
         if mesh_name == "":
             return None
         for mesh in self.meshes():
-            if mesh.name == mesh_name or mesh.data.name == mesh_name:
+            if mesh_name in {mesh.name, mesh.data.name}:
                 return mesh
         return None
 
@@ -1143,7 +1131,7 @@ class Model:
         if mesh_name == "":
             return -1
         for i, mesh in enumerate(self.meshes()):
-            if mesh.name == mesh_name or mesh.data.name == mesh_name:
+            if mesh_name in {mesh.name, mesh.data.name}:
                 return i
         return -1
 
@@ -1225,7 +1213,7 @@ class Model:
             if rigid_type == rigid_body.MODE_STATIC:
                 i.parent_type = "OBJECT"
                 i.parent = self.rigidGroupObject()
-            elif rigid_type in [rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE]:
+            elif rigid_type in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
                 arm = relation.target
                 bone_name = relation.subtarget
                 if arm is not None and bone_name != "":
@@ -1258,7 +1246,7 @@ class Model:
 
     def __restoreTransforms(self, obj):
         for attr in ("location", "rotation_euler"):
-            attr_name = "__backup_%s__" % attr
+            attr_name = f"__backup_{attr}__"
             val = obj.get(attr_name, None)
             if val is not None:
                 setattr(obj, attr, val)
@@ -1266,7 +1254,7 @@ class Model:
 
     def __backupTransforms(self, obj):
         for attr in ("location", "rotation_euler"):
-            attr_name = "__backup_%s__" % attr
+            attr_name = f"__backup_{attr}__"
             if attr_name in obj:  # should not happen in normal build/clean cycle
                 continue
             obj[attr_name] = getattr(obj, attr, None)
@@ -1283,7 +1271,7 @@ class Model:
             relation = i.constraints["mmd_tools_rigid_parent"]
             relation.mute = True
             # mute IK
-            if int(i.mmd_rigid.type) in [rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE]:
+            if int(i.mmd_rigid.type) in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
                 arm = relation.target
                 bone_name = relation.subtarget
                 if arm is not None and bone_name != "":
@@ -1387,7 +1375,7 @@ class Model:
                         fake_child.location = t
                         fake_child.rotation_euler = r.to_euler(fake_child.rotation_mode)
 
-            elif rigid_type in [rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE]:
+            elif rigid_type in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
                 m = target_bone.matrix @ target_bone.bone.matrix_local.inverted()
                 self.__rigid_body_matrix_map[rigid_obj] = m
                 t, r, s = (m @ rigid_obj.matrix_local).decompose()

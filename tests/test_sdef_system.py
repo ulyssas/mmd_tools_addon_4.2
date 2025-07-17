@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
@@ -5,7 +8,7 @@ import unittest
 
 import bmesh
 import bpy
-from bl_ext.user_default.mmd_tools.core.sdef import FnSDEF
+from bl_ext.blender_org.mmd_tools.core.sdef import FnSDEF, _hash
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,11 +30,9 @@ class TestSDEFSystem(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
-        # logger.setLevel('DEBUG')
-        # logger.setLevel('INFO')
 
         # Clear the scene
         bpy.ops.wm.read_homefile(use_empty=True)
@@ -56,7 +57,7 @@ class TestSDEFSystem(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __vector_error(self, vec0, vec1):
         return (Vector(vec0) - Vector(vec1)).length
@@ -143,8 +144,6 @@ class TestSDEFSystem(unittest.TestCase):
 
     def test_hash_function(self):
         """Test the internal _hash function"""
-        from bl_ext.user_default.mmd_tools.core.sdef import _hash
-
         # Create test objects
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
@@ -342,8 +341,6 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertTrue(result, "SDEF bind should succeed")
 
         # Check if cache is populated
-        from bl_ext.user_default.mmd_tools.core.sdef import _hash
-
         key = _hash(mesh_obj)
         self.assertIn(key, FnSDEF.g_verts, "Cache should be populated after binding")
 
@@ -744,8 +741,6 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertTrue(result2, "Second SDEF bind should succeed")
 
         # Verify cache is populated
-        from bl_ext.user_default.mmd_tools.core.sdef import _hash
-
         key1 = _hash(mesh_obj1)
         key2 = _hash(mesh_obj2)
         self.assertIn(key1, FnSDEF.g_verts, "First object should be in cache")

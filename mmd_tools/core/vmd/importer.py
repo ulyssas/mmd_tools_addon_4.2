@@ -255,7 +255,7 @@ class _FnBezier:
                 D = c * c - 4 * b * d
                 if D < 0:
                     return
-                D = D**0.5
+                D **= 0.5
                 b2 = 2 * b
                 t = (-c + D) / b2
                 if 0 <= t <= 1:
@@ -274,7 +274,7 @@ class _FnBezier:
         D = A * A + B * B * B
 
         if D > 0:
-            D = D**0.5
+            D **= 0.5
             t = b_3a + _sqrt3(A + D) + _sqrt3(A - D)
             if 0 <= t <= 1:
                 yield t
@@ -303,7 +303,7 @@ class HasAnimationData:
 
 
 class VMDImporter:
-    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, always_create_new_action=False, use_NLA=False, detect_camera_changes=True, detect_lamp_changes=True):
+    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, always_create_new_action=False, use_nla=False, detect_camera_changes=True, detect_lamp_changes=True):
         self.__vmdFile = vmd.File()
         self.__vmdFile.load(filepath=filepath)
         logging.debug(str(self.__vmdFile.header))
@@ -313,10 +313,10 @@ class VMDImporter:
         self.__bone_mapper = bone_mapper
         self.__bone_util_cls = BoneConverterPoseMode if use_pose_mode else BoneConverter
         self.__frame_start = bpy.context.scene.frame_current
-        self.__frame_margin = frame_margin if self.__frame_start == 1 else 0  # Ignore margin if current frame is not 1
+        self.__frame_margin = frame_margin if self.__frame_start in {0, 1} else 0  # only applies if current frame is 0 or 1
         self.__mirror = use_mirror
         self.__always_create_new_action = always_create_new_action
-        self.__use_NLA = use_NLA
+        self.__use_nla = use_nla
         self.__detect_camera_changes = detect_camera_changes
         self.__detect_lamp_changes = detect_lamp_changes
 
@@ -345,7 +345,6 @@ class VMDImporter:
             bezier = [20, 20, 107, 107]
 
         # Always multiply before dividing to reduce precision errors
-        d = (kp1.co - kp0.co)
         kp0.handle_right = kp0.co + Vector((d.x * bezier[0] / 127.0, d.y * bezier[1] / 127.0))
         kp1.handle_left = kp0.co + Vector((d.x * bezier[2] / 127.0, d.y * bezier[3] / 127.0))
 
@@ -376,7 +375,7 @@ class VMDImporter:
             VMDImporter.__keyframe_insert_inner(fcurves, path, 2, frame, value[2])
 
         else:
-            raise TypeError("Unsupported type: {0}".format(type(value)))
+            raise TypeError(f"Unsupported type: {type(value)}")
 
     def __getBoneConverter(self, bone):
         converter = self.__bone_util_cls(bone, self.__scale)
@@ -423,7 +422,7 @@ class VMDImporter:
         if target.animation_data is None:
             target.animation_data_create()
 
-        if not self.__use_NLA:
+        if not self.__use_nla:
             if not self.__always_create_new_action and target.animation_data.action:
                 return target.animation_data.action
             target.animation_data.action = action
@@ -455,18 +454,17 @@ class VMDImporter:
 
         if fcurve is None:
             fcurve = action.fcurves.new(data_path=data_path, index=index, action_group=action_group_name)
-        else:
-            # Ensure F-Curve belongs to the correct action group
-            if action_group_name and (fcurve.group is None or fcurve.group.name != action_group_name):
-                # Find or create the action group
-                group = None
-                for g in action.groups:
-                    if g.name == action_group_name:
-                        group = g
-                        break
-                if group is None:
-                    group = action.groups.new(action_group_name)
-                fcurve.group = group
+        # Ensure F-Curve belongs to the correct action group
+        elif action_group_name and (fcurve.group is None or fcurve.group.name != action_group_name):
+            # Find or create the action group
+            group = None
+            for g in action.groups:
+                if g.name == action_group_name:
+                    group = g
+                    break
+            if group is None:
+                group = action.groups.new(action_group_name)
+            fcurve.group = group
 
         return fcurve
 
@@ -515,11 +513,11 @@ class VMDImporter:
             fcurves = [dummy_keyframe_points] * 7  # x, y, z, r0, r1, r2, (r3)
             data_path_rot = prop_rot_map.get(bone.rotation_mode, "rotation_euler")
             bone_rotation = getattr(bone, data_path_rot)
-            default_values = list(bone.location) + list(bone_rotation)
-            data_path = 'pose.bones["%s"].location' % bone.name
+            default_values = tuple(bone.location) + tuple(bone_rotation)
+            data_path = f'pose.bones["{bone.name}"].location'
             for axis_i in range(3):
                 fcurves[axis_i] = self.__get_or_create_fcurve(action, data_path, axis_i, bone.name)
-            data_path = 'pose.bones["%s"].%s' % (bone.name, data_path_rot)
+            data_path = f'pose.bones["{bone.name}"].{data_path_rot}'
             for axis_i in range(len(bone_rotation)):
                 fcurves[3 + axis_i] = self.__get_or_create_fcurve(action, data_path, axis_i, bone.name)
 
@@ -531,8 +529,8 @@ class VMDImporter:
                 kp_iter = iter(new_keyframes)
                 if extra_frame:
                     kp = next(kp_iter)
-                    kp.co = (1, default_values[i])
-                    kp.interpolation = "LINEAR"
+                    kp.co = (self.__frame_start, default_values[i])
+                    kp.interpolation = "BEZIER"
                 fcurves[i] = kp_iter
 
             converter = self.__getBoneConverter(bone)
@@ -545,9 +543,33 @@ class VMDImporter:
                 curr_rot = converter.convert_rotation(_rot(k.rotation))
                 if prev_rot is not None:
                     curr_rot = converter.compatible_rotation(prev_rot, curr_rot)
-                    # FIXME the rotation interpolation has slightly different result
+                    # NOTE the rotation interpolation has slightly different result
                     #   Blender: rot(x) = prev_rot*(1 - bezier(t)) + curr_rot*bezier(t)
                     #       MMD: rot(x) = prev_rot.slerp(curr_rot, factor=bezier(t))
+                    #
+                    # Technical details:
+                    # - MMD internally uses quaternions with Slerp interpolation (Quaternion + Slerp)
+                    # - Blender supports either:
+                    #   * Quaternion mode with Nlerp interpolation (Quaternion + Nlerp)
+                    #   * Euler mode with Slerp interpolation (Euler + Slerp)
+                    # - Blender does NOT support Quaternion + Slerp combination, which is exactly what MMD uses
+                    #
+                    # Since the quaternion vs euler difference has a much larger impact than the Slerp vs Nlerp difference,
+                    # MMD Tools chooses to use Quaternion + Nlerp to prioritize quaternion accuracy over interpolation method.
+                    # This is why we cannot perfectly match MMD's rotation behavior in Blender.
+                    #
+                    # Observed behavior in Blender:
+                    #     In Quaternion mode:
+                    #          0    1    2    3    4    5    6    7    8    9   10
+                    #     W  1.0  0.9  0.8  0.7  0.6  0.5  0.4  0.3  0.2  0.1  0.0
+                    #     X  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+                    #     Y  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+                    #     Z  0.0  0.1  0.2  0.3  0.4  0.5  0.6  0.7  0.8  0.9  1.0
+                    #     In XYZ Euler mode:
+                    #          0    1    2    3    4    5    6    7    8    9   10
+                    #     X   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d
+                    #     Y   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d   0d
+                    #     Z   0d  18d  36d  54d  72d  90d 108d 126d 144d 162d 180d
                 prev_rot = curr_rot
 
                 x.co = (frame, loc[0])
@@ -593,8 +615,7 @@ class VMDImporter:
                 frame_num = keyFrame.frame_number
                 if frame_num <= first_frame:
                     first_frame = frame_num
-                    for ikName, enable in keyFrame.ik_states:
-                        first_frame_ik_states[ikName] = enable
+                    first_frame_ik_states.update(keyFrame.ik_states)
             # Set the mmd_ik_toggle property for each bone based on the collected first frame IK states
             for ikName, enable in first_frame_ik_states.items():
                 bone = pose_bones.get(ikName, None)
@@ -622,10 +643,7 @@ class VMDImporter:
             mmd_root = root_object.mmd_root
             # Check all types of morphs in the model
             for morph_type in ["vertex_morphs", "uv_morphs", "bone_morphs", "material_morphs", "group_morphs"]:
-                for morph in getattr(mmd_root, morph_type, []):
-                    model_morph_names.add(morph.name)
-
-        from math import ceil, floor
+                model_morph_names.update(morph.name for morph in getattr(mmd_root, morph_type, []))
 
         for name, keyFrames in shapeKeyAnim.items():
             if name not in shapeKeyDict:
@@ -639,7 +657,7 @@ class VMDImporter:
                 continue
             logging.info("(mesh) frames:%5d  name: %s", len(keyFrames), name)
             shapeKey = shapeKeyDict[name]
-            data_path = 'key_blocks["%s"].value' % shapeKey.name
+            data_path = f'key_blocks["{shapeKey.name}"].value'
             fcurve = self.__get_or_create_fcurve(action, data_path, 0)
 
             original_count = len(fcurve.keyframe_points)
@@ -651,8 +669,8 @@ class VMDImporter:
                 v.co = (k.frame_number + self.__frame_start + self.__frame_margin, k.weight)
                 v.interpolation = "LINEAR"
             weights = tuple(i.weight for i in keyFrames)
-            shapeKey.slider_min = min(shapeKey.slider_min, floor(min(weights)))
-            shapeKey.slider_max = max(shapeKey.slider_max, ceil(max(weights)))
+            shapeKey.slider_min = min(shapeKey.slider_min, math.floor(min(weights)))
+            shapeKey.slider_max = max(shapeKey.slider_max, math.ceil(max(weights)))
 
         self.__assign_action(meshObj.data.shape_keys, action)
 
@@ -703,11 +721,8 @@ class VMDImporter:
         if self.__mirror:
             _loc, _rot = _MirrorMapper.get_location, _MirrorMapper.get_rotation3
 
-        fcurves = []
-        for i in range(3):
-            fcurves.append(self.__get_or_create_fcurve(parent_action, "location", i))  # x, y, z
-        for i in range(3):
-            fcurves.append(self.__get_or_create_fcurve(parent_action, "rotation_euler", i))  # rx, ry, rz
+        fcurves = [self.__get_or_create_fcurve(parent_action, "location", i) for i in range(3)]  # x, y, z
+        fcurves.extend(self.__get_or_create_fcurve(parent_action, "rotation_euler", i) for i in range(3))  # rx, ry, rz
         fcurves.append(self.__get_or_create_fcurve(parent_action, "mmd_camera.angle", 0))  # fov
         fcurves.append(self.__get_or_create_fcurve(parent_action, "mmd_camera.is_perspective", 0))  # persp
         fcurves.append(self.__get_or_create_fcurve(distance_action, "location", 1))  # dis
@@ -734,6 +749,7 @@ class VMDImporter:
             if prev_kps is not None:
                 interp = k.interp
                 for idx, prev_kp, kp in zip(indices, prev_kps, curr_kps, strict=False):
+                    # TODO: Optimize this bottleneck: __setInterpolation is called per keypoint; should batch set interpolation instead
                     self.__setInterpolation(interp[idx : idx + 4 : 2] + interp[idx + 1 : idx + 4 : 2], prev_kp, kp)
             prev_kps = curr_kps
 

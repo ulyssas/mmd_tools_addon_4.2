@@ -238,7 +238,7 @@ class PMXImporter:
                     b_target = editBoneTable[m_bone.target]
                     for i in range(len(m_bone.ik_links)):
                         b_bone_link = editBoneTable[m_bone.ik_links[i].target]
-                        if self.__fix_IK_links or b_bone_link.length < 0.001:
+                        if self.__fix_ik_links or b_bone_link.length < 0.001:
                             b_bone_tail = b_target if i == 0 else editBoneTable[m_bone.ik_links[i - 1].target]
                             loc = b_bone_tail.head - b_bone_link.head
                             if loc.length < 0.001:
@@ -260,7 +260,7 @@ class PMXImporter:
                             b_bone.tail = b_bone.head + Vector((0, 0, 1)) * self.__scale
                     else:
                         b_bone.tail = b_bone.head + Vector((0, 0, 1)) * self.__scale
-                    if m_bone.displayConnection != -1 and m_bone.displayConnection != [0.0, 0.0, 0.0]:
+                    if m_bone.displayConnection not in (-1, (0.0, 0.0, 0.0), [0.0, 0.0, 0.0]):
                         logging.debug(" * special tip bone %s, display %s", b_bone.name, str(m_bone.displayConnection))
                         specialTipBones.append(b_bone.name)
 
@@ -273,9 +273,7 @@ class PMXImporter:
         return nameTable, specialTipBones
 
     def __sortPoseBonesByBoneIndex(self, pose_bones: List[bpy.types.PoseBone], bone_names):
-        r: List[bpy.types.PoseBone] = []
-        for i in bone_names:
-            r.append(pose_bones[i])
+        r: List[bpy.types.PoseBone] = [pose_bones[i] for i in bone_names]
         return r
 
     @staticmethod
@@ -421,7 +419,7 @@ class PMXImporter:
             else:  # vector offset
                 mmd_bone.display_connection_type = "OFFSET"
 
-            if pmx_bone.displayConnection == -1 or pmx_bone.displayConnection == (0.0, 0.0, 0.0):
+            if pmx_bone.displayConnection in (-1, (0.0, 0.0, 0.0), [0.0, 0.0, 0.0]):
                 mmd_bone.is_tip = True
             elif b_bone.name in specialTipBones:
                 mmd_bone.is_tip = True
@@ -616,7 +614,7 @@ class PMXImporter:
                 bf.image = self.__imageTable.get(mi, None)
 
         # Import ADD UV2 as vertex colors
-        if pmxModel.header and pmxModel.header.additional_uvs >= 2:
+        if self.__import_adduv2_as_vertex_colors and pmxModel.header and pmxModel.header.additional_uvs >= 2:
             # Create vertex color layer
             vertex_colors = mesh.vertex_colors.new(name="Color")
             color_data = []
@@ -905,11 +903,12 @@ class PMXImporter:
         remove_doubles = args.get("remove_doubles", False)
         self.__mark_sharp_edges = args.get("mark_sharp_edges", True)
         self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(179.0))
+        self.__import_adduv2_as_vertex_colors = args.get("import_adduv2_as_vertex_colors", False)
         self.__scale = args.get("scale", 1.0)
         self.__use_mipmap = args.get("use_mipmap", True)
         self.__sph_blend_factor = args.get("sph_blend_factor", 1.0)
         self.__spa_blend_factor = args.get("spa_blend_factor", 1.0)
-        self.__fix_IK_links = args.get("fix_IK_links", False)
+        self.__fix_ik_links = args.get("fix_ik_links", False)
         self.__apply_bone_fixed_axis = args.get("apply_bone_fixed_axis", False)
         self.__translator = args.get("translator")
 
@@ -989,7 +988,7 @@ class _PMXCleaner:
         pmx_vertices = pmx_model.vertices
 
         # clean face/vertex
-        cls.__clean_pmx_faces(pmx_faces, pmx_model.materials, lambda f: frozenset(f))
+        cls.__clean_pmx_faces(pmx_faces, pmx_model.materials, frozenset)
 
         index_map = {v: v for f in pmx_faces for v in f}
         is_index_clean = len(index_map) == len(pmx_vertices)

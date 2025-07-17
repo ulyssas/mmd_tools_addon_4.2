@@ -1052,11 +1052,11 @@ msgstr "将骨骼重命名为英文"
 msgid "Translate bone names from Japanese to English using selected dictionary"
 msgstr "使用选中的词典将骨骼名从日语翻译为英语"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
 msgid "Fix IK Links"
 msgstr "修复IK关联"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
 msgid "Fix IK links to be blender suitable"
 msgstr "修复逆向运动学关联，使其适合被 Blender 处理"
 
@@ -1206,11 +1206,11 @@ msgstr "更新场景设置"
 msgid "Update frame range and frame rate (30 fps)"
 msgstr "更新帧范围与帧率 (30 FPS)"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_nla
 msgid "Use NLA"
 msgstr "使用NLA"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_nla
 msgid "Import the motion as NLA strips"
 msgstr "将动作导入为非线性动作片段"
 

@@ -85,12 +85,12 @@ class FnMaterial:
         Raises:
             MaterialNotFoundError: If one of the materials is not found
         """
-        mesh = cast(bpy.types.Mesh, mesh_object.data)
+        mesh = cast("bpy.types.Mesh", mesh_object.data)
         try:
             # Try to find the materials
             mat1 = mesh.materials[mat1_ref]
             mat2 = mesh.materials[mat2_ref]
-            if None in (mat1, mat2):
+            if None in {mat1, mat2}:
                 raise MaterialNotFoundError
         except (KeyError, IndexError) as exc:
             # Wrap exceptions within our custom ones
@@ -112,7 +112,7 @@ class FnMaterial:
     @staticmethod
     def fixMaterialOrder(meshObj: bpy.types.Object, material_names: Iterable[str]):
         """Fix the material order which is lost after joining meshes."""
-        materials = cast(bpy.types.Mesh, meshObj.data).materials
+        materials = cast("bpy.types.Mesh", meshObj.data).materials
         for new_idx, mat in enumerate(material_names):
             # Get the material that is currently on this index
             other_mat = materials[new_idx]
@@ -250,7 +250,7 @@ class FnMaterial:
         sphere_texture_type = int(self.material.mmd_material.sphere_texture_type)
         is_sph_add = sphere_texture_type == 2
 
-        if sphere_texture_type not in (1, 2, 3):
+        if sphere_texture_type not in {1, 2, 3}:
             self.__update_shader_input("Sphere Tex Fac", 0)
         else:
             self.__update_shader_input("Sphere Tex Fac", 1)
@@ -316,8 +316,6 @@ class FnMaterial:
     def __create_texture_node(self, node_name, filepath, pos):
         texture = self.__get_texture_node(node_name)
         if texture is None:
-            from mathutils import Vector
-
             self.__update_shader_nodes()
             nodes = self.material.node_tree.nodes
             texture = nodes.new("ShaderNodeTexImage")
@@ -552,7 +550,7 @@ class FnMaterial:
             links.new(node_shader.outputs["Shader"], node_output.inputs["Surface"])
 
         for name_id in ("Base", "Toon", "Sphere"):
-            texture = self.__get_texture_node("mmd_%s_tex" % name_id.lower())
+            texture = self.__get_texture_node(f"mmd_{name_id.lower()}_tex")
             if texture:
                 name_tex_in, name_alpha_in, name_uv_out = (name_id + x for x in (" Tex", " Alpha", " UV"))
                 if not node_shader.inputs.get(name_tex_in, _Dummy).is_linked:

@@ -1,17 +1,22 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import gc
 import logging
 import math
 import os
 import shutil
+import time
 import unittest
 
-import bl_ext.user_default.mmd_tools
+import bl_ext.blender_org.mmd_tools
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.properties.camera import MMDCamera
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
-MMD_TOOLS_PATH = os.path.dirname(bl_ext.user_default.mmd_tools.__file__)
+MMD_TOOLS_PATH = os.path.dirname(bl_ext.blender_org.mmd_tools.__file__)
 TOON_TEXTURE_PATH = os.path.join(MMD_TOOLS_PATH, "externals", "MikuMikuDance", "toon01.bmp")
 
 
@@ -30,7 +35,7 @@ class TestMMDProperties(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """Start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -48,9 +53,9 @@ class TestMMDProperties(unittest.TestCase):
         """Make sure mmd_tools addon is enabled"""
         bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
-        if not pref.addons.get("bl_ext.user_default.mmd_tools", None):
+        if not pref.addons.get("bl_ext.blender_org.mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def _create_test_model(self, name: str = "TestModel") -> Model:
         """Create a basic MMD model for testing"""
@@ -150,8 +155,6 @@ class TestMMDProperties(unittest.TestCase):
         self.assertTrue(hasattr(camera_obj, "mmd_camera"), "Camera should have mmd_camera property")
 
         # Test property type
-        from bl_ext.user_default.mmd_tools.properties.camera import MMDCamera
-
         self.assertIsInstance(camera_obj.mmd_camera, MMDCamera, "mmd_camera should be MMDCamera type")
 
         print("✓ Camera properties registration test passed")
@@ -1486,8 +1489,6 @@ class TestMMDProperties(unittest.TestCase):
     def test_property_performance(self):
         """Test property performance with many objects"""
         self._enable_mmd_tools()
-
-        import time
 
         start_time = time.time()
 

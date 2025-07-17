@@ -5,6 +5,7 @@ import math
 from typing import Optional
 
 import bpy
+from mathutils import Matrix, Vector
 
 from ..bpyutils import FnContext, Props
 
@@ -100,7 +101,7 @@ class MMDCamera:
     def __init__(self, obj):
         root_object = FnCamera.find_root(obj)
         if root_object is None:
-            raise ValueError("%s is not MMDCamera" % str(obj))
+            raise ValueError(f"{str(obj)} is not MMDCamera")
 
         self.__emptyObj = getattr(root_object, "original", obj)
 
@@ -176,10 +177,6 @@ class MMDCamera:
         distance_action = bpy.data.actions.new(name=action_name + "_dis")
         FnCamera.remove_drivers(mmd_cam)
 
-        from math import atan
-
-        from mathutils import Matrix, Vector
-
         render = scene.render
         factor = (render.resolution_y * render.pixel_aspect_y) / (render.resolution_x * render.pixel_aspect_x)
         matrix_rotation = Matrix(([1, 0, 0, 0], [0, 0, 1, 0], [0, -1, 0, 0], [0, 0, 0, 1]))
@@ -188,11 +185,8 @@ class MMDCamera:
         frame_count = frame_end - frame_start
         frames = range(frame_start, frame_end)
 
-        fcurves = []
-        for i in range(3):
-            fcurves.append(parent_action.fcurves.new(data_path="location", index=i))  # x, y, z
-        for i in range(3):
-            fcurves.append(parent_action.fcurves.new(data_path="rotation_euler", index=i))  # rx, ry, rz
+        fcurves = [parent_action.fcurves.new(data_path="location", index=i) for i in range(3)]  # x, y, z
+        fcurves.extend(parent_action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3))  # rx, ry, rz
         fcurves.append(parent_action.fcurves.new(data_path="mmd_camera.angle"))  # fov
         fcurves.append(parent_action.fcurves.new(data_path="mmd_camera.is_perspective"))  # persp
         fcurves.append(distance_action.fcurves.new(data_path="location", index=1))  # dis
@@ -232,7 +226,7 @@ class MMDCamera:
             x.co, y.co, z.co = ((f, i) for i in cam_target_loc)
             rx.co, ry.co, rz.co = ((f, i) for i in cam_rotation)
             dis.co = (f, cam_dis)
-            fov.co = (f, 2 * atan(tan_val))
+            fov.co = (f, 2 * math.atan(tan_val))
             persp.co = (f, cameraObj.data.type != "ORTHO")
             persp.interpolation = "CONSTANT"
             for kp in (x, y, z, rx, ry, rz, fov, dis):

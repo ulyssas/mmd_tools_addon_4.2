@@ -1057,11 +1057,11 @@ msgstr "ボーンを英語にリネーム"
 msgid "Translate bone names from Japanese to English using selected dictionary"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
 msgid "Fix IK Links"
 msgstr "IKリンクを修正"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
 msgid "Fix IK links to be blender suitable"
 msgstr ""
 
@@ -1211,11 +1211,11 @@ msgstr "シーン設定を更新"
 msgid "Update frame range and frame rate (30 fps)"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_nla
 msgid "Use NLA"
 msgstr "NLAを使用"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_nla
 msgid "Import the motion as NLA strips"
 msgstr ""
 

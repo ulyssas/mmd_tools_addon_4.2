@@ -1,9 +1,12 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools import auto_scene_setup
+from bl_ext.blender_org.mmd_tools import auto_scene_setup
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -23,7 +26,7 @@ class TestSceneSetup(unittest.TestCase):
                     os.remove(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -42,7 +45,7 @@ class TestSceneSetup(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __create_test_actions(self):
         """Create test actions with frame ranges for testing setupFrameRanges"""

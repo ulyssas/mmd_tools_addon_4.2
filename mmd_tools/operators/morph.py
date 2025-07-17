@@ -1,6 +1,7 @@
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
+from collections import namedtuple
 from typing import Optional, cast
 
 import bpy
@@ -137,7 +138,7 @@ class CopyMorph(bpy.types.Operator):
         if morph is None:
             return {"CANCELLED"}
 
-        name_orig, name_tmp = morph.name, "_tmp%s" % str(morph.as_pointer())
+        name_orig, name_tmp = morph.name, f"_tmp{str(morph.as_pointer())}"
 
         if morph_type.startswith("vertex"):
             for obj in FnModel.iterate_mesh_objects(root):
@@ -364,12 +365,12 @@ class CreateWorkMaterial(bpy.types.Operator):
 
         base_mat = meshObj.data.materials.get(mat_data.material, None)
         if base_mat is None:
-            self.report({"ERROR"}, 'Material "%s" not found' % mat_data.material)
+            self.report({"ERROR"}, f'Material "{mat_data.material}" not found')
             return {"CANCELLED"}
 
         work_mat_name = base_mat.name + "_temp"
         if work_mat_name in bpy.data.materials:
-            self.report({"ERROR"}, 'Temporary material "%s" is in use' % work_mat_name)
+            self.report({"ERROR"}, f'Temporary material "{work_mat_name}" is in use')
             return {"CANCELLED"}
 
         work_mat = base_mat.copy()
@@ -428,7 +429,7 @@ class ClearTempMaterials(bpy.types.Operator):
                         FnMaterial.swap_materials(meshObj, m.name, base_mat_name)
                         return True
                     except MaterialNotFoundError:
-                        self.report({"WARNING"}, "Base material for %s was not found" % m.name)
+                        self.report({"WARNING"}, f"Base material for {m.name} was not found")
                 return False
 
             FnMaterial.clean_materials(meshObj, can_remove=__pre_remove)
@@ -587,7 +588,7 @@ class ViewUVMorph(bpy.types.Operator):
 
         selected = meshObj.select_get()
         with bpyutils.select_object(meshObj):
-            mesh = cast(bpy.types.Mesh, meshObj.data)
+            mesh = cast("bpy.types.Mesh", meshObj.data)
             morph = mmd_root.uv_morphs[mmd_root.active_morph]
             uv_textures = mesh.uv_layers
 
@@ -601,7 +602,7 @@ class ViewUVMorph(bpy.types.Operator):
                 uv_textures.active = uv_textures[uv_layer_name]
 
             uv_layer_name = uv_textures.active.name
-            uv_tex = uv_textures.new(name="__uv.%s" % uv_layer_name)
+            uv_tex = uv_textures.new(name=f"__uv.{uv_layer_name}")
             if uv_tex is None:
                 self.report({"ERROR"}, "Failed to create a temporary uv layer")
                 return {"CANCELLED"}
@@ -680,7 +681,7 @@ class EditUVMorph(bpy.types.Operator):
 
         selected = meshObj.select_get()
         with bpyutils.select_object(meshObj):
-            mesh = cast(bpy.types.Mesh, meshObj.data)
+            mesh = cast("bpy.types.Mesh", meshObj.data)
             bpy.ops.object.mode_set(mode="EDIT")
             bpy.ops.mesh.select_mode(type="VERT", action="ENABLE")
             bpy.ops.mesh.reveal()  # unhide all vertices
@@ -722,19 +723,17 @@ class ApplyUVMorph(bpy.types.Operator):
 
         selected = meshObj.select_get()
         with bpyutils.select_object(meshObj):
-            mesh = cast(bpy.types.Mesh, meshObj.data)
+            mesh = cast("bpy.types.Mesh", meshObj.data)
             morph = mmd_root.uv_morphs[mmd_root.active_morph]
 
             base_uv_name = mesh.uv_layers.active.name[5:]
             if base_uv_name not in mesh.uv_layers:
-                self.report({"ERROR"}, ' * UV map "%s" not found' % base_uv_name)
+                self.report({"ERROR"}, f' * UV map "{base_uv_name}" not found')
                 return {"CANCELLED"}
 
             base_uv_data = mesh.uv_layers[base_uv_name].data
             temp_uv_data = mesh.uv_layers.active.data
             axis_type = "ZW" if base_uv_name.startswith("_") else "XY"
-
-            from collections import namedtuple
 
             __OffsetData = namedtuple("OffsetData", "index, offset")
             offsets = {}
@@ -766,6 +765,183 @@ class CleanDuplicatedMaterialMorphs(bpy.types.Operator):
     def execute(self, context: bpy.types.Context):
         mmd_root_object = FnModel.find_root_object(context.active_object)
         FnMorph.clean_duplicated_material_morphs(mmd_root_object)
+
+        return {"FINISHED"}
+
+
+class ConvertBoneMorphToVertexMorph(bpy.types.Operator):
+    bl_idname = "mmd_tools.convert_bone_morph_to_vertex_morph"
+    bl_label = "Convert To Vertex Morph"
+    bl_description = "Convert a bone morph into a single vertex morph by applying the bone transformations.\nIf a corresponding vertex morph already exists, it will be updated."
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+
+    @classmethod
+    def poll(cls, context):
+        root = FnModel.find_root_object(context.active_object)
+        if root is None:
+            return False
+        mmd_root = root.mmd_root
+        if mmd_root.active_morph_type != "bone_morphs":
+            return False
+        morph = ItemOp.get_by_index(mmd_root.bone_morphs, mmd_root.active_morph)
+        return morph is not None and len(morph.data) > 0
+
+    def execute(self, context):
+        obj = context.active_object
+        root = FnModel.find_root_object(obj)
+        mmd_root = root.mmd_root
+
+        # Get the active bone morph
+        bone_morph = ItemOp.get_by_index(mmd_root.bone_morphs, mmd_root.active_morph)
+        if bone_morph is None:
+            self.report({"ERROR"}, "No active bone morph")
+            return {"CANCELLED"}
+
+        original_name = bone_morph.name
+        target_name = original_name
+
+        # Add 'B' suffix if necessary
+        if not original_name.endswith("B"):
+            bone_morph.name = original_name + "B"
+            target_name = original_name
+        else:
+            # If already has B suffix, use name without B
+            target_name = original_name[:-1]
+
+        try:
+            # Step 1: import
+            from ..core.model import Model
+
+            rig = Model(root)
+
+            # Ensure morph slider is bound
+            bpy.ops.mmd_tools.morph_slider_setup(type="BIND")
+
+            # Re-obtain placeholder object
+            placeholder_obj = rig.morph_slider.placeholder()
+            if placeholder_obj is None or placeholder_obj.data.shape_keys is None:
+                self.report({"ERROR"}, "Failed to create morph slider system")
+                return {"CANCELLED"}
+
+            shape_keys = placeholder_obj.data.shape_keys
+            key_blocks = shape_keys.key_blocks
+
+            # Step 2: Check if target bone morph exists
+            current_morph_name = bone_morph.name
+            if current_morph_name not in key_blocks:
+                self.report({"ERROR"}, f"Bone morph '{current_morph_name}' not found in morph sliders")
+                return {"CANCELLED"}
+
+            # Step 3: Save all current morph values
+            original_values = {}
+            for key_block in key_blocks:
+                if key_block.name != "--- morph sliders ---":
+                    original_values[key_block.name] = key_block.value
+
+            # Step 4: Set all morphs to 0
+            for key_block in key_blocks:
+                if key_block.name != "--- morph sliders ---":
+                    key_block.value = 0
+
+            # Step 5: Set target bone morph to 1.0
+            key_blocks[current_morph_name].value = 1.0
+
+            # Step 6: Use Armature Modifier's "Apply as Shape Key" functionality
+            created_shape_keys = []
+            for mesh_obj in FnModel.iterate_mesh_objects(root):
+                # Switch to this mesh object
+                context.view_layer.objects.active = mesh_obj
+
+                # Ensure mesh object has shape keys
+                if mesh_obj.data.shape_keys is None:
+                    mesh_obj.shape_key_add(name="Basis", from_mix=False)
+
+                # Delete existing shape key with same name
+                if target_name in mesh_obj.data.shape_keys.key_blocks:
+                    idx = mesh_obj.data.shape_keys.key_blocks.find(target_name)
+                    if idx >= 0:
+                        mesh_obj.active_shape_key_index = idx
+                        bpy.ops.object.shape_key_remove()
+
+                # Find armature modifier
+                armature_modifier = None
+                for modifier in mesh_obj.modifiers:
+                    if modifier.type == "ARMATURE":
+                        armature_modifier = modifier
+                        break
+
+                if armature_modifier is None:
+                    self.report({"WARNING"}, f"No armature modifier found on mesh '{mesh_obj.name}'")
+                    continue
+
+                # Use Apply as Shape Key functionality, keeping the modifier
+                bpy.ops.object.modifier_apply_as_shapekey(modifier=armature_modifier.name, keep_modifier=True)
+
+                # Rename the newly created shape key to target name
+                shape_key_blocks = mesh_obj.data.shape_keys.key_blocks
+                new_shape_key = shape_key_blocks[-1]  # Latest created shape key
+                new_shape_key.name = target_name
+                new_shape_key.value = 0.0  # Set to 0 to avoid double effect
+
+                created_shape_keys.append((mesh_obj.name, target_name))
+                self.report({"INFO"}, f"Created shape key '{target_name}' on mesh '{mesh_obj.name}'")
+
+            # Step 7: Restore all original morph values
+            for key_name, original_value in original_values.items():
+                if key_name in key_blocks:
+                    key_blocks[key_name].value = original_value
+
+            # Step 8: Create or update vertex morph entry
+            vertex_morph_exists = False
+            for i, morph in enumerate(mmd_root.vertex_morphs):
+                if morph.name == target_name:
+                    vertex_morph_exists = True
+                    mmd_root.active_morph_type = "vertex_morphs"
+                    mmd_root.active_morph = i
+                    break
+
+            if not vertex_morph_exists:
+                mmd_root.active_morph_type = "vertex_morphs"
+                morph, mmd_root.active_morph = ItemOp.add_after(mmd_root.vertex_morphs, mmd_root.active_morph)
+                morph.name = target_name
+
+            # Step 9: Add to facial expression display frame
+            facial_frame = None
+            for frame in mmd_root.display_item_frames:
+                if frame.name == "表情":
+                    facial_frame = frame
+                    break
+
+            if facial_frame:
+                morph_exists_in_frame = False
+                for item in facial_frame.data:
+                    if item.type == "MORPH" and item.name == target_name and item.morph_type == "vertex_morphs":
+                        morph_exists_in_frame = True
+                        break
+
+                if not morph_exists_in_frame:
+                    new_item = facial_frame.data.add()
+                    new_item.type = "MORPH"
+                    new_item.morph_type = "vertex_morphs"
+                    new_item.name = target_name
+
+                    facial_frame.active_item = len(facial_frame.data) - 1
+
+                    for i, frame in enumerate(mmd_root.display_item_frames):
+                        if frame.name == "表情":
+                            mmd_root.active_display_item_frame = i
+                            break
+
+            # UNBIND
+            bpy.ops.mmd_tools.morph_slider_setup(type="UNBIND")
+
+            # Success message
+            shape_key_info = ", ".join([f"{mesh}:{key}" for mesh, key in created_shape_keys])
+            self.report({"INFO"}, f"Successfully converted bone morph '{original_name}' to vertex morph '{target_name}'. Created shape keys: {shape_key_info}")
+
+        except Exception as e:
+            self.report({"ERROR"}, f"Error during conversion: {str(e)}")
+            return {"CANCELLED"}
 
         return {"FINISHED"}
 

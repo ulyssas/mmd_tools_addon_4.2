@@ -326,10 +326,7 @@ class FnBone:
 
     @staticmethod
     def apply_auto_bone_roll(armature):
-        bone_names = []
-        for b in armature.pose.bones:
-            if not b.is_mmd_shadow_bone and not b.mmd_bone.enabled_local_axes and FnBone.has_auto_local_axis(b.mmd_bone.name_j):
-                bone_names.append(b.name)
+        bone_names = [b.name for b in armature.pose.bones if not b.is_mmd_shadow_bone and not b.mmd_bone.enabled_local_axes and FnBone.has_auto_local_axis(b.mmd_bone.name_j)]
         with bpyutils.edit_object(armature) as data:
             bone: bpy.types.EditBone
             for bone in data.edit_bones:
@@ -456,6 +453,11 @@ class FnBone:
                 remove_constraint(constraints, name)
                 return
             c = TransformConstraintOp.create(constraints, name, map_type)
+            # FIXME: Some bones require specific rotation modes to match MMD behavior.
+            # Currently using hardcoded bone names as a temporary solution.
+            # See https://github.com/MMD-Blender/blender_mmd_tools/issues/242
+            if bone_name in {"左肩C", "右肩C", "肩C.L", "肩C.R"}:
+                c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for shoulder bones
             c.target = p_bone.id_data
             shadow_bone.add_constraint(c)
             TransformConstraintOp.update_min_max(c, value, influence)

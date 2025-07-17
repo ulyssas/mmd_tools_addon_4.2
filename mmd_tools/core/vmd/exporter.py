@@ -7,7 +7,7 @@ import re
 from typing import List, Optional, Set
 
 import bpy
-import mathutils
+from mathutils import Euler, Quaternion
 
 from .. import vmd
 from ..camera import MMDCamera
@@ -54,8 +54,7 @@ class _FCurve:
                     result.add(max(0, round(kp1.co[0]) - 1))
                 elif kp0.interpolation == "BEZIER":
                     bz = _FnBezier.from_fcurve(kp0, kp1)
-                    for t in bz.find_critical():
-                        result.add(round(bz.evaluate(t).x))
+                    result.update(round(bz.evaluate(t).x) for t in bz.find_critical())
             kp0 = kp1
 
         return result
@@ -112,8 +111,8 @@ class _FCurve:
                     break
             assert len(frames) >= 1 and frames[-1] == i
             if prev_kp is None:
-                for f in frames:  # starting key frames
-                    result.append([kp.co[1], ((20, 20), (107, 107))])
+                # starting key frames
+                result.extend([kp.co[1], ((20, 20), (107, 107))] for f in frames)
             elif len(frames) == 1:
                 result.append([kp.co[1], self.getVMDControlPoints(prev_kp, kp)])
             elif prev_kp.interpolation == "BEZIER":
@@ -123,8 +122,7 @@ class _FCurve:
                     result.append([pt.y, self.__toVMDControlPoints(b1)])
                 result.append([bz.points[-1].y, self.__toVMDControlPoints(bz)])
             else:
-                for f in frames:
-                    result.append([evaluate(f), ((20, 20), (107, 107))])
+                result.extend([evaluate(f), ((20, 20), (107, 107))] for f in frames)
             prev_kp = kp
 
         prev_kp_co_1 = prev_kp.co[1]
@@ -220,13 +218,13 @@ class VMDExporter:
         if mode == "AXIS_ANGLE":
 
             def __xyzw_from_axis_angle(xyzw):
-                q = mathutils.Quaternion(xyzw[:3], xyzw[3])
+                q = Quaternion(xyzw[:3], xyzw[3])
                 return [q.x, q.y, q.z, q.w]
 
             return __xyzw_from_axis_angle
 
         def __xyzw_from_euler(xyzw):
-            q = mathutils.Euler(xyzw[:3], xyzw[3]).to_quaternion()
+            q = Euler(xyzw[:3], xyzw[3]).to_quaternion()
             return [q.x, q.y, q.z, q.w]
 
         return __xyzw_from_euler

@@ -1,11 +1,14 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core import pmx
-from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core import pmx
+from bl_ext.blender_org.mmd_tools.core.model import Model
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -27,7 +30,7 @@ class TestFileIoOperators(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -52,7 +55,7 @@ class TestFileIoOperators(unittest.TestCase):
         """
         input_blend = os.path.join(SAMPLES_DIR, "blends", "shy_cube", "shy_cube.blend")
         if not os.path.isfile(input_blend):
-            self.fail("required sample file %s not found. Please download it" % input_blend)
+            self.fail(f"required sample file {input_blend} not found. Please download it")
         output_pmx = os.path.join(TESTS_DIR, "output", "shy_cube.pmx")
         bpy.ops.wm.open_mainfile(filepath=input_blend)
         root = Model.findRoot(self.context.active_object)

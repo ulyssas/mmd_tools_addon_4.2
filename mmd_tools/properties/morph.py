@@ -17,7 +17,7 @@ def _morph_base_get_name(prop: "_MorphBase") -> str:
 def _morph_base_set_name(prop: "_MorphBase", value: str):
     mmd_root = prop.id_data.mmd_root
     # morph_type = mmd_root.active_morph_type
-    morph_type = "%s_morphs" % prop.bl_rna.identifier[:-5].lower()
+    morph_type = f"{prop.bl_rna.identifier[:-5].lower()}_morphs"
     # assert(prop.bl_rna.identifier.endswith('Morph'))
     # logging.debug('_set_name: %s %s %s', prop, value, morph_type)
     prop_name = prop.get("name", None)

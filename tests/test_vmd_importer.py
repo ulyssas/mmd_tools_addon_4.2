@@ -1,10 +1,14 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
+import logging
 import os
 import shutil
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.vmd.importer import BoneConverter, BoneConverterPoseMode, RenamedBoneMapper, VMDImporter, _FnBezier, _MirrorMapper
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.vmd.importer import BoneConverter, BoneConverterPoseMode, RenamedBoneMapper, VMDImporter, _FnBezier, _MirrorMapper
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -26,9 +30,7 @@ class TestVMDImporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """Start each test with a clean state"""
-        import logging
-
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -52,18 +54,16 @@ class TestVMDImporter(unittest.TestCase):
 
         ret = []
         for root, dirs, files in os.walk(directory):
-            for name in files:
-                if name.lower().endswith("." + extension.lower()):
-                    ret.append(os.path.join(root, name))
+            ret.extend(os.path.join(root, name) for name in files if name.lower().endswith("." + extension.lower()))
         return ret
 
     def _enable_mmd_tools(self):
         """Make sure mmd_tools addon is enabled"""
         bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
-        if not pref.addons.get("bl_ext.user_default.mmd_tools", None):
+        if not pref.addons.get("bl_ext.blender_org.mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def _create_standard_mmd_armature(self):
         """Create armature with standard MMD bone names"""
@@ -438,7 +438,7 @@ class TestVMDImporter(unittest.TestCase):
 
                 # Show bone matching info
                 if vmd_analysis["bone_animation"]:
-                    target_bones = set(bone.name for bone in target_obj.pose.bones)
+                    target_bones = {bone.name for bone in target_obj.pose.bones}
                     vmd_bones = set(vmd_analysis["bone_animation"].keys())
                     matching_bones = target_bones & vmd_bones
                     print(f"Matching bones: {len(matching_bones)} out of {len(vmd_bones)} VMD bones")
@@ -454,7 +454,7 @@ class TestVMDImporter(unittest.TestCase):
 
                     # Show shape key matching info
                     if vmd_analysis["shape_key_animation"]:
-                        target_shapes = set(key.name for key in target_obj.data.shape_keys.key_blocks if key.name != "Basis")
+                        target_shapes = {key.name for key in target_obj.data.shape_keys.key_blocks if key.name != "Basis"}
                         vmd_shapes = set(vmd_analysis["shape_key_animation"].keys())
                         matching_shapes = target_shapes & vmd_shapes
                         print(f"Matching shape keys: {matching_shapes}")
@@ -500,7 +500,7 @@ class TestVMDImporter(unittest.TestCase):
         self.assertFalse(importer._VMDImporter__bone_util_cls == BoneConverterPoseMode)
         self.assertTrue(importer._VMDImporter__convert_mmd_camera)
         self.assertTrue(importer._VMDImporter__convert_mmd_lamp)
-        expected_margin = 5 if importer._VMDImporter__frame_start == 1 else 0
+        expected_margin = 5 if importer._VMDImporter__frame_start in {0, 1} else 0
         self.assertEqual(importer._VMDImporter__frame_margin, expected_margin)
         self.assertFalse(importer._VMDImporter__mirror)
 
@@ -510,7 +510,7 @@ class TestVMDImporter(unittest.TestCase):
         self.assertTrue(importer._VMDImporter__bone_util_cls == BoneConverterPoseMode)
         self.assertFalse(importer._VMDImporter__convert_mmd_camera)
         self.assertFalse(importer._VMDImporter__convert_mmd_lamp)
-        expected_custom_margin = 10 if importer._VMDImporter__frame_start == 1 else 0
+        expected_custom_margin = 10 if importer._VMDImporter__frame_start in {0, 1} else 0
         self.assertEqual(importer._VMDImporter__frame_margin, expected_custom_margin)
         self.assertTrue(importer._VMDImporter__mirror)
 
@@ -969,15 +969,15 @@ class TestVMDImporter(unittest.TestCase):
         except AssertionError:
             self.fail("Plugin has assertion issues with custom bone mappers - this is a plugin bug")
 
-    def test_vmd_import_use_NLA(self):
-        """Test VMD importing with use_NLA option"""
+    def test_vmd_import_use_nla(self):
+        """Test VMD importing with use_nla option"""
         vmd_files = self._list_sample_files("vmd", "vmd")
         if not vmd_files:
             self.fail("No VMD sample files found for NLA test")
 
         armature = self._create_standard_mmd_armature()
 
-        importer = VMDImporter(filepath=vmd_files[0], use_NLA=True)
+        importer = VMDImporter(filepath=vmd_files[0], use_nla=True)
         importer.assign(armature)
 
         self.assertIsNotNone(armature.animation_data, "Animation data should be created")

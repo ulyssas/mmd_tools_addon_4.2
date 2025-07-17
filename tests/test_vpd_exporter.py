@@ -1,11 +1,14 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.vpd.exporter import VPDExporter
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.vpd.exporter import VPDExporter
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +32,7 @@ class TestVPDExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -52,9 +55,7 @@ class TestVPDExporter(unittest.TestCase):
 
         ret = []
         for root, dirs, files in os.walk(directory):
-            for name in files:
-                if name.lower().endswith("." + extension.lower()):
-                    ret.append(os.path.join(root, name))
+            ret.extend(os.path.join(root, name) for name in files if name.lower().endswith("." + extension.lower()))
         return ret
 
     def __enable_mmd_tools(self):
@@ -68,7 +69,7 @@ class TestVPDExporter(unittest.TestCase):
                 else bpy.ops.preferences.addon_enable
             )
             addon_enable(
-                module="bl_ext.user_default.mmd_tools"
+                module="bl_ext.blender_org.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
 
     def __create_model_from_pmx(self, pmx_file):
@@ -160,7 +161,7 @@ class TestVPDExporter(unittest.TestCase):
             for j, bone in enumerate(armature.pose.bones):
                 if j % (i + 1) == 0:  # Create different patterns for different poses
                     bone.location = Vector((0.1 * i, 0.2 * i, 0.3 * i))
-                    bone.rotation_quaternion = Quaternion(((0.9, 0.1 * i, 0.2 * i, 0.3 * i)))
+                    bone.rotation_quaternion = Quaternion((0.9, 0.1 * i, 0.2 * i, 0.3 * i))
                     bone.keyframe_insert(data_path="location", frame=i + 1)
                     bone.keyframe_insert(data_path="rotation_quaternion", frame=i + 1)
 
@@ -278,7 +279,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify file was created
@@ -327,7 +328,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=active_pose_path,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="ACTIVE"
+                pose_type="ACTIVE",
             )
 
             # Verify active pose file was created
@@ -341,7 +342,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=all_poses_path,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="ALL"
+                pose_type="ALL",
             )
 
             # Verify all pose files were created
@@ -376,7 +377,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path_1x,
                 scale=1.0,
                 model_name="TestModel",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Export with scale 2.0
@@ -386,7 +387,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path_2x,
                 scale=2.0,
                 model_name="TestModel",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify both files were created
@@ -394,9 +395,9 @@ class TestVPDExporter(unittest.TestCase):
             self.assertTrue(os.path.exists(output_path_2x), "Scale 2x VPD file was not created")
 
             # Read both files to compare content
-            with open(output_path_1x, "r", encoding="utf-8", errors="replace") as f1:
+            with open(output_path_1x, encoding="utf-8", errors="replace") as f1:
                 content_1x = f1.read()
-            with open(output_path_2x, "r", encoding="utf-8", errors="replace") as f2:
+            with open(output_path_2x, encoding="utf-8", errors="replace") as f2:
                 content_2x = f2.read()
 
             # Files should be different due to scale difference
@@ -436,7 +437,7 @@ class TestVPDExporter(unittest.TestCase):
                     exporter = VPDExporter()
 
                     # For ACTIVE and ALL pose types, we need animation data
-                    if pose_type in ["ACTIVE", "ALL"]:
+                    if pose_type in {"ACTIVE", "ALL"}:
                         # Ensure armature has animation data
                         if armature.animation_data is None:
                             armature.animation_data_create()
@@ -479,7 +480,7 @@ class TestVPDExporter(unittest.TestCase):
                         scale=1.0,
                         model_name="TestModel",
                         pose_type=pose_type,
-                        use_pose_mode=use_pose_mode
+                        use_pose_mode=use_pose_mode,
                     )
 
                     # Check output for CURRENT pose type
@@ -490,7 +491,7 @@ class TestVPDExporter(unittest.TestCase):
                                        f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
 
                         # Check content (without assuming Japanese characters work correctly)
-                        with open(output_path, "r", encoding="cp932", errors="replace") as f:
+                        with open(output_path, encoding="cp932", errors="replace") as f:
                             content = f.read()
                             # Check for markers that should be present in any VPD file
                             self.assertIn("Vocaloid Pose Data file", content,
@@ -523,7 +524,7 @@ class TestVPDExporter(unittest.TestCase):
 
                 except Exception as e:
                     # For older Blender versions, pose_library might not be available
-                    if "pose_library" in str(e) and pose_type in ["ACTIVE", "ALL"]:
+                    if "pose_library" in str(e) and pose_type in {"ACTIVE", "ALL"}:
                         print(f"!! Skipped pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
                         print("   This is normal if your Blender version doesn't support pose libraries")
                     else:
@@ -590,7 +591,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path,
                 scale=1.0,
                 model_name=model_name,
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify export succeeded
@@ -598,7 +599,7 @@ class TestVPDExporter(unittest.TestCase):
             self.assertTrue(os.path.getsize(output_path) > 0, "VPD file for real model is empty")
 
             # Simple verification by checking file content
-            with open(output_path, "r", encoding="cp932", errors="replace") as f:
+            with open(output_path, encoding="cp932", errors="replace") as f:
                 content = f.read()
                 # The file should contain the model name in OSM format
                 self.assertIn(f"{model_name}.osm", content, "Model name not found in VPD file")
@@ -626,7 +627,7 @@ class TestVPDExporter(unittest.TestCase):
                 filepath=output_path,
                 scale=1.0,
                 model_name="TestDirectAPI",
-                pose_type="CURRENT"
+                pose_type="CURRENT",
             )
 
             # Verify export succeeded
@@ -647,7 +648,7 @@ class TestVPDExporter(unittest.TestCase):
             exporter.export(
                 armature=armature,
                 filepath=output_path,
-                pose_type="INVALID_TYPE"  # This should raise ValueError
+                pose_type="INVALID_TYPE",  # This should raise ValueError
             )
 
 

@@ -99,6 +99,8 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
         self.__toggle_items_ttl = time.time() + 10
         self.__toggle_items_cache = []
         armature_object = FnModel.find_armature_object(mmd_root_object)
+        if armature_object is None:
+            return self.__toggle_items_cache
         pose_bones = armature_object.pose.bones
         ik_map = {pose_bones[c.subtarget]: (b.bone, c.chain_count, not c.is_valid) for b in pose_bones for c in b.constraints if c.type == "IK" and c.subtarget in pose_bones}
 

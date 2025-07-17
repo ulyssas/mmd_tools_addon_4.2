@@ -1,14 +1,17 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 
 # Import the modules to test
-from bl_ext.user_default.mmd_tools.core.bone import FnBone, MigrationFnBone
-from bl_ext.user_default.mmd_tools.core.model import FnModel
+from bl_ext.blender_org.mmd_tools.core.bone import FnBone, MigrationFnBone
+from bl_ext.blender_org.mmd_tools.core.model import FnModel
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,11 +33,9 @@ class TestBone(unittest.TestCase):
                     shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
-        # logger.setLevel('DEBUG')
-        # logger.setLevel('INFO')
 
         # Start with a clean Blender scene
         bpy.ops.wm.read_homefile(use_empty=True)
@@ -52,7 +53,7 @@ class TestBone(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __create_test_armature(self):
         """Create a test armature with some bones for testing"""
@@ -102,14 +103,6 @@ class TestBone(unittest.TestCase):
         FnBone.setup_special_bone_collections(armature_object)
 
         return armature_object
-
-    def __vector_error(self, vec0, vec1):
-        """Calculate vector difference"""
-        return (Vector(vec0) - Vector(vec1)).length
-
-    def __axis_error(self, axis0, axis1):
-        """Calculate axis difference"""
-        return (Vector(axis0).normalized() - Vector(axis1).normalized()).length
 
     # ********************************************
     # Bone ID Tests
@@ -238,7 +231,7 @@ class TestBone(unittest.TestCase):
 
         # The roll might change based on local axes - verify the change is reasonable
         roll_difference = abs(new_roll - original_roll)
-        self.assertLessEqual(roll_difference, 2 * pi, "Roll change should be within reasonable bounds")
+        self.assertLessEqual(roll_difference, 2 * math.pi, "Roll change should be within reasonable bounds")
 
         # Verify that the bone is still valid after local axes application
         bone = self.test_armature.data.bones["左腕"]

@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import glob
 import multiprocessing
 import os
@@ -123,11 +126,11 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Run the test
         result = subprocess.run(
             cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             text=True,
             encoding="utf-8",
-            errors="replace",  # Handle Unicode decode errors gracefully
+            errors="replace",
+            check=True,
         )
 
         # Calculate total execution time
@@ -143,12 +146,16 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Return the final progress for this test
         final_progress = current_test_num / total_tests
 
-        # Check if the test passed
-        # Look for "OK" indicating all tests passed, or check for absence of FAILED/ERROR
-        if "OK" in result.stdout or (result.returncode == 0 and "FAILED" not in result.stdout and "ERROR" not in result.stdout):
+        # Check if the test passed - specifically for unittest output
+        output = result.stdout + result.stderr
+        success_indicators = {"OK"}
+        failure_indicators = {"FAIL\n", "FAIL:", "ERROR\n", "ERROR:", "skipped", "FAILED", "failures=", "errors=", "skipped="}
+
+        has_success = any(indicator in output for indicator in success_indicators)
+        has_failure = any(indicator in output for indicator in failure_indicators)
+
+        if result.returncode == 0 and has_success and not has_failure:
             return True, "", elapsed_str, final_progress
-        # We no longer extract the detailed error message
-        # Just indicate that the test failed
         return False, "Test failed", elapsed_str, final_progress
 
     except Exception:
@@ -171,7 +178,7 @@ def print_summary_progress(iteration, total):
     """Print a simple progress bar for the overall progress"""
     progress_percent = iteration / float(total)
 
-    percent = ("{0:.1f}").format(100 * progress_percent)
+    percent = (f"{100 * progress_percent:.1f}")
     length = 30
     filled_length = int(length * progress_percent)
     bar = "█" * filled_length + "-" * (length - filled_length)
@@ -191,7 +198,7 @@ def run_all_tests():
     # If blender_path is just "blender", check if it's in PATH by running a simple command
     if blender_path == "blender":
         try:
-            subprocess.run([blender_path, "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+            subprocess.run([blender_path, "--version"], capture_output=True, check=False)
         except FileNotFoundError:
             print("Error: 'blender' executable not found in PATH.")
             print("Please either:")

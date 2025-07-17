@@ -1,12 +1,16 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import math
 import os
 import shutil
+import traceback
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core import vmd
-from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core import vmd
+from bl_ext.blender_org.mmd_tools.core.model import Model
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +32,7 @@ class TestVmdExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -63,9 +67,7 @@ class TestVmdExporter(unittest.TestCase):
         for file_type in file_types:
             file_ext = "." + file_type
             for root, dirs, files in os.walk(os.path.join(SAMPLES_DIR, file_type)):
-                for name in files:
-                    if name.lower().endswith(file_ext):
-                        ret.append(os.path.join(root, name))
+                ret.extend(os.path.join(root, name) for name in files if name.lower().endswith(file_ext))
         return ret
 
     def __enable_mmd_tools(self):
@@ -73,7 +75,7 @@ class TestVmdExporter(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
+            addon_enable(module="bl_ext.blender_org.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def __get_largest_pmx_file(self):
         """Get the largest PMX file from samples"""
@@ -231,47 +233,45 @@ class TestVmdExporter(unittest.TestCase):
                 # x2, y2 parameters allow == 107
                 is_valid = s == r  # Always allow source == result
 
-                if param_type in ["x1", "y1"]:
+                if param_type in {"x1", "y1"}:
                     is_valid = is_valid or (r == 20)
-                elif param_type in ["x2", "y2"]:
+                elif param_type in {"x2", "y2"}:
                     is_valid = is_valid or (r == 107)
 
                 if not is_valid:
                     expected_values = ["same as source"]
-                    if param_type in ["x1", "y1"]:
+                    if param_type in {"x1", "y1"}:
                         expected_values.append("20")
-                    elif param_type in ["x2", "y2"]:
+                    elif param_type in {"x2", "y2"}:
                         expected_values.append("107")
 
                     error_count += 1
                     print(f"        Invalid for zero-dy axis {axis} at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d} (expected: {' or '.join(expected_values)}, dy={dy_values[axis]:.2e}), {msg}")
                     max_error = max(max_error, abs(s - r))
-            else:
-                # Check if current axis has linear interpolation
-                if is_axis_linear(axis):
-                    # For linear interpolation, allow result to be 20, 107 for corresponding positions
-                    is_valid = s == r  # Always allow source == result
+            # Check if current axis has linear interpolation
+            elif is_axis_linear(axis):
+                # For linear interpolation, allow result to be 20, 107 for corresponding positions
+                is_valid = s == r  # Always allow source == result
 
-                    if param_type in ["x1", "y1"]:
-                        is_valid = is_valid or (r == 20)
-                    elif param_type in ["x2", "y2"]:
-                        is_valid = is_valid or (r == 107)
+                if param_type in {"x1", "y1"}:
+                    is_valid = is_valid or (r == 20)
+                elif param_type in {"x2", "y2"}:
+                    is_valid = is_valid or (r == 107)
 
-                    if not is_valid:
-                        error_count += 1
-                        expected_values = ["same as source"]
-                        if param_type in ["x1", "y1"]:
-                            expected_values.append("20")
-                        elif param_type in ["x2", "y2"]:
-                            expected_values.append("107")
-                        print(f"        Invalid for linear interp at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d} (expected: {' or '.join(expected_values)}), {msg}")
-                        max_error = max(max_error, abs(s - r))
-                else:
-                    # Normal case: require exact match
-                    if abs(s - r) > 0:
-                        error_count += 1
-                        print(f"        Difference at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d}, diff {abs(s - r):4d}, {msg}")
-                        max_error = max(max_error, abs(s - r))
+                if not is_valid:
+                    error_count += 1
+                    expected_values = ["same as source"]
+                    if param_type in {"x1", "y1"}:
+                        expected_values.append("20")
+                    elif param_type in {"x2", "y2"}:
+                        expected_values.append("107")
+                    print(f"        Invalid for linear interp at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d} (expected: {' or '.join(expected_values)}), {msg}")
+                    max_error = max(max_error, abs(s - r))
+            # Normal case: require exact match
+            elif abs(s - r) > 0:
+                error_count += 1
+                print(f"        Difference at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d}, diff {abs(s - r):4d}, {msg}")
+                max_error = max(max_error, abs(s - r))
 
         return max_error, error_count
 
@@ -462,7 +462,7 @@ class TestVmdExporter(unittest.TestCase):
                     mesh_obj.select_set(True)
 
                 # Import VMD motion
-                bpy.ops.mmd_tools.import_vmd(files=[{"name": os.path.basename(vmd_file)}], directory=os.path.dirname(vmd_file), scale=0.08, margin=0, bone_mapper="PMX", use_pose_mode=False, use_mirror=False, update_scene_settings=True, always_create_new_action=True, use_NLA=False)
+                bpy.ops.mmd_tools.import_vmd(files=[{"name": os.path.basename(vmd_file)}], directory=os.path.dirname(vmd_file), scale=0.08, margin=0, bone_mapper="PMX", use_pose_mode=False, use_mirror=False, update_scene_settings=True, always_create_new_action=True, use_nla=False)
                 print("    VMD imported successfully")
 
                 # Export VMD motion
@@ -493,8 +493,6 @@ class TestVmdExporter(unittest.TestCase):
             except Exception as e:
                 print(f"    ✗ VMD test failed: {e}")
                 # Don't fail the entire test, just log the error
-                import traceback
-
                 traceback.print_exc()
 
         print("\n=== VMD Export Test Results ===")

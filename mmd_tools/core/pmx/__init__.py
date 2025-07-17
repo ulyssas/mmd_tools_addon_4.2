@@ -54,7 +54,7 @@ class FileReadStream(FileStream):
         if size in typedict:
             index, = struct.unpack(typedict[size], self.__fin.read(size))
         else:
-            raise ValueError("invalid data size %s" % str(size))
+            raise ValueError(f"invalid data size {str(size)}")
         return index
 
     def __readSignedIndex(self, size):
@@ -128,8 +128,7 @@ class FileWriteStream(FileStream):
         if size in typedict:
             self.__fout.write(struct.pack(typedict[size], int(index)))
         else:
-            raise ValueError("invalid data size %s" % str(size))
-        return
+            raise ValueError(f"invalid data size {str(size)}")
 
     def __writeSignedIndex(self, index, size):
         return self.__writeIndex(index, size, {1: "<b", 2: "<h", 4: "<i"})
@@ -199,7 +198,7 @@ class Encoding:
         if isinstance(arg, str):
             t = list(filter(lambda x: x[1] == arg, self._MAP))
             if len(t) == 0:
-                raise ValueError("invalid charset %s" % arg)
+                raise ValueError(f"invalid charset {arg}")
         elif isinstance(arg, int):
             t = list(filter(lambda x: x[0] == arg, self._MAP))
             if len(t) == 0:
@@ -211,7 +210,7 @@ class Encoding:
         self.charset  = t[1]
 
     def __repr__(self):
-        return "<Encoding charset %s>" % self.charset
+        return f"<Encoding charset {self.charset}>"
 
 
 class Coordinate:
@@ -271,7 +270,7 @@ class Header:
         logging.debug("pmx format version: %f", self.version)
         if self.version != self.VERSION:
             logging.error("PMX version %.1f is unsupported", self.version)
-            raise UnsupportedVersionError("unsupported PMX version: %.1f" % self.version)
+            raise UnsupportedVersionError(f"unsupported PMX version: {self.version:.1f}")
         if fs.readByte() != 8:
             logging.warning(" * This file might be corrupted.")
         self.encoding = Encoding(fs.readByte())
@@ -642,13 +641,7 @@ comment(english):
         logging.info("finished exporting the model.")
 
     def __repr__(self):
-        return "<Model name %s, name_e %s, comment %s, comment_e %s, textures %s>" % (
-            self.name,
-            self.name_e,
-            self.comment,
-            self.comment_e,
-            str(self.textures),
-            )
+        return f"<Model name {self.name}, name_e {self.name_e}, comment {self.comment}, comment_e {self.comment_e}, textures {str(self.textures)}>"
 
 
 class Vertex:
@@ -661,14 +654,7 @@ class Vertex:
         self.edge_scale = 1
 
     def __repr__(self):
-        return "<Vertex co %s, normal %s, uv %s, additional_uvs %s, weight %s, edge_scale %s>" % (
-            str(self.co),
-            str(self.normal),
-            str(self.uv),
-            str(self.additional_uvs),
-            str(self.weight),
-            str(self.edge_scale),
-            )
+        return f"<Vertex co {str(self.co)}, normal {str(self.normal)}, uv {str(self.uv)}, additional_uvs {str(self.additional_uvs)}, weight {str(self.weight)}, edge_scale {str(self.edge_scale)}>"
 
     def load(self, fs):
         self.co = fs.readVector(3)
@@ -757,7 +743,7 @@ class BoneWeight:
             self.weights.r0 = fs.readVector(3)
             self.weights.r1 = fs.readVector(3)
         else:
-            raise ValueError("invalid weight type %s" % str(self.type))
+            raise ValueError(f"invalid weight type {str(self.type)}")
 
     def save(self, fs):
         fs.writeByte(self.type)
@@ -782,7 +768,7 @@ class BoneWeight:
             fs.writeVector(self.weights.r0)
             fs.writeVector(self.weights.r1)
         else:
-            raise ValueError("invalid weight type %s" % str(self.type))
+            raise ValueError(f"invalid weight type {str(self.type)}")
 
 
 class Texture:
@@ -790,7 +776,7 @@ class Texture:
         self.path = ""
 
     def __repr__(self):
-        return "<Texture path %s>" % str(self.path)
+        return f"<Texture path {str(self.path)}>"
 
     def load(self, fs):
         self.path = fs.readStr()
@@ -848,25 +834,7 @@ class Material:
         self.vertex_count = 0
 
     def __repr__(self):
-        return "<Material name %s, name_e %s, diffuse %s, specular %s, shininess %s, ambient %s, is_double_sided %s, enabled_drop_shadow %s, enabled_self_shadow_map %s, enabled_self_shadow %s, enabled_toon_edge %s, edge_color %s, edge_size %s, texture %s, sphere_texture %s, toon_texture %s, comment %s>" % (
-            self.name,
-            self.name_e,
-            str(self.diffuse),
-            str(self.specular),
-            str(self.shininess),
-            str(self.ambient),
-            str(self.is_double_sided),
-            str(self.enabled_drop_shadow),
-            str(self.enabled_self_shadow_map),
-            str(self.enabled_self_shadow),
-            str(self.enabled_toon_edge),
-            str(self.edge_color),
-            str(self.edge_size),
-            str(self.texture),
-            str(self.sphere_texture),
-            str(self.toon_texture),
-            str(self.comment),
-        )
+        return f"<Material name {self.name}, name_e {self.name_e}, diffuse {str(self.diffuse)}, specular {str(self.specular)}, shininess {str(self.shininess)}, ambient {str(self.ambient)}, is_double_sided {str(self.is_double_sided)}, enabled_drop_shadow {str(self.enabled_drop_shadow)}, enabled_self_shadow_map {str(self.enabled_self_shadow_map)}, enabled_self_shadow {str(self.enabled_self_shadow)}, enabled_toon_edge {str(self.enabled_toon_edge)}, edge_color {str(self.edge_color)}, edge_size {str(self.edge_size)}, texture {str(self.texture)}, sphere_texture {str(self.sphere_texture)}, toon_texture {str(self.toon_texture)}, comment {str(self.comment)}>"
 
     def load(self, fs, num_textures):
         def __tex_index(index):
@@ -990,9 +958,7 @@ class Bone:
         self.ik_links = []
 
     def __repr__(self):
-        return "<Bone name %s, name_e %s>" % (
-            self.name,
-            self.name_e,)
+        return f"<Bone name {self.name}, name_e {self.name_e}>"
 
     def load(self, fs):
         self.name = fs.readStr()
@@ -1117,7 +1083,7 @@ class IKLink:
         self.minimumAngle = None
 
     def __repr__(self):
-        return "<IKLink target %s>" % (str(self.target))
+        return f"<IKLink target {str(self.target)}>"
 
     def load(self, fs):
         self.target = fs.readBoneIndex()
@@ -1153,7 +1119,7 @@ class Morph:
         self.category = category
 
     def __repr__(self):
-        return "<Morph name %s, name_e %s>" % (self.name, self.name_e)
+        return f"<Morph name {self.name}, name_e {self.name_e}>"
 
     def type_index(self):
         raise NotImplementedError
@@ -1390,10 +1356,7 @@ class Display:
         self.data = []
 
     def __repr__(self):
-        return "<Display name %s, name_e %s>" % (
-            self.name,
-            self.name_e,
-            )
+        return f"<Display name {self.name}, name_e {self.name_e}>"
 
     def load(self, fs):
         self.name = fs.readStr()
@@ -1462,10 +1425,7 @@ class Rigid:
         self.mode = 0
 
     def __repr__(self):
-        return "<Rigid name %s, name_e %s>" % (
-            self.name,
-            self.name_e,
-            )
+        return f"<Rigid name {self.name}, name_e {self.name_e}>"
 
     def load(self, fs):
         self.name = fs.readStr()
@@ -1620,12 +1580,14 @@ def load(path):
         header = Header()
         header.load(fs)
         fs.setHeader(header)
+
         model = Model()
         try:
             model.load(fs)
-        except struct.error as e:
-            logging.error(" * Corrupted file: %s", e)
+        except struct.error:
+            logging.exception(" * Corrupted file")
             # raise
+
         logging.info(" Finished loading.")
         logging.info("----------------------------------------")
         logging.info(" mmd_tools.pmx module")

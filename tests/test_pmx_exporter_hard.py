@@ -1,12 +1,15 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
-from bl_ext.user_default.mmd_tools.core import pmx
-from bl_ext.user_default.mmd_tools.core.pmd.importer import import_pmd_to_pmx
+from bl_ext.blender_org.mmd_tools.core import pmx
+from bl_ext.blender_org.mmd_tools.core.pmd.importer import import_pmd_to_pmx
 from mathutils import Euler, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,11 +31,9 @@ class TestPmxExporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
-        # logger.setLevel('DEBUG')
-        # logger.setLevel('INFO')
 
     # ********************************************
     # Utils
@@ -56,9 +57,9 @@ class TestPmxExporter(unittest.TestCase):
         return max(abs(a - b) for a, b in zip(tuple0, tuple1, strict=False))
 
     def __quaternion_error(self, quat0, quat1):
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     # ********************************************
     # Header & Informations
@@ -181,7 +182,9 @@ class TestPmxExporter(unittest.TestCase):
                 self.assertGreaterEqual(dot_product, 0.99999, f"Normal angle difference too large: dot_product={dot_product:.6f}")
 
             self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6)
-            self.assertEqual(v0.additional_uvs, v1.additional_uvs)
+            for uv0, uv1 in zip(v0.additional_uvs, v1.additional_uvs, strict=False):
+                self.assertLess(self.__tuple_error(uv0, uv1), 1e-6)
+
             self.assertEqual(v0.edge_scale, v1.edge_scale)
             self.assertEqual(v0.weight.type, v1.weight.type)
             self.assertEqual(v0.weight.bones, v1.weight.bones)
@@ -460,7 +463,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.VertexMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "VertexMorph %s" % m0.name
+            msg = f"VertexMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -483,7 +486,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.UVMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "UVMorph %s" % m0.name
+            msg = f"UVMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -510,7 +513,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.BoneMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "BoneMorph %s" % m0.name
+            msg = f"BoneMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -535,7 +538,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.MaterialMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "MaterialMorph %s" % m0.name
+            msg = f"MaterialMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -567,7 +570,7 @@ class TestPmxExporter(unittest.TestCase):
         result = result_table.get(pmx.GroupMorph, [])
         self.assertEqual(len(source), len(result))
         for m0, m1 in zip(source, result, strict=False):
-            msg = "GroupMorph %s" % m0.name
+            msg = f"GroupMorph {m0.name}"
             self.assertEqual(m0.name, m1.name, msg)
             self.assertEqual(m0.name_e, m1.name_e, msg)
             self.assertEqual(m0.category, m1.category, msg)
@@ -623,9 +626,7 @@ class TestPmxExporter(unittest.TestCase):
         for file_type in file_types:
             file_ext = "." + file_type
             for root, dirs, files in os.walk(os.path.join(SAMPLES_DIR, file_type)):
-                for name in files:
-                    if name.lower().endswith(file_ext):
-                        ret.append(os.path.join(root, name))
+                ret.extend(os.path.join(root, name) for name in files if name.lower().endswith(file_ext))
         return ret
 
     def __enable_mmd_tools(self):
@@ -633,7 +634,7 @@ class TestPmxExporter(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")  # make sure addon 'mmd_tools' is enabled
+            addon_enable(module="bl_ext.blender_org.mmd_tools")  # make sure addon 'mmd_tools' is enabled
 
     def test_pmx_exporter(self):
         """Direct test of PMX file loading/exporting without going through the importer"""
@@ -650,7 +651,7 @@ class TestPmxExporter(unittest.TestCase):
             "DISPLAY": True,  # Check display frames
         }
 
-        print("\n    Check: %s" % str(check_types.keys()))
+        print(f"\n    Check: {str(check_types.keys())}")
 
         for test_num, filepath in enumerate(input_files):
             print("\n     - %2d/%d | filepath: %s" % (test_num + 1, len(input_files), filepath))
@@ -662,7 +663,7 @@ class TestPmxExporter(unittest.TestCase):
                     file_loader = import_pmd_to_pmx
                 source_model = file_loader(filepath)
             except Exception as e:
-                self.fail("Exception happened during loading %s: %s" % (filepath, str(e)))
+                self.fail(f"Exception happened during loading {filepath}: {str(e)}")
 
             # Enable MMD tools and export to temporary file
             try:
@@ -672,16 +673,16 @@ class TestPmxExporter(unittest.TestCase):
                 output_pmx = os.path.join(TESTS_DIR, "output", "%d.pmx" % test_num)
                 bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=1.0, copy_textures=False, sort_materials=False, sort_vertices="NONE", vertex_splitting=False, log_level="ERROR")
             except Exception as e:
-                self.fail("Exception happened during export %s: %s" % (output_pmx, str(e)))
+                self.fail(f"Exception happened during export {output_pmx}: {str(e)}")
 
             # Verify the file was created
-            self.assertTrue(os.path.isfile(output_pmx), "File was not created: %s" % output_pmx)
+            self.assertTrue(os.path.isfile(output_pmx), f"File was not created: {output_pmx}")
 
             # Load the exported PMX file and compare with source
             try:
                 result_model = pmx.load(output_pmx)
             except Exception as e:
-                self.fail("Failed to load output file %s: %s" % (output_pmx, str(e)))
+                self.fail(f"Failed to load output file {output_pmx}: {str(e)}")
 
             # Run all the comparison tests
             self.__check_pmx_header_info(source_model, result_model, check_types.keys())

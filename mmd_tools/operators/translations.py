@@ -84,7 +84,7 @@ class TranslateMMDModel(bpy.types.Operator):
         try:
             self.__translator = DictionaryEnum.get_translator(self.dictionary)
         except Exception as e:
-            self.report({"ERROR"}, "Failed to load dictionary: %s" % e)
+            self.report({"ERROR"}, f"Failed to load dictionary: {e}")
             return {"CANCELLED"}
 
         obj = context.active_object
@@ -93,7 +93,7 @@ class TranslateMMDModel(bpy.types.Operator):
 
         if "MMD" in self.modes:
             for i in self.types:
-                getattr(self, "translate_%s" % i.lower())(rig)
+                getattr(self, f"translate_{i.lower()}")(rig)
 
         if "BLENDER" in self.modes:
             self.translate_blender_names(rig)
@@ -127,7 +127,7 @@ class TranslateMMDModel(bpy.types.Operator):
 
         if "DISPLAY" in self.types:
             g: bpy.types.BoneCollection
-            for g in cast(bpy.types.Armature, rig.armature().data).collections:
+            for g in cast("bpy.types.Armature", rig.armature().data).collections:
                 g.name = self.translate(g.name, g.name)
 
         if "PHYSICS" in self.types:
@@ -199,7 +199,7 @@ DEFAULT_SHOW_ROW_COUNT = 20
 
 class MMD_TOOLS_UL_MMDTranslationElementIndex(bpy.types.UIList):
     def draw_item(self, context, layout: bpy.types.UILayout, data, mmd_translation_element_index: "MMDTranslationElementIndex", icon, active_data, active_propname, index: int):
-        mmd_translation_element: "MMDTranslationElement" = data.translation_elements[mmd_translation_element_index.value]
+        mmd_translation_element: MMDTranslationElement = data.translation_elements[mmd_translation_element_index.value]
         MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type].draw_item(layout, mmd_translation_element, index)
 
 
@@ -298,7 +298,7 @@ class GlobalTranslationPopup(bpy.types.Operator):
         if root_object is None:
             return {"CANCELLED"}
 
-        mmd_translation: "MMDTranslation" = root_object.mmd_root.translation
+        mmd_translation: MMDTranslation = root_object.mmd_root.translation
         self._mmd_translation = mmd_translation
         FnTranslations.clear_data(mmd_translation)
         FnTranslations.collect_data(mmd_translation)

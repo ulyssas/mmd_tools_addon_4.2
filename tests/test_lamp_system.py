@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
@@ -6,9 +9,9 @@ import unittest
 import bpy
 
 # Import the lamp system components
-from bl_ext.user_default.mmd_tools.core.lamp import MMDLamp
-from bl_ext.user_default.mmd_tools.operators.lamp import ConvertToMMDLamp
-from bl_ext.user_default.mmd_tools.panels.prop_lamp import MMDLampPanel
+from bl_ext.blender_org.mmd_tools.core.lamp import MMDLamp
+from bl_ext.blender_org.mmd_tools.operators.lamp import ConvertToMMDLamp
+from bl_ext.blender_org.mmd_tools.panels.prop_lamp import MMDLampPanel
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,11 +33,9 @@ class TestLampSystem(unittest.TestCase):
                     shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
-        # logger.setLevel('DEBUG')
-        # logger.setLevel('INFO')
 
         # Clear all mesh objects
         bpy.ops.wm.read_homefile(use_empty=True)
@@ -57,7 +58,7 @@ class TestLampSystem(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __create_lamp_object(self, name="TestLamp", lamp_type="SUN", location=(0, 0, 0)):
         """Create a lamp object for testing"""

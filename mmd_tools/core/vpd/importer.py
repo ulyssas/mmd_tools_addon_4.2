@@ -65,13 +65,13 @@ class VPDImporter:
                 bone_rotation = getattr(bone, data_path_rot)
                 fcurves = [None] * (3 + len(bone_rotation))  # x, y, z, r0, r1, r2, (r3)
 
-                data_path = 'pose.bones["%s"].location' % bone.name
+                data_path = f'pose.bones["{bone.name}"].location'
                 for axis_i in range(3):
                     fcurves[axis_i] = action.fcurves.find(data_path, index=axis_i)
                     if fcurves[axis_i] is None:
                         fcurves[axis_i] = action.fcurves.new(data_path=data_path, index=axis_i, action_group=bone.name)
 
-                data_path = 'pose.bones["%s"].%s' % (bone.name, data_path_rot)
+                data_path = f'pose.bones["{bone.name}"].{data_path_rot}'
                 for axis_i in range(len(bone_rotation)):
                     fcurves[3 + axis_i] = action.fcurves.find(data_path, index=axis_i)
                     if fcurves[3 + axis_i] is None:
@@ -125,7 +125,7 @@ class VPDImporter:
             shape_key.value = m.weight
 
             # Create or get FCurve
-            data_path = 'key_blocks["%s"].value' % shape_key.name
+            data_path = f'key_blocks["{shape_key.name}"].value'
             fcurve = action.fcurves.find(data_path)
             if fcurve is None:
                 fcurve = action.fcurves.new(data_path=data_path)

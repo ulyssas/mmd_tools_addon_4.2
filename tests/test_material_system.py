@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import gc
 import logging
 import os
@@ -5,9 +8,10 @@ import shutil
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.exceptions import MaterialNotFoundError
-from bl_ext.user_default.mmd_tools.core.material import FnMaterial
-from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.exceptions import MaterialNotFoundError
+from bl_ext.blender_org.mmd_tools.core.material import FnMaterial, MigrationFnMaterial
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.panels.prop_material import MMDMaterialPanel, MMDTexturePanel
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -29,7 +33,7 @@ class TestMaterialSystem(unittest.TestCase):
                     shutil.rmtree(item_fp)
 
     def setUp(self):
-        """Start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -103,9 +107,9 @@ class TestMaterialSystem(unittest.TestCase):
         """Make sure mmd_tools addon is enabled"""
         bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
-        if not pref.addons.get("bl_ext.user_default.mmd_tools", None):
+        if not pref.addons.get("bl_ext.blender_org.mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     # ********************************************
     # Helper Functions
@@ -631,10 +635,10 @@ class TestMaterialSystem(unittest.TestCase):
         self.assertAlmostEqual(mmd_mat2.ambient_color[1], expected_ambient2[1], places=6, msg="Material2 ambient G should be half of BSDF-set diffuse G")
         self.assertAlmostEqual(mmd_mat2.ambient_color[2], expected_ambient2[2], places=6, msg="Material2 ambient B should be half of BSDF-set diffuse B")
 
-        print("   - Converted diffuse color (with texture): ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat.diffuse_color))
-        print("   - Converted diffuse color (no texture): ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat2.diffuse_color))
-        print("   - Calculated ambient color: ({:.2f}, {:.2f}, {:.2f})".format(*mmd_mat.ambient_color))
-        print("   - Calculated shininess: {:.1f}".format(mmd_mat.shininess))
+        print(f"   - Converted diffuse color (with texture): {mmd_mat.diffuse_color}")
+        print(f"   - Converted diffuse color (no texture): {mmd_mat2.diffuse_color}")
+        print(f"   - Calculated ambient color: {mmd_mat.ambient_color}")
+        print(f"   - Calculated shininess: {mmd_mat.shininess:.1f}")
         print("✓ Convert to MMD material test passed")
 
     # ********************************************
@@ -929,9 +933,6 @@ class TestMaterialSystem(unittest.TestCase):
         """Test MMD material panel poll conditions"""
         self._enable_mmd_tools()
 
-        # Import the panel class
-        from bl_ext.user_default.mmd_tools.panels.prop_material import MMDMaterialPanel
-
         # Test with no active object
         bpy.context.view_layer.objects.active = None
         self.assertFalse(MMDMaterialPanel.poll(bpy.context), "Should not poll with no active object")
@@ -952,9 +953,6 @@ class TestMaterialSystem(unittest.TestCase):
     def test_mmd_texture_panel_poll(self):
         """Test MMD texture panel poll conditions"""
         self._enable_mmd_tools()
-
-        # Import the panel class
-        from bl_ext.user_default.mmd_tools.panels.prop_material import MMDTexturePanel
 
         # Test similar conditions as material panel
         mesh_obj, material = self.__create_test_mesh_with_material()
@@ -1199,8 +1197,6 @@ class TestMaterialSystem(unittest.TestCase):
         self.assertIsNotNone(mmd_mat.diffuse_color, "Should have converted diffuse color")
 
         # Test shader migration
-        from bl_ext.user_default.mmd_tools.core.material import MigrationFnMaterial
-
         MigrationFnMaterial.update_mmd_shader()
 
         print("✓ Material version compatibility test passed")

@@ -5,6 +5,7 @@ import logging
 import time
 
 import bpy
+import numpy as np
 from mathutils import Matrix, Vector
 
 from ..bpyutils import FnObject
@@ -109,7 +110,7 @@ class FnSDEF:
                     # preprocessing
                     w0, w1 = bgs[0].weight, bgs[1].weight
                     # w0 + w1 == 1
-                    w0 = w0 / (w0 + w1)
+                    w0 /= (w0 + w1)
                     w1 = 1 - w0
 
                     c, r0, r1 = sdef_c[i].co, sdef_r0[i].co, sdef_r1[i].co
@@ -190,8 +191,6 @@ class FnSDEF:
         else:  # bulk update
             shapekey_data = cls.g_shapekey_data[_hash(obj)]
             if shapekey_data is None:
-                import numpy as np
-
                 shapekey_data = np.zeros(len(shapekey.data) * 3, dtype=np.float32)
                 shapekey.data.foreach_get("co", shapekey_data)
                 shapekey_data = cls.g_shapekey_data[_hash(obj)] = shapekey_data.reshape(len(shapekey.data), 3)
@@ -287,18 +286,15 @@ class FnSDEF:
         ov.type = "SINGLE_PROP"
         ov.targets[0].id = obj
         ov.targets[0].data_path = "name"
-        if not bulk_update and use_skip:  # FIXME: force disable use_skip=True for bulk_update=False on 2.8
-            use_skip = False
         mod = obj.modifiers.get("mmd_armature")
         variables = f.driver.variables
-        for name in set(data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)):  # add required bones for dependency graph
+        for name in {data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)}:  # add required bones for dependency graph
             var = variables.new()
             var.type = "TRANSFORMS"
             var.targets[0].id = mod.object
             var.targets[0].bone_target = name
         f.driver.use_self = True
-        param = (bulk_update, use_skip, use_scale)
-        f.driver.expression = "mmd_sdef_driver(self, obj, bulk_update={}, use_skip={}, use_scale={})".format(*param)
+        f.driver.expression = f"mmd_sdef_driver(self, obj, bulk_update={bulk_update}, use_skip={use_skip}, use_scale={use_scale})"
         return True
 
     @classmethod
@@ -318,7 +314,7 @@ class FnSDEF:
     @classmethod
     def clear_cache(cls, obj=None, unused_only=False):
         if unused_only:
-            valid_keys = set(_hash(i) for i in bpy.data.objects if i.type == "MESH" and i != obj)
+            valid_keys = {_hash(i) for i in bpy.data.objects if i.type == "MESH" and i != obj}
             for key in cls.g_verts.keys() - valid_keys:
                 del cls.g_verts[key]
             for key in cls.g_shapekey_data.keys() - cls.g_verts.keys():

@@ -1,7 +1,10 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.model import Model
 
 # Usage: blender --background -noaudio --python tests/test_model_operators.py -- --verbose
 
@@ -20,7 +23,7 @@ EXP_FRAME = "\u8868\u60c5"
 class ModelOperatorsTest(unittest.TestCase):
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         # Ensure active object exists (user may have deleted the default cube)
         if not bpy.context.active_object:
             bpy.ops.mesh.primitive_cube_add()

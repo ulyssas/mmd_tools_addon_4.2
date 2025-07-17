@@ -1,12 +1,16 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
+from collections import namedtuple
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.morph import FnMorph
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.morph import FnMorph, MigrationFnMorph
 from mathutils import Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +32,7 @@ class TestMorphSystem(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -45,7 +49,7 @@ class TestMorphSystem(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def __create_test_model(self, name="TestModel"):
         """Create a simple test model with armature and mesh"""
@@ -77,8 +81,8 @@ class TestMorphSystem(unittest.TestCase):
 
     def __quaternion_error(self, quat0, quat1):
         """Calculate quaternion error"""
-        angle = quat0.rotation_difference(quat1).angle % pi
-        return min(angle, pi - angle)
+        angle = quat0.rotation_difference(quat1).angle % math.pi
+        return min(angle, math.pi - angle)
 
     def __list_sample_files(self, file_types):
         """List sample files for testing"""
@@ -86,9 +90,7 @@ class TestMorphSystem(unittest.TestCase):
         for file_type in file_types:
             file_ext = "." + file_type
             for root, dirs, files in os.walk(os.path.join(SAMPLES_DIR, file_type)):
-                for name in files:
-                    if name.lower().endswith(file_ext):
-                        ret.append(os.path.join(root, name))
+                ret.extend(os.path.join(root, name) for name in files if name.lower().endswith(file_ext))
         return ret
 
     # ********************************************
@@ -440,8 +442,6 @@ class TestMorphSystem(unittest.TestCase):
         self.assertEqual(uv_morph.uv_index, 0, "UV morph should have correct UV index")
 
         # Test storing UV morph data
-        from collections import namedtuple
-
         OffsetData = namedtuple("OffsetData", "index offset")
         offsets = [
             OffsetData(0, (0.1, 0.2, 0.0, 0.0)),
@@ -545,8 +545,6 @@ class TestMorphSystem(unittest.TestCase):
 
     def test_migration_functions(self):
         """Test migration functions for compatibility"""
-        from bl_ext.user_default.mmd_tools.core.morph import MigrationFnMorph
-
         # Test migration functions don't crash on empty scene
         MigrationFnMorph.update_mmd_morph()  # Should not crash
         MigrationFnMorph.ensure_material_id_not_conflict()  # Should not crash

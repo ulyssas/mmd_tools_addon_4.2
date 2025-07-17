@@ -9,7 +9,7 @@ import bpy
 class _NodeTreeUtils:
     def __init__(self, shader: bpy.types.ShaderNodeTree):
         self.shader = shader
-        self.nodes: bpy.types.bpy_prop_collection[bpy.types.ShaderNode] = shader.nodes  # type: ignore
+        self.nodes: bpy.types.bpy_prop_collection[bpy.types.ShaderNode] = shader.nodes  # type: ignore[assignment]
         self.links = shader.links
 
     def _find_node(self, node_type: str) -> Optional[bpy.types.ShaderNode]:
@@ -64,13 +64,13 @@ class _NodeGroupUtils(_NodeTreeUtils):
     @property
     def node_input(self) -> bpy.types.NodeGroupInput:
         if not self.__node_input:
-            self.__node_input = cast(bpy.types.NodeGroupInput, self._find_node("NodeGroupInput") or self.new_node("NodeGroupInput", (-2, 0)))
+            self.__node_input = cast("bpy.types.NodeGroupInput", self._find_node("NodeGroupInput") or self.new_node("NodeGroupInput", (-2, 0)))
         return self.__node_input
 
     @property
     def node_output(self) -> bpy.types.NodeGroupOutput:
         if not self.__node_output:
-            self.__node_output = cast(bpy.types.NodeGroupOutput, self._find_node("NodeGroupOutput") or self.new_node("NodeGroupOutput", (2, 0)))
+            self.__node_output = cast("bpy.types.NodeGroupOutput", self._find_node("NodeGroupOutput") or self.new_node("NodeGroupOutput", (2, 0)))
         return self.__node_output
 
     def hide_nodes(self, hide_sockets=True):
@@ -263,8 +263,8 @@ class _MaterialMorph:
             # https://github.com/blender/blender/blob/594f47ecd2d5367ca936cf6fc6ec8168c2b360d0/source/blender/blenkernel/intern/material.c#L1400
             node_mix = ng.new_mix_node("MULTIPLY" if use_mul else "ADD", (pos[0] + 1, pos[1]))
             links.new(node_input.outputs["Fac"], node_mix.inputs["Fac"])
-            ng.new_input_socket("%s1" % id_name + tag, node_mix.inputs["Color1"])
-            ng.new_input_socket("%s2" % id_name + tag, node_mix.inputs["Color2"], socket_type="NodeSocketVector")
+            ng.new_input_socket(f"{id_name}1" + tag, node_mix.inputs["Color1"])
+            ng.new_input_socket(f"{id_name}2" + tag, node_mix.inputs["Color2"], socket_type="NodeSocketVector")
             ng.new_output_socket(id_name + tag, node_mix.outputs["Color"])
             return node_mix
 

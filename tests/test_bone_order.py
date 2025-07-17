@@ -1,8 +1,11 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
-from bl_ext.user_default.mmd_tools.panels.sidebar.bone_order import MMD_TOOLS_UL_ModelBones
+from bl_ext.blender_org.mmd_tools.core.model import FnModel, Model
+from bl_ext.blender_org.mmd_tools.panels.sidebar.bone_order import MMD_TOOLS_UL_ModelBones
 from mathutils import Vector
 
 
@@ -10,7 +13,7 @@ class TestBoneOrder(unittest.TestCase):
     """Test suite for bone order operations and bone ID management"""
 
     def setUp(self):
-        """Set up test environment with MMD model and bones"""
+        """Set up testing environment"""
         # Clear existing mesh objects to start clean
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete(use_global=False)
@@ -83,7 +86,7 @@ class TestBoneOrder(unittest.TestCase):
 
                 # Set some bones with additional transform properties for testing
                 # Use bone names that exist and find their IDs after fix
-                if bone_name in ["left_arm", "right_arm"]:
+                if bone_name in {"left_arm", "right_arm"}:
                     pose_bone.mmd_bone.has_additional_rotation = True
                     pose_bone.mmd_bone.additional_transform_bone = "upper_body"
                     # Note: additional_transform_bone_id will be set properly after fix_bone_order

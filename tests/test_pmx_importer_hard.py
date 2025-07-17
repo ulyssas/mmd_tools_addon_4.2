@@ -1,13 +1,16 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import gc
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.pmx.importer import PMXImporter
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +32,7 @@ class TestPmxImporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """Start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -51,9 +54,9 @@ class TestPmxImporter(unittest.TestCase):
         return (Vector(vec0) - Vector(vec1)).length
 
     def __quaternion_error(self, quat0, quat1):
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     def __safe_get_object(self, name):
         """Safely get object by name"""
@@ -81,18 +84,16 @@ class TestPmxImporter(unittest.TestCase):
         for file_type in file_types:
             file_ext = "." + file_type
             for root, dirs, files in os.walk(os.path.join(SAMPLES_DIR, file_type)):
-                for name in files:
-                    if name.lower().endswith(file_ext):
-                        ret.append(os.path.join(root, name))
+                ret.extend(os.path.join(root, name) for name in files if name.lower().endswith(file_ext))
         return ret
 
     def _enable_mmd_tools(self):
         """Make sure mmd_tools addon is enabled"""
         bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
-        if not pref.addons.get("bl_ext.user_default.mmd_tools", None):
+        if not pref.addons.get("bl_ext.blender_org.mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     def _import_pmx_model(self, filepath, **kwargs):
         """Import PMX model with given parameters"""
@@ -103,7 +104,7 @@ class TestPmxImporter(unittest.TestCase):
             "clean_model": False,
             "remove_doubles": False,
             "mark_sharp_edges": True,
-            "fix_IK_links": False,
+            "fix_ik_links": False,
             "apply_bone_fixed_axis": False,
             "rename_LR_bones": False,
             "use_underscore": False,
@@ -381,7 +382,7 @@ class TestPmxImporter(unittest.TestCase):
 
             # Verify that display frames reference existing bones
             mmd_root = root_obj.mmd_root
-            bone_names = set(bone.name for bone in armature.pose.bones)
+            bone_names = {bone.name for bone in armature.pose.bones}
 
             for frame in mmd_root.display_item_frames:
                 for item in frame.data:
@@ -490,12 +491,12 @@ class TestPmxImporter(unittest.TestCase):
         # Some models might not have bones that can be renamed
         print(f"   - Found L/R suffixed bones: {has_lr_suffix}")
 
-        # Test fix_IK_links option
+        # Test fix_ik_links option
         bpy.ops.object.select_all(action="SELECT")
         bpy.ops.object.delete()
 
-        root_obj = self._import_pmx_model(filepath, fix_IK_links=True, types={"ARMATURE"})
-        self.assertIsNotNone(root_obj, "Failed to import with fix_IK_links=True")
+        root_obj = self._import_pmx_model(filepath, fix_ik_links=True, types={"ARMATURE"})
+        self.assertIsNotNone(root_obj, "Failed to import with fix_ik_links=True")
 
         print("✓ Bone options test passed")
 
@@ -789,7 +790,7 @@ class TestPmxImporter(unittest.TestCase):
                 self.assertTrue(vertex_order_vg.lock_weight, "Vertex order group should be locked")
 
             # Count bone vertex groups
-            bone_vgs = [vg for vg in vertex_groups if vg.name not in ["mmd_edge_scale", "mmd_vertex_order"]]
+            bone_vgs = [vg for vg in vertex_groups if vg.name not in {"mmd_edge_scale", "mmd_vertex_order"}]
             print(f"   - Found {len(bone_vgs)} bone vertex groups")
 
         print("✓ Vertex weight distribution test passed")
@@ -881,7 +882,7 @@ class TestPmxImporter(unittest.TestCase):
                     degenerate_faces = 0
                     for poly in mesh_data.polygons:
                         vertices = [mesh_data.vertices[i].co for i in poly.vertices]
-                        if len(set(tuple(v) for v in vertices)) < 3:
+                        if len({tuple(v) for v in vertices}) < 3:
                             degenerate_faces += 1
 
                     print(f"   - Found {degenerate_faces} potentially degenerate faces")

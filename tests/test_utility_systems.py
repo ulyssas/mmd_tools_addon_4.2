@@ -1,10 +1,15 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 import bpy
-from bl_ext.user_default.mmd_tools import auto_load, bpyutils, cycles_converter, handlers
-from bl_ext.user_default.mmd_tools.core.exceptions import MaterialNotFoundError
+from bl_ext.blender_org.mmd_tools import auto_load, bpyutils, cycles_converter, handlers
+from bl_ext.blender_org.mmd_tools.core.exceptions import MaterialNotFoundError
 
 
 class TestUtilitySystems(unittest.TestCase):
@@ -24,7 +29,7 @@ class TestUtilitySystems(unittest.TestCase):
         cls.__enable_mmd_tools()
 
     def setUp(self):
-        """Clean state for each test"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
         # Start with clean scene
@@ -37,7 +42,7 @@ class TestUtilitySystems(unittest.TestCase):
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module="bl_ext.user_default.mmd_tools")
+            addon_enable(module="bl_ext.blender_org.mmd_tools")
 
     # ********************************************
     # Exception Tests
@@ -70,9 +75,6 @@ class TestUtilitySystems(unittest.TestCase):
     def test_auto_load_module_discovery(self):
         """Test auto_load module discovery functions"""
         # Test iter_submodule_names with a mock directory structure
-        import tempfile
-        from pathlib import Path
-
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
 
@@ -136,7 +138,7 @@ class TestUtilitySystems(unittest.TestCase):
                     "TestPropGroup": test_prop_group,
                     "NotAClass": "string value",
                     "MockPanel": MockPanel,
-                }
+                },
             },
         )()
 
@@ -495,11 +497,11 @@ class TestUtilitySystems(unittest.TestCase):
         # Restore
         handlers.MMDHanders.register()
 
-    @patch("bl_ext.user_default.mmd_tools.core.sdef.FnSDEF")
-    @patch("bl_ext.user_default.mmd_tools.core.material.MigrationFnMaterial")
-    @patch("bl_ext.user_default.mmd_tools.core.morph.MigrationFnMorph")
-    @patch("bl_ext.user_default.mmd_tools.core.camera.MigrationFnCamera")
-    @patch("bl_ext.user_default.mmd_tools.core.model.MigrationFnModel")
+    @patch("bl_ext.blender_org.mmd_tools.core.sdef.FnSDEF")
+    @patch("bl_ext.blender_org.mmd_tools.core.material.MigrationFnMaterial")
+    @patch("bl_ext.blender_org.mmd_tools.core.morph.MigrationFnMorph")
+    @patch("bl_ext.blender_org.mmd_tools.core.camera.MigrationFnCamera")
+    @patch("bl_ext.blender_org.mmd_tools.core.model.MigrationFnModel")
     def test_handlers_load_handler(self, mock_model, mock_camera, mock_morph, mock_material, mock_sdef):
         """Test load handler functionality"""
         # Call load handler
@@ -514,7 +516,7 @@ class TestUtilitySystems(unittest.TestCase):
         mock_model.update_mmd_ik_loop_factor.assert_called_once()
         mock_model.update_mmd_tools_version.assert_called_once()
 
-    @patch("bl_ext.user_default.mmd_tools.core.morph.MigrationFnMorph")
+    @patch("bl_ext.blender_org.mmd_tools.core.morph.MigrationFnMorph")
     def test_handlers_save_pre_handler(self, mock_morph):
         """Test save pre handler functionality"""
         # Call save pre handler
@@ -578,9 +580,6 @@ class TestUtilitySystems(unittest.TestCase):
             self.assertIsNotNone(test_obj)
 
             # Test auto_load module functions integration
-            import tempfile
-            from pathlib import Path
-
             with tempfile.TemporaryDirectory() as temp_dir:
                 temp_path = Path(temp_dir)
 

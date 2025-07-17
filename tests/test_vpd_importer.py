@@ -1,11 +1,15 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
+import traceback
 import unittest
 
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import Model
-from bl_ext.user_default.mmd_tools.core.vpd.importer import VPDImporter
+from bl_ext.blender_org.mmd_tools.core.model import Model
+from bl_ext.blender_org.mmd_tools.core.vpd.importer import VPDImporter
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -27,7 +31,7 @@ class TestVPDImporter(unittest.TestCase):
                 shutil.rmtree(item_fp)
 
     def setUp(self):
-        """We should start each test with a clean state"""
+        """Set up testing environment"""
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
@@ -50,9 +54,7 @@ class TestVPDImporter(unittest.TestCase):
 
         ret = []
         for root, dirs, files in os.walk(directory):
-            for name in files:
-                if name.lower().endswith("." + extension.lower()):
-                    ret.append(os.path.join(root, name))
+            ret.extend(os.path.join(root, name) for name in files if name.lower().endswith("." + extension.lower()))
         return ret
 
     def __enable_mmd_tools(self):
@@ -66,7 +68,7 @@ class TestVPDImporter(unittest.TestCase):
                 else bpy.ops.preferences.addon_enable
             )
             addon_enable(
-                module="bl_ext.user_default.mmd_tools"
+                module="bl_ext.blender_org.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
 
     def __create_model_from_pmx(self, pmx_file):
@@ -128,7 +130,7 @@ class TestVPDImporter(unittest.TestCase):
 
                 if not model_root:
                     print(
-                        "   * Skipping model - no MMD root object found after import"
+                        "   * Skipping model - no MMD root object found after import",
                     )
                     continue
 
@@ -156,7 +158,7 @@ class TestVPDImporter(unittest.TestCase):
 
                         # Import using operator
                         result = bpy.ops.mmd_tools.import_vpd(
-                            filepath=vpd_file, scale=1.0
+                            filepath=vpd_file, scale=1.0,
                         )
 
                         # Check result
@@ -174,17 +176,13 @@ class TestVPDImporter(unittest.TestCase):
 
                     except Exception as e:
                         print(f"   * Exception during VPD import: {str(e)}")
-                        import traceback
-
                         print(traceback.format_exc())
                         self.fail(
-                            f"Exception importing VPD {vpd_name} to model {model_name}: {str(e)}"
+                            f"Exception importing VPD {vpd_name} to model {model_name}: {str(e)}",
                         )
 
             except Exception as e:
                 print(f"   * Exception during model import: {str(e)}")
-                import traceback
-
                 print(traceback.format_exc())
                 self.fail(f"Exception importing model {model_name}: {str(e)}")
 

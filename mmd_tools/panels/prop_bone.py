@@ -23,9 +23,9 @@ class MMDBonePanel(bpy.types.Panel):
             row = self.layout.column(align=True)
             for name in ik_bone_names:
                 if name in ik_custom_map:
-                    row.prop(bones[name].mmd_bone, "ik_rotation_constraint", text="IK Angle {%s}" % name)
+                    row.prop(bones[name].mmd_bone, "ik_rotation_constraint", text=f"IK Angle {{{name}}}")
                 else:
-                    row.prop(pose_bone.mmd_bone, "ik_rotation_constraint", text="IK Angle (%s)" % name)
+                    row.prop(pose_bone.mmd_bone, "ik_rotation_constraint", text=f"IK Angle ({name})")
 
     def draw(self, context):
         pose_bone = context.active_pose_bone or context.active_object.pose.bones.get(context.active_bone.name, None)

@@ -124,7 +124,7 @@ def apply_operator_preset(operator, preset_name):
         # Execute preset with proper context
         with bpy.context.temp_override(active_operator=operator):
             try:
-                with open(preset_file, "r", encoding="utf-8") as f:
+                with open(preset_file, encoding="utf-8") as f:
                     preset_code = f.read()
 
                 namespace = {"bpy": bpy}
@@ -266,7 +266,12 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         subtype="ANGLE",
         unit="ROTATION",
     )
-    fix_IK_links: bpy.props.BoolProperty(
+    import_adduv2_as_vertex_colors: bpy.props.BoolProperty(
+        name="Import Vertex Colors",
+        description="Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created.",
+        default=False,
+    )
+    fix_ik_links: bpy.props.BoolProperty(
         name="Fix IK Links",
         description="Fix IK links to be blender suitable",
         default=False,
@@ -344,6 +349,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             elif self.filepath:
                 self._do_execute(context)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -367,7 +373,8 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 remove_doubles=self.remove_doubles,
                 mark_sharp_edges=self.mark_sharp_edges,
                 sharp_edge_angle=self.sharp_edge_angle,
-                fix_IK_links=self.fix_IK_links,
+                import_adduv2_as_vertex_colors=self.import_adduv2_as_vertex_colors,
+                fix_ik_links=self.fix_ik_links,
                 ik_loop_factor=self.ik_loop_factor,
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,
                 rename_LR_bones=self.rename_bones,
@@ -377,10 +384,9 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 sph_blend_factor=self.sph_blend_factor,
                 spa_blend_factor=self.spa_blend_factor,
             )
-            self.report({"INFO"}, 'Imported MMD model from "%s"' % self.filepath)
+            self.report({"INFO"}, f'Imported MMD model from "{self.filepath}"')
         except Exception:
-            err_msg = traceback.format_exc()
-            logging.error(err_msg)
+            logging.exception("Error occurred")
             raise
         finally:
             if self.save_log:
@@ -408,7 +414,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     )
     margin: bpy.props.IntProperty(
         name="Margin",
-        description="Number of frames to add before the motion starts (only applies if current frame is 1)",
+        description="Number of frames to add before the motion starts (only applies if current frame is 0 or 1)",
         min=0,
         default=0,
     )
@@ -454,11 +460,11 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         default=True,
     )
     always_create_new_action: bpy.props.BoolProperty(
-        name="Always Create New Action",
-        description="Always create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
+        name="Create New Action",
+        description="Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         default=False,
     )
-    use_NLA: bpy.props.BoolProperty(
+    use_nla: bpy.props.BoolProperty(
         name="Use NLA",
         description="Import the motion as NLA strips",
         default=False,
@@ -498,7 +504,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout.prop(self, "scale")
         layout.prop(self, "margin")
         layout.prop(self, "always_create_new_action")
-        layout.prop(self, "use_NLA")
+        layout.prop(self, "use_nla")
 
         layout.prop(self, "bone_mapper")
         if self.bone_mapper == "RENAMED_BONES":
@@ -546,7 +552,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                 frame_margin=self.margin,
                 use_mirror=self.use_mirror,
                 always_create_new_action=self.always_create_new_action,
-                use_NLA=self.use_NLA,
+                use_nla=self.use_nla,
                 detect_camera_changes=self.detect_camera_changes,
                 detect_lamp_changes=self.detect_lamp_changes,
             )
@@ -691,7 +697,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     )
     sort_materials: bpy.props.BoolProperty(
         name="Sort Materials",
-        description=("Sort materials for alpha blending. " "WARNING: Will not work if you have " + "transparent meshes inside the model. " + "E.g. blush meshes"),
+        description="Sort materials for alpha blending. WARNING: Will not work if you have transparent meshes inside the model. E.g. blush meshes",
         default=False,
     )
     disable_specular: bpy.props.BoolProperty(
@@ -719,11 +725,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description=(
             "Vertex Splitting for Custom Split Normals\n"
             "ENABLE:\n"
-            "    Split vertices when the same vertex has different normals or vertex colors.\n"
+            "    Split vertices when the same vertex has different normals.\n"
             "DISABLE:\n"
-            "    Use angle * area weighted averaging for normals and vertex colors.\n"
+            "    Use angle * area weighted averaging for normals.\n"
             "WARNING:\n"
-            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals or vertex colors per vertex, and can significantly increase the vertex count. Use with caution.\n"
+            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
             "\n"
             "NOTE:\n"
             "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible.\n"
@@ -740,6 +746,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
             ("CUSTOM", "Custom", 'Use custom vertex weight of vertex group "mmd_vertex_order"', 2),
         ],
         default="NONE",
+    )
+    export_vertex_colors_as_adduv2: bpy.props.BoolProperty(
+        name="Export Vertex Colors",
+        description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
+        default=False,
     )
     ik_angle_limits: bpy.props.EnumProperty(
         name="IK Angle Limits",
@@ -819,6 +830,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                     self.filepath = os.path.join(model_folder, model_name + ".pmx")
                 self._do_execute(context, root)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -832,7 +844,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
 
         arm = FnModel.find_armature_object(root)
         if arm is None:
-            self.report({"ERROR"}, '[Skipped] The armature object of MMD model "%s" can\'t be found' % root.name)
+            self.report({"ERROR"}, f'[Skipped] The armature object of MMD model "{root.name}" can\'t be found')
             return {"CANCELLED"}
         orig_pose_position = None
         if not root.mmd_root.is_built:  # use 'REST' pose when the model is not built
@@ -860,12 +872,12 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
                 vertex_splitting=self.vertex_splitting,
+                export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 ik_angle_limits=self.ik_angle_limits,
             )
-            self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, self.filepath))
+            self.report({"INFO"}, f'Exported MMD model "{root.name}" to "{self.filepath}"')
         except Exception:
-            err_msg = traceback.format_exc()
-            logging.error(err_msg)
+            logging.exception("Error occurred")
             raise
         finally:
             if orig_pose_position:
@@ -963,10 +975,9 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             vmd_exporter.VMDExporter().export(**params)
             logging.info(" Finished exporting motion in %f seconds.", time.time() - start_time)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
-            logging.error(err_msg)
             self.report({"ERROR"}, err_msg)
-
         return {"FINISHED"}
 
 
@@ -1053,7 +1064,7 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
         try:
             vpd_exporter.VPDExporter().export(**params)
         except Exception:
+            logging.exception("Error occurred")
             err_msg = traceback.format_exc()
-            logging.error(err_msg)
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
