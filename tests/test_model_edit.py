@@ -446,7 +446,6 @@ class TestModelEdit(unittest.TestCase):
             # First, collect the objects to be removed
             objects_to_remove = []
             for obj in bpy.data.objects:
-                print("??????????????????????")
                 if obj.type == "ARMATURE" and obj not in {first_model_arm, second_model_arm_with_head}:
                     objects_to_remove.append(obj)
                 elif obj.mmd_type == "ROOT" and obj not in {first_model_root, second_model_root}:
