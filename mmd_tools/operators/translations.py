@@ -1,9 +1,9 @@
 # Copyright 2021 MMD Tools authors
 # This file is part of MMD Tools.
 
-from typing import TYPE_CHECKING, cast
 import csv
 import os
+from typing import TYPE_CHECKING, cast
 
 import bpy
 
@@ -363,31 +363,31 @@ class ExportTranslationCSVOperator(bpy.types.Operator):
         if not self.filepath.endswith(".csv"):
             self.filepath = bpy.path.ensure_ext(self.filepath, ".csv")
         context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
+        return {"RUNNING_MODAL"}
 
     def execute(self, context):
         if not self.filepath.lower().endswith(".csv"):
             self.filepath += ".csv"
         root_object = FnModel.find_root_object(context.active_object)
         if root_object is None:
-            self.report({'ERROR'}, "Root object not found")
-            return {'CANCELLED'}
+            self.report({"ERROR"}, "Root object not found")
+            return {"CANCELLED"}
 
         mmd_translation = root_object.mmd_root.translation
 
         try:
-            with open(self.filepath, 'w', newline='', encoding='utf-8') as csvfile:
+            with open(self.filepath, "w", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
-                writer.writerow(['type', 'blender', 'japanese', 'english'])
+                writer.writerow(["type", "blender", "japanese", "english"])
                 for idx in mmd_translation.filtered_translation_element_indices:
                     element = mmd_translation.translation_elements[idx.value]
                     writer.writerow([element.type, element.name, element.name_j, element.name_e])
         except Exception as e:
-            self.report({'ERROR'}, f"Failed to write CSV: {e}")
-            return {'CANCELLED'}
+            self.report({"ERROR"}, f"Failed to write CSV: {e}")
+            return {"CANCELLED"}
 
-        self.report({'INFO'}, f"Exported to {os.path.basename(self.filepath)}")
-        return {'FINISHED'}
+        self.report({"INFO"}, f"Exported to {os.path.basename(self.filepath)}")
+        return {"FINISHED"}
 
 
 class ImportTranslationCSVOperator(bpy.types.Operator):
@@ -405,7 +405,7 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
         name="File Path",
         description="Path to import the translation CSV",
         subtype="FILE_PATH",
-        default='*.csv',
+        default="*.csv",
     )
 
     def invoke(self, context, event):
@@ -423,7 +423,7 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
         warnings = []
 
         try:
-            with open(self.filepath, "r", encoding="utf-8") as csvfile:
+            with open(self.filepath, encoding="utf-8") as csvfile:
                 reader = csv.DictReader(csvfile)
                 csv_rows = list(reader)
 
@@ -471,7 +471,7 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
         msg = f"Imported {updated_count} entries from CSV"
         if warnings:
             for w in warnings:
-                self.report({'WARNING'}, w)
+                self.report({"WARNING"}, w)
             msg += " with warnings"
 
         self.report({"INFO"}, msg)
