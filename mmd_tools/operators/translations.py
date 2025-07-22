@@ -349,7 +349,6 @@ class GlobalTranslationPopup(bpy.types.Operator):
         translation_box.label(text="Dictionaries:", icon="HELP")
         row = translation_box.row()
         row.prop(mmd_translation, "dictionary", text="to_english")
-        # row.operator(ExecuteTranslationScriptOperator.bl_idname, text='Write to .csv')
 
         translation_box.separator()
         row = translation_box.row()
@@ -359,7 +358,6 @@ class GlobalTranslationPopup(bpy.types.Operator):
         box.separator()
         translation_box = box.box().column(align=True)
         translation_box.label(text="CSV:", icon="FILE_TEXT")
-
         row = translation_box.row()
         row.operator(ImportTranslationCSVOperator.bl_idname, text="Import CSV")
         row.operator(ExportTranslationCSVOperator.bl_idname, text="Export CSV")
