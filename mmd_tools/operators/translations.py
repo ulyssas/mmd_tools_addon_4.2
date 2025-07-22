@@ -12,7 +12,11 @@ from ..core.translations import MMD_DATA_TYPE_TO_HANDLERS, FnTranslations
 from ..translations import DictionaryEnum
 
 if TYPE_CHECKING:
-    from ..properties.translations import MMDTranslation, MMDTranslationElement, MMDTranslationElementIndex
+    from ..properties.translations import (
+        MMDTranslation,
+        MMDTranslationElement,
+        MMDTranslationElementIndex,
+    )
 
 
 class TranslateMMDModel(bpy.types.Operator):
@@ -103,7 +107,11 @@ class TranslateMMDModel(bpy.types.Operator):
         translator = self.__translator
         txt = translator.save_fails()
         if translator.fails:
-            self.report({"WARNING"}, "Failed to translate %d names, see '%s' in text editor" % (len(translator.fails), txt.name))
+            self.report(
+                {"WARNING"},
+                "Failed to translate %d names, see '%s' in text editor"
+                % (len(translator.fails), txt.name),
+            )
         return {"FINISHED"}
 
     def translate(self, name_j, name_e):
@@ -152,7 +160,9 @@ class TranslateMMDModel(bpy.types.Operator):
         comment_text = bpy.data.texts.get(mmd_root.comment_text, None)
         comment_e_text = bpy.data.texts.get(mmd_root.comment_e_text, None)
         if comment_text and comment_e_text:
-            comment_e = self.translate(comment_text.as_string(), comment_e_text.as_string())
+            comment_e = self.translate(
+                comment_text.as_string(), comment_e_text.as_string()
+            )
             comment_e_text.from_string(comment_e)
 
     def translate_bone(self, rig):
@@ -181,7 +191,9 @@ class TranslateMMDModel(bpy.types.Operator):
         for m in rig.materials():
             if m is None:
                 continue
-            m.mmd_material.name_e = self.translate(m.mmd_material.name_j, m.mmd_material.name_e)
+            m.mmd_material.name_e = self.translate(
+                m.mmd_material.name_j, m.mmd_material.name_e
+            )
 
     def translate_display(self, rig):
         mmd_root = rig.rootObject().mmd_root
@@ -196,13 +208,27 @@ class TranslateMMDModel(bpy.types.Operator):
             i.mmd_joint.name_e = self.translate(i.mmd_joint.name_j, i.mmd_joint.name_e)
 
 
-DEFAULT_SHOW_ROW_COUNT = 18
+DEFAULT_SHOW_ROW_COUNT = 20
 
 
 class MMD_TOOLS_UL_MMDTranslationElementIndex(bpy.types.UIList):
-    def draw_item(self, context, layout: bpy.types.UILayout, data, mmd_translation_element_index: "MMDTranslationElementIndex", icon, active_data, active_propname, index: int):
-        mmd_translation_element: MMDTranslationElement = data.translation_elements[mmd_translation_element_index.value]
-        MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type].draw_item(layout, mmd_translation_element, index)
+    def draw_item(
+        self,
+        context,
+        layout: bpy.types.UILayout,
+        data,
+        mmd_translation_element_index: "MMDTranslationElementIndex",
+        icon,
+        active_data,
+        active_propname,
+        index: int,
+    ):
+        mmd_translation_element: MMDTranslationElement = data.translation_elements[
+            mmd_translation_element_index.value
+        ]
+        MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type].draw_item(
+            layout, mmd_translation_element, index
+        )
 
 
 class RestoreMMDDataReferenceOperator(bpy.types.Operator):
@@ -216,8 +242,14 @@ class RestoreMMDDataReferenceOperator(bpy.types.Operator):
 
     def execute(self, context: bpy.types.Context):
         root_object = FnModel.find_root_object(context.active_object)
-        mmd_translation_element_index = root_object.mmd_root.translation.filtered_translation_element_indices[self.index].value
-        mmd_translation_element = root_object.mmd_root.translation.translation_elements[mmd_translation_element_index]
+        mmd_translation_element_index = (
+            root_object.mmd_root.translation.filtered_translation_element_indices[
+                self.index
+            ].value
+        )
+        mmd_translation_element = root_object.mmd_root.translation.translation_elements[
+            mmd_translation_element_index
+        ]
         setattr(mmd_translation_element, self.prop_name, self.restore_value)
 
         return {"FINISHED"}
@@ -244,13 +276,33 @@ class GlobalTranslationPopup(bpy.types.Operator):
 
         group = row.row(align=True, heading="is Blank:")
         group.alignment = "RIGHT"
-        group.prop(mmd_translation, "filter_japanese_blank", toggle=True, text="Japanese")
+        group.prop(
+            mmd_translation, "filter_japanese_blank", toggle=True, text="Japanese"
+        )
         group.prop(mmd_translation, "filter_english_blank", toggle=True, text="English")
 
         group = row.row(align=True)
-        group.prop(mmd_translation, "filter_restorable", toggle=True, icon="FILE_REFRESH", icon_only=True)
-        group.prop(mmd_translation, "filter_selected", toggle=True, icon="RESTRICT_SELECT_OFF", icon_only=True)
-        group.prop(mmd_translation, "filter_visible", toggle=True, icon="HIDE_OFF", icon_only=True)
+        group.prop(
+            mmd_translation,
+            "filter_restorable",
+            toggle=True,
+            icon="FILE_REFRESH",
+            icon_only=True,
+        )
+        group.prop(
+            mmd_translation,
+            "filter_selected",
+            toggle=True,
+            icon="RESTRICT_SELECT_OFF",
+            icon_only=True,
+        )
+        group.prop(
+            mmd_translation,
+            "filter_visible",
+            toggle=True,
+            icon="HIDE_OFF",
+            icon_only=True,
+        )
 
         col = layout.column(align=True)
         box = col.box().column(align=True)
@@ -262,7 +314,10 @@ class GlobalTranslationPopup(bpy.types.Operator):
         row.label(text="", icon="RESTRICT_SELECT_OFF")
         row.label(text="", icon="HIDE_OFF")
 
-        if len(mmd_translation.filtered_translation_element_indices) > DEFAULT_SHOW_ROW_COUNT:
+        if (
+            len(mmd_translation.filtered_translation_element_indices)
+            > DEFAULT_SHOW_ROW_COUNT
+        ):
             row.label(text="", icon="BLANK1")
 
         col.template_list(
@@ -281,7 +336,12 @@ class GlobalTranslationPopup(bpy.types.Operator):
 
         box.separator()
         row = box.row()
-        row.prop(mmd_translation, "batch_operation_script_preset", text="Preset", icon="CON_TRANSFORM_CACHE")
+        row.prop(
+            mmd_translation,
+            "batch_operation_script_preset",
+            text="Preset",
+            icon="CON_TRANSFORM_CACHE",
+        )
         row.operator(ExecuteTranslationBatchOperator.bl_idname, text="Execute")
 
         box.separator()
@@ -299,10 +359,9 @@ class GlobalTranslationPopup(bpy.types.Operator):
         box.separator()
         translation_box = box.box().column(align=True)
         translation_box.label(text="CSV:", icon="FILE_TEXT")
+
         row = translation_box.row()
         row.operator(ImportTranslationCSVOperator.bl_idname, text="Import CSV")
-        translation_box.separator()
-        row = translation_box.row()
         row.operator(ExportTranslationCSVOperator.bl_idname, text="Export CSV")
 
     def invoke(self, context: bpy.types.Context, _event):
@@ -341,13 +400,18 @@ class ExecuteTranslationBatchOperator(bpy.types.Operator):
 
         fails, text = FnTranslations.execute_translation_batch(root)
         if fails:
-            self.report({"WARNING"}, "Failed to translate %d names, see '%s' in text editor" % (len(fails), text.name))
+            self.report(
+                {"WARNING"},
+                "Failed to translate %d names, see '%s' in text editor"
+                % (len(fails), text.name),
+            )
 
         return {"FINISHED"}
 
 
 class ExportTranslationCSVOperator(bpy.types.Operator):
     bl_idname = "mmd_tools.export_translation_csv"
+    bl_description = "Export CSV for external translation."
     bl_label = "Export Translation CSV"
 
     filter_glob: bpy.props.StringProperty(default="*.csv", options={"HIDDEN"})
@@ -359,15 +423,18 @@ class ExportTranslationCSVOperator(bpy.types.Operator):
         default="mmd_translation.csv",
     )
 
-    def invoke(self, context, event):
-        if not self.filepath.endswith(".csv"):
+    def _ensure_csv_extension(self):
+        """Ensure the file path ends with a .csv extension (case-insensitive)."""
+        if not self.filepath.lower().endswith(".csv"):
             self.filepath = bpy.path.ensure_ext(self.filepath, ".csv")
+
+    def invoke(self, context, event):
+        self._ensure_csv_extension()
         context.window_manager.fileselect_add(self)
         return {"RUNNING_MODAL"}
 
     def execute(self, context):
-        if not self.filepath.lower().endswith(".csv"):
-            self.filepath += ".csv"
+        self._ensure_csv_extension()
         root_object = FnModel.find_root_object(context.active_object)
         if root_object is None:
             self.report({"ERROR"}, "Root object not found")
@@ -381,7 +448,9 @@ class ExportTranslationCSVOperator(bpy.types.Operator):
                 writer.writerow(["type", "blender", "japanese", "english"])
                 for idx in mmd_translation.filtered_translation_element_indices:
                     element = mmd_translation.translation_elements[idx.value]
-                    writer.writerow([element.type, element.name, element.name_j, element.name_e])
+                    writer.writerow(
+                        [element.type, element.name, element.name_j, element.name_e]
+                    )
         except Exception as e:
             self.report({"ERROR"}, f"Failed to write CSV: {e}")
             return {"CANCELLED"}
@@ -392,6 +461,7 @@ class ExportTranslationCSVOperator(bpy.types.Operator):
 
 class ImportTranslationCSVOperator(bpy.types.Operator):
     bl_idname = "mmd_tools.import_translation_csv"
+    bl_description = "Import translated CSV."
     bl_label = "Import Translation CSV"
 
     only_update_english_name: bpy.props.BoolProperty(
@@ -425,14 +495,28 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
         try:
             with open(self.filepath, encoding="utf-8") as csvfile:
                 reader = csv.DictReader(csvfile)
-                csv_rows = list(reader)
+                required_headers = {"blender", "japanese", "english"}
+                if not required_headers.issubset(set(reader.fieldnames or [])):
+                    missing = required_headers - set(reader.fieldnames or [])
+                    self.report(
+                        {"ERROR"},
+                        f"Missing required headers in CSV: {', '.join(missing)}",
+                    )
+                    return {"CANCELLED"}
 
-                visible_indices = [i.value for i in mmd_translation.filtered_translation_element_indices]
-                min_len = min(len(csv_rows), len(visible_indices))
+                visible_indices = [
+                    i.value
+                    for i in mmd_translation.filtered_translation_element_indices
+                ]
+                translation_elements_list = list(mmd_translation.translation_elements)
+                row_count = 0
 
-                for i in range(min_len):
-                    row = csv_rows[i]
-                    element = list(mmd_translation.translation_elements)[visible_indices[i]]
+                for row in reader:
+                    if row_count >= len(visible_indices):
+                        row_count += 1
+                        continue
+
+                    element = translation_elements_list[visible_indices[row_count]]
 
                     b_name = row.get("blender", "").strip()
                     j_name = row.get("japanese", "").strip()
@@ -457,11 +541,17 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
                     if updated:
                         updated_count += 1
 
+                    row_count += 1
+
                 # Output warnings
-                if len(csv_rows) > len(visible_indices):
-                    warnings.append(f"{len(csv_rows) - len(visible_indices)} extra lines in CSV! (ignored)")
-                elif len(csv_rows) < len(visible_indices):
-                    warnings.append(f"{len(visible_indices) - len(csv_rows)} missing lines in CSV! (aborted translation)")
+                if row_count > len(visible_indices):
+                    warnings.append(
+                        f"{row_count - len(visible_indices)} extra lines in CSV! (ignored)"
+                    )
+                elif row_count < len(visible_indices):
+                    warnings.append(
+                        f"{len(visible_indices) - row_count} missing lines in CSV! (aborted translation)"
+                    )
         except Exception as e:
             self.report({"ERROR"}, f"Failed to read CSV: {e}")
             return {"CANCELLED"}
