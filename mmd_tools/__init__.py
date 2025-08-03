@@ -21,11 +21,22 @@ from . import auto_load
 PACKAGE_NAME = __package__
 PACKAGE_PATH = os.path.dirname(__file__)
 
-with open(os.path.join(PACKAGE_PATH, "blender_manifest.toml"), "rb") as f:
-    import tomllib
+bl_info = {
+    "name": "mmd_tools",
+    "author": "UuuNyaa <uuunyaa@gmail.com>",
+    "version": (4, 3, 10),
+    "blender": (4, 2, 0),
+    "location": "View3D > Sidebar > MMD Panel",
+    "description": "Utility tools for MMD model editing. (UuuNyaa's forked version)",
+    "warning": "",
+    "doc_url": "https://mmd-blender.fandom.com/wiki/MMD_Tools",
+    "wiki_url": "https://mmd-blender.fandom.com/wiki/MMD_Tools",
+    "tracker_url": "https://github.com/UuuNyaa/blender_mmd_tools/issues",
+    "support": "COMMUNITY",
+    "category": "Object",
+}
 
-    manifest = tomllib.load(f)
-    MMD_TOOLS_VERSION = manifest["version"]
+MMD_TOOLS_VERSION = ".".join(map(str, bl_info["version"]))
 
 auto_load.init(PACKAGE_NAME)
 
