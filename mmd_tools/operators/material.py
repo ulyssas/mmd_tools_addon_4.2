@@ -1,6 +1,8 @@
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
+from collections import defaultdict
+
 import bpy
 from bpy.props import BoolProperty, StringProperty
 from bpy.types import Operator
@@ -90,6 +92,124 @@ class ConvertMaterials(Operator):
                 continue
             cycles_converter.convertToBlenderShader(obj, use_principled=self.use_principled, clean_nodes=self.clean_nodes, subsurface=self.subsurface)
         return {"FINISHED"}
+
+
+class MergeMaterials(Operator):
+    bl_idname = "mmd_tools.merge_materials"
+    bl_label = "Merge Materials"
+    bl_description = "Merge materials with the same texture in selected objects. Only merges materials with exactly one texture node. Please convert to Blender materials first."
+    bl_options = {"REGISTER", "UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        return any(x.type == "MESH" for x in context.selected_objects)
+
+    def execute(self, context):
+        # Process all selected mesh objects
+        for obj in context.selected_objects:
+            if obj.type != "MESH":
+                continue
+
+            self.merge_materials_for_object(context, obj)
+
+        return {"FINISHED"}
+
+    def merge_materials_for_object(self, context, obj):
+        """Merge materials with same texture for a single object"""
+        if not obj.data.materials:
+            self.report({"INFO"}, f"Object '{obj.name}' has no materials")
+            return
+
+        # Map texture paths to material indices and names
+        texture_to_materials = defaultdict(list)
+
+        # Check each material
+        for i, material in enumerate(obj.data.materials):
+            if not material or not material.use_nodes:
+                continue
+
+            # 1. Check texture node count (must be exactly 1)
+            texture_nodes = [node for node in material.node_tree.nodes if node.type == "TEX_IMAGE"]
+            if len(texture_nodes) != 1:
+                continue
+
+            # 2. Record texture path and material info
+            texture_node = texture_nodes[0]
+            if texture_node.image:
+                texture_path = texture_node.image.filepath
+                texture_to_materials[texture_path].append({"index": i, "name": material.name})
+
+        # Find material groups that need merging
+        materials_to_merge = {path: materials for path, materials in texture_to_materials.items() if len(materials) > 1}
+
+        if not materials_to_merge:
+            self.report({"INFO"}, f"No materials to merge in object '{obj.name}'")
+            return
+
+        # Set active object
+        context.view_layer.objects.active = obj
+
+        # Enter edit mode
+        bpy.ops.object.mode_set(mode="EDIT")
+
+        # Track materials to delete
+        materials_to_delete = set()
+        merge_details = []
+
+        # Process each texture group
+        for texture_path, materials in materials_to_merge.items():
+            # Use first material as target
+            target_material = materials[0]
+            target_index = target_material["index"]
+            target_name = target_material["name"]
+
+            source_materials = []
+
+            # Reassign faces from other materials to target material
+            for source_material in materials[1:]:
+                source_index = source_material["index"]
+                source_name = source_material["name"]
+                source_materials.append(source_name)
+
+                # Deselect all faces
+                bpy.ops.mesh.select_all(action="DESELECT")
+
+                # Set active material slot to source material
+                obj.active_material_index = source_index
+
+                # Select faces by material
+                bpy.ops.object.material_slot_select()
+
+                # Set active material slot to target material
+                obj.active_material_index = target_index
+
+                # Assign selected faces to target material
+                bpy.ops.object.material_slot_assign()
+
+                # Mark source material for deletion
+                materials_to_delete.add(source_index)
+
+            # Record merge details
+            texture_name = bpy.path.basename(texture_path) if texture_path else "No texture"
+            merge_details.append({"texture": texture_name, "target": target_name, "sources": source_materials})
+
+        # Exit edit mode
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        # Remove unused material slots (from high to low index to avoid index shifting)
+        materials_to_delete_sorted = sorted(materials_to_delete, reverse=True)
+
+        for material_index in materials_to_delete_sorted:
+            obj.active_material_index = material_index
+            bpy.ops.object.material_slot_remove()
+
+        # Report detailed merge information
+        merged_count = sum(len(details["sources"]) for details in merge_details)
+        self.report({"INFO"}, f"Object '{obj.name}': Merged {merged_count} materials")
+
+        for details in merge_details:
+            sources_text = ", ".join(details["sources"])
+            self.report({"INFO"}, f"Same Texture '{details['texture']}': Merged materials [{sources_text}] into '{details['target']}'")
 
 
 class ConvertBSDFMaterials(Operator):

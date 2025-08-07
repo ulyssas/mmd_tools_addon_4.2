@@ -152,6 +152,7 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
         row.operator("mmd_tools.edge_preview_setup", text="", icon="TRASH").action = "CLEAN"
         row = grid.row(align=True)
         row.operator("mmd_tools.convert_materials", text="Convert to Blender", icon="BLENDER")
+        row.operator("mmd_tools.merge_materials", text="", icon="LINK_BLEND")
         row.operator("mmd_tools.convert_bsdf_materials", text="Convert to MMD", icon="MATSPHERE")
 
     def draw_misc(self, context, mmd_root_object):
