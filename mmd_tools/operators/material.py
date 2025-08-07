@@ -146,17 +146,10 @@ class MergeMaterials(Operator):
             self.report({"INFO"}, f"No materials to merge in object '{obj.name}'")
             return
 
-        # Set active object
-        context.view_layer.objects.active = obj
-
-        # Enter edit mode
-        bpy.ops.object.mode_set(mode="EDIT")
-
-        # Track materials to delete
-        materials_to_delete = set()
-        merge_details = []
-
         # Process each texture group
+        context.view_layer.objects.active = obj
+        bpy.ops.object.mode_set(mode="EDIT")
+        merge_details = []
         for texture_path, materials in materials_to_merge.items():
             # Use first material as target
             target_material = materials[0]
@@ -171,39 +164,18 @@ class MergeMaterials(Operator):
                 source_name = source_material["name"]
                 source_materials.append(source_name)
 
-                # Deselect all faces
                 bpy.ops.mesh.select_all(action="DESELECT")
-
-                # Set active material slot to source material
                 obj.active_material_index = source_index
-
-                # Select faces by material
                 bpy.ops.object.material_slot_select()
-
-                # Set active material slot to target material
                 obj.active_material_index = target_index
-
-                # Assign selected faces to target material
                 bpy.ops.object.material_slot_assign()
-
-                # Mark source material for deletion
-                materials_to_delete.add(source_index)
 
             # Record merge details
             texture_name = bpy.path.basename(texture_path) if texture_path else "No texture"
             merge_details.append({"texture": texture_name, "target": target_name, "sources": source_materials})
-
-        # Exit edit mode
         bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.material_slot_remove_unused()
 
-        # Remove unused material slots (from high to low index to avoid index shifting)
-        materials_to_delete_sorted = sorted(materials_to_delete, reverse=True)
-
-        for material_index in materials_to_delete_sorted:
-            obj.active_material_index = material_index
-            bpy.ops.object.material_slot_remove()
-
-        # Report detailed merge information
         merged_count = sum(len(details["sources"]) for details in merge_details)
         self.report({"INFO"}, f"Object '{obj.name}': Merged {merged_count} materials")
 
