@@ -161,7 +161,7 @@ class TranslateMMDModel(bpy.types.Operator):
         comment_e_text = bpy.data.texts.get(mmd_root.comment_e_text, None)
         if comment_text and comment_e_text:
             comment_e = self.translate(
-                comment_text.as_string(), comment_e_text.as_string()
+                comment_text.as_string(), comment_e_text.as_string(),
             )
             comment_e_text.from_string(comment_e)
 
@@ -192,7 +192,7 @@ class TranslateMMDModel(bpy.types.Operator):
             if m is None:
                 continue
             m.mmd_material.name_e = self.translate(
-                m.mmd_material.name_j, m.mmd_material.name_e
+                m.mmd_material.name_j, m.mmd_material.name_e,
             )
 
     def translate_display(self, rig):
@@ -227,7 +227,7 @@ class MMD_TOOLS_UL_MMDTranslationElementIndex(bpy.types.UIList):
             mmd_translation_element_index.value
         ]
         MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type].draw_item(
-            layout, mmd_translation_element, index
+            layout, mmd_translation_element, index,
         )
 
 
@@ -277,7 +277,7 @@ class GlobalTranslationPopup(bpy.types.Operator):
         group = row.row(align=True, heading="is Blank:")
         group.alignment = "RIGHT"
         group.prop(
-            mmd_translation, "filter_japanese_blank", toggle=True, text="Japanese"
+            mmd_translation, "filter_japanese_blank", toggle=True, text="Japanese",
         )
         group.prop(mmd_translation, "filter_english_blank", toggle=True, text="English")
 
@@ -447,7 +447,7 @@ class ExportTranslationCSVOperator(bpy.types.Operator):
                 for idx in mmd_translation.filtered_translation_element_indices:
                     element = mmd_translation.translation_elements[idx.value]
                     writer.writerow(
-                        [element.type, element.name, element.name_j, element.name_e]
+                        [element.type, element.name, element.name_j, element.name_e],
                     )
         except Exception as e:
             self.report({"ERROR"}, f"Failed to write CSV: {e}")
@@ -544,11 +544,11 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
                 # Output warnings
                 if row_count > len(visible_indices):
                     warnings.append(
-                        f"{row_count - len(visible_indices)} extra lines in CSV! (ignored)"
+                        f"{row_count - len(visible_indices)} extra lines in CSV! (ignored)",
                     )
                 elif row_count < len(visible_indices):
                     warnings.append(
-                        f"{len(visible_indices) - row_count} missing lines in CSV! (aborted translation)"
+                        f"{len(visible_indices) - row_count} missing lines in CSV! (aborted translation)",
                     )
         except Exception as e:
             self.report({"ERROR"}, f"Failed to read CSV: {e}")
