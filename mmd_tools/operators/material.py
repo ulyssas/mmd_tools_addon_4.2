@@ -97,7 +97,7 @@ class ConvertMaterials(Operator):
 class MergeMaterials(Operator):
     bl_idname = "mmd_tools.merge_materials"
     bl_label = "Merge Materials"
-    bl_description = "Merge materials with the same texture in selected objects. Only merges materials with exactly one texture node. Please convert to Blender materials first."
+    bl_description = "Merge materials with the same texture in selected objects. Only merges materials with exactly one texture node. Materials with no texture or with multiple textures are not merged. Please convert to Blender materials first."
     bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
@@ -136,7 +136,7 @@ class MergeMaterials(Operator):
             # 2. Record texture path and material info
             texture_node = texture_nodes[0]
             if texture_node.image:
-                texture_path = texture_node.image.filepath
+                texture_path = bpy.path.abspath(texture_node.image.filepath)
                 texture_to_materials[texture_path].append({"index": i, "name": material.name})
 
         # Find material groups that need merging
@@ -171,7 +171,7 @@ class MergeMaterials(Operator):
                 bpy.ops.object.material_slot_assign()
 
             # Record merge details
-            texture_name = bpy.path.basename(texture_path) if texture_path else "No texture"
+            texture_name = bpy.path.basename(texture_path)
             merge_details.append({"texture": texture_name, "target": target_name, "sources": source_materials})
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.material_slot_remove_unused()
