@@ -18,12 +18,19 @@ Use the MMD Tools version that matches your Blender LTS version.
 - Check the [MMD Tools Wiki](https://mmd-blender.fandom.com/wiki/MMD_Tools) for details.
 - 詳細は [MMD ToolsのWiki (日本語)](https://mmd-blender.fandom.com/ja/wiki/MMD_Tools) を確認してください。
 
+## Recommended Add-ons
+While `mmd_tools` focuses on core import/export functionality, the community has developed excellent add-ons that provide advanced workflows.
+
+-   **[MikuMikuRig](https://github.com/XiaoFFGe/MikuMikuRig):** A powerful, feature-rich add-on for advanced animation workflows. It provides a complete solution for using Blender's **Rigify** with MMD models, including one-click controller generation, retargeting, and baking the final animation back to a VMD-exportable format. This is the recommended solution for users who want to leverage Rigify for their MMD projects.
+
+*Please note that these are third-party add-ons. For support and questions, please contact the respective authors.*
+
 ## Project Scope
 The following features are intentionally excluded from MMD Tools:
 
 - **PMX Editor replacement**: MMD Tools is not designed to replace PMX Editor functionality due to limited resources and to avoid reinventing the wheel
 - **Blender Link features compatibility**: Link features have known issues that need to be resolved by Blender developers, so we do not guarantee compatibility
-- **Rigify compatibility**: Complex compatibility issues and frequent Rigify updates make it difficult to maintain, so we do not support Rigify at this time
+- **Rigify compatibility**: Due to the complexity and maintenance burden, direct support for Rigify is not part of the core add-on. For users seeking advanced animation workflows with Rigify, we recommend community-developed solutions like the ones mentioned in the "Recommended Add-ons" section above.
 - **Material Library system**: Implementing a full-featured material library would be equivalent to building a separate add-on, which is outside the scope of this project. Instead, users can define their own custom default materials by editing the startup file. For example, the `MMDShaderDev` Node Group can be customized and saved in the Blender startup file (`File > Defaults > Save Startup File`), allowing it to be automatically applied to new MMD models without modifying the add-on itself.
 
 ## Contributing
