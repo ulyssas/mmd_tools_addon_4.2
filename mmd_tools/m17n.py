@@ -752,7 +752,7 @@ translations_tuple = (
             (),
         ),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "转换至顶点变形", (False, ())),
+        ("zh_HANS", "转换到顶点变形", (False, ())),
     ),
     (
         (
@@ -2848,8 +2848,8 @@ translations_tuple = (
     (
         ("Operator", "Merge Materials"),
         (("bpy.types.MMD_TOOLS_OT_merge_materials",), ()),
-        ("ja_JP", "マテリアルをソート", (True, ())),
-        ("zh_HANS", "排列材质", (True, ())),
+        ("ja_JP", "マテリアルを統合", (False, ())),
+        ("zh_HANS", "合併材质", (False, ())),
     ),
     (
         (
@@ -3815,14 +3815,14 @@ translations_tuple = (
     (
         ("*", "MMD Material"),
         (("bpy.types.MATERIAL_PT_mmd_tools_material",), ()),
-        ("ja_JP", "マテリアル:", (True, ())),
-        ("zh_HANS", "材质:", (True, ())),
+        ("ja_JP", "MMD マテリアル", (False, ())),
+        ("zh_HANS", "MMD 材质", (False, ())),
     ),
     (
         ("*", "MMD Texture"),
         (("bpy.types.MATERIAL_PT_mmd_tools_texture",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("ja_JP", "MMD テクスチャ", (False, ())),
+        ("zh_HANS", "MMD 纹理", (False, ())),
     ),
     (
         ("*", "MMD"),
@@ -3926,8 +3926,8 @@ translations_tuple = (
     (
         ("*", "MMD Rigid Body"),
         (("bpy.types.RIGID_PT_mmd_tools_bone",), ()),
-        ("ja_JP", "MMDリジッドボディ選択", (True, ())),
-        ("zh_HANS", "刚体", (True, ())),
+        ("ja_JP", "MMD リジッドボディ", (False, ())),
+        ("zh_HANS", "MMD 刚体", (False, ())),
     ),
     (
         ("*", "MMD IK Toggle"),
@@ -5859,13 +5859,13 @@ translations_tuple = (
         ("Operator", "Import CSV"),
         (("extensions/blender_org/mmd_tools/operators/translations.py:362",), ()),
         ("ja_JP", "インポート CSV", (False, ())),
-        ("zh_HANS", "导入", (True, ())),
+        ("zh_HANS", "导入 CSV", (False, ())),
     ),
     (
         ("Operator", "Export CSV"),
         (("extensions/blender_org/mmd_tools/operators/translations.py:363",), ()),
         ("ja_JP", "エクスポート CSV", (False, ())),
-        ("zh_HANS", "导出", (True, ())),
+        ("zh_HANS", "导出 CSV", (False, ())),
     ),
     (
         ("*", "Exported to "),
@@ -6590,7 +6590,7 @@ translations_tuple = (
         ("Operator", "Convert to MMD"),
         (("extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:156",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "转换至 MMD", (False, ())),
+        ("zh_HANS", "转换给MMD", (False, ())),
     ),
     (
         ("*", "Misc:"),

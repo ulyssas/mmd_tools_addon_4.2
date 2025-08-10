@@ -1723,7 +1723,7 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_merge_materials
 msgctxt "Operator"
 msgid "Merge Materials"
-msgstr ""
+msgstr "マテリアルを統合"
 
 #. :src: bpy.types.MMD_TOOLS_OT_merge_materials
 msgid "Merge materials with the same texture in selected objects. Only merges materials with exactly one texture node. Materials with no texture or with multiple textures are not merged. Please convert to Blender materials first."
@@ -2316,13 +2316,12 @@ msgid "MMD Joint"
 msgstr ""
 
 #. :src: bpy.types.MATERIAL_PT_mmd_tools_material
-#, fuzzy
 msgid "MMD Material"
-msgstr "マテリアル:"
+msgstr "MMD マテリアル"
 
 #. :src: bpy.types.MATERIAL_PT_mmd_tools_texture
 msgid "MMD Texture"
-msgstr ""
+msgstr "MMD テクスチャ"
 
 #. :src: bpy.types.OBJECT_PT_mmd_tools_bone_order
 #. :src: bpy.types.OBJECT_PT_mmd_tools_display_items
@@ -2392,9 +2391,8 @@ msgid "MMD Model Information"
 msgstr ""
 
 #. :src: bpy.types.RIGID_PT_mmd_tools_bone
-#, fuzzy
 msgid "MMD Rigid Body"
-msgstr "MMDリジッドボディ選択"
+msgstr "MMD リジッドボディ"
 
 #. :src: bpy.types.PoseBone.mmd_ik_toggle
 msgid "MMD IK Toggle"

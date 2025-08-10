@@ -468,7 +468,7 @@ msgstr "清除所有 UV 变形的临时数据"
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:229
 msgctxt "Operator"
 msgid "Convert To Vertex Morph"
-msgstr "转换至顶点变形"
+msgstr "转换到顶点变形"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_bone_morph_to_vertex_morph
 msgid ""
@@ -1713,10 +1713,9 @@ msgid "Remove main texture of active material"
 msgstr "移除活动材质的主纹理"
 
 #. :src: bpy.types.MMD_TOOLS_OT_merge_materials
-#, fuzzy
 msgctxt "Operator"
 msgid "Merge Materials"
-msgstr "排列材质"
+msgstr "合併材质"
 
 #. :src: bpy.types.MMD_TOOLS_OT_merge_materials
 msgid "Merge materials with the same texture in selected objects. Only merges materials with exactly one texture node. Materials with no texture or with multiple textures are not merged. Please convert to Blender materials first."
@@ -2297,22 +2296,20 @@ msgid "View the result of active UV morph on current mesh object"
 msgstr "查看活动 UV 变形在当前网格物体上的结果"
 
 #. :src: bpy.types.BONE_PT_mmd_tools_bone
-#, fuzzy
 msgid "MMD Bone Tools"
-msgstr "MMD Tools"
+msgstr ""
 
 #. :src: bpy.types.JOINT_PT_mmd_tools_bone
 msgid "MMD Joint"
 msgstr ""
 
 #. :src: bpy.types.MATERIAL_PT_mmd_tools_material
-#, fuzzy
 msgid "MMD Material"
-msgstr "材质:"
+msgstr "MMD 材质"
 
 #. :src: bpy.types.MATERIAL_PT_mmd_tools_texture
 msgid "MMD Texture"
-msgstr ""
+msgstr "MMD 纹理"
 
 #. :src: bpy.types.OBJECT_PT_mmd_tools_bone_order
 #. :src: bpy.types.OBJECT_PT_mmd_tools_display_items
@@ -2382,9 +2379,8 @@ msgid "MMD Model Information"
 msgstr ""
 
 #. :src: bpy.types.RIGID_PT_mmd_tools_bone
-#, fuzzy
 msgid "MMD Rigid Body"
-msgstr "刚体"
+msgstr "MMD 刚体"
 
 #. :src: bpy.types.PoseBone.mmd_ik_toggle
 msgid "MMD IK Toggle"
@@ -3560,16 +3556,14 @@ msgid "CSV:"
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:362
-#, fuzzy
 msgctxt "Operator"
 msgid "Import CSV"
-msgstr "导入"
+msgstr "导入 CSV"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:363
-#, fuzzy
 msgctxt "Operator"
 msgid "Export CSV"
-msgstr "导出"
+msgstr "导出 CSV"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:456
 msgid "Exported to "
@@ -3999,7 +3993,7 @@ msgstr "转换给Blender"
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:156
 msgctxt "Operator"
 msgid "Convert to MMD"
-msgstr "转换至 MMD"
+msgstr "转换给MMD"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:160
 msgid "Misc:"
