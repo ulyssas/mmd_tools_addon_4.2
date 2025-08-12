@@ -213,7 +213,7 @@ class PropertyFrameKey:
         (self.visible,) = struct.unpack("<b", fin.read(1))
         (count,) = struct.unpack("<L", fin.read(4))
         for i in range(count):
-            ik_name = _decodeCp932String(struct.unpack("<20s", fin.read(20))[0])
+            ik_name = _decodeCp932String(struct.unpack("<15s", fin.read(20)[:15])[0])  # MMD format: only the first 15 bytes are valid
             (state,) = struct.unpack("<b", fin.read(1))
             self.ik_states.append((ik_name, state))
 
