@@ -587,8 +587,9 @@ class VMDImporter:
                         self.__setInterpolation(interp[idx : idx + 16 : 4], prev_kp, kp)
                 prev_kps = curr_kps
 
-        for c in action.fcurves:
-            self.__fixFcurveHandles(c)
+        for fcurve in action.fcurves:
+            fcurve.update()  # After keyframe_points.add(), call update() to sort and remove duplicate keyframes
+            self.__fixFcurveHandles(fcurve)
 
         # property animation
         propertyAnim = self.__vmdFile.propertyAnimation
@@ -672,6 +673,8 @@ class VMDImporter:
             shapeKey.slider_min = min(shapeKey.slider_min, math.floor(min(weights)))
             shapeKey.slider_max = max(shapeKey.slider_max, math.ceil(max(weights)))
 
+            fcurve.update()
+
         self.__assign_action(meshObj.data.shape_keys, action)
 
     def __assignToRoot(self, rootObj, action_name=None):
@@ -754,6 +757,7 @@ class VMDImporter:
             prev_kps = curr_kps
 
         for fcurve in fcurves:
+            fcurve.update()
             self.__fixFcurveHandles(fcurve)
             if self.__detect_camera_changes:
                 self.detectCameraChange(fcurve)
