@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import TYPE_CHECKING
+import csv
+import os
 
 import bpy
 from mmd_tools.core.model import FnModel, Model
@@ -270,11 +272,18 @@ class GlobalTranslationPopup(bpy.types.Operator):
         translation_box.label(text='Dictionaries:', icon='HELP')
         row = translation_box.row()
         row.prop(mmd_translation, 'dictionary', text='to_english')
-        # row.operator(ExecuteTranslationScriptOperator.bl_idname, text='Write to .csv')
 
         translation_box.separator()
         row = translation_box.row()
         row.prop(mmd_translation, 'dictionary', text='replace')
+
+        # CSV import/export
+        box.separator()
+        translation_box = box.box().column(align=True)
+        translation_box.label(text='CSV:', icon='FILE_TEXT')
+        row = translation_box.row()
+        row.operator(ImportTranslationCSVOperator.bl_idname, text='Import CSV')
+        row.operator(ExportTranslationCSVOperator.bl_idname, text='Export CSV')
 
     def invoke(self, context: bpy.types.Context, _event):
         root_object = FnModel.find_root(context.object)
@@ -314,4 +323,167 @@ class ExecuteTranslationBatchOperator(bpy.types.Operator):
         if fails:
             self.report({'WARNING'}, "Failed to translate %d names, see '%s' in text editor" % (len(fails), text.name))
 
+        return {'FINISHED'}
+
+
+class ExportTranslationCSVOperator(bpy.types.Operator):
+    bl_idname = 'mmd_tools.export_translation_csv'
+    bl_description = 'Export CSV for external translation.'
+    bl_label = 'Export Translation CSV'
+
+    filter_glob: bpy.props.StringProperty(default='*.csv', options={'HIDDEN'})
+    filename_ext = '.csv'
+    filepath: bpy.props.StringProperty(
+        name='File Path',
+        description='Path to save the translation CSV',
+        subtype='FILE_PATH',
+        default='mmd_translation.csv',
+    )
+
+    def _ensure_csv_extension(self):
+        '''Ensure the file path ends with a .csv extension (case-insensitive).'''
+        if not self.filepath.lower().endswith('.csv'):
+            self.filepath = bpy.path.ensure_ext(self.filepath, '.csv')
+
+    def invoke(self, context, event):
+        self._ensure_csv_extension()
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        self._ensure_csv_extension()
+        root_object = FnModel.find_root(context.active_object)
+        if root_object is None:
+            self.report({'ERROR'}, 'Root object not found')
+            return {'CANCELLED'}
+
+        mmd_translation = root_object.mmd_root.translation
+
+        try:
+            with open(self.filepath, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['type', 'blender', 'japanese', 'english'])
+                for idx in mmd_translation.filtered_translation_element_indices:
+                    element = mmd_translation.translation_elements[idx.value]
+                    writer.writerow(
+                        [element.type, element.name, element.name_j, element.name_e]
+                    )
+        except Exception as e:
+            self.report({'ERROR'}, f'Failed to write CSV: {e}')
+            return {'CANCELLED'}
+
+        self.report({'INFO'}, f'Exported to {os.path.basename(self.filepath)}')
+        return {'FINISHED'}
+
+
+class ImportTranslationCSVOperator(bpy.types.Operator):
+    bl_idname = 'mmd_tools.import_translation_csv'
+    bl_description = 'Import translated CSV.'
+    bl_label = 'Import Translation CSV'
+
+    only_update_english_name: bpy.props.BoolProperty(
+        name='Only Update English Name',
+        description='(Enabled by default) Only update English name (name_e). otherwise, update all names when different',
+        default=True,
+    )
+
+    filter_glob: bpy.props.StringProperty(default='*.csv', options={'HIDDEN'})
+    filepath: bpy.props.StringProperty(
+        name='File Path',
+        description='Path to import the translation CSV',
+        subtype='FILE_PATH',
+        default='*.csv',
+    )
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        root_object = FnModel.find_root(context.active_object)
+        if root_object is None:
+            self.report({'ERROR'}, 'Root object not found')
+            return {'CANCELLED'}
+
+        mmd_translation = root_object.mmd_root.translation
+        updated_count = 0
+        warnings = []
+
+        try:
+            with open(self.filepath, encoding='utf-8') as csvfile:
+                reader = csv.DictReader(csvfile)
+                required_headers = {'blender', 'japanese', 'english'}
+                if not required_headers.issubset(set(reader.fieldnames or [])):
+                    missing = required_headers - set(reader.fieldnames or [])
+                    self.report(
+                        {'ERROR'},
+                        f'Missing required headers in CSV: {", ".join(missing)}',
+                    )
+                    return {'CANCELLED'}
+
+                visible_indices = [
+                    i.value
+                    for i in mmd_translation.filtered_translation_element_indices
+                ]
+                translation_elements_list = list(mmd_translation.translation_elements)
+                row_count = 0
+
+                for row in reader:
+                    if row_count >= len(visible_indices):
+                        row_count += 1
+                        continue
+
+                    element = translation_elements_list[visible_indices[row_count]]
+
+                    b_name = row.get('blender', '').strip()
+                    j_name = row.get('japanese', '').strip()
+                    e_name = row.get('english', '').strip()
+
+                    updated = False
+                    if self.only_update_english_name:
+                        if element.name_e != e_name:
+                            element.name_e = e_name
+                            updated = True
+                    else:
+                        if element.name != b_name:
+                            element.name = b_name
+                            updated = True
+                        if element.name_j != j_name:
+                            element.name_j = j_name
+                            updated = True
+                        if element.name_e != e_name:
+                            element.name_e = e_name
+                            updated = True
+
+                    if updated:
+                        updated_count += 1
+
+                    row_count += 1
+
+                # Output warnings
+                if row_count > len(visible_indices):
+                    warnings.append(
+                        f'{row_count - len(visible_indices)} extra lines in CSV! (ignored)'
+                    )
+                elif row_count < len(visible_indices):
+                    warnings.append(
+                        f'{len(visible_indices) - row_count} missing lines in CSV! (aborted translation)'
+                    )
+        except Exception as e:
+            self.report({'ERROR'}, f'Failed to read CSV: {e}')
+            return {'CANCELLED'}
+
+        # Apply Translations here because Blender cannot open
+        # popup and file dialog at the same time
+        FnTranslations.update_query(mmd_translation)
+        FnTranslations.apply_translations(root_object)
+        FnTranslations.clear_data(root_object.mmd_root.translation)
+
+        msg = f'Imported {updated_count} entries from CSV'
+        if warnings:
+            for w in warnings:
+                self.report({'WARNING'}, w)
+            msg += ' with warnings'
+
+        self.report({'INFO'}, msg)
         return {'FINISHED'}
