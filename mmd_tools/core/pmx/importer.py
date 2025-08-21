@@ -952,8 +952,23 @@ class PMXImporter:
             FnBone.apply_additional_transformation(self.__armObj)
 
         if "PHYSICS" in types:
-            self.__importRigids()
-            self.__importJoints()
+            rigidbody_world = bpy.context.scene.rigidbody_world
+            original_enabled = None
+
+            try:
+                self.__importRigids()
+
+                # Temporarily disable physics to prevent rigid bodies from moving to origin during import
+                # See: https://github.com/MMD-Blender/blender_mmd_tools/issues/255
+                if rigidbody_world:
+                    original_enabled = rigidbody_world.enabled
+                    rigidbody_world.enabled = False
+
+                self.__importJoints()
+
+            finally:
+                if rigidbody_world and original_enabled is not None:
+                    rigidbody_world.enabled = original_enabled
 
         if "DISPLAY" in types:
             self.__importDisplayFrames()
