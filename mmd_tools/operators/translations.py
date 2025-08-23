@@ -426,11 +426,9 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
                     for i in mmd_translation.filtered_translation_element_indices
                 ]
                 translation_elements_list = list(mmd_translation.translation_elements)
-                row_count = 0
 
-                for row in reader:
+                for row_count, row in enumerate(reader):
                     if row_count >= len(visible_indices):
-                        row_count += 1
                         continue
 
                     element = translation_elements_list[visible_indices[row_count]]
@@ -458,16 +456,14 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
                     if updated:
                         updated_count += 1
 
-                    row_count += 1
-
                 # Output warnings
-                if row_count > len(visible_indices):
+                if row_count+1 > len(visible_indices):
                     warnings.append(
-                        f'{row_count - len(visible_indices)} extra lines in CSV! (ignored)'
+                        f'{(row_count+1) - len(visible_indices)} extra lines in CSV! (ignored)'
                     )
-                elif row_count < len(visible_indices):
+                elif row_count+1 < len(visible_indices):
                     warnings.append(
-                        f'{len(visible_indices) - row_count} missing lines in CSV! (aborted translation)'
+                        f'{len(visible_indices) - (row_count+1)} missing lines in CSV! (aborted translation)'
                     )
         except Exception as e:
             self.report({'ERROR'}, f'Failed to read CSV: {e}')
