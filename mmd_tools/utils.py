@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import string
+import numpy as np
 from typing import Callable, Optional, Set
 
 import bpy
@@ -109,7 +110,8 @@ def mergeVertexGroup(meshObj, src_vertex_group_name, dest_vertex_group_name):
 
 
 def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
-    if len(meshObj.data.materials) < 2:
+    meshData = meshObj.data
+    if len(meshData.materials) < 2:
         selectAObject(meshObj)
         return
     matrix_parent_inverse = meshObj.matrix_parent_inverse.copy()
@@ -118,15 +120,12 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
     meshObj.parent = dummy_parent
     meshObj.active_shape_key_index = 0
     try:
-        enterEditMode(meshObj)
         if keep_normals:
-            for mat_slot in meshObj.material_slots.items():
-                meshObj.active_material_index = mat_slot[1].slot_index
-                bpy.ops.mesh.select_all(action="DESELECT")
-                bpy.ops.object.material_slot_select()
-                bpy.ops.mesh.split()
-        else:
-            bpy.ops.mesh.select_all(action="SELECT")
+            mmd_normal = meshData.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
+            normals_data = np.empty(meshData.attributes.domain_size("CORNER") * 3, dtype=np.float32)
+            meshData.loops.foreach_get("normal", normals_data)
+            mmd_normal.data.foreach_set("vector", normals_data)
+        enterEditMode(meshObj)
         bpy.ops.mesh.separate(type="MATERIAL")
     finally:
         bpy.ops.object.mode_set(mode="OBJECT")
@@ -135,6 +134,14 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
         i.name = getattr(materials[0], "name", "None") if len(materials) else "None"
         i.parent = prev_parent
         i.matrix_parent_inverse = matrix_parent_inverse
+        if keep_normals:
+            mmd_normal = i.data.attributes.get("mmd_normal")
+            if mmd_normal:
+                normals_data = np.empty(i.data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
+                mmd_normal.data.foreach_get("vector", normals_data)
+                i.data.normals_split_custom_set(normals_data.reshape(-1,3))
+                i.data.attributes.remove(mmd_normal)
+
     bpy.data.objects.remove(dummy_parent)
 
 
