@@ -1,0 +1,174 @@
+name: Auto Tests
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install required tools
+        run: |
+          echo "Installing jq for JSON parsing"
+          sudo apt-get update -qq
+          sudo apt-get install -y jq > /dev/null 2>&1
+
+      - name: Download latest Blender release
+        run: |
+          echo "Fetching latest Blender version..."
+          TAGS_RESPONSE=$(curl -s https://api.github.com/repos/blender/blender/tags)
+
+          LATEST_VERSION=$(echo "$TAGS_RESPONSE" | jq -r '.[0].name' | sed 's/^v//')
+          echo "Latest Blender version: ${LATEST_VERSION}"
+
+          if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then
+            echo "ERROR: Could not fetch latest version from GitHub API"
+            exit 1
+          fi
+
+          BLENDER_MAJOR=$(echo $LATEST_VERSION | cut -d. -f1-2)
+          BLENDER_URL="https://download.blender.org/release/Blender${BLENDER_MAJOR}/blender-${LATEST_VERSION}-linux-x64.tar.xz"
+
+          echo "Downloading Blender ${LATEST_VERSION}..."
+          wget -q -O blender.tar.xz "${BLENDER_URL}"
+
+          echo "Extracting Blender..."
+          tar -xf blender.tar.xz > /dev/null 2>&1
+
+          echo "Installing Blender to /opt..."
+          sudo mv blender-*/ /opt/blender > /dev/null 2>&1
+          sudo ln -s /opt/blender/blender /usr/local/bin/blender > /dev/null 2>&1
+
+          echo "BLENDER_VERSION=${BLENDER_MAJOR}" >> $GITHUB_ENV
+          echo "Blender installation completed"
+
+      - name: Install MMD Tools to Blender extensions directory
+        run: |
+          echo "Setting up MMD Tools extension..."
+
+          BLENDER_EXTENSIONS_DIR="$HOME/.config/blender/${BLENDER_VERSION}/extensions/blender_org"
+          mkdir -p "$BLENDER_EXTENSIONS_DIR"
+
+          # Copy only the mmd_tools subdirectory, not the whole project
+          cp -r ./mmd_tools "$BLENDER_EXTENSIONS_DIR/mmd_tools"
+          echo "MMD Tools installed to extensions directory"
+
+          # Verify the structure
+          echo "Verifying installation structure:"
+          if [ -d "$BLENDER_EXTENSIONS_DIR/mmd_tools/core" ]; then
+            echo "✓ Core directory found at correct location"
+          else
+            echo "✗ Core directory missing"
+            echo "Contents of MMD Tools directory:"
+            ls -la "$BLENDER_EXTENSIONS_DIR/mmd_tools/" || echo "Directory not found"
+          fi
+
+      - name: Enable MMD Tools
+        run: |
+          echo "Enabling MMD Tools..."
+
+          cat > enable_mmd_tools.py << 'EOF'
+          import bpy
+          import sys
+
+          try:
+              # Enable MMD Tools addon using the correct operator
+              bpy.ops.preferences.addon_enable(module="bl_ext.blender_org.mmd_tools")
+              print("✓ MMD Tools enabled successfully")
+
+              # Verify it's enabled
+              pref = bpy.context.preferences
+              if pref.addons.get('bl_ext.blender_org.mmd_tools'):
+                  print("✓ MMD Tools found in enabled addons")
+              else:
+                  print("✗ MMD Tools not found in enabled addons")
+                  # Print all enabled addons for debugging
+                  print("Currently enabled addons:")
+                  for addon_name in pref.addons.keys():
+                      print(f"  - {addon_name}")
+                  sys.exit(1)
+
+              # Save user preferences
+              bpy.ops.wm.save_userpref()
+              print("✓ Preferences saved")
+
+          except Exception as e:
+              print(f"✗ Error enabling MMD Tools: {e}")
+              import traceback
+              traceback.print_exc()
+              sys.exit(1)
+          EOF
+
+          blender --background --python enable_mmd_tools.py
+
+      - name: Verify installation and test import
+        run: |
+          echo "=== Final Verification ==="
+
+          cat > verify_import.py << 'EOF'
+          import bpy
+          import sys
+
+          print("=== CHECKING ADDON STATUS ===")
+          pref = bpy.context.preferences
+          if pref.addons.get('bl_ext.blender_org.mmd_tools'):
+              print("✓ MMD Tools is enabled")
+          else:
+              print("✗ MMD Tools is NOT enabled")
+              sys.exit(1)
+
+          print("\n=== TESTING IMPORTS ===")
+          try:
+              from bl_ext.blender_org.mmd_tools.core import pmx
+              print("✓ Successfully imported bl_ext.blender_org.mmd_tools.core.pmx")
+          except ImportError as e:
+              print(f"✗ Failed to import pmx module: {e}")
+              sys.exit(1)
+
+          try:
+              from bl_ext.blender_org.mmd_tools.core import model
+              print("✓ Successfully imported bl_ext.blender_org.mmd_tools.core.model")
+          except ImportError as e:
+              print(f"✗ Failed to import model module: {e}")
+              sys.exit(1)
+
+          print("✓ All imports successful!")
+          EOF
+
+          blender --background --python verify_import.py
+
+      - name: Run single test example
+        run: |
+          echo "Running single test example..."
+          blender --background -noaudio --python tests/test_fileio_operators.py -- --verbose
+          blender --background -noaudio --python tests/test_rigid_body.py -- --verbose
+          blender --background -noaudio --python tests/test_utils_unit.py -- --verbose
+
+      - name: Run all tests
+        run: |
+          echo "Running all tests..."
+          blender --background -noaudio --python tests/all_test_runner.py -- --verbose
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-latest-blender
+          path: |
+            tests/**/*.log
+            tests/**/*.xml
+            tests/**/*.txt
+          if-no-files-found: ignore
+
+      - name: Show final status
+        if: always()
+        run: |
+          echo "Test execution completed at $(date)"
