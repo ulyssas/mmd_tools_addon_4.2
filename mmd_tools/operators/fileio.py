@@ -258,7 +258,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     )
     sharp_edge_angle: bpy.props.FloatProperty(
         name="Sharp Edge Angle",
-        description="Angle threshold for marking sharp edges (degrees). 179° is sufficient to preserve all normals during import. However, if you need to edit the model rather than just render animations, you may need to adjust this as needed. MMD Tools cannot guarantee which editing operations in Blender require what angles. This setting has no effect if 'Mark Sharp Edges' is disabled.",
+        description="Angle threshold for marking sharp edges. 179° is sufficient to preserve all normals during import. However, if you need to edit the model rather than just render animations, you may need to adjust this as needed. MMD Tools cannot guarantee which editing operations in Blender require what angles. This setting has no effect if 'Mark Sharp Edges' is disabled.",
         default=math.radians(179.0),
         min=0.0,
         max=math.radians(180.0),
@@ -737,6 +737,21 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         ),
         default=False,
     )
+    keep_sharp: bpy.props.BoolProperty(
+        name="Keep Sharp",
+        description="When Vertex Splitting is disabled, keep sharp edge normals. This option has no effect when Vertex Splitting is enabled, as vertex splitting naturally preserves all sharp edge normals",
+        default=True,
+    )
+    sharp_edge_angle: bpy.props.FloatProperty(
+        name="Sharp Edge Angle",
+        description="Angle threshold for determining sharp edges when Keep Sharp is enabled. Edges with angles greater than this value will be considered sharp.\nNote that manually marked sharp edges are also considered sharp.",
+        default=math.radians(30),
+        min=0.0,
+        max=math.radians(180.0),
+        step=100,
+        subtype="ANGLE",
+        unit="ROTATION",
+    )
     sort_vertices: bpy.props.EnumProperty(
         name="Sort Vertices",
         description="Choose the method to sort vertices",
@@ -872,6 +887,8 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
                 vertex_splitting=self.vertex_splitting,
+                keep_sharp=self.keep_sharp,
+                sharp_edge_angle=self.sharp_edge_angle,
                 export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 ik_angle_limits=self.ik_angle_limits,
             )
