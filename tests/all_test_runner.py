@@ -156,9 +156,12 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
 
         if result.returncode == 0 and has_success and not has_failure:
             return True, "", elapsed_str, final_progress
-        return False, "Test failed", elapsed_str, final_progress
+        # Extract last few lines for error summary
+        error_lines = output.strip().split("\n")
+        error_summary = "\n".join(error_lines[-3:]) if error_lines else "Test failed"
+        return False, error_summary, elapsed_str, final_progress
 
-    except Exception:
+    except Exception as e:
         # Calculate elapsed time in case of exception
         elapsed = datetime.now() - test_start_time
         elapsed_str = f"{elapsed.seconds}.{str(elapsed.microseconds)[:3]}s"
@@ -171,7 +174,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
                 progress_process.terminate()
 
         final_progress = current_test_num / total_tests
-        return False, "Exception occurred", elapsed_str, final_progress
+        return False, f"Exception occurred: {str(e)}", elapsed_str, final_progress
 
 
 def print_summary_progress(iteration, total):
@@ -247,10 +250,14 @@ def run_all_tests():
         sys.stdout.write("\r" + " " * 100 + "\r")
         sys.stdout.flush()
 
-        # Print the result for this test with color
+        # Print the result for this test with color and immediate error output
         status = "✓" if passed else "✗"
         color = GREEN if passed else RED
         print(f"{color}{status} {script_name} ({elapsed}){RESET}")
+
+        # Print error immediately if test failed
+        if not passed and error.strip():
+            print(f"    Error: {error}")
 
         if passed:
             passed_tests.append((script_name, elapsed))
@@ -283,6 +290,11 @@ def run_all_tests():
 
     print("\nTest run completed at", datetime.now().strftime("%Y-%m-%d %H:%M:%S"), f"({total_time_seconds:.3f}s)")
 
+    if failed_tests:
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
 
 # When run directly
 if __name__ == "__main__":
@@ -310,3 +322,7 @@ if __name__ == "__main__":
         run_all_tests()
     except KeyboardInterrupt:
         print("\nTest run interrupted by user")
+        sys.exit(130)
+    except Exception as e:
+        print(f"\nUnexpected error: {e}")
+        sys.exit(1)

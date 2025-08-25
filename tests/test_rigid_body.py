@@ -37,12 +37,12 @@ class TestRigidBody(unittest.TestCase):
         logger = logging.getLogger()
         logger.setLevel("ERROR")
 
-        if not bpy.context.active_object:
-            bpy.ops.mesh.primitive_cube_add()
+        # Reset Blender scene to default state
+        bpy.ops.wm.read_homefile(use_empty=True)
 
-        bpy.ops.object.mode_set(mode="OBJECT")
-        bpy.ops.object.select_all(action="SELECT")
-        bpy.ops.object.delete(use_global=True)
+        if bpy.context.scene.rigidbody_world:
+            bpy.ops.rigidbody.world_remove()
+        bpy.ops.rigidbody.world_add()
 
         self.context = bpy.context
         self.scene = bpy.context.scene
@@ -73,7 +73,6 @@ class TestRigidBody(unittest.TestCase):
 
     def _enable_mmd_tools(self):
         """Make sure mmd_tools addon is enabled"""
-        bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("bl_ext.blender_org.mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
