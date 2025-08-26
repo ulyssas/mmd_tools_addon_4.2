@@ -241,7 +241,7 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
 
 class MMD_TOOLS_UL_Morphs(bpy.types.UIList):
-    def draw_item(self, _context, layout, data, item, icon, _active_data, _active_propname, _index):
+    def draw_item(self, context, layout, data, item, icon, _active_data, _active_propname, _index):
         mmd_root = data
         if self.layout_type == "DEFAULT":
             # main row
@@ -271,7 +271,7 @@ class MMD_TOOLS_UL_Morphs(bpy.types.UIList):
 
             # Value Slider
             slider_row = row.row(align=True)
-            root = FnModel.find_root_object(_context.active_object)
+            root = FnModel.find_root_object(context.active_object)
             if root:
                 rig = Model(root)
                 slider = rig.morph_slider.get(item.name)
