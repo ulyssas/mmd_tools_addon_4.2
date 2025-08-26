@@ -271,7 +271,7 @@ class MMD_TOOLS_UL_Morphs(bpy.types.UIList):
 
             # Value Slider
             slider_row = row.row(align=True)
-            root = FnModel.find_root_object(context.active_object)
+            root = FnModel.find_root_object(_context.active_object)
             if root:
                 rig = Model(root)
                 slider = rig.morph_slider.get(item.name)
