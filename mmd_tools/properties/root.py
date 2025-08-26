@@ -374,6 +374,18 @@ class MMDRoot(bpy.types.PropertyGroup):
         update=_toggleShowNamesOfJoints,
     )
 
+    show_japanese_name: bpy.props.BoolProperty(
+        name="Japanese name",
+        description="Toggle Japanese name display",
+        default=True,
+    )
+
+    show_english_name: bpy.props.BoolProperty(
+        name="English name",
+        description="Toggle English name display",
+        default=True,
+    )
+
     use_toon_texture: bpy.props.BoolProperty(
         name="Use Toon Texture",
         description="Use toon texture",

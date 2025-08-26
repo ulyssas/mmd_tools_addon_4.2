@@ -30,6 +30,11 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
         row.prop(mmd_root, "active_morph_type", expand=True)
         morph_type = mmd_root.active_morph_type
 
+        grid = col.grid_flow(row_major=True, align=False)
+        row = grid.row(align=True)
+        row.prop(mmd_root, "show_japanese_name", toggle=True)
+        row.prop(mmd_root, "show_english_name", toggle=True)
+
         c = col.column(align=True)
         row = c.row()
         row.template_list("MMD_TOOLS_UL_Morphs", "", mmd_root, morph_type, mmd_root, "active_morph")
@@ -45,10 +50,6 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
         morph = ItemOp.get_by_index(getattr(mmd_root, morph_type), mmd_root.active_morph)
         if morph:
-            slider = rig.morph_slider.get(morph.name)
-            if slider:
-                col.row().prop(slider, "value")
-
             row = col.row(align=True)
             row.prop(
                 mmd_root,
@@ -240,23 +241,43 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
 
 class MMD_TOOLS_UL_Morphs(bpy.types.UIList):
-    def draw_item(self, _context, layout, data, item, icon, _active_data, _active_propname, _index):
+    def draw_item(self, context, layout, data, item, icon, _active_data, _active_propname, _index):
         mmd_root = data
         if self.layout_type == "DEFAULT":
-            row = layout.split(factor=0.4, align=True)
-            row.prop(item, "name", text="", emboss=False, icon="SHAPEKEY_DATA")
-            row = row.split(factor=0.6, align=True)
-            row.prop(item, "name_e", text="", emboss=True)
-            row = row.row(align=True)
-            row.prop(item, "category", text="", emboss=False)
+            # main row
+            row = layout.row(align=True)
+
+            # Left part
+            info_split = row.split(factor=0.7, align=True)
+            left_row = info_split.row(align=True)
+            if mmd_root.show_japanese_name:
+                left_row.prop(item, "name", text="", emboss=False, icon="SHAPEKEY_DATA")
+            if mmd_root.show_english_name:
+                left_row.prop(item, "name_e", text="", emboss=True)
+
+            # Morph category
+            cat_row = info_split.row(align=True)
+            cat_row.prop(item, "category", text="", emboss=False)
+
+            # Facial Frame
             frame_facial = mmd_root.display_item_frames.get("表情")
             morph_item = frame_facial.data.get(item.name) if frame_facial else None
             if morph_item is None:
-                row.label(icon="INFO")
+                cat_row.label(icon="INFO")
             elif morph_item.morph_type != mmd_root.active_morph_type:
-                row.label(icon="SHAPEKEY_DATA")
+                cat_row.label(icon="SHAPEKEY_DATA")
             else:
-                row.label(icon="BLANK1")
+                cat_row.label(icon="BLANK1")
+
+            # Value Slider
+            slider_row = row.row(align=True)
+            root = FnModel.find_root_object(context.active_object)
+            if root:
+                rig = Model(root)
+                slider = rig.morph_slider.get(item.name)
+                if slider:
+                    slider_row.prop(slider, "value", text="", slider=True)
+
             if isinstance(item, MaterialMorph) and any(not d.material for d in item.data):
                 row.label(icon="TEMP")
         elif self.layout_type == "COMPACT":
