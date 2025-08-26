@@ -831,47 +831,26 @@ class PMXImporter:
         armModifier.show_render = armModifier.show_viewport = len(meshObj.data.vertices) > 0
 
     def __assignCustomNormals(self):
+        # Replaced problematic mesh.normals_split_custom_set() and normals_split_custom_set_from_vertices()
+        # with mesh.attributes.new("custom_normal", ...) and custom_normal_attr.data.foreach_set("vector", ...)
+        # to resolve Blender core bugs that corrupt custom normal data.
+
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
-
-        # CRITICAL: Mark sharp edges (based on angle) BEFORE setting custom normals
-        # For mesh.normals_split_custom_set() to work as expected, two conditions must be met:
-        # 1. The normal vectors must be non-zero (mentioned in Blender documentation)
-        # 2. Some edges must be marked as sharp (NOT mentioned in Blender documentation)
-        # An angle of 179 degrees is confirmed to be sufficient to preserve all custom normals.
-        # 180 degrees does not work because it misses some sharp edges required for normals_split_custom_set to work 100% correctly.
-        current_mode = bpy.context.active_object.mode
-        bpy.ops.object.mode_set(mode="OBJECT")
-        bpy.ops.object.select_all(action="DESELECT")
-        bpy.context.view_layer.objects.active = self.__meshObj
-        # Mark sharp edges based on user settings
-        if self.__mark_sharp_edges:
-            bpy.ops.object.mode_set(mode="EDIT")
-            bpy.ops.mesh.select_all(action="DESELECT")
-            bpy.ops.mesh.edges_select_sharp(sharpness=self.__sharp_edge_angle)
-            bpy.ops.mesh.mark_sharp()
-            bpy.ops.object.mode_set(mode="OBJECT")
-
-            # Logging
-            angle_degrees = math.degrees(self.__sharp_edge_angle)
-            total_edges = len(mesh.edges)
-            sharp_edges = sum(1 for edge in mesh.edges if edge.use_edge_sharp)
-            percentage = (sharp_edges / total_edges) * 100 if total_edges > 0 else 0
-            logging.info(f"   - Marked {sharp_edges}/{total_edges} ({percentage:.2f}%) sharp edges with angle: {angle_degrees:.1f} degrees")
-        else:
-            logging.info("   - Skipped marking sharp edges")
-        mesh.update()
 
         if self.__vertex_map:
             verts, faces = self.__model.vertices, self.__model.faces
             custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]
-            mesh.normals_split_custom_set(custom_normals)
         else:
             custom_normals = [(Vector(v.normal).xzy).normalized() for v in self.__model.vertices]
-            mesh.normals_split_custom_set_from_vertices(custom_normals)
+            custom_normals = [custom_normals[loop.vertex_index] for loop in mesh.loops]
 
-        mesh.update()
-        bpy.ops.object.mode_set(mode=current_mode)
+        custom_normal_attr = mesh.attributes.get("custom_normal")
+        if not custom_normal_attr:
+            custom_normal_attr = mesh.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
+        flat_normals = [comp for vec in custom_normals for comp in vec]
+        custom_normal_attr.data.foreach_set("vector", flat_normals)
+
         logging.info("   - Done!!")
 
     def __renameLRBones(self, use_underscore):
@@ -901,8 +880,6 @@ class PMXImporter:
         types = args.get("types", set())
         clean_model = args.get("clean_model", False)
         remove_doubles = args.get("remove_doubles", False)
-        self.__mark_sharp_edges = args.get("mark_sharp_edges", True)
-        self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(179.0))
         self.__import_adduv2_as_vertex_colors = args.get("import_adduv2_as_vertex_colors", False)
         self.__scale = args.get("scale", 1.0)
         self.__use_mipmap = args.get("use_mipmap", True)
@@ -952,8 +929,23 @@ class PMXImporter:
             FnBone.apply_additional_transformation(self.__armObj)
 
         if "PHYSICS" in types:
-            self.__importRigids()
-            self.__importJoints()
+            rigidbody_world = bpy.context.scene.rigidbody_world
+            original_enabled = None
+
+            try:
+                self.__importRigids()
+
+                # Temporarily disable physics to prevent rigid bodies from moving to origin during import
+                # See: https://github.com/MMD-Blender/blender_mmd_tools/issues/255
+                if rigidbody_world:
+                    original_enabled = rigidbody_world.enabled
+                    rigidbody_world.enabled = False
+
+                self.__importJoints()
+
+            finally:
+                if rigidbody_world and original_enabled is not None:
+                    rigidbody_world.enabled = original_enabled
 
         if "DISPLAY" in types:
             self.__importDisplayFrames()

@@ -13,13 +13,9 @@ class TestUtilsUnit(unittest.TestCase):
 
     def setUp(self):
         """Set up testing environment"""
-        # Ensure active object exists (user may have deleted the default cube)
-        if not bpy.context.active_object:
-            bpy.ops.mesh.primitive_cube_add()
+        # Reset Blender scene to default state
+        bpy.ops.wm.read_homefile(use_empty=True)
 
-        bpy.ops.object.mode_set(mode="OBJECT")
-        bpy.ops.object.select_all(action="SELECT")
-        bpy.ops.object.delete(use_global=True)
         # Add some useful shortcuts
         self.context = bpy.context
         self.scene = bpy.context.scene
@@ -312,7 +308,8 @@ class TestUtilsUnit(unittest.TestCase):
         """Test if saferelpath correctly handles relative paths across drives"""
         # Test normal relative path (same drive)
         if os.name == "posix":  # Unix-like system
-            self.assertEqual(saferelpath("/a/b/c/file.txt", "/a/b"), "c/file.txt", "Failed to get relative path")
+            self.assertEqual(saferelpath("/a/b/c/file.txt", "/a/b"), "file.txt", "Default strategy should return basename")
+            self.assertEqual(saferelpath("/a/b/c/file.txt", "/a/b", "outside"), "c/file.txt", "Outside strategy should return relative path")
 
         # Test with different strategies
         base_path = os.path.basename("path/to/file.txt")
@@ -369,5 +366,6 @@ class TestUtilsUnit(unittest.TestCase):
 
 if __name__ == "__main__":
     import sys
+
     sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     unittest.main()

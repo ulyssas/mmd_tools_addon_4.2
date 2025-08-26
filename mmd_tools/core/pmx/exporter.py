@@ -921,30 +921,28 @@ class __PmxExporter:
             p_joint.spring_rotation_constant = Vector(mmd_joint.spring_angular).xzy
             self.__model.joints.append(p_joint)
 
-    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area, loop_angle):
+    @staticmethod
+    def __convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map):
         vertices = vertices_map[vert_index]
-        assert vertices, f"Empty vertices list for vertex index {vert_index}"
+        for i in vertices:
+            if i.uv is None:
+                i.uv = uv
+                i.normal = normal
+                return i
+            if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
+                return i
+        n = copy.copy(i)  # shallow copy should be fine
+        n.uv = uv
+        n.normal = normal
+        vertices.append(n)
+        return n
 
-        if self.__vertex_splitting:  # Vertex splitting mode
-            for i in vertices:
-                if i.uv is None:
-                    # Initialize new vertex with all attributes
-                    i.uv = uv
-                    i.normal = normal
-                    return i
-                if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
-                    # UV, normal are all compatible within thresholds
-                    return i
+    def __convertFaceUVToVertexUVSmooth(self, vert_index, uv, normal, vertices_map, face_area, loop_angle, is_sharp_vertex):
+        """Convert face UV to vertex UV with weighted normal averaging."""
+        if is_sharp_vertex:
+            return self.__convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map)
 
-            # Create new vertex for different UV, normal
-            n = copy.copy(vertices[0])  # Shallow copy should be fine
-            n.uv = uv
-            n.normal = normal
-            vertices.append(n)
-            return n
-
-        # Non-splitting mode: UV splits, normals use weighted averaging
-        # Find or create vertex based on UV compatibility only
+        vertices = vertices_map[vert_index]
         v = None
         for i in vertices:
             if i.uv is None:
@@ -983,6 +981,7 @@ class __PmxExporter:
         else:
             weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
             v.normal = (weighted_normal_sum / total_weight).normalized()
+
         return v
 
     @staticmethod
@@ -1172,6 +1171,32 @@ class __PmxExporter:
         def _UVWrapper(x):
             return (_DummyUV(x[i : i + 3]) for i in range(0, len(x), 3))
 
+        # Build per-face vertex sharp status lookup table
+        vertex_sharp_status = {}
+        if self.__keep_sharp:
+            bm_sharp = bmesh.new()
+            bm_sharp.from_mesh(base_mesh)
+            bm_sharp.faces.ensure_lookup_table()
+            bm_sharp.verts.ensure_lookup_table()
+
+            for face in bm_sharp.faces:
+                for vertex in face.verts:
+                    is_sharp = False
+                    face_edges = [e for e in vertex.link_edges if face in e.link_faces]
+                    for edge in face_edges:
+                        if not edge.smooth:
+                            is_sharp = True
+                            break
+                        if len(edge.link_faces) == 2:
+                            if edge.calc_face_angle() > self.__sharp_edge_angle:
+                                is_sharp = True
+                                break
+                        elif len(edge.link_faces) != 2:
+                            is_sharp = True
+                            break
+                    vertex_sharp_status[face.index, vertex.index] = is_sharp
+            bm_sharp.free()
+
         material_faces = {}
         uv_data = base_mesh.uv_layers.active
         if uv_data:
@@ -1180,16 +1205,32 @@ class __PmxExporter:
             uv_data = iter(lambda: _DummyUV, None)
 
         face_seq = []
-        for face, uv in zip(base_mesh.polygons, uv_data, strict=False):
+        for face_idx, (face, uv) in enumerate(zip(base_mesh.polygons, uv_data, strict=False)):
             if len(face.vertices) != 3:
                 raise ValueError(f"Face should be triangulated. Face index: {face.index}, Mesh name: {base_mesh.name}")
+
             loop_indices = list(face.loop_indices)
             n1, n2, n3 = [loop_normals[idx] for idx in loop_indices]
             a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
             face_area = face.area
-            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
-            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
-            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
+
+            # Retrieve sharp vertex status using pre-computed lookup table
+            if self.__keep_sharp:
+                v0_is_sharp = vertex_sharp_status.get((face.index, face.vertices[0]), False)
+                v1_is_sharp = vertex_sharp_status.get((face.index, face.vertices[1]), False)
+                v2_is_sharp = vertex_sharp_status.get((face.index, face.vertices[2]), False)
+            else:
+                v0_is_sharp = v1_is_sharp = v2_is_sharp = False
+
+            # Convert face UV to vertex UV
+            if self.__vertex_splitting:
+                v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
+                v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
+                v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
+            else:
+                v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, v0_is_sharp)
+                v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, v1_is_sharp)
+                v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, v2_is_sharp)
 
             t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)
@@ -1356,6 +1397,8 @@ class __PmxExporter:
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
         self.__vertex_splitting = args.get("vertex_splitting", False)
+        self.__keep_sharp = args.get("keep_sharp", True)
+        self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(30))
         self.__export_vertex_colors_as_adduv2 = args.get("export_vertex_colors_as_adduv2", False)
         self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
         sort_vertices = args.get("sort_vertices", "NONE")
@@ -1414,6 +1457,8 @@ class __PmxExporter:
         triangulation_ratio = final_face_count / original_face_count if original_face_count > 0 else 0
         logging.info("Changes in Vertex and Face Count:")
         logging.info("  Vertex Splitting for Normals: %s", "Enabled" if self.__vertex_splitting else "Disabled")
+        logging.info("  Keep Sharp: %s", "Enabled" if self.__keep_sharp else "Disabled")
+        logging.info("  Sharp Edge Angle: %.1f degrees", math.degrees(self.__sharp_edge_angle))
         logging.info("  Vertices: Original %d -> Output %d (%+d)", original_vertex_count, final_vertex_count, vertex_diff)
         logging.info("  Faces: Original %d -> Output %d (%+d)", original_face_count, final_face_count, face_diff)
         logging.info("  Face Triangulation Ratio: %.2fx (Output / Original)", triangulation_ratio)

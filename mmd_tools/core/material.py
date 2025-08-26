@@ -520,7 +520,7 @@ class FnMaterial:
         if node_shader is None:
             node_shader: bpy.types.ShaderNodeGroup = nodes.new("ShaderNodeGroup")
             node_shader.name = "mmd_shader"
-            node_shader.location = (0, 1500)
+            node_shader.location = (0, 300)
             node_shader.width = 200
             node_shader.node_tree = self.__get_shader()
 

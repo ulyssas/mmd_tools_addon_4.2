@@ -251,21 +251,6 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Merge duplicated vertices and faces.\nWarning: This will perform global vertex merging instead of per-material vertex merging which may break mesh geometry, material boundaries, and distort the UV map. Use with caution.",
         default=False,
     )
-    mark_sharp_edges: bpy.props.BoolProperty(
-        name="Mark Sharp Edges",
-        description="Mark sharp edges when setting custom normals. Blender uses loop normals with sharp edges to control normal smoothing, which differs from traditional vertex normal approaches. This option ensures PMX normals are preserved correctly in Blender's system. Recommended to enable.",
-        default=True,
-    )
-    sharp_edge_angle: bpy.props.FloatProperty(
-        name="Sharp Edge Angle",
-        description="Angle threshold for marking sharp edges (degrees). 179° is sufficient to preserve all normals during import. However, if you need to edit the model rather than just render animations, you may need to adjust this as needed. MMD Tools cannot guarantee which editing operations in Blender require what angles. This setting has no effect if 'Mark Sharp Edges' is disabled.",
-        default=math.radians(179.0),
-        min=0.0,
-        max=math.radians(180.0),
-        step=100,
-        subtype="ANGLE",
-        unit="ROTATION",
-    )
     import_adduv2_as_vertex_colors: bpy.props.BoolProperty(
         name="Import Vertex Colors",
         description="Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created.",
@@ -371,8 +356,6 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 scale=self.scale,
                 clean_model=self.clean_model,
                 remove_doubles=self.remove_doubles,
-                mark_sharp_edges=self.mark_sharp_edges,
-                sharp_edge_angle=self.sharp_edge_angle,
                 import_adduv2_as_vertex_colors=self.import_adduv2_as_vertex_colors,
                 fix_ik_links=self.fix_ik_links,
                 ik_loop_factor=self.ik_loop_factor,
@@ -737,6 +720,21 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         ),
         default=False,
     )
+    keep_sharp: bpy.props.BoolProperty(
+        name="Keep Sharp",
+        description="When Vertex Splitting is disabled, keep sharp edge normals. This option has no effect when Vertex Splitting is enabled, as vertex splitting naturally preserves all sharp edge normals",
+        default=True,
+    )
+    sharp_edge_angle: bpy.props.FloatProperty(
+        name="Sharp Edge Angle",
+        description="Angle threshold for determining sharp edges when Keep Sharp is enabled. Edges with angles greater than this value will be considered sharp.\nNote that manually marked sharp edges are also considered sharp.",
+        default=math.radians(30),
+        min=0.0,
+        max=math.radians(180.0),
+        step=100,
+        subtype="ANGLE",
+        unit="ROTATION",
+    )
     sort_vertices: bpy.props.EnumProperty(
         name="Sort Vertices",
         description="Choose the method to sort vertices",
@@ -872,6 +870,8 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
                 vertex_splitting=self.vertex_splitting,
+                keep_sharp=self.keep_sharp,
+                sharp_edge_angle=self.sharp_edge_angle,
                 export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 ik_angle_limits=self.ik_angle_limits,
             )

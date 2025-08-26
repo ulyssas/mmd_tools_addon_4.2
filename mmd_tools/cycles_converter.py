@@ -221,7 +221,7 @@ def __switchToPrincipledBsdf(node_tree: bpy.types.NodeTree, node_basic: bpy.type
 
         if alpha_socket_name in node_alpha.inputs:
             if "Alpha" in shader.inputs:
-                shader.inputs["Alpha"].default_value = node_alpha.inputs[alpha_socket_name].default_value
+                shader.inputs["Alpha"].default_value = node_alpha.inputs["Alpha"].default_value
                 if node_alpha.inputs[alpha_socket_name].is_linked:
                     node_tree.links.new(node_alpha.inputs[alpha_socket_name].links[0].from_socket, shader.inputs["Alpha"])
             else:

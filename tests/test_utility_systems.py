@@ -27,6 +27,8 @@ class TestUtilitySystems(unittest.TestCase):
         """Set up test environment"""
         # Enable MMD Tools addon
         cls.__enable_mmd_tools()
+        # Enable Cycles rendering engine
+        cls.__enable_cycles()
 
     def setUp(self):
         """Set up testing environment"""
@@ -43,6 +45,14 @@ class TestUtilitySystems(unittest.TestCase):
         if not pref.addons.get("mmd_tools", None):
             addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
             addon_enable(module="bl_ext.blender_org.mmd_tools")
+
+    @classmethod
+    def __enable_cycles(cls):
+        """Enable Cycles rendering engine"""
+        pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
+        if not pref.addons.get("cycles", None):
+            addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
+            addon_enable(module="cycles")
 
     # ********************************************
     # Exception Tests

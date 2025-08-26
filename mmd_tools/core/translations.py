@@ -112,7 +112,7 @@ class MMDBoneHandler(MMDDataHandlerABC):
         armature_object: bpy.types.Object = FnModel.find_armature_object(mmd_translation.id_data)
         pose_bone: bpy.types.PoseBone
         for index, pose_bone in enumerate(armature_object.pose.bones):
-            if not any(c.is_visible for c in pose_bone.bone.collections):
+            if pose_bone.bone.hide or (pose_bone.bone.collections and not any(c.is_visible for c in pose_bone.bone.collections)):
                 continue
 
             mmd_translation_element: MMDTranslationElement = mmd_translation.translation_elements.add()
