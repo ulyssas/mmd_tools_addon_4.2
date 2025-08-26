@@ -139,7 +139,12 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
             if mmd_normal:
                 normals_data = np.empty(i.data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
                 mmd_normal.data.foreach_get("vector", normals_data)
-                i.data.normals_split_custom_set(normals_data.reshape(-1, 3))
+
+                custom_normal_attr = i.data.attributes.get("custom_normal")
+                if not custom_normal_attr:
+                    custom_normal_attr = i.data.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
+                custom_normal_attr.data.foreach_set("vector", normals_data)
+
                 i.data.attributes.remove(mmd_normal)
 
     bpy.data.objects.remove(dummy_parent)
