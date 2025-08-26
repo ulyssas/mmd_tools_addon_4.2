@@ -833,35 +833,6 @@ class PMXImporter:
     def __assignCustomNormals(self):
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
-
-        # CRITICAL: Mark sharp edges (based on angle) BEFORE setting custom normals
-        # For mesh.normals_split_custom_set() to work as expected, two conditions must be met:
-        # 1. The normal vectors must be non-zero (mentioned in Blender documentation)
-        # 2. Some edges must be marked as sharp (NOT mentioned in Blender documentation)
-        # An angle of 179 degrees is confirmed to be sufficient to preserve all custom normals.
-        # 180 degrees does not work because it misses some sharp edges required for normals_split_custom_set to work 100% correctly.
-        current_mode = bpy.context.active_object.mode
-        bpy.ops.object.mode_set(mode="OBJECT")
-        bpy.ops.object.select_all(action="DESELECT")
-        bpy.context.view_layer.objects.active = self.__meshObj
-        # Mark sharp edges based on user settings
-        if self.__mark_sharp_edges:
-            bpy.ops.object.mode_set(mode="EDIT")
-            bpy.ops.mesh.select_all(action="DESELECT")
-            bpy.ops.mesh.edges_select_sharp(sharpness=self.__sharp_edge_angle)
-            bpy.ops.mesh.mark_sharp()
-            bpy.ops.object.mode_set(mode="OBJECT")
-
-            # Logging
-            angle_degrees = math.degrees(self.__sharp_edge_angle)
-            total_edges = len(mesh.edges)
-            sharp_edges = sum(1 for edge in mesh.edges if edge.use_edge_sharp)
-            percentage = (sharp_edges / total_edges) * 100 if total_edges > 0 else 0
-            logging.info(f"   - Marked {sharp_edges}/{total_edges} ({percentage:.2f}%) sharp edges with angle: {angle_degrees:.1f} degrees")
-        else:
-            logging.info("   - Skipped marking sharp edges")
-        mesh.update()
-
         if self.__vertex_map:
             verts, faces = self.__model.vertices, self.__model.faces
             custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]
@@ -869,9 +840,6 @@ class PMXImporter:
         else:
             custom_normals = [(Vector(v.normal).xzy).normalized() for v in self.__model.vertices]
             mesh.normals_split_custom_set_from_vertices(custom_normals)
-
-        mesh.update()
-        bpy.ops.object.mode_set(mode=current_mode)
         logging.info("   - Done!!")
 
     def __renameLRBones(self, use_underscore):
@@ -901,8 +869,6 @@ class PMXImporter:
         types = args.get("types", set())
         clean_model = args.get("clean_model", False)
         remove_doubles = args.get("remove_doubles", False)
-        self.__mark_sharp_edges = args.get("mark_sharp_edges", True)
-        self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(179.0))
         self.__import_adduv2_as_vertex_colors = args.get("import_adduv2_as_vertex_colors", False)
         self.__scale = args.get("scale", 1.0)
         self.__use_mipmap = args.get("use_mipmap", True)

@@ -251,21 +251,6 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Merge duplicated vertices and faces.\nWarning: This will perform global vertex merging instead of per-material vertex merging which may break mesh geometry, material boundaries, and distort the UV map. Use with caution.",
         default=False,
     )
-    mark_sharp_edges: bpy.props.BoolProperty(
-        name="Mark Sharp Edges",
-        description="Mark sharp edges when setting custom normals. Blender uses loop normals with sharp edges to control normal smoothing, which differs from traditional vertex normal approaches. This option ensures PMX normals are preserved correctly in Blender's system. Recommended to enable.",
-        default=True,
-    )
-    sharp_edge_angle: bpy.props.FloatProperty(
-        name="Sharp Edge Angle",
-        description="Angle threshold for marking sharp edges. 179° is sufficient to preserve all normals during import. However, if you need to edit the model rather than just render animations, you may need to adjust this as needed. MMD Tools cannot guarantee which editing operations in Blender require what angles. This setting has no effect if 'Mark Sharp Edges' is disabled.",
-        default=math.radians(179.0),
-        min=0.0,
-        max=math.radians(180.0),
-        step=100,
-        subtype="ANGLE",
-        unit="ROTATION",
-    )
     import_adduv2_as_vertex_colors: bpy.props.BoolProperty(
         name="Import Vertex Colors",
         description="Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created.",
@@ -371,8 +356,6 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 scale=self.scale,
                 clean_model=self.clean_model,
                 remove_doubles=self.remove_doubles,
-                mark_sharp_edges=self.mark_sharp_edges,
-                sharp_edge_angle=self.sharp_edge_angle,
                 import_adduv2_as_vertex_colors=self.import_adduv2_as_vertex_colors,
                 fix_ik_links=self.fix_ik_links,
                 ik_loop_factor=self.ik_loop_factor,

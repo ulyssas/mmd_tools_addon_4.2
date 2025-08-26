@@ -103,7 +103,6 @@ class TestPmxImporter(unittest.TestCase):
             "scale": 0.08,
             "clean_model": False,
             "remove_doubles": False,
-            "mark_sharp_edges": True,
             "fix_ik_links": False,
             "apply_bone_fixed_axis": False,
             "rename_LR_bones": False,
@@ -542,7 +541,6 @@ class TestPmxImporter(unittest.TestCase):
             types={"MESH", "ARMATURE", "PHYSICS", "MORPHS", "DISPLAY"},
             scale=0.08,
             clean_model=True,
-            mark_sharp_edges=True,
             use_mipmap=True,
         )
 
