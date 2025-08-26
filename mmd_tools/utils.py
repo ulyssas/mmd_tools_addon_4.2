@@ -5,10 +5,10 @@ import logging
 import os
 import re
 import string
-import numpy as np
 from typing import Callable, Optional, Set
 
 import bpy
+import numpy as np
 
 from .bpyutils import FnContext
 
@@ -139,7 +139,7 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
             if mmd_normal:
                 normals_data = np.empty(i.data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
                 mmd_normal.data.foreach_get("vector", normals_data)
-                i.data.normals_split_custom_set(normals_data.reshape(-1,3))
+                i.data.normals_split_custom_set(normals_data.reshape(-1, 3))
                 i.data.attributes.remove(mmd_normal)
 
     bpy.data.objects.remove(dummy_parent)

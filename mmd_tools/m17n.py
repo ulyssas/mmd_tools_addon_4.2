@@ -160,7 +160,7 @@ translations_tuple = (
         (
             "ja_JP",
             "トゥーンテクスチャのパス. 通常は MikuMikuDance の Data ディレクトリ内にあります",
-            (False, ())
+            (False, ()),
         ),
         (
             "zh_HANS",
