@@ -173,7 +173,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         mmd_model_mesh_objects = list(self.select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
 
-        # create new separate model first
+        # Create new separate model first
         bpy.ops.object.mode_set(mode="OBJECT")
         separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
         separate_model.initialDisplayFrames()
@@ -181,14 +181,14 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         separate_root_object.matrix_world = mmd_root_object.matrix_world
         separate_model_armature_object = separate_model.armature()
 
-        # now separate armature bones from original model
+        # Now separate armature bones from original model
         separate_armature_object: Optional[bpy.types.Object] = None
         if self.separate_armature:
             target_armature_object.select_set(True)
             context.view_layer.objects.active = target_armature_object
             bpy.ops.object.mode_set(mode="EDIT")
 
-            # re-select the bones that should be separated (they might have been deselected)
+            # Re-select the bones that should be separated (they might have been deselected)
             for bone_name in separate_bones.keys():
                 if bone_name in target_armature_object.data.edit_bones:
                     target_armature_object.data.edit_bones[bone_name].select = True
@@ -197,12 +197,12 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             separate_armature_object = next(iter([a for a in context.selected_objects if a != target_armature_object and a.type == "ARMATURE"]), None)
         bpy.ops.object.mode_set(mode="OBJECT")
 
-        # collect separate rigid bodies
+        # Collect separate rigid bodies
         separate_rigid_bodies: Set[bpy.types.Object] = {rigid_body_object for rigid_body_object in mmd_model.rigidBodies() if rigid_body_object.mmd_rigid.bone in separate_bones}
 
         boundary_joint_owner_condition = any if self.boundary_joint_owner == "DESTINATION" else all
 
-        # collect separate joints
+        # Collect separate joints
         separate_joints: Set[bpy.types.Object] = {
             joint_object
             for joint_object in mmd_model.joints()
@@ -220,13 +220,13 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             separate_mesh_objects = set()
             model2separate_mesh_objects = {}
         else:
-            # select meshes
+            # Select meshes
             obj: bpy.types.Object
             for obj in context.view_layer.objects:
                 obj.select_set(obj in mmd_model_mesh_objects)
             context.view_layer.objects.active = mmd_model_mesh_objects[0]
 
-            # separate mesh by selected vertices
+            # Separate mesh by selected vertices
             bpy.ops.object.mode_set(mode="EDIT")
             bpy.ops.mesh.separate(type="SELECTED")
             separate_mesh_objects: List[bpy.types.Object] = [m for m in context.selected_objects if m.type == "MESH" and m not in mmd_model_mesh_objects]
@@ -244,7 +244,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + list(separate_mesh_objects)):
             bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-        # replace mesh armature modifier.object
+        # Replace mesh armature modifier.object
         for separate_mesh in separate_mesh_objects:
             armature_modifier: Optional[bpy.types.ArmatureModifier] = next(iter([m for m in separate_mesh.modifiers if m.type == "ARMATURE"]), None)
             if armature_modifier is None:
@@ -258,7 +258,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         with select_object(separate_model.jointGroupObject(), objects=[separate_model.jointGroupObject()] + list(separate_joints)):
             bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-        # move separate objects to new collection
+        # Move separate objects to new collection
         mmd_layer_collection = FnContext.find_user_layer_collection_by_object(context, mmd_root_object)
         assert mmd_layer_collection is not None
 
@@ -275,7 +275,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             mmd_root_object,
             overwrite=True,
             replace_name2values={
-                # replace related_mesh property values
+                # Replace related_mesh property values
                 "related_mesh": {m.data.name: s.data.name for m, s in model2separate_mesh_objects.items()},
             },
         )
