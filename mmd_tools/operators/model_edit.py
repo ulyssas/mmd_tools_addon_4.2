@@ -173,12 +173,28 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         mmd_model_mesh_objects = list(self.select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
 
-        # separate armature bones
-        separate_armature_object: Optional[bpy.types.Object]
+        # create new separate model first
+        bpy.ops.object.mode_set(mode="OBJECT")
+        separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
+        separate_model.initialDisplayFrames()
+        separate_root_object = separate_model.rootObject()
+        separate_root_object.matrix_world = mmd_root_object.matrix_world
+        separate_model_armature_object = separate_model.armature()
+
+        # now separate armature bones from original model
+        separate_armature_object: Optional[bpy.types.Object] = None
         if self.separate_armature:
             target_armature_object.select_set(True)
+            context.view_layer.objects.active = target_armature_object
+            bpy.ops.object.mode_set(mode="EDIT")
+
+            # re-select the bones that should be separated (they might have been deselected)
+            for bone_name in separate_bones.keys():
+                if bone_name in target_armature_object.data.edit_bones:
+                    target_armature_object.data.edit_bones[bone_name].select = True
+
             bpy.ops.armature.separate()
-            separate_armature_object = next(iter([a for a in context.selected_objects if a != target_armature_object]), None)
+            separate_armature_object = next(iter([a for a in context.selected_objects if a != target_armature_object and a.type == "ARMATURE"]), None)
         bpy.ops.object.mode_set(mode="OBJECT")
 
         # collect separate rigid bodies
@@ -218,16 +234,12 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
             model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects, strict=False))
 
-        separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
-
-        separate_model.initialDisplayFrames()
-        separate_root_object = separate_model.rootObject()
-        separate_root_object.matrix_world = mmd_root_object.matrix_world
-        separate_model_armature_object = separate_model.armature()
-
-        if self.separate_armature:
+        if self.separate_armature and separate_armature_object:
+            separate_armature_data = separate_armature_object.data
             with select_object(separate_model_armature_object, objects=[separate_model_armature_object, separate_armature_object]):
                 bpy.ops.object.join()
+            if separate_armature_data.users == 0:
+                bpy.data.armatures.remove(separate_armature_data)
 
         with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + list(separate_mesh_objects)):
             bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
