@@ -848,11 +848,9 @@ class PMXImporter:
         custom_normal_attr = mesh.attributes.get("custom_normal")
         if not custom_normal_attr:
             custom_normal_attr = mesh.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
-
         flat_normals = [comp for vec in custom_normals for comp in vec]
         custom_normal_attr.data.foreach_set("vector", flat_normals)
 
-        mesh.update()
         logging.info("   - Done!!")
 
     def __renameLRBones(self, use_underscore):
