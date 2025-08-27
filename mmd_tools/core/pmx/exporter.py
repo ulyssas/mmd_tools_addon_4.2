@@ -817,13 +817,18 @@ class __PmxExporter:
         morph_map = {}
         index = 0
 
-        # Priority: Display Panel order
+        # Build set of actually existing morphs to filter against
+        existing_morphs = set()
+        existing_morphs.update((self.MORPH_TYPES[type(m)], m.name) for m in self.__model.morphs)
+
+        # Priority: Display Panel order (only for existing morphs)
         facial_frame = self.__get_facial_frame(root)
         if facial_frame:
             for item in facial_frame.data:
                 if item.type == "MORPH":
                     key = (item.morph_type, item.name)
-                    if key not in morph_map:
+                    # Only add if morph actually exists and not already mapped
+                    if key not in morph_map and key in existing_morphs:
                         morph_map[key] = index
                         index += 1
 
