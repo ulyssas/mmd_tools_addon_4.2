@@ -236,13 +236,55 @@ class __PmxExporter:
 
         path_set = set()  # to prevent overwriting
         tex_copy_list = []
+
         for texture in self.__model.textures:
             path = texture.path
             tex_dir = output_dir  # restart to the default directory at each loop
+
+            # First, look for packed texture (highest priority)
+            packed_image = None
+            filename = os.path.basename(path)
+
+            for image in bpy.data.images:
+                if image.packed_file and (image.filepath == path or os.path.basename(image.filepath) == filename):
+                    packed_image = image
+                    break
+
+            if packed_image:
+                # Use packed texture
+                dst_name = os.path.basename(path)
+                tex_dir = output_dir
+
+                if base_folder:
+                    dst_name = saferelpath(path, base_folder, strategy="outside")
+                    if dst_name.startswith(".."):
+                        # Check if the texture comes from the preferred folder
+                        if tex_dir_preference:
+                            dst_name = saferelpath(path, tex_dir_preference, strategy="outside")
+                        if dst_name.startswith(".."):
+                            # If the texture is still outside, fall back to the basename
+                            logging.warning("The texture %s is not inside the base texture folder", path)
+                            dst_name = os.path.basename(path)
+                            tex_dir = tex_dir_fallback
+                else:
+                    tex_dir = tex_dir_fallback
+
+                dest_path = os.path.join(tex_dir, dst_name)
+                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                with open(dest_path, "wb") as f:
+                    f.write(packed_image.packed_file.data)
+
+                logging.info("Extracted packed texture: %s --> %s", packed_image.name, dest_path)
+                texture.path = dest_path
+                path_set.add(os.path.normcase(dest_path))
+                continue
+
+            # Fallback to original file if no packed version
             if not os.path.isfile(path):
-                logging.warning("*** skipping texture file which does not exist: %s", path)
+                logging.warning("*** Texture not found (neither packed nor as an external file), skipping: %s", path)
                 path_set.add(os.path.normcase(path))
                 continue
+
             dst_name = os.path.basename(path)
             if base_folder:
                 dst_name = saferelpath(path, base_folder, strategy="outside")
@@ -272,7 +314,7 @@ class __PmxExporter:
                 counter += 1
             path_set.add(os.path.normcase(dest_path))
             os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-            shutil.copyfile(path, dest_path)
+            shutil.copy2(path, dest_path)
             logging.info("Copy file %s --> %s", path, dest_path)
             texture.path = dest_path
 
