@@ -808,17 +808,26 @@ class PMXImporter:
             frame.name_e = i.name_e
             frame.is_special = i.isSpecial
             for disp_type, index in i.data:
-                item = frame.data.add()
                 if disp_type == 0:
-                    item.type = "BONE"
-                    item.name = self.__boneTable[index].name
+                    # Check bone index bounds
+                    if 0 <= index < len(self.__boneTable):
+                        item = frame.data.add()
+                        item.type = "BONE"
+                        item.name = self.__boneTable[index].name
+                    else:
+                        logging.warning("Invalid bone index %d in display frame '%s', skipping item", index, i.name)
                 elif disp_type == 1:
-                    item.type = "MORPH"
-                    morph = pmxModel.morphs[index]
-                    item.name = morph.name
-                    item.morph_type = morph_types[morph.type_index()]
+                    # Check morph index bounds
+                    if 0 <= index < len(pmxModel.morphs):
+                        item = frame.data.add()
+                        item.type = "MORPH"
+                        morph = pmxModel.morphs[index]
+                        item.name = morph.name
+                        item.morph_type = morph_types[morph.type_index()]
+                    else:
+                        logging.warning("Invalid morph index %d in display frame '%s', skipping item", index, i.name)
                 else:
-                    raise Exception("Unknown display item type.")
+                    logging.warning("Unknown display item type %d in display frame '%s', skipping item", disp_type, i.name)
 
         FnBone.sync_bone_collections_from_display_item_frames(self.__armObj)
 
