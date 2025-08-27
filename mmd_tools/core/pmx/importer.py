@@ -6,6 +6,7 @@ import logging
 import math
 import os
 import time
+from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional
 
 import bpy
@@ -187,7 +188,7 @@ class PMXImporter:
 
         self.__textureTable = []
         for i in pmxModel.textures:
-            self.__textureTable.append(bpy.path.resolve_ncase(path=i.path))
+            self.__textureTable.append(str(Path(i.path).resolve()))
 
     def __createEditBones(self, obj, pmx_bones):
         """Create EditBones from pmx file data.
