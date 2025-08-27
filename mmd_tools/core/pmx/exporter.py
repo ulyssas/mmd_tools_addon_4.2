@@ -924,6 +924,8 @@ class __PmxExporter:
     @staticmethod
     def __convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map):
         vertices = vertices_map[vert_index]
+        assert vertices, f"Empty vertices list for vertex index {vert_index}"
+
         for i in vertices:
             if i.uv is None:
                 i.uv = uv
@@ -943,6 +945,8 @@ class __PmxExporter:
             return self.__convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map)
 
         vertices = vertices_map[vert_index]
+        assert vertices, f"Empty vertices list for vertex index {vert_index}"
+
         v = None
         for i in vertices:
             if i.uv is None:
