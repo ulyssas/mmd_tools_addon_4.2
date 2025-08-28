@@ -698,6 +698,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
         default=False,
     )
+    fix_bone_order: bpy.props.BoolProperty(
+        name="Fix Bone Order",
+        description="Automatically fix bone order before export. This ensures bones are ordered correctly for MMD compatibility.",
+        default=True,
+    )
     overwrite_bone_morphs_from_action_pose: bpy.props.BoolProperty(
         name="Overwrite Bone Morphs",
         description="Overwrite the bone morphs from active Action Pose before exporting.",
@@ -864,6 +869,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 rigid_bodies=FnModel.iterate_rigid_body_objects(root),
                 joints=FnModel.iterate_joint_objects(root),
                 copy_textures=self.copy_textures,
+                fix_bone_order=self.fix_bone_order,
                 overwrite_bone_morphs_from_action_pose=self.overwrite_bone_morphs_from_action_pose,
                 translate_in_presets=self.translate_in_presets,
                 sort_materials=self.sort_materials,
