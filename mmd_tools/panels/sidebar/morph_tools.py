@@ -50,6 +50,10 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
         morph = ItemOp.get_by_index(getattr(mmd_root, morph_type), mmd_root.active_morph)
         if morph:
+            slider = rig.morph_slider.get(morph.name)
+            if slider:
+                col.row().prop(slider, "value")
+
             row = col.row(align=True)
             row.prop(
                 mmd_root,
