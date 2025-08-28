@@ -47,10 +47,6 @@ class MMDToolsBoneIdMoveUp(bpy.types.Operator):
             # safe swap bone IDs
             FnModel.swap_bone_ids(active_bone, prev_bone, root.mmd_root.bone_morphs, armature.pose.bones)
 
-            # Refresh UI
-            for area in context.screen.areas:
-                area.tag_redraw()
-
         return {"FINISHED"}
 
 
@@ -93,10 +89,6 @@ class MMDToolsBoneIdMoveDown(bpy.types.Operator):
             # safe swap bone IDs
             FnModel.swap_bone_ids(active_bone, next_bone, root.mmd_root.bone_morphs, armature.pose.bones)
 
-            # Refresh UI
-            for area in context.screen.areas:
-                area.tag_redraw()
-
         return {"FINISHED"}
 
 
@@ -124,10 +116,6 @@ class MMDToolsBoneIdMoveTop(bpy.types.Operator):
         pose_bones = armature.pose.bones
         FnModel.shift_bone_id(old_bone_id, new_bone_id, bone_morphs, pose_bones)
 
-        # Refresh UI
-        for area in context.screen.areas:
-            area.tag_redraw()
-
         return {"FINISHED"}
 
 
@@ -154,10 +142,6 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
         bone_morphs = root.mmd_root.bone_morphs
         pose_bones = armature.pose.bones
         FnModel.shift_bone_id(old_bone_id, new_bone_id, bone_morphs, pose_bones)
-
-        # Refresh UI
-        for area in context.screen.areas:
-            area.tag_redraw()
 
         return {"FINISHED"}
 
@@ -201,10 +185,6 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         # Apply additional transformation (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)
         FnBone.apply_additional_transformation(armature)
-
-        # Refresh UI
-        for area in context.screen.areas:
-            area.tag_redraw()
 
         return {"FINISHED"}
 
