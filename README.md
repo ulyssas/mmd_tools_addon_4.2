@@ -9,7 +9,7 @@ MMD ToolsはMMD(MikuMikuDance)のモデルデータ(.pmd, .pmx)、モーショ�
 ## Version Compatibility
 | Blender Version | MMD Tools Version | Branch      |
 |-----------------|-------------------|-------------|
-| Blender 4.2 LTS | MMD Tools v4.x    | [main](https://github.com/MMD-Blender/blender_mmd_tools) |
+| Blender 4.5 LTS | MMD Tools v4.x    | [main](https://github.com/MMD-Blender/blender_mmd_tools) |
 | Blender 3.6 LTS | MMD Tools v2.x    | [blender-v3](https://github.com/MMD-Blender/blender_mmd_tools/tree/blender-v3) |
 
 Use the MMD Tools version that matches your Blender LTS version.
