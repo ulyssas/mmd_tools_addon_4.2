@@ -347,6 +347,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     def _do_execute(self, context):
         logger = logging.getLogger()
         logger.setLevel(self.log_level)
+        handler = None
         if self.save_log:
             handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.import.log")
             logger.addHandler(handler)
@@ -378,7 +379,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             logging.exception("Error occurred")
             raise
         finally:
-            if self.save_log:
+            if handler:
                 logger.removeHandler(handler)
 
         return {"FINISHED"}
@@ -475,6 +476,17 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
         default=True,
     )
+    log_level: bpy.props.EnumProperty(
+        name="Log level",
+        description="Select log level",
+        items=LOG_LEVEL_ITEMS,
+        default="INFO",
+    )
+    save_log: bpy.props.BoolProperty(
+        name="Create a log file",
+        description="Create a log file",
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -507,53 +519,73 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
         layout.prop(self, "update_scene_settings")
 
+        layout.prop(self, "log_level")
+        layout.prop(self, "save_log")
+
     def execute(self, context):
-        selected_objects = set(context.selected_objects)
-        for i in frozenset(selected_objects):
-            root = FnModel.find_root_object(i)
-            if root == i:
-                rig = Model(root)
-                armature = rig.armature()
-                if armature is not None:
-                    selected_objects.add(armature)
-                placeholder = rig.morph_slider.placeholder()
-                if placeholder is not None:
-                    selected_objects.add(placeholder)
-                selected_objects |= set(rig.meshes())
+        logger = logging.getLogger()
+        logger.setLevel(self.log_level)
+        handler = None
+        if self.save_log:
+            handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.import.log")
+            logger.addHandler(handler)
 
-        bone_mapper = None
-        if self.bone_mapper == "PMX":
-            bone_mapper = makePmxBoneMap
-        elif self.bone_mapper == "RENAMED_BONES":
-            bone_mapper = vmd_importer.RenamedBoneMapper(
-                rename_LR_bones=self.rename_bones,
-                use_underscore=self.use_underscore,
-                translator=DictionaryEnum.get_translator(self.dictionary),
-            ).init
+        try:
+            selected_objects = set(context.selected_objects)
+            for i in frozenset(selected_objects):
+                root = FnModel.find_root_object(i)
+                if root == i:
+                    rig = Model(root)
+                    armature = rig.armature()
+                    if armature is not None:
+                        selected_objects.add(armature)
+                    placeholder = rig.morph_slider.placeholder()
+                    if placeholder is not None:
+                        selected_objects.add(placeholder)
+                    selected_objects |= set(rig.meshes())
 
-        for file in self.files:
-            start_time = time.time()
-            importer = vmd_importer.VMDImporter(
-                filepath=os.path.join(self.directory, file.name),
-                scale=self.scale,
-                bone_mapper=bone_mapper,
-                use_pose_mode=self.use_pose_mode,
-                frame_margin=self.margin,
-                use_mirror=self.use_mirror,
-                always_create_new_action=self.always_create_new_action,
-                use_nla=self.use_nla,
-                detect_camera_changes=self.detect_camera_changes,
-                detect_lamp_changes=self.detect_lamp_changes,
-            )
+            bone_mapper = None
+            if self.bone_mapper == "PMX":
+                bone_mapper = makePmxBoneMap
+            elif self.bone_mapper == "RENAMED_BONES":
+                bone_mapper = vmd_importer.RenamedBoneMapper(
+                    rename_LR_bones=self.rename_bones,
+                    use_underscore=self.use_underscore,
+                    translator=DictionaryEnum.get_translator(self.dictionary),
+                ).init
 
-            for i in selected_objects:
-                importer.assign(i)
-            logging.info(" Finished importing motion in %f seconds.", time.time() - start_time)
+            for file in self.files:
+                start_time = time.time()
+                importer = vmd_importer.VMDImporter(
+                    filepath=os.path.join(self.directory, file.name),
+                    scale=self.scale,
+                    bone_mapper=bone_mapper,
+                    use_pose_mode=self.use_pose_mode,
+                    frame_margin=self.margin,
+                    use_mirror=self.use_mirror,
+                    always_create_new_action=self.always_create_new_action,
+                    use_nla=self.use_nla,
+                    detect_camera_changes=self.detect_camera_changes,
+                    detect_lamp_changes=self.detect_lamp_changes,
+                )
 
-        if self.update_scene_settings:
-            auto_scene_setup.setupFrameRanges()
-            auto_scene_setup.setupFps()
-        context.scene.frame_set(context.scene.frame_current)
+                for i in selected_objects:
+                    importer.assign(i)
+                logging.info(" Finished importing motion in %f seconds.", time.time() - start_time)
+
+            if self.update_scene_settings:
+                auto_scene_setup.setupFrameRanges()
+                auto_scene_setup.setupFps()
+            context.scene.frame_set(context.scene.frame_current)
+
+        except Exception:
+            logging.exception("Error occurred")
+            err_msg = traceback.format_exc()
+            self.report({"ERROR"}, err_msg)
+        finally:
+            if handler:
+                logger.removeHandler(handler)
+
         return {"FINISHED"}
 
 
@@ -847,6 +879,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     def _do_execute(self, context, root):
         logger = logging.getLogger()
         logger.setLevel(self.log_level)
+        handler = None
         if self.save_log:
             handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.export.log")
             logger.addHandler(handler)
@@ -894,7 +927,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         finally:
             if orig_pose_position:
                 arm.data.pose_position = orig_pose_position
-            if self.save_log:
+            if handler:
                 logger.removeHandler(handler)
 
         return {"FINISHED"}
