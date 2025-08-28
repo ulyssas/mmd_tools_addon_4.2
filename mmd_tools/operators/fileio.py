@@ -963,6 +963,17 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
         description="Add additional keyframes to accurately preserve animation curves. Blender's bezier handles are more flexible than the VMD format. Complex handle settings will be lost during export unless additional keyframes are added to approximate the original curves.",
         default=False,
     )
+    log_level: bpy.props.EnumProperty(
+        name="Log level",
+        description="Select log level",
+        items=LOG_LEVEL_ITEMS,
+        default="INFO",
+    )
+    save_log: bpy.props.BoolProperty(
+        name="Create a log file",
+        description="Create a log file",
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -988,34 +999,41 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
-        params = {
-            "filepath": self.filepath,
-            "scale": self.scale,
-            "use_pose_mode": self.use_pose_mode,
-            "use_frame_range": self.use_frame_range,
-            "preserve_curves": self.preserve_curves,
-        }
-
-        obj = context.active_object
-        if obj.mmd_type == "ROOT":
-            rig = Model(obj)
-            params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
-            params["armature"] = rig.armature()
-            params["model_name"] = obj.mmd_root.name or obj.name
-        elif getattr(obj.data, "shape_keys", None):
-            params["mesh"] = obj
-            params["model_name"] = obj.name
-        elif obj.type == "ARMATURE":
-            params["armature"] = obj
-            params["model_name"] = obj.name
-        else:
-            for i in context.selected_objects:
-                if MMDCamera.isMMDCamera(i):
-                    params["camera"] = i
-                elif MMDLamp.isMMDLamp(i):
-                    params["lamp"] = i
+        logger = logging.getLogger()
+        logger.setLevel(self.log_level)
+        handler = None
+        if self.save_log:
+            handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.export.log")
+            logger.addHandler(handler)
 
         try:
+            params = {
+                "filepath": self.filepath,
+                "scale": self.scale,
+                "use_pose_mode": self.use_pose_mode,
+                "use_frame_range": self.use_frame_range,
+                "preserve_curves": self.preserve_curves,
+            }
+
+            obj = context.active_object
+            if obj.mmd_type == "ROOT":
+                rig = Model(obj)
+                params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
+                params["armature"] = rig.armature()
+                params["model_name"] = obj.mmd_root.name or obj.name
+            elif getattr(obj.data, "shape_keys", None):
+                params["mesh"] = obj
+                params["model_name"] = obj.name
+            elif obj.type == "ARMATURE":
+                params["armature"] = obj
+                params["model_name"] = obj.name
+            else:
+                for i in context.selected_objects:
+                    if MMDCamera.isMMDCamera(i):
+                        params["camera"] = i
+                    elif MMDLamp.isMMDLamp(i):
+                        params["lamp"] = i
+
             start_time = time.time()
             vmd_exporter.VMDExporter().export(**params)
             logging.info(" Finished exporting motion in %f seconds.", time.time() - start_time)
@@ -1023,6 +1041,9 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             logging.exception("Error occurred")
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
+        finally:
+            if handler:
+                logger.removeHandler(handler)
         return {"FINISHED"}
 
 
