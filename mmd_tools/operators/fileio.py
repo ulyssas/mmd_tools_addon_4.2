@@ -693,6 +693,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Export visible meshes only",
         default=False,
     )
+    export_vertex_colors_as_adduv2: bpy.props.BoolProperty(
+        name="Export Vertex Colors",
+        description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
+        default=False,
+    )
     overwrite_bone_morphs_from_action_pose: bpy.props.BoolProperty(
         name="Overwrite Bone Morphs",
         description="Overwrite the bone morphs from active Action Pose before exporting.",
@@ -744,11 +749,6 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
             ("CUSTOM", "Custom", 'Use custom vertex weight of vertex group "mmd_vertex_order"', 2),
         ],
         default="NONE",
-    )
-    export_vertex_colors_as_adduv2: bpy.props.BoolProperty(
-        name="Export Vertex Colors",
-        description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
-        default=False,
     )
     ik_angle_limits: bpy.props.EnumProperty(
         name="IK Angle Limits",
@@ -869,10 +869,10 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_materials=self.sort_materials,
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
+                export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 vertex_splitting=self.vertex_splitting,
                 keep_sharp=self.keep_sharp,
                 sharp_edge_angle=self.sharp_edge_angle,
-                export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 ik_angle_limits=self.ik_angle_limits,
             )
             self.report({"INFO"}, f'Exported MMD model "{root.name}" to "{self.filepath}"')
