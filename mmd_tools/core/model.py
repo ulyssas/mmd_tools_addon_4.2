@@ -435,7 +435,7 @@ class FnModel:
 
     @staticmethod
     def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones, sorting_method: str = "FIX-MOVE-CHILDREN"):
-        """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel."""
+        """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
 
         def get_hierarchy_depth(bone):
             """Get the depth of bone in the hierarchy (root bones have depth 0)"""

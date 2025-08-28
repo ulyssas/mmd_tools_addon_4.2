@@ -171,6 +171,12 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         if not root or not armature:
             return {"CANCELLED"}
 
+        # Trigger mode switch to sync newly created bones from Edit mode
+        bpy.context.view_layer.objects.active = armature
+        current_mode = armature.mode
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.mode_set(mode=current_mode)
+
         # Migrate bone layers from Blender 3.6 and earlier to bone collections in newer versions
         self.check_and_rename_collections(armature)
 
@@ -178,9 +184,25 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         bone_order_mesh_object = self.find_old_bone_order_mesh_object(root)
         if bone_order_mesh_object:
             self.migrate_from_vertex_groups(bone_order_mesh_object, armature, root)
-        else:
-            # safe realign bone IDs
+
+        # Fix bone order
+        for iteration in range(10):
+            current_state = {}
+            for bone in armature.pose.bones:
+                if not getattr(bone, "is_mmd_shadow_bone", False):
+                    current_state[bone.name] = bone.mmd_bone.bone_id
+
             FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones, self.sorting_method)
+
+            new_state = {}
+            for bone in armature.pose.bones:
+                if not getattr(bone, "is_mmd_shadow_bone", False):
+                    new_state[bone.name] = bone.mmd_bone.bone_id
+
+            if current_state == new_state:
+                break
+        else:
+            self.report({"WARNING"}, "Bone order did not converge after 10 iterations")
 
         # Apply additional transformation (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)
