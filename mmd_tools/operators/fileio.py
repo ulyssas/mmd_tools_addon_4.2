@@ -256,6 +256,11 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created.",
         default=False,
     )
+    fix_bone_order: bpy.props.BoolProperty(
+        name="Fix Bone Order",
+        description="Automatically fix bone order after import. This ensures bones are ordered correctly for MMD compatibility.",
+        default=True,
+    )
     fix_ik_links: bpy.props.BoolProperty(
         name="Fix IK Links",
         description="Fix IK links to be blender suitable",
@@ -357,6 +362,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 clean_model=self.clean_model,
                 remove_doubles=self.remove_doubles,
                 import_adduv2_as_vertex_colors=self.import_adduv2_as_vertex_colors,
+                fix_bone_order=self.fix_bone_order,
                 fix_ik_links=self.fix_ik_links,
                 ik_loop_factor=self.ik_loop_factor,
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,

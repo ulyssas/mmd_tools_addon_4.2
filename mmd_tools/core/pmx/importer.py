@@ -929,6 +929,8 @@ class PMXImporter:
                 self.__createMeshObject()
                 self.__importVertexGroup()
             self.__importBones()
+            if args.get("fix_bone_order", True):
+                bpy.ops.mmd_tools.fix_bone_order()
             if args.get("rename_LR_bones", False):
                 use_underscore = args.get("use_underscore", False)
                 self.__renameLRBones(use_underscore)
