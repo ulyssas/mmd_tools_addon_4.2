@@ -477,25 +477,58 @@ class FnModel:
             # Keep original position
             return (0, current_id if current_id >= 0 else float("inf"), bone.name)
 
-        # Get valid bones (non-shadow bones)
+        # 1. Get valid bones (non-shadow bones) and sort them to determine the final order
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
 
-        # Choose sorting method
         if sorting_method == "REBUILD-DEPTH":
             # Sort by hierarchy depth, then name (allows chain mixing)
             valid_bones.sort(key=lambda pb: (get_hierarchy_depth(pb), pb.name))
         elif sorting_method == "REBUILD-PATH":
             # Sort by hierarchy path (keeps bone chains together)
             valid_bones.sort(key=bone_hierarchy_path)
-        else:  # Default to "FIX-MOVE-CHILDREN"
+        else:  # "FIX-MOVE-CHILDREN"
             # Fix mode: move children after parents (preserve parent positions)
             valid_bones.sort(key=get_fix_key_move_children)
 
-        # Reassign IDs sequentially
+        # Use conflict-free batch remapping
+        # ---------------------------------
+        # This optimized approach avoids conflicts by first creating a complete map of all
+        # required ID changes, then updating all external references in one pass, and
+        # finally applying the new IDs to the bones themselves.
+
+        # 2. Create a translation map from old bone_id to new bone_id
+        id_translation_map = {}
+        bone_to_new_id_map = {}
         for i, bone in enumerate(valid_bones):
             new_id = bone_id_offset + i
+            old_id = bone.mmd_bone.bone_id
+            if old_id != new_id:
+                if old_id >= 0:
+                    id_translation_map[old_id] = new_id
+            bone_to_new_id_map[bone.name] = new_id
+
+        # 3. Assign the new IDs to the bones themselves
+        for bone in valid_bones:
+            new_id = bone_to_new_id_map[bone.name]
             if bone.mmd_bone.bone_id != new_id:
-                FnModel.safe_change_bone_id(bone, new_id, bone_morphs, pose_bones)
+                bone.mmd_bone.bone_id = new_id
+
+        # 4. Batch update all references (morphs and other bones) using the translation map
+        if not id_translation_map:  # No changes needed
+            return
+
+        for bone_morph in bone_morphs:
+            for data in bone_morph.data:
+                if data.bone_id in id_translation_map:
+                    data.bone_id = id_translation_map[data.bone_id]
+
+        for pose_bone in pose_bones:
+            if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone):
+                mmd_bone = pose_bone.mmd_bone
+                if mmd_bone.additional_transform_bone_id in id_translation_map:
+                    mmd_bone.additional_transform_bone_id = id_translation_map[mmd_bone.additional_transform_bone_id]
+                if mmd_bone.display_connection_bone_id in id_translation_map:
+                    mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
 
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):
