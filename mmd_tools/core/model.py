@@ -436,7 +436,7 @@ class FnModel:
                     mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
 
     @staticmethod
-    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones, sorting_method: str = "FIX-MOVE-CHILDREN"):
+    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
 
         def get_hierarchy_depth(bone):
@@ -482,15 +482,8 @@ class FnModel:
         # 1. Get valid bones (non-shadow bones) and sort them to determine the final order
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
 
-        if sorting_method == "REBUILD-DEPTH":
-            # Sort by hierarchy depth, then name (allows chain mixing)
-            valid_bones.sort(key=lambda pb: (get_hierarchy_depth(pb), pb.name))
-        elif sorting_method == "REBUILD-PATH":
-            # Sort by hierarchy path (keeps bone chains together)
-            valid_bones.sort(key=bone_hierarchy_path)
-        else:  # "FIX-MOVE-CHILDREN"
-            # Fix mode: move children after parents (preserve parent positions)
-            valid_bones.sort(key=get_fix_key_move_children)
+        # Sort
+        valid_bones.sort(key=get_fix_key_move_children)
 
         # Use conflict-free batch remapping
         # ---------------------------------
