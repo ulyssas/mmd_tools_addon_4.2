@@ -507,7 +507,7 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
             parent_icon = "ERROR"
             if parent_bone_id >= 0:
                 if bone_transform_rank >= (parent_bone_id + bone_parent.mmd_bone.transform_order * count):
-                    parent_icon = "INFO" if bone_id < parent_bone_id else "FILE_PARENT"
+                    parent_icon = "FILE_PARENT"
             r.label(text=str(parent_bone_id), icon=parent_icon)
         else:
             r.label()
