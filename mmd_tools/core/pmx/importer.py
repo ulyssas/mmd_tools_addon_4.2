@@ -460,6 +460,9 @@ class PMXImporter:
                     b_bone.lock_scale = [True, True, True]
 
     def __importRigids(self):
+        if len(self.__model.rigids) == 0:
+            logging.info("No rigid bodies to import, skipping rigid body creation.")
+            return
         start_time = time.time()
         self.__rigidTable = {}
         context = FnContext.ensure_context()
@@ -506,6 +509,9 @@ class PMXImporter:
         logging.debug("Finished importing rigid bodies in %f seconds.", time.time() - start_time)
 
     def __importJoints(self):
+        if len(self.__model.joints) == 0:
+            logging.info("No joints to import, skipping joint creation.")
+            return
         start_time = time.time()
         context = FnContext.ensure_context()
         joint_pool = FnRigidBody.new_joint_objects(context, FnModel.ensure_joint_group_object(context, self.__rig.rootObject()), len(self.__model.joints), FnModel.get_empty_display_size(self.__rig.rootObject()))
