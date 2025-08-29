@@ -440,9 +440,10 @@ class FnModel:
         """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
 
         def get_sort_key(bone):
-            """Generate sorting key that only moves bones violating parent-child rules"""
+            """Generate sorting key that only moves bones violating parent-child rules and additional transform rules"""
             transform_order = getattr(bone.mmd_bone, "transform_order", 0)
             current_id = bone.mmd_bone.bone_id if bone.mmd_bone.bone_id >= 0 else float("inf")
+            additional_transform_bone_id = getattr(bone.mmd_bone, "additional_transform_bone_id", -1)
 
             # Check if this bone violates parent-child order rules
             violation_found = False
@@ -466,8 +467,25 @@ class FnModel:
 
                 parent = parent.parent
 
+            # Check additional transform constraint
+            # additional_transform_bone_id must be smaller than current bone_id when transform_order is the same
+            if additional_transform_bone_id >= 0 and current_id >= 0 and additional_transform_bone_id >= current_id:
+                # Find the bone with additional_transform_bone_id to check its transform_order
+                additional_transform_bone = None
+                for pose_bone in pose_bones:
+                    if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone) and pose_bone.mmd_bone.bone_id == additional_transform_bone_id:
+                        additional_transform_bone = pose_bone
+                        break
+
+                if additional_transform_bone:
+                    additional_transform_order = getattr(additional_transform_bone.mmd_bone, "transform_order", 0)
+                    # Only apply constraint when transform_order is the same
+                    if additional_transform_order == transform_order:
+                        violation_found = True
+                        max_ancestor_id = max(max_ancestor_id, additional_transform_bone_id)
+
             if violation_found:
-                # Move this bone after its ancestors
+                # Move this bone after its ancestors and additional transform dependencies
                 return (max_ancestor_id + 0.1, current_id, bone.name)
             # Keep original position - use current bone_id for sorting
             return (current_id, current_id, bone.name)
