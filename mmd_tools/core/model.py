@@ -439,57 +439,44 @@ class FnModel:
     def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
 
-        def get_hierarchy_depth(bone):
-            """Get the depth of bone in the hierarchy (root bones have depth 0)"""
-            depth = 0
-            while bone.parent:
-                depth += 1
-                bone = bone.parent
-            return depth
+        def get_sort_key(bone):
+            """Generate sorting key that only moves bones violating parent-child rules"""
+            transform_order = getattr(bone.mmd_bone, "transform_order", 0)
+            current_id = bone.mmd_bone.bone_id if bone.mmd_bone.bone_id >= 0 else float("inf")
 
-        def bone_hierarchy_path(bone):
-            """Build path from root to bone for parent-child hierarchy sorting"""
-            path = []
-            while bone:
-                path.append(bone.name)
-                bone = bone.parent
-            return tuple(reversed(path))
-
-        def get_fix_key_move_children(bone):
-            """Fix mode: move children after their parents (preserve parent positions)"""
-            # Find the maximum ID among ALL ancestors in the hierarchy chain
+            # Check if this bone violates parent-child order rules
+            violation_found = False
             max_ancestor_id = -1
-            temp_parent = bone.parent
+            parent = bone.parent
 
-            while temp_parent:
-                if hasattr(temp_parent, "is_mmd_shadow_bone") and temp_parent.is_mmd_shadow_bone:
-                    temp_parent = temp_parent.parent
+            while parent:
+                if hasattr(parent, "is_mmd_shadow_bone") and parent.is_mmd_shadow_bone:
+                    parent = parent.parent
                     continue
 
-                if temp_parent.mmd_bone.bone_id >= 0:
-                    max_ancestor_id = max(max_ancestor_id, temp_parent.mmd_bone.bone_id)
-                temp_parent = temp_parent.parent
+                parent_transform_order = getattr(parent.mmd_bone, "transform_order", 0)
+                parent_id = parent.mmd_bone.bone_id
 
-            current_id = bone.mmd_bone.bone_id
+                # The rule that can be solved by sorting:
+                # if parent.transform_order == child.transform_order,
+                # then parent.bone_id must be < child.bone_id
+                if parent_transform_order == transform_order and parent_id >= 0 and current_id >= 0 and parent_id >= current_id:
+                    violation_found = True
+                    max_ancestor_id = max(max_ancestor_id, parent_id)
 
-            if max_ancestor_id >= 0 and current_id >= 0 and max_ancestor_id >= current_id:
-                # This bone needs to be moved after ALL ancestors
-                # Use max ancestor ID + small offset + hierarchy depth for stable sorting
-                return (1, max_ancestor_id + 0.1, get_hierarchy_depth(bone), bone.name)
-            # Keep original position
-            return (0, current_id if current_id >= 0 else float("inf"), bone.name)
+                parent = parent.parent
 
-        # 1. Get valid bones (non-shadow bones) and sort them to determine the final order
+            if violation_found:
+                # Move this bone after its ancestors
+                return (max_ancestor_id + 0.1, current_id, bone.name)
+            # Keep original position - use current bone_id for sorting
+            return (current_id, current_id, bone.name)
+
+        # 1. Get valid bones (non-shadow bones) and sort them
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
 
-        # Sort
-        valid_bones.sort(key=get_fix_key_move_children)
-
-        # Use conflict-free batch remapping
-        # ---------------------------------
-        # This optimized approach avoids conflicts by first creating a complete map of all
-        # required ID changes, then updating all external references in one pass, and
-        # finally applying the new IDs to the bones themselves.
+        # Sort - only bones violating rules will be moved
+        valid_bones.sort(key=get_sort_key)
 
         # 2. Create a translation map from old bone_id to new bone_id
         id_translation_map = {}
