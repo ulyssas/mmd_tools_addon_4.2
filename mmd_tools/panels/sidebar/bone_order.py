@@ -171,6 +171,12 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         if not root or not armature:
             return {"CANCELLED"}
 
+        # Clean invalid bone references first
+        bone_morphs = root.mmd_root.bone_morphs
+        cleaned_count = FnModel.clean_invalid_bone_id_references(pose_bones=armature.pose.bones, bone_morphs=bone_morphs)
+        if cleaned_count > 0:
+            self.report({"INFO"}, f"Cleaned {cleaned_count} invalid bone reference(s).")
+
         # Trigger mode switch to sync newly created bones from Edit mode
         bpy.context.view_layer.objects.active = armature
         current_mode = armature.mode
@@ -305,6 +311,38 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
                 break
 
         self.report({"INFO"}, f"Successfully migrated {next_id} bones from vertex groups to bone_id system")
+
+
+class MMDToolsCleanInvalidBoneIdReferences(bpy.types.Operator):
+    bl_idname = "mmd_tools.clean_invalid_bone_id_references"
+    bl_label = "Clean Invalid Bone References"
+    bl_description = "Scans the active MMD model for any references to bone_ids that no longer exist, then cleans them up. This is useful after deleting bones to maintain data integrity."
+    bl_options = {"REGISTER", "UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        return FnModel.find_root_object(context.active_object) is not None
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.active_object)
+        if not root:
+            self.report({"WARNING"}, "Operation cancelled: No active MMD model found.")
+            return {"CANCELLED"}
+
+        armature = FnModel.find_armature_object(root)
+        if not armature:
+            self.report({"WARNING"}, f"Operation cancelled: Armature not found for MMD model '{root.name}'.")
+            return {"CANCELLED"}
+
+        bone_morphs = root.mmd_root.bone_morphs
+        cleaned_count = FnModel.clean_invalid_bone_id_references(pose_bones=armature.pose.bones, bone_morphs=bone_morphs)
+
+        if cleaned_count > 0:
+            self.report({"INFO"}, f"Successfully cleaned or removed {cleaned_count} invalid bone reference(s).")
+        else:
+            self.report({"INFO"}, "No invalid bone references were found.")
+
+        return {"FINISHED"}
 
 
 class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):

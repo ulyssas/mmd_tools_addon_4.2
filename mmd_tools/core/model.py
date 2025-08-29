@@ -533,6 +533,72 @@ class FnModel:
                     mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
 
     @staticmethod
+    def clean_invalid_bone_id_references(pose_bones, bone_morphs) -> int:
+        """
+        Scan all bones and bone morphs to clean up invalid bone ID references.
+
+        This function performs two main tasks:
+        1.  For bone properties that reference another bone by ID (e.g.,
+            additional_transform_bone_id, display_connection_bone_id), it
+            resets the ID to -1 if the target bone no longer exists.
+        2.  For Bone Morphs, it removes individual morph data entries
+            that reference a bone that no longer exists.
+
+        Args:
+            pose_bones (bpy.types.bpy_prop_collection):
+                The pose bone collection from the armature object (armature.pose.bones).
+            bone_morphs (bpy.types.bpy_prop_collection):
+                The bone morph collection from the MMD root object (root.mmd_root.bone_morphs).
+
+        Returns:
+            int: The total number of invalid references that were cleaned or removed.
+        """
+        if not pose_bones:
+            return 0
+
+        cleaned_count = 0
+        valid_bone_ids = {b.mmd_bone.bone_id for b in pose_bones if hasattr(b, "mmd_bone") and b.mmd_bone.bone_id >= 0 and not getattr(b, "is_mmd_shadow_bone", False)}
+
+        # Step 2: Clean up ID references on the bones themselves.
+        for bone in pose_bones:
+            if not hasattr(bone, "mmd_bone"):
+                continue
+
+            mmd_bone = bone.mmd_bone
+
+            # --- Clean up Additional Transform ---
+            at_bone_id = mmd_bone.additional_transform_bone_id
+            if at_bone_id >= 0 and at_bone_id not in valid_bone_ids:
+                logging.info(f"Resetting invalid additional transform from bone '{bone.name}' (was targeting bone_id {at_bone_id})")
+                mmd_bone.has_additional_rotation = False
+                mmd_bone.has_additional_location = False
+                mmd_bone.additional_transform_bone_id = -1
+                mmd_bone.additional_transform_influence = 1.0
+                mmd_bone.is_additional_transform_dirty = True
+                cleaned_count += 1
+
+            # --- Clean up Display Connection ---
+            dc_bone_id = mmd_bone.display_connection_bone_id
+            if dc_bone_id >= 0 and dc_bone_id not in valid_bone_ids:
+                logging.info(f"Resetting invalid display connection from bone '{bone.name}' (was targeting bone_id {dc_bone_id})")
+                mmd_bone.display_connection_bone_id = -1
+                mmd_bone.display_connection_type = "OFFSET"
+                cleaned_count += 1
+
+        # Step 3: Clean up invalid references within Bone Morphs.
+        if bone_morphs:
+            for morph in bone_morphs:
+                morph_data = morph.data
+                for i in range(len(morph_data) - 1, -1, -1):
+                    item = morph_data[i]
+                    if item.bone_id >= 0 and item.bone_id not in valid_bone_ids:
+                        logging.info(f"Removing invalid morph item targeting bone_id {item.bone_id} from morph '{morph.name}'")
+                        morph_data.remove(i)
+                        cleaned_count += 1
+
+        return cleaned_count
+
+    @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):
         # Ensure we are in object mode
         if bpy.context.mode != "OBJECT":

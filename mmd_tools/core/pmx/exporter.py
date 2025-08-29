@@ -1424,6 +1424,7 @@ class __PmxExporter:
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)
 
+        bpy.ops.mmd_tools.clean_invalid_bone_id_references()
         if args.get("fix_bone_order", True):
             bpy.ops.mmd_tools.fix_bone_order()
 
