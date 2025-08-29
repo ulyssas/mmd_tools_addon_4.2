@@ -6,6 +6,7 @@ import logging
 import math
 import os
 import time
+from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional
 
 import bpy
@@ -187,7 +188,7 @@ class PMXImporter:
 
         self.__textureTable = []
         for i in pmxModel.textures:
-            self.__textureTable.append(bpy.path.resolve_ncase(path=i.path))
+            self.__textureTable.append(str(Path(i.path).resolve()))
 
     def __createEditBones(self, obj, pmx_bones):
         """Create EditBones from pmx file data.
@@ -808,17 +809,26 @@ class PMXImporter:
             frame.name_e = i.name_e
             frame.is_special = i.isSpecial
             for disp_type, index in i.data:
-                item = frame.data.add()
                 if disp_type == 0:
-                    item.type = "BONE"
-                    item.name = self.__boneTable[index].name
+                    # Check bone index bounds
+                    if 0 <= index < len(self.__boneTable):
+                        item = frame.data.add()
+                        item.type = "BONE"
+                        item.name = self.__boneTable[index].name
+                    else:
+                        logging.warning("Invalid bone index %d in display frame '%s', skipping item", index, i.name)
                 elif disp_type == 1:
-                    item.type = "MORPH"
-                    morph = pmxModel.morphs[index]
-                    item.name = morph.name
-                    item.morph_type = morph_types[morph.type_index()]
+                    # Check morph index bounds
+                    if 0 <= index < len(pmxModel.morphs):
+                        item = frame.data.add()
+                        item.type = "MORPH"
+                        morph = pmxModel.morphs[index]
+                        item.name = morph.name
+                        item.morph_type = morph_types[morph.type_index()]
+                    else:
+                        logging.warning("Invalid morph index %d in display frame '%s', skipping item", index, i.name)
                 else:
-                    raise Exception("Unknown display item type.")
+                    logging.warning("Unknown display item type %d in display frame '%s', skipping item", disp_type, i.name)
 
         FnBone.sync_bone_collections_from_display_item_frames(self.__armObj)
 
@@ -919,6 +929,8 @@ class PMXImporter:
                 self.__createMeshObject()
                 self.__importVertexGroup()
             self.__importBones()
+            if args.get("fix_bone_order", True):
+                bpy.ops.mmd_tools.fix_bone_order()
             if args.get("rename_LR_bones", False):
                 use_underscore = args.get("use_underscore", False)
                 self.__renameLRBones(use_underscore)

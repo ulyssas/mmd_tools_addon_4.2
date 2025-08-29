@@ -155,6 +155,38 @@ class TestBoneOrder(unittest.TestCase):
 
         print("✓ Fix bone order test passed - bone structure is clean")
 
+    def test_fix_bone_order_multiple_runs(self):
+        """Test fix_bone_order stability across multiple runs with all bones scrambled"""
+        pose_bones = self.armature_object.pose.bones
+
+        # Scramble all non-shadow bones with high, non-sequential IDs
+        scrambled_ids = [99, 88, 77, 66, 55, 44, 33, 22, 11, 100]
+        bone_index = 0
+
+        for bone in pose_bones:
+            if not getattr(bone, "is_mmd_shadow_bone", False):
+                if bone_index < len(scrambled_ids):
+                    bone.mmd_bone.bone_id = scrambled_ids[bone_index]
+                    bone_index += 1
+
+        # Run fix_bone_order multiple times
+        states = []
+        for i in range(3):  # Test 3 executions
+            bpy.context.view_layer.objects.active = self.root_object
+            result = bpy.ops.mmd_tools.fix_bone_order()
+            self.assertEqual(result, {"FINISHED"}, f"Fix bone order run {i + 1} should succeed")
+
+            # Record current state
+            current_state = {}
+            for bone in self.armature_object.pose.bones:
+                if not getattr(bone, "is_mmd_shadow_bone", False):
+                    current_state[bone.name] = bone.mmd_bone.bone_id
+            states.append(current_state)
+
+        # Verify all runs produced identical results
+        for i in range(1, len(states)):
+            self.assertEqual(states[0], states[i], f"All fix_bone_order runs should produce identical results. Run 1: {states[0]}, Run {i + 1}: {states[i]}")
+
     def test_get_max_bone_id(self):
         """Test getting maximum bone ID from pose bones"""
         max_id = FnModel.get_max_bone_id(self.armature_object.pose.bones)

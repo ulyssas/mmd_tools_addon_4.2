@@ -3,6 +3,7 @@
 
 import logging
 import os
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, cast
 
 import bpy
@@ -172,7 +173,7 @@ class FnMaterial:
         if mmd_mat.is_shared_toon_texture:
             shared_toon_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "shared_toon_folder", "")
             toon_path = os.path.join(shared_toon_folder, "toon%02d.bmp" % (mmd_mat.shared_toon_texture + 1))
-            self.create_toon_texture(bpy.path.resolve_ncase(path=toon_path))
+            self.create_toon_texture(str(Path(toon_path).resolve()))
         elif mmd_mat.toon_texture != "":
             self.create_toon_texture(mmd_mat.toon_texture)
         else:

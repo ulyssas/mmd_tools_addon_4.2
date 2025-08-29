@@ -352,22 +352,16 @@ class FnModel:
         Maintains the gap structure of bone IDs unchanged, only changes which bone corresponds to which ID.
         Other bones shift positions to accommodate the change while preserving relative order.
         """
-        # Check for invalid bone IDs
         if old_bone_id < 0:
             logging.warning(f"Cannot shift bone with invalid old_bone_id ({old_bone_id})")
             return
         if new_bone_id < 0:
             logging.warning(f"Cannot shift bone to invalid new_bone_id ({new_bone_id})")
             return
-
-        # If source and target IDs are the same, no operation needed
         if old_bone_id == new_bone_id:
             return
 
-        # Get all valid pose bones (exclude shadow bones)
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone) and pb.mmd_bone.bone_id >= 0]
-
-        # Sort by bone_id
         valid_bones.sort(key=lambda pb: pb.mmd_bone.bone_id)
 
         # Extract current bone IDs (this order structure must remain unchanged)
@@ -395,47 +389,55 @@ class FnModel:
             FnModel.safe_change_bone_id(moving_bone, new_bone_id, bone_morphs, pose_bones)
             return
 
-        # Create new bone order array
-        new_bone_order = valid_bones.copy()
+        # 1. Determine the changes and build the translation map
+        id_translation_map = {}
+        bone_to_new_id_map = {}
 
-        if old_pos < new_pos:
-            # Move right: shift left bones to the right by one position
+        if old_pos < new_pos:  # Move down (ID increases)
+            # Bone at old_pos moves to new_pos's ID.
+            # Bones from old_pos+1 to new_pos shift up to fill the gap.
+            id_translation_map[old_bone_id] = fixed_bone_ids[new_pos]
+            bone_to_new_id_map[moving_bone.name] = fixed_bone_ids[new_pos]
             for i in range(old_pos, new_pos):
-                new_bone_order[i] = valid_bones[i + 1]
-            new_bone_order[new_pos] = moving_bone
-        else:
-            # Move left: shift right bones to the left by one position
-            for i in range(old_pos, new_pos, -1):
-                new_bone_order[i] = valid_bones[i - 1]
-            new_bone_order[new_pos] = moving_bone
-
-        # Reassign bone IDs (using fixed ID order) with conflict resolution
-        # Use one temporary ID to perform circular shift, similar to swap_bone_ids approach
-        temp_id = FnModel.get_max_bone_id(pose_bones) + 1
-
-        # Perform circular shift using temporary ID
-        if old_pos < new_pos:
-            # Move right: shift sequence [old_pos+1, new_pos] leftward
-            # moving_bone -> temp_id, then shift others left, finally temp_id -> target
-            FnModel.unsafe_change_bone_id(moving_bone, temp_id, bone_morphs, pose_bones)
-            for i in range(old_pos, new_pos):
+                bone_to_shift = valid_bones[i + 1]
                 target_id = fixed_bone_ids[i]
-                source_bone = valid_bones[i + 1]
-                FnModel.unsafe_change_bone_id(source_bone, target_id, bone_morphs, pose_bones)
-            FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
-        else:
-            # Move left: shift sequence [new_pos, old_pos-1] rightward
-            # moving_bone -> temp_id, then shift others right, finally temp_id -> target
-            FnModel.unsafe_change_bone_id(moving_bone, temp_id, bone_morphs, pose_bones)
-            for i in range(old_pos, new_pos, -1):
+                id_translation_map[bone_to_shift.mmd_bone.bone_id] = target_id
+                bone_to_new_id_map[bone_to_shift.name] = target_id
+        else:  # Move up (ID decreases)
+            # Bone at old_pos moves to new_pos's ID.
+            # Bones from new_pos to old_pos-1 shift down.
+            id_translation_map[old_bone_id] = fixed_bone_ids[new_pos]
+            bone_to_new_id_map[moving_bone.name] = fixed_bone_ids[new_pos]
+            for i in range(new_pos + 1, old_pos + 1):
+                bone_to_shift = valid_bones[i - 1]
                 target_id = fixed_bone_ids[i]
-                source_bone = valid_bones[i - 1]
-                FnModel.unsafe_change_bone_id(source_bone, target_id, bone_morphs, pose_bones)
-            FnModel.unsafe_change_bone_id(moving_bone, fixed_bone_ids[new_pos], bone_morphs, pose_bones)
+                id_translation_map[bone_to_shift.mmd_bone.bone_id] = target_id
+                bone_to_new_id_map[bone_to_shift.name] = target_id
+
+        # 2. Assign the new IDs to the affected bones
+        for bone_name, new_id in bone_to_new_id_map.items():
+            pose_bones[bone_name].mmd_bone.bone_id = new_id
+
+        # 3. Batch update all references (morphs and other bones)
+        if not id_translation_map:
+            return
+
+        for bone_morph in bone_morphs:
+            for data in bone_morph.data:
+                if data.bone_id in id_translation_map:
+                    data.bone_id = id_translation_map[data.bone_id]
+
+        for pose_bone in pose_bones:
+            if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone):
+                mmd_bone = pose_bone.mmd_bone
+                if mmd_bone.additional_transform_bone_id in id_translation_map:
+                    mmd_bone.additional_transform_bone_id = id_translation_map[mmd_bone.additional_transform_bone_id]
+                if mmd_bone.display_connection_bone_id in id_translation_map:
+                    mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
 
     @staticmethod
     def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones, sorting_method: str = "FIX-MOVE-CHILDREN"):
-        """Realigns all bone IDs sequentially without gaps for bones displayed in Bone Order Panel."""
+        """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
 
         def get_hierarchy_depth(bone):
             """Get the depth of bone in the hierarchy (root bones have depth 0)"""
@@ -477,25 +479,124 @@ class FnModel:
             # Keep original position
             return (0, current_id if current_id >= 0 else float("inf"), bone.name)
 
-        # Get valid bones (non-shadow bones)
+        # 1. Get valid bones (non-shadow bones) and sort them to determine the final order
         valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
 
-        # Choose sorting method
         if sorting_method == "REBUILD-DEPTH":
             # Sort by hierarchy depth, then name (allows chain mixing)
             valid_bones.sort(key=lambda pb: (get_hierarchy_depth(pb), pb.name))
         elif sorting_method == "REBUILD-PATH":
             # Sort by hierarchy path (keeps bone chains together)
             valid_bones.sort(key=bone_hierarchy_path)
-        else:  # Default to "FIX-MOVE-CHILDREN"
+        else:  # "FIX-MOVE-CHILDREN"
             # Fix mode: move children after parents (preserve parent positions)
             valid_bones.sort(key=get_fix_key_move_children)
 
-        # Reassign IDs sequentially
+        # Use conflict-free batch remapping
+        # ---------------------------------
+        # This optimized approach avoids conflicts by first creating a complete map of all
+        # required ID changes, then updating all external references in one pass, and
+        # finally applying the new IDs to the bones themselves.
+
+        # 2. Create a translation map from old bone_id to new bone_id
+        id_translation_map = {}
+        bone_to_new_id_map = {}
         for i, bone in enumerate(valid_bones):
             new_id = bone_id_offset + i
+            old_id = bone.mmd_bone.bone_id
+            if old_id != new_id:
+                if old_id >= 0:
+                    id_translation_map[old_id] = new_id
+            bone_to_new_id_map[bone.name] = new_id
+
+        # 3. Assign the new IDs to the bones themselves
+        for bone in valid_bones:
+            new_id = bone_to_new_id_map[bone.name]
             if bone.mmd_bone.bone_id != new_id:
-                FnModel.safe_change_bone_id(bone, new_id, bone_morphs, pose_bones)
+                bone.mmd_bone.bone_id = new_id
+
+        # 4. Batch update all references (morphs and other bones) using the translation map
+        if not id_translation_map:  # No changes needed
+            return
+
+        for bone_morph in bone_morphs:
+            for data in bone_morph.data:
+                if data.bone_id in id_translation_map:
+                    data.bone_id = id_translation_map[data.bone_id]
+
+        for pose_bone in pose_bones:
+            if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone):
+                mmd_bone = pose_bone.mmd_bone
+                if mmd_bone.additional_transform_bone_id in id_translation_map:
+                    mmd_bone.additional_transform_bone_id = id_translation_map[mmd_bone.additional_transform_bone_id]
+                if mmd_bone.display_connection_bone_id in id_translation_map:
+                    mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
+
+    @staticmethod
+    def clean_invalid_bone_id_references(pose_bones, bone_morphs) -> int:
+        """
+        Scan all bones and bone morphs to clean up invalid bone ID references.
+
+        This function performs two main tasks:
+        1.  For bone properties that reference another bone by ID (e.g.,
+            additional_transform_bone_id, display_connection_bone_id), it
+            resets the ID to -1 if the target bone no longer exists.
+        2.  For Bone Morphs, it removes individual morph data entries
+            that reference a bone that no longer exists.
+
+        Args:
+            pose_bones (bpy.types.bpy_prop_collection):
+                The pose bone collection from the armature object (armature.pose.bones).
+            bone_morphs (bpy.types.bpy_prop_collection):
+                The bone morph collection from the MMD root object (root.mmd_root.bone_morphs).
+
+        Returns:
+            int: The total number of invalid references that were cleaned or removed.
+        """
+        if not pose_bones:
+            return 0
+
+        cleaned_count = 0
+        valid_bone_ids = {b.mmd_bone.bone_id for b in pose_bones if hasattr(b, "mmd_bone") and b.mmd_bone.bone_id >= 0 and not getattr(b, "is_mmd_shadow_bone", False)}
+
+        # Step 2: Clean up ID references on the bones themselves.
+        for bone in pose_bones:
+            if not hasattr(bone, "mmd_bone"):
+                continue
+
+            mmd_bone = bone.mmd_bone
+
+            # --- Clean up Additional Transform ---
+            at_bone_id = mmd_bone.additional_transform_bone_id
+            if at_bone_id >= 0 and at_bone_id not in valid_bone_ids:
+                logging.info(f"Resetting invalid additional transform from bone '{bone.name}' (was targeting bone_id {at_bone_id})")
+                mmd_bone.has_additional_rotation = False
+                mmd_bone.has_additional_location = False
+                mmd_bone.additional_transform_bone_id = -1
+                mmd_bone.additional_transform_influence = 1.0
+                mmd_bone.is_additional_transform_dirty = True
+                cleaned_count += 1
+
+            # --- Clean up Display Connection ---
+            dc_bone_id = mmd_bone.display_connection_bone_id
+            if dc_bone_id >= 0 and dc_bone_id not in valid_bone_ids:
+                logging.info(f"Resetting invalid display connection from bone '{bone.name}' (was targeting bone_id {dc_bone_id})")
+                mmd_bone.display_connection_bone_id = -1
+                mmd_bone.display_connection_type = "OFFSET"
+                cleaned_count += 1
+
+        # Step 3: Clean up invalid references within Bone Morphs.
+        if bone_morphs:
+            for morph in bone_morphs:
+                morph_data = morph.data
+                for i in range(len(morph_data) - 1, -1, -1):
+                    item = morph_data[i]
+                    if item.bone_id >= 0 and item.bone_id not in valid_bone_ids:
+                        logging.info(f"Removing invalid morph item targeting bone_id {item.bone_id} from morph '{morph.name}'")
+                        morph_data.remove(i)
+                        cleaned_count += 1
+
+        return cleaned_count
 
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):

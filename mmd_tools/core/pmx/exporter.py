@@ -230,51 +230,69 @@ class __PmxExporter:
             logging.warning("  The texture file does not exist: %s", t.path)
         return len(self.__model.textures) - 1
 
-    def __copy_textures(self, output_dir, base_folder=""):
+    def __copy_textures(self, output_dir, base_folder="", copy_textures=False):
+        # Step 0: Store original paths for Step 2
+        original_paths = {texture: texture.path for texture in self.__model.textures}
+
+        # Step 1: Set PMX texture relative paths
         tex_dir_fallback = os.path.join(output_dir, "textures")
         tex_dir_preference = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
 
-        path_set = set()  # to prevent overwriting
-        tex_copy_list = []
         for texture in self.__model.textures:
-            path = texture.path
-            tex_dir = output_dir  # restart to the default directory at each loop
-            if not os.path.isfile(path):
-                logging.warning("*** skipping texture file which does not exist: %s", path)
-                path_set.add(os.path.normcase(path))
-                continue
-            dst_name = os.path.basename(path)
+            current_path = original_paths[texture]
+
+            # Calculate the ideal destination filename and directory based on preference
+            dst_name = os.path.basename(current_path)
+            tex_dir = output_dir  # Restart to the default directory at each loop
             if base_folder:
-                dst_name = saferelpath(path, base_folder, strategy="outside")
+                dst_name = saferelpath(current_path, base_folder, strategy="outside")
                 if dst_name.startswith(".."):
-                    # Check if the texture comes from the preferred folder
                     if tex_dir_preference:
-                        dst_name = saferelpath(path, tex_dir_preference, strategy="outside")
+                        dst_name = saferelpath(current_path, tex_dir_preference, strategy="outside")
                     if dst_name.startswith(".."):
-                        # If the code reaches here the texture is somewhere else
-                        logging.warning("The texture %s is not inside the base texture folder", path)
-                        # Fall back to basename and textures folder
-                        dst_name = os.path.basename(path)
+                        logging.warning("The texture %s is not inside the base texture folder", current_path)
+                        dst_name = os.path.basename(current_path)
                         tex_dir = tex_dir_fallback
             else:
                 tex_dir = tex_dir_fallback
-            dest_path = os.path.join(tex_dir, dst_name)
-            if os.path.normcase(path) != os.path.normcase(dest_path):  # Only copy if the paths are different
-                tex_copy_list.append((texture, path, dest_path))
-            else:
-                path_set.add(os.path.normcase(path))
 
-        for texture, path, dest_path in tex_copy_list:
-            counter = 1
-            base, ext = os.path.splitext(dest_path)
-            while os.path.normcase(dest_path) in path_set:
-                dest_path = "%s_%d%s" % (base, counter, ext)
-                counter += 1
-            path_set.add(os.path.normcase(dest_path))
-            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-            shutil.copyfile(path, dest_path)
-            logging.info("Copy file %s --> %s", path, dest_path)
-            texture.path = dest_path
+            # Determine the full destination path and the final PMX relative path
+            full_dest_path = os.path.join(tex_dir, dst_name)
+            final_relative_path = os.path.relpath(full_dest_path, start=output_dir).replace("\\", "/")
+
+            texture.path = final_relative_path
+
+        # Step 2: Copy textures
+        if copy_textures:
+            for texture in self.__model.textures:
+                src_path = original_paths[texture]
+                dest_relative_path = texture.path
+
+                # Reconstruct the absolute destination path from the PMX's new relative path
+                full_dest_path = os.path.abspath(os.path.join(output_dir, dest_relative_path))
+
+                os.makedirs(os.path.dirname(full_dest_path), exist_ok=True)
+
+                # Check if the source is a packed image
+                packed_image = None
+                for image in bpy.data.images:
+                    if image.packed_file and (image.filepath == src_path or os.path.basename(image.filepath) == os.path.basename(src_path)):
+                        packed_image = image
+                        break
+
+                # Handle packed images first by extracting them
+                if packed_image:
+                    logging.info("Extracting packed texture '%s' -> '%s'", packed_image.name, full_dest_path)
+                    with open(full_dest_path, "wb") as f:
+                        f.write(packed_image.packed_file.data)
+
+                # If not packed, handle existing external files by copying them
+                elif os.path.isfile(src_path):
+                    if os.path.normcase(src_path) != os.path.normcase(full_dest_path):
+                        logging.info("Copying external texture '%s' -> '%s'", src_path, full_dest_path)
+                        shutil.copy2(src_path, full_dest_path)
+                else:
+                    logging.warning("Source for texture '%s' not found. Cannot copy.", src_path)
 
     def __exportMaterial(self, material, num_faces):
         p_mat = pmx.Material()
@@ -817,13 +835,18 @@ class __PmxExporter:
         morph_map = {}
         index = 0
 
-        # Priority: Display Panel order
+        # Build set of actually existing morphs to filter against
+        existing_morphs = set()
+        existing_morphs.update((self.MORPH_TYPES[type(m)], m.name) for m in self.__model.morphs)
+
+        # Priority: Display Panel order (only for existing morphs)
         facial_frame = self.__get_facial_frame(root)
         if facial_frame:
             for item in facial_frame.data:
                 if item.type == "MORPH":
                     key = (item.morph_type, item.name)
-                    if key not in morph_map:
+                    # Only add if morph actually exists and not already mapped
+                    if key not in morph_map and key in existing_morphs:
                         morph_map[key] = index
                         index += 1
 
@@ -924,6 +947,8 @@ class __PmxExporter:
     @staticmethod
     def __convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map):
         vertices = vertices_map[vert_index]
+        assert vertices, f"Empty vertices list for vertex index {vert_index}"
+
         for i in vertices:
             if i.uv is None:
                 i.uv = uv
@@ -943,6 +968,8 @@ class __PmxExporter:
             return self.__convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map)
 
         vertices = vertices_map[vert_index]
+        assert vertices, f"Empty vertices list for vertex index {vert_index}"
+
         v = None
         for i in vertices:
             if i.uv is None:
@@ -1331,6 +1358,11 @@ class __PmxExporter:
         return _Mesh(material_faces, shape_key_names, material_names)
 
     def __loadMeshData(self, meshObj, bone_map):
+        # Check if mesh has valid geometry
+        if not meshObj.data or len(meshObj.data.vertices) == 0:
+            logging.warning("Skipping empty mesh: %s", meshObj.name)
+            return _Mesh({}, [], {})
+
         show_only_shape_key = meshObj.show_only_shape_key
         active_shape_key_index = meshObj.active_shape_key_index
         meshObj.active_shape_key_index = 0
@@ -1392,7 +1424,9 @@ class __PmxExporter:
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)
 
-        bpy.ops.mmd_tools.fix_bone_order()
+        bpy.ops.mmd_tools.clean_invalid_bone_id_references()
+        if args.get("fix_bone_order", True):
+            bpy.ops.mmd_tools.fix_bone_order()
 
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
@@ -1435,11 +1469,11 @@ class __PmxExporter:
         rigid_map = self.__exportRigidBodies(rigids, nameMap)
         self.__exportJoints(joints, rigid_map)
 
-        if args.get("copy_textures", False):
-            output_dir = os.path.dirname(filepath)
-            import_folder = root.get("import_folder", "") if root else ""
-            base_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
-            self.__copy_textures(output_dir, import_folder or base_folder)
+        output_dir = os.path.dirname(filepath)
+        import_folder = root.get("import_folder", "") if root else ""
+        base_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
+        copy_textures_enabled = args.get("copy_textures", False)
+        self.__copy_textures(output_dir, import_folder or base_folder, copy_textures=copy_textures_enabled)
 
         # Output Changes in Vertex and Face Count
         original_vertex_count = 0

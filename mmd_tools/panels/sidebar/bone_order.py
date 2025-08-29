@@ -47,10 +47,6 @@ class MMDToolsBoneIdMoveUp(bpy.types.Operator):
             # safe swap bone IDs
             FnModel.swap_bone_ids(active_bone, prev_bone, root.mmd_root.bone_morphs, armature.pose.bones)
 
-            # Refresh UI
-            for area in context.screen.areas:
-                area.tag_redraw()
-
         return {"FINISHED"}
 
 
@@ -93,10 +89,6 @@ class MMDToolsBoneIdMoveDown(bpy.types.Operator):
             # safe swap bone IDs
             FnModel.swap_bone_ids(active_bone, next_bone, root.mmd_root.bone_morphs, armature.pose.bones)
 
-            # Refresh UI
-            for area in context.screen.areas:
-                area.tag_redraw()
-
         return {"FINISHED"}
 
 
@@ -124,10 +116,6 @@ class MMDToolsBoneIdMoveTop(bpy.types.Operator):
         pose_bones = armature.pose.bones
         FnModel.shift_bone_id(old_bone_id, new_bone_id, bone_morphs, pose_bones)
 
-        # Refresh UI
-        for area in context.screen.areas:
-            area.tag_redraw()
-
         return {"FINISHED"}
 
 
@@ -154,10 +142,6 @@ class MMDToolsBoneIdMoveBottom(bpy.types.Operator):
         bone_morphs = root.mmd_root.bone_morphs
         pose_bones = armature.pose.bones
         FnModel.shift_bone_id(old_bone_id, new_bone_id, bone_morphs, pose_bones)
-
-        # Refresh UI
-        for area in context.screen.areas:
-            area.tag_redraw()
 
         return {"FINISHED"}
 
@@ -187,6 +171,18 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         if not root or not armature:
             return {"CANCELLED"}
 
+        # Clean invalid bone references first
+        bone_morphs = root.mmd_root.bone_morphs
+        cleaned_count = FnModel.clean_invalid_bone_id_references(pose_bones=armature.pose.bones, bone_morphs=bone_morphs)
+        if cleaned_count > 0:
+            self.report({"INFO"}, f"Cleaned {cleaned_count} invalid bone reference(s).")
+
+        # Trigger mode switch to sync newly created bones from Edit mode
+        bpy.context.view_layer.objects.active = armature
+        current_mode = armature.mode
+        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.mode_set(mode=current_mode)
+
         # Migrate bone layers from Blender 3.6 and earlier to bone collections in newer versions
         self.check_and_rename_collections(armature)
 
@@ -194,17 +190,29 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         bone_order_mesh_object = self.find_old_bone_order_mesh_object(root)
         if bone_order_mesh_object:
             self.migrate_from_vertex_groups(bone_order_mesh_object, armature, root)
-        else:
-            # safe realign bone IDs
+
+        # Fix bone order
+        for iteration in range(10):
+            current_state = {}
+            for bone in armature.pose.bones:
+                if not getattr(bone, "is_mmd_shadow_bone", False):
+                    current_state[bone.name] = bone.mmd_bone.bone_id
+
             FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones, self.sorting_method)
+
+            new_state = {}
+            for bone in armature.pose.bones:
+                if not getattr(bone, "is_mmd_shadow_bone", False):
+                    new_state[bone.name] = bone.mmd_bone.bone_id
+
+            if current_state == new_state:
+                break
+        else:
+            self.report({"WARNING"}, "Bone order did not converge after 10 iterations")
 
         # Apply additional transformation (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)
         FnBone.apply_additional_transformation(armature)
-
-        # Refresh UI
-        for area in context.screen.areas:
-            area.tag_redraw()
 
         return {"FINISHED"}
 
@@ -303,6 +311,38 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
                 break
 
         self.report({"INFO"}, f"Successfully migrated {next_id} bones from vertex groups to bone_id system")
+
+
+class MMDToolsCleanInvalidBoneIdReferences(bpy.types.Operator):
+    bl_idname = "mmd_tools.clean_invalid_bone_id_references"
+    bl_label = "Clean Invalid Bone References"
+    bl_description = "Scans the active MMD model for any references to bone_ids that no longer exist, then cleans them up. This is useful after deleting bones to maintain data integrity."
+    bl_options = {"REGISTER", "UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        return FnModel.find_root_object(context.active_object) is not None
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.active_object)
+        if not root:
+            self.report({"WARNING"}, "Operation cancelled: No active MMD model found.")
+            return {"CANCELLED"}
+
+        armature = FnModel.find_armature_object(root)
+        if not armature:
+            self.report({"WARNING"}, f"Operation cancelled: Armature not found for MMD model '{root.name}'.")
+            return {"CANCELLED"}
+
+        bone_morphs = root.mmd_root.bone_morphs
+        cleaned_count = FnModel.clean_invalid_bone_id_references(pose_bones=armature.pose.bones, bone_morphs=bone_morphs)
+
+        if cleaned_count > 0:
+            self.report({"INFO"}, f"Successfully cleaned or removed {cleaned_count} invalid bone reference(s).")
+        else:
+            self.report({"INFO"}, "No invalid bone references were found.")
+
+        return {"FINISHED"}
 
 
 class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):

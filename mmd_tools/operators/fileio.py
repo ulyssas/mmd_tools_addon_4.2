@@ -256,6 +256,11 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created.",
         default=False,
     )
+    fix_bone_order: bpy.props.BoolProperty(
+        name="Fix Bone Order",
+        description="Automatically fix bone order after import. This ensures bones are ordered correctly for MMD compatibility.",
+        default=True,
+    )
     fix_ik_links: bpy.props.BoolProperty(
         name="Fix IK Links",
         description="Fix IK links to be blender suitable",
@@ -342,9 +347,11 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     def _do_execute(self, context):
         logger = logging.getLogger()
         logger.setLevel(self.log_level)
+        handler = None
         if self.save_log:
             handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.import.log")
             logger.addHandler(handler)
+
         try:
             importer_cls = pmx_importer.PMXImporter
             if re.search(r"\.pmd$", self.filepath, flags=re.IGNORECASE):
@@ -357,6 +364,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 clean_model=self.clean_model,
                 remove_doubles=self.remove_doubles,
                 import_adduv2_as_vertex_colors=self.import_adduv2_as_vertex_colors,
+                fix_bone_order=self.fix_bone_order,
                 fix_ik_links=self.fix_ik_links,
                 ik_loop_factor=self.ik_loop_factor,
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,
@@ -372,7 +380,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             logging.exception("Error occurred")
             raise
         finally:
-            if self.save_log:
+            if handler:
                 logger.removeHandler(handler)
 
         return {"FINISHED"}
@@ -469,6 +477,17 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
         default=True,
     )
+    log_level: bpy.props.EnumProperty(
+        name="Log level",
+        description="Select log level",
+        items=LOG_LEVEL_ITEMS,
+        default="INFO",
+    )
+    save_log: bpy.props.BoolProperty(
+        name="Create a log file",
+        description="Create a log file",
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -501,53 +520,73 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
         layout.prop(self, "update_scene_settings")
 
+        layout.prop(self, "log_level")
+        layout.prop(self, "save_log")
+
     def execute(self, context):
-        selected_objects = set(context.selected_objects)
-        for i in frozenset(selected_objects):
-            root = FnModel.find_root_object(i)
-            if root == i:
-                rig = Model(root)
-                armature = rig.armature()
-                if armature is not None:
-                    selected_objects.add(armature)
-                placeholder = rig.morph_slider.placeholder()
-                if placeholder is not None:
-                    selected_objects.add(placeholder)
-                selected_objects |= set(rig.meshes())
+        logger = logging.getLogger()
+        logger.setLevel(self.log_level)
+        handler = None
+        if self.save_log:
+            handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.import.log")
+            logger.addHandler(handler)
 
-        bone_mapper = None
-        if self.bone_mapper == "PMX":
-            bone_mapper = makePmxBoneMap
-        elif self.bone_mapper == "RENAMED_BONES":
-            bone_mapper = vmd_importer.RenamedBoneMapper(
-                rename_LR_bones=self.rename_bones,
-                use_underscore=self.use_underscore,
-                translator=DictionaryEnum.get_translator(self.dictionary),
-            ).init
+        try:
+            selected_objects = set(context.selected_objects)
+            for i in frozenset(selected_objects):
+                root = FnModel.find_root_object(i)
+                if root == i:
+                    rig = Model(root)
+                    armature = rig.armature()
+                    if armature is not None:
+                        selected_objects.add(armature)
+                    placeholder = rig.morph_slider.placeholder()
+                    if placeholder is not None:
+                        selected_objects.add(placeholder)
+                    selected_objects |= set(rig.meshes())
 
-        for file in self.files:
-            start_time = time.time()
-            importer = vmd_importer.VMDImporter(
-                filepath=os.path.join(self.directory, file.name),
-                scale=self.scale,
-                bone_mapper=bone_mapper,
-                use_pose_mode=self.use_pose_mode,
-                frame_margin=self.margin,
-                use_mirror=self.use_mirror,
-                always_create_new_action=self.always_create_new_action,
-                use_nla=self.use_nla,
-                detect_camera_changes=self.detect_camera_changes,
-                detect_lamp_changes=self.detect_lamp_changes,
-            )
+            bone_mapper = None
+            if self.bone_mapper == "PMX":
+                bone_mapper = makePmxBoneMap
+            elif self.bone_mapper == "RENAMED_BONES":
+                bone_mapper = vmd_importer.RenamedBoneMapper(
+                    rename_LR_bones=self.rename_bones,
+                    use_underscore=self.use_underscore,
+                    translator=DictionaryEnum.get_translator(self.dictionary),
+                ).init
 
-            for i in selected_objects:
-                importer.assign(i)
-            logging.info(" Finished importing motion in %f seconds.", time.time() - start_time)
+            for file in self.files:
+                start_time = time.time()
+                importer = vmd_importer.VMDImporter(
+                    filepath=os.path.join(self.directory, file.name),
+                    scale=self.scale,
+                    bone_mapper=bone_mapper,
+                    use_pose_mode=self.use_pose_mode,
+                    frame_margin=self.margin,
+                    use_mirror=self.use_mirror,
+                    always_create_new_action=self.always_create_new_action,
+                    use_nla=self.use_nla,
+                    detect_camera_changes=self.detect_camera_changes,
+                    detect_lamp_changes=self.detect_lamp_changes,
+                )
 
-        if self.update_scene_settings:
-            auto_scene_setup.setupFrameRanges()
-            auto_scene_setup.setupFps()
-        context.scene.frame_set(context.scene.frame_current)
+                for i in selected_objects:
+                    importer.assign(i)
+                logging.info(" Finished importing motion in %f seconds.", time.time() - start_time)
+
+            if self.update_scene_settings:
+                auto_scene_setup.setupFrameRanges()
+                auto_scene_setup.setupFps()
+            context.scene.frame_set(context.scene.frame_current)
+
+        except Exception:
+            logging.exception("Error occurred")
+            err_msg = traceback.format_exc()
+            self.report({"ERROR"}, err_msg)
+        finally:
+            if handler:
+                logger.removeHandler(handler)
+
         return {"FINISHED"}
 
 
@@ -693,6 +732,16 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Export visible meshes only",
         default=False,
     )
+    export_vertex_colors_as_adduv2: bpy.props.BoolProperty(
+        name="Export Vertex Colors",
+        description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
+        default=False,
+    )
+    fix_bone_order: bpy.props.BoolProperty(
+        name="Fix Bone Order",
+        description="Automatically fix bone order before export. This ensures bones are ordered correctly for MMD compatibility.",
+        default=True,
+    )
     overwrite_bone_morphs_from_action_pose: bpy.props.BoolProperty(
         name="Overwrite Bone Morphs",
         description="Overwrite the bone morphs from active Action Pose before exporting.",
@@ -744,11 +793,6 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
             ("CUSTOM", "Custom", 'Use custom vertex weight of vertex group "mmd_vertex_order"', 2),
         ],
         default="NONE",
-    )
-    export_vertex_colors_as_adduv2: bpy.props.BoolProperty(
-        name="Export Vertex Colors",
-        description="Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export.",
-        default=False,
     )
     ik_angle_limits: bpy.props.EnumProperty(
         name="IK Angle Limits",
@@ -836,6 +880,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     def _do_execute(self, context, root):
         logger = logging.getLogger()
         logger.setLevel(self.log_level)
+        handler = None
         if self.save_log:
             handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.export.log")
             logger.addHandler(handler)
@@ -864,15 +909,16 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 rigid_bodies=FnModel.iterate_rigid_body_objects(root),
                 joints=FnModel.iterate_joint_objects(root),
                 copy_textures=self.copy_textures,
+                fix_bone_order=self.fix_bone_order,
                 overwrite_bone_morphs_from_action_pose=self.overwrite_bone_morphs_from_action_pose,
                 translate_in_presets=self.translate_in_presets,
                 sort_materials=self.sort_materials,
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
+                export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 vertex_splitting=self.vertex_splitting,
                 keep_sharp=self.keep_sharp,
                 sharp_edge_angle=self.sharp_edge_angle,
-                export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 ik_angle_limits=self.ik_angle_limits,
             )
             self.report({"INFO"}, f'Exported MMD model "{root.name}" to "{self.filepath}"')
@@ -882,7 +928,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         finally:
             if orig_pose_position:
                 arm.data.pose_position = orig_pose_position
-            if self.save_log:
+            if handler:
                 logger.removeHandler(handler)
 
         return {"FINISHED"}
@@ -918,6 +964,17 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
         description="Add additional keyframes to accurately preserve animation curves. Blender's bezier handles are more flexible than the VMD format. Complex handle settings will be lost during export unless additional keyframes are added to approximate the original curves.",
         default=False,
     )
+    log_level: bpy.props.EnumProperty(
+        name="Log level",
+        description="Select log level",
+        items=LOG_LEVEL_ITEMS,
+        default="INFO",
+    )
+    save_log: bpy.props.BoolProperty(
+        name="Create a log file",
+        description="Create a log file",
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -943,34 +1000,41 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
         return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
-        params = {
-            "filepath": self.filepath,
-            "scale": self.scale,
-            "use_pose_mode": self.use_pose_mode,
-            "use_frame_range": self.use_frame_range,
-            "preserve_curves": self.preserve_curves,
-        }
-
-        obj = context.active_object
-        if obj.mmd_type == "ROOT":
-            rig = Model(obj)
-            params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
-            params["armature"] = rig.armature()
-            params["model_name"] = obj.mmd_root.name or obj.name
-        elif getattr(obj.data, "shape_keys", None):
-            params["mesh"] = obj
-            params["model_name"] = obj.name
-        elif obj.type == "ARMATURE":
-            params["armature"] = obj
-            params["model_name"] = obj.name
-        else:
-            for i in context.selected_objects:
-                if MMDCamera.isMMDCamera(i):
-                    params["camera"] = i
-                elif MMDLamp.isMMDLamp(i):
-                    params["lamp"] = i
+        logger = logging.getLogger()
+        logger.setLevel(self.log_level)
+        handler = None
+        if self.save_log:
+            handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.export.log")
+            logger.addHandler(handler)
 
         try:
+            params = {
+                "filepath": self.filepath,
+                "scale": self.scale,
+                "use_pose_mode": self.use_pose_mode,
+                "use_frame_range": self.use_frame_range,
+                "preserve_curves": self.preserve_curves,
+            }
+
+            obj = context.active_object
+            if obj.mmd_type == "ROOT":
+                rig = Model(obj)
+                params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
+                params["armature"] = rig.armature()
+                params["model_name"] = obj.mmd_root.name or obj.name
+            elif getattr(obj.data, "shape_keys", None):
+                params["mesh"] = obj
+                params["model_name"] = obj.name
+            elif obj.type == "ARMATURE":
+                params["armature"] = obj
+                params["model_name"] = obj.name
+            else:
+                for i in context.selected_objects:
+                    if MMDCamera.isMMDCamera(i):
+                        params["camera"] = i
+                    elif MMDLamp.isMMDLamp(i):
+                        params["lamp"] = i
+
             start_time = time.time()
             vmd_exporter.VMDExporter().export(**params)
             logging.info(" Finished exporting motion in %f seconds.", time.time() - start_time)
@@ -978,6 +1042,9 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             logging.exception("Error occurred")
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
+        finally:
+            if handler:
+                logger.removeHandler(handler)
         return {"FINISHED"}
 
 
