@@ -351,6 +351,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         if self.save_log:
             handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.import.log")
             logger.addHandler(handler)
+
         try:
             importer_cls = pmx_importer.PMXImporter
             if re.search(r"\.pmd$", self.filepath, flags=re.IGNORECASE):
