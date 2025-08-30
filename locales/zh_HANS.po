@@ -1470,16 +1470,16 @@ msgid "Rename the bone of motion data to be blender suitable"
 msgstr "重命名动作数据中的骨骼，使其适于被 Blender 处理"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_camera_changes
-msgid "Detect Camera Changes"
-msgstr "检测相机切换"
+msgid "Detect Camera Cut"
+msgstr "检测镜头切换"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_camera_changes
 msgid "When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
-msgid "Detect Light Changes"
-msgstr ""
+msgid "Detect Light Cut"
+msgstr "检测灯光切换"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
 msgid "When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes."

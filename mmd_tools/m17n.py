@@ -2485,10 +2485,10 @@ translations_tuple = (
         ("zh_HANS", "重命名动作数据中的骨骼，使其适于被 Blender 处理", (False, ())),
     ),
     (
-        ("*", "Detect Camera Changes"),
+        ("*", "Detect Camera Cut"),
         (("bpy.types.MMD_TOOLS_OT_import_vmd.detect_camera_changes",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "检测相机切换", (False, ())),
+        ("zh_HANS", "检测镜头切换", (False, ())),
     ),
     (
         (
@@ -2500,10 +2500,10 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Detect Light Changes"),
+        ("*", "Detect Light Cut"),
         (("bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "检测灯光切换", (False, ())),
     ),
     (
         (
