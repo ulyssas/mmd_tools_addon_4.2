@@ -565,23 +565,19 @@ class FnModel:
             mmd_bone = bone.mmd_bone
 
             # --- Clean up Additional Transform ---
-            at_bone_id = mmd_bone.additional_transform_bone_id
-            if at_bone_id >= 0 and at_bone_id not in valid_bone_ids:
-                logging.info(f"Resetting invalid additional transform from bone '{bone.name}' (was targeting bone_id {at_bone_id})")
-                mmd_bone.has_additional_rotation = False
-                mmd_bone.has_additional_location = False
+            ref_bone_id = mmd_bone.additional_transform_bone_id
+            if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                 mmd_bone.additional_transform_bone_id = -1
-                mmd_bone.additional_transform_influence = 1.0
                 mmd_bone.is_additional_transform_dirty = True
                 cleaned_count += 1
+                logging.info(f"Cleaned invalid additional transform reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
 
             # --- Clean up Display Connection ---
-            dc_bone_id = mmd_bone.display_connection_bone_id
-            if dc_bone_id >= 0 and dc_bone_id not in valid_bone_ids:
-                logging.info(f"Resetting invalid display connection from bone '{bone.name}' (was targeting bone_id {dc_bone_id})")
+            ref_bone_id = mmd_bone.display_connection_bone_id
+            if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                 mmd_bone.display_connection_bone_id = -1
-                mmd_bone.display_connection_type = "OFFSET"
                 cleaned_count += 1
+                logging.info(f"Cleaned invalid display connection reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
 
         # Step 3: Clean up invalid references within Bone Morphs.
         if bone_morphs:
@@ -589,10 +585,11 @@ class FnModel:
                 morph_data = morph.data
                 for i in range(len(morph_data) - 1, -1, -1):
                     item = morph_data[i]
-                    if item.bone_id >= 0 and item.bone_id not in valid_bone_ids:
-                        logging.info(f"Removing invalid morph item targeting bone_id {item.bone_id} from morph '{morph.name}'")
-                        morph_data.remove(i)
+                    ref_bone_id = item.bone_id
+                    if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
+                        item.bone_id = -1
                         cleaned_count += 1
+                        logging.info(f"Cleaned invalid bone reference on morph '{morph.name}' (bone_id: {ref_bone_id} does not exist)")
 
         return cleaned_count
 
