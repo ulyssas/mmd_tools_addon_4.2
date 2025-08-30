@@ -1060,7 +1060,7 @@ translations_tuple = (
         ("*", "Middle Joint Bones Lock"),
         (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.middle_joint_bones_lock",), ()),
         ("ja_JP", "中間関節ボーンをロック", (False, ())),
-        ("zh_HANS", "中间关节骨骼锁定", (False, ())),
+        ("zh_HANS", "中间关节骨锁定", (False, ())),
     ),
     (
         ("*", "Lock specific bones for backward compatibility."),

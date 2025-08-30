@@ -141,25 +141,24 @@ msgid "Display Item Frame Menu"
 msgstr "添加表示枠"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_display_item_menu
-#, fuzzy
 msgid "Display Item Menu"
-msgstr "表示枠项目"
+msgstr "表示枠"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_joint_menu
 msgid "Joint Menu"
-msgstr ""
+msgstr "关节"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_morph_menu
 msgid "Morph Menu"
-msgstr ""
+msgstr "变形"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_menu
 msgid "Rigidbody Menu"
-msgstr ""
+msgstr "刚体"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_select_menu
 msgid "Rigidbody Select Menu"
-msgstr ""
+msgstr "刚体选择"
 
 #. :src: bpy.types.TOPBAR_MT_mmd_file_export
 #. :src: bpy.types.TOPBAR_MT_mmd_file_import

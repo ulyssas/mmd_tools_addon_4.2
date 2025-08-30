@@ -142,23 +142,23 @@ msgstr "表示項目フレームを追加"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_display_item_menu
 msgid "Display Item Menu"
-msgstr ""
+msgstr "表示枠"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_joint_menu
 msgid "Joint Menu"
-msgstr ""
+msgstr "関節"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_morph_menu
 msgid "Morph Menu"
-msgstr ""
+msgstr "モーフ"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_menu
 msgid "Rigidbody Menu"
-msgstr ""
+msgstr "剛体"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_select_menu
 msgid "Rigidbody Select Menu"
-msgstr ""
+msgstr "剛体選択"
 
 #. :src: bpy.types.TOPBAR_MT_mmd_file_export
 #. :src: bpy.types.TOPBAR_MT_mmd_file_import
