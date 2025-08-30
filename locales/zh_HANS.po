@@ -3619,7 +3619,7 @@ msgid "Influence"
 msgstr "影响"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:94
-msgid "Display Connection (Bone Target):"
+msgid "Display Connection (Bone Tail Location):"
 msgstr "骨骼末端指向:"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:95
@@ -3650,7 +3650,7 @@ msgid "Target Bone"
 msgstr "目标骨骼"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:100
-msgid "Offset is auto-calculated at export."
+msgid "Offset is auto-calculated during export."
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:26

@@ -5884,7 +5884,7 @@ translations_tuple = (
         ("zh_HANS", "影响", (False, ())),
     ),
     (
-        ("*", "Display Connection (Bone Target):"),
+        ("*", "Display Connection (Bone Tail Location):"),
         (("extensions/blender_org/mmd_tools/panels/prop_bone.py:94",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "骨骼末端指向:", (False, ())),
