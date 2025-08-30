@@ -261,32 +261,32 @@ translations_tuple = (
     (
         ("*", "Display Item Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_display_item_menu",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "表示枠项目", (True, ())),
+        ("ja_JP", "表示枠", (False, ())),
+        ("zh_HANS", "表示枠", (True, ())),
     ),
     (
         ("*", "Joint Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_joint_menu",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("ja_JP", "関節", (False, ())),
+        ("zh_HANS", "关节", (False, ())),
     ),
     (
         ("*", "Morph Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_morph_menu",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("ja_JP", "モーフ", (False, ())),
+        ("zh_HANS", "变形", (False, ())),
     ),
     (
         ("*", "Rigidbody Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_rigidbody_menu",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("ja_JP", "剛体", (False, ())),
+        ("zh_HANS", "刚体", (False, ())),
     ),
     (
         ("*", "Rigidbody Select Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_rigidbody_select_menu",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("ja_JP", "剛体選択", (False, ())),
+        ("zh_HANS", "刚体选择", (False, ())),
     ),
     (
         ("*", "MMD UuuNyaa"),
@@ -1060,7 +1060,7 @@ translations_tuple = (
         ("*", "Middle Joint Bones Lock"),
         (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.middle_joint_bones_lock",), ()),
         ("ja_JP", "中間関節ボーンをロック", (False, ())),
-        ("zh_HANS", "中间关节骨锁定", (False, ())),
+        ("zh_HANS", "中间关节骨骼锁定", (False, ())),
     ),
     (
         ("*", "Lock specific bones for backward compatibility."),
@@ -2488,7 +2488,7 @@ translations_tuple = (
         ("*", "Detect Camera Changes"),
         (("bpy.types.MMD_TOOLS_OT_import_vmd.detect_camera_changes",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "检测相机切换", (False, ())),
     ),
     (
         (
@@ -3805,13 +3805,13 @@ translations_tuple = (
         ("*", "MMD Bone Tools"),
         (("bpy.types.BONE_PT_mmd_tools_bone",), ()),
         ("ja_JP", "MMDボーンツール", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "MMD 骨骼工具", (False, ())),
     ),
     (
         ("*", "MMD Joint"),
         (("bpy.types.JOINT_PT_mmd_tools_bone",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "MMD 关节", (False, ())),
     ),
     (
         ("*", "MMD Material"),
@@ -3856,7 +3856,7 @@ translations_tuple = (
         ("*", "MMD Camera Tools"),
         (("bpy.types.OBJECT_PT_mmd_tools_camera",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "MMD 相机工具", (False, ())),
     ),
     (
         ("*", "Display Panel"),

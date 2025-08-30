@@ -154,9 +154,8 @@ msgid "Morph Menu"
 msgstr ""
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_menu
-#, fuzzy
 msgid "Rigidbody Menu"
-msgstr "刚体"
+msgstr ""
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_select_menu
 msgid "Rigidbody Select Menu"
@@ -402,7 +401,7 @@ msgstr "清理重复的材质变形"
 #. :src: bpy.types.MMD_TOOLS_OT_clean_invalid_bone_id_references
 msgctxt "Operator"
 msgid "Clean Invalid Bone References"
-msgstr ""
+msgstr "清理无效骨骼引用"
 
 #. :src: bpy.types.MMD_TOOLS_OT_clean_invalid_bone_id_references
 msgid "Scans the active MMD model for any references to bone_ids that no longer exist, then cleans them up. This is useful after deleting bones to maintain data integrity."
@@ -923,7 +922,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits
 msgid "IK Angle Limits"
-msgstr ""
+msgstr "IK 角度限制"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits
 msgid "Choose how to handle IK angle limits during export"
@@ -931,7 +930,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'EXPORT_ALL'
 msgid "Export All Limits"
-msgstr ""
+msgstr "导出所有限制"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'EXPORT_ALL'
 msgid "Export all existing IK angle limits using current priority system: mmd_ik_limit_override -> Blender IK limits -> other sources. If mmd_ik_limit_override disables an axis but Blender IK limits exist for that axis, the Blender limits will still be exported. This maintains backward compatibility with existing workflows"
@@ -939,7 +938,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'IGNORE_ALL'
 msgid "Ignore All Limits"
-msgstr ""
+msgstr "忽略所有限制"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'IGNORE_ALL'
 msgid "Completely ignore all IK angle limits from any source during export. No angle restrictions will be written to the PMX file, regardless of mmd_ik_limit_override, Blender IK limits, or other constraint settings. Useful when you want to rely entirely on MMD v9.19+ fixed axis feature instead"
@@ -947,7 +946,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'OVERRIDE_CONTROLLED'
 msgid "Override Controlled"
-msgstr ""
+msgstr "覆盖控制"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'OVERRIDE_CONTROLLED'
 msgid "Use mmd_ik_limit_override constraints as the sole authority for IK limits. When mmd_ik_limit_override exists: only its enabled axes export limits, disabled axes export no limits (ignoring Blender IK limits). When mmd_ik_limit_override doesn't exist: fall back to Blender IK limits. This makes mmd_ik_limit_override act as a true 'override' that completely controls whether limits are exported, enabling fine-grained per-bone control"
@@ -1020,7 +1019,7 @@ msgstr "导出模型时的缩放比例系数"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
 msgid "Sharp Edge Angle"
-msgstr ""
+msgstr "锐边角度"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
 msgid ""
@@ -1120,7 +1119,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.preserve_curves
 msgid "Preserve Animation Curves"
-msgstr ""
+msgstr "保持动画曲线"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.preserve_curves
 msgid "Add additional keyframes to accurately preserve animation curves. Blender's bezier handles are more flexible than the VMD format. Complex handle settings will be lost during export unless additional keyframes are added to approximate the original curves."
@@ -1206,7 +1205,7 @@ msgstr "可设置模型的姿态以将姿态数据导出至不同的基础姿态
 #. :src: bpy.types.MMD_TOOLS_OT_fix_bone_issues
 msgctxt "Operator"
 msgid "Fix Bone Issues"
-msgstr ""
+msgstr "修复骨骼问题"
 
 #. :src: bpy.types.MMD_TOOLS_OT_fix_bone_issues
 msgid "Fix bone name encoding issues automatically"
@@ -1224,7 +1223,7 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_fix_morph_issues
 msgctxt "Operator"
 msgid "Fix Morph Issues"
-msgstr ""
+msgstr "修复变形问题"
 
 #. :src: bpy.types.MMD_TOOLS_OT_fix_morph_issues
 msgid "Fix morph name issues automatically"
@@ -1233,7 +1232,7 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_fix_texture_issues
 msgctxt "Operator"
 msgid "Fix Texture Issues"
-msgstr ""
+msgstr "修复贴图问题"
 
 #. :src: bpy.types.MMD_TOOLS_OT_fix_texture_issues
 msgid "Fix texture name and path issues automatically"
@@ -1474,7 +1473,7 @@ msgstr "重命名动作数据中的骨骼，使其适于被 Blender 处理"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_camera_changes
 msgid "Detect Camera Changes"
-msgstr ""
+msgstr "检测相机切换"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_camera_changes
 msgid "When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts."
@@ -2283,11 +2282,11 @@ msgstr "查看活动 UV 变形在当前网格物体上的结果"
 
 #. :src: bpy.types.BONE_PT_mmd_tools_bone
 msgid "MMD Bone Tools"
-msgstr ""
+msgstr "MMD 骨骼工具"
 
 #. :src: bpy.types.JOINT_PT_mmd_tools_bone
 msgid "MMD Joint"
-msgstr ""
+msgstr "MMD 关节"
 
 #. :src: bpy.types.MATERIAL_PT_mmd_tools_material
 msgid "MMD Material"
@@ -2317,7 +2316,7 @@ msgstr "骨骼顺序"
 
 #. :src: bpy.types.OBJECT_PT_mmd_tools_camera
 msgid "MMD Camera Tools"
-msgstr ""
+msgstr "MMD 相机工具"
 
 #. :src: bpy.types.OBJECT_PT_mmd_tools_display_items
 msgid "Display Panel"
@@ -2365,6 +2364,7 @@ msgid "MMD Model Information"
 msgstr ""
 
 #. :src: bpy.types.RIGID_PT_mmd_tools_bone
+#, fuzzy
 msgid "MMD Rigid Body"
 msgstr "MMD刚体"
 
@@ -3884,22 +3884,22 @@ msgstr "检测结果:"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:48
 msgid "Quick Fixes:"
-msgstr "快速修復:"
+msgstr "快速修复:"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:53
 msgctxt "Operator"
 msgid "Fix Bones"
-msgstr "修復骨骼"
+msgstr "修复骨骼"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:56
 msgctxt "Operator"
 msgid "Fix Morphs"
-msgstr "修復变形"
+msgstr "修复变形"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:59
 msgctxt "Operator"
 msgid "Fix Textures"
-msgstr "修復贴图"
+msgstr "修复贴图"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:44
 msgid "Run validation to see results"
