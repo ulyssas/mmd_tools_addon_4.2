@@ -2363,7 +2363,6 @@ msgid "MMD Model Information"
 msgstr ""
 
 #. :src: bpy.types.RIGID_PT_mmd_tools_bone
-#, fuzzy
 msgid "MMD Rigid Body"
 msgstr "MMD刚体"
 
