@@ -130,23 +130,6 @@ msgstr "弹簧目标"
 msgid "Validation Results"
 msgstr "检测结果"
 
-#. :src: bpy.types.Prefs.gizmo_action
-msgid "Activate Gizmo"
-msgstr ""
-
-#. :src: bpy.types.Prefs.spacebar_action:'PLAY'
-msgid "Toggle animation playback ('Shift-Space' for Tools)"
-msgstr ""
-
-#. :src: bpy.types.Prefs.spacebar_action:'TOOL'
-msgid ""
-"Open the popup tool-bar\n"
-"When 'Space' is held and used as a modifier:\n"
-"• Pressing the tools binding key switches to it immediately.\n"
-"• Dragging the cursor over a tool and releasing activates it (like a pie menu).\n"
-"For Play use 'Shift-Space'"
-msgstr ""
-
 #. :src: bpy.types.OBJECT_MT_mmd_tools_bone_order_menu
 #, fuzzy
 msgid "Bone Order Menu"
@@ -416,6 +399,15 @@ msgstr "清理重复材质变形"
 msgid "Clean duplicated material morphs"
 msgstr "清理重复的材质变形"
 
+#. :src: bpy.types.MMD_TOOLS_OT_clean_invalid_bone_id_references
+msgctxt "Operator"
+msgid "Clean Invalid Bone References"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_invalid_bone_id_references
+msgid "Scans the active MMD model for any references to bone_ids that no longer exist, then cleans them up. This is useful after deleting bones to maintain data integrity."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_clean_rig
 msgctxt "Operator"
 msgid "Clean Rig"
@@ -464,8 +456,8 @@ msgstr "清除所有 UV 变形的临时数据"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_bone_morph_to_vertex_morph
 #. :src: bpy.types.MMD_TOOLS_OT_convert_group_morph_to_vertex_morph
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:186
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:229
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:191
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:234
 msgctxt "Operator"
 msgid "Convert To Vertex Morph"
 msgstr "转换到顶点变形"
@@ -919,6 +911,16 @@ msgstr ""
 msgid "Filepath used for exporting the file"
 msgstr ""
 
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.fix_bone_order
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
+#, fuzzy
+msgid "Fix Bone Order"
+msgstr "修复骨骼顺序"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.fix_bone_order
+msgid "Automatically fix bone order before export. This ensures bones are ordered correctly for MMD compatibility."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits
 msgid "IK Angle Limits"
 msgstr ""
@@ -951,33 +953,49 @@ msgstr ""
 msgid "Use mmd_ik_limit_override constraints as the sole authority for IK limits. When mmd_ik_limit_override exists: only its enabled axes export limits, disabled axes export no limits (ignoring Blender IK limits). When mmd_ik_limit_override doesn't exist: fall back to Blender IK limits. This makes mmd_ik_limit_override act as a true 'override' that completely controls whether limits are exported, enabling fine-grained per-bone control"
 msgstr ""
 
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.keep_sharp
+msgid "When Vertex Splitting is disabled, keep sharp edge normals. This option has no effect when Vertex Splitting is enabled, as vertex splitting naturally preserves all sharp edge normals"
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.log_level
 msgid "Log level"
 msgstr "日志级别"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.log_level
 msgid "Select log level"
 msgstr "选择日志级别"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'DEBUG'
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level:'DEBUG'
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'DEBUG'
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.log_level:'DEBUG'
 msgid "4. DEBUG"
 msgstr "4. DEBUG"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'INFO'
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level:'INFO'
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'INFO'
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.log_level:'INFO'
 msgid "3. INFO"
 msgstr "3. INFO"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'WARNING'
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level:'WARNING'
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'WARNING'
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.log_level:'WARNING'
 msgid "2. WARNING"
 msgstr "2. WARNING"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'ERROR'
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level:'ERROR'
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'ERROR'
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.log_level:'ERROR'
 msgid "1. ERROR"
 msgstr "1. ERROR"
 
@@ -990,13 +1008,25 @@ msgid "Overwrite the bone morphs from active Action Pose before exporting."
 msgstr "在导出前以活动姿态覆盖骨骼变形"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.save_log
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.save_log
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.save_log
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.save_log
 msgid "Create a log file"
 msgstr "创建一个日志文件"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.scale
 msgid "Scaling factor for exporting the model"
 msgstr "导出模型时的缩放比例系数"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
+msgid "Sharp Edge Angle"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
+msgid ""
+"Angle threshold for determining sharp edges when Keep Sharp is enabled. Edges with angles greater than this value will be considered sharp.\n"
+"Note that manually marked sharp edges are also considered sharp."
+msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
 msgid "Sort Materials"
@@ -1191,38 +1221,6 @@ msgstr "重新对齐骨骼 ID"
 msgid "Realign bone IDs to be sequential without gaps. Sorted primarily by hierarchy depth (ensuring parents have lower IDs than children), then by bone_id (valid ones prioritized), then by bone name. Apply additional transforms afterward (Assembly -> Bone button)."
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method
-msgid "Sorting Method"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method
-msgid "Choose how to sort bones during realignment"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method:'FIX-MOVE-CHILDREN'
-msgid "Fix: Move Children"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method:'FIX-MOVE-CHILDREN'
-msgid "Move children after parents, preserve parent positions"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method:'REBUILD-DEPTH'
-msgid "Rebuild: Depth"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method:'REBUILD-DEPTH'
-msgid "Sort by hierarchy depth (chains mixing)"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method:'REBUILD-PATH'
-msgid "Rebuild: Path"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order.sorting_method:'REBUILD-PATH'
-msgid "Sort by hierarchy path (keeps bone chains together)"
-msgstr ""
-
 #. :src: bpy.types.MMD_TOOLS_OT_fix_morph_issues
 msgctxt "Operator"
 msgid "Fix Morph Issues"
@@ -1292,6 +1290,10 @@ msgstr "将骨骼重命名为英文"
 msgid "Translate bone names from Japanese to English using selected dictionary"
 msgstr "使用选中的词典将骨骼名从日语翻译为英语"
 
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
+msgid "Automatically fix bone order after import. This ensures bones are ordered correctly for MMD compatibility."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
 msgid "Fix IK Links"
 msgstr "修复IK关联"
@@ -1306,18 +1308,10 @@ msgstr "逆向运动学循环系数"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.import_adduv2_as_vertex_colors
 msgid "Import Vertex Colors"
-msgstr ""
+msgstr "导入顶点色"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.import_adduv2_as_vertex_colors
 msgid "Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created."
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.mark_sharp_edges
-msgid "Mark Sharp Edges"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.mark_sharp_edges
-msgid "Mark sharp edges when setting custom normals. Blender uses loop normals with sharp edges to control normal smoothing, which differs from traditional vertex normal approaches. This option ensures PMX normals are preserved correctly in Blender's system. Recommended to enable."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.remove_doubles
@@ -1345,14 +1339,6 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.scale
 msgid "Scaling factor for importing the model"
 msgstr "导入模型的缩放比例系数"
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.sharp_edge_angle
-msgid "Sharp Edge Angle"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.sharp_edge_angle
-msgid "Angle threshold for marking sharp edges (degrees). 179° is sufficient to preserve all normals during import. However, if you need to edit the model rather than just render animations, you may need to adjust this as needed. MMD Tools cannot guarantee which editing operations in Blender require what angles. This setting has no effect if 'Mark Sharp Edges' is disabled."
-msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.spa_blend_factor
 msgid "influence of .spa textures"
@@ -2940,6 +2926,24 @@ msgstr "显示骨架"
 msgid "Show the armature object of the MMD model"
 msgstr "显示MMD模型的骨架物体"
 
+#. :src: bpy.types.MMDRoot.show_english_name
+#, fuzzy
+msgid "English name"
+msgstr "英文名"
+
+#. :src: bpy.types.MMDRoot.show_english_name
+msgid "Toggle English name display"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_japanese_name
+#, fuzzy
+msgid "Japanese name"
+msgstr "日文名"
+
+#. :src: bpy.types.MMDRoot.show_japanese_name
+msgid "Toggle Japanese name display"
+msgstr ""
+
 #. :src: bpy.types.MMDRoot.show_joints
 msgid "Show Joints"
 msgstr "显示关节"
@@ -3314,19 +3318,17 @@ msgctxt "Operator"
 msgid "Select MMD Rigid Body"
 msgstr "选择MMD刚体"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:387
-#, fuzzy
-msgid "Imported MMD model from \"\""
+#: extensions/user_default/mmd_tools/operators/fileio.py:210
+msgid "Imported MMD model from \"%s\""
 msgstr "已从\"%s\"导入 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:847
+#: extensions/blender_org/mmd_tools/operators/fileio.py:890
 #, fuzzy
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr "[跳过] 找不到 MMD 模型\"%s\"的骨架数据"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:878
-#, fuzzy
-msgid "Exported MMD model \"\" to \"\""
+#: extensions/user_default/mmd_tools/operators/fileio.py:580
+msgid "Exported MMD model \"%s\" to \"%s\""
 msgstr "已导出 MMD 模型\"%s\"至\"%s\""
 
 #: extensions/blender_org/mmd_tools/operators/material.py:180
@@ -3372,9 +3374,8 @@ msgstr "这一操作将破坏现有的函数曲线/动作"
 msgid "Click [OK] to run the operation."
 msgstr "点击[确定]来运行操作"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:66
-#, fuzzy
-msgid "Can not move object \"\""
+#: extensions/user_default/mmd_tools/operators/misc.py:67
+msgid "Can not move object \"%s\""
 msgstr "无法移动物体\"%s\""
 
 #: extensions/blender_org/mmd_tools/operators/misc.py:210
@@ -3418,9 +3419,8 @@ msgstr "请首先选择关联的网格"
 msgid "The model mesh can't be found"
 msgstr "找不到模型的网格"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:368
-#, fuzzy
-msgid "Material \"\" not found"
+#: extensions/user_default/mmd_tools/operators/morph.py:371
+msgid "Material \"%s\" not found"
 msgstr "找不到材质\"%s\""
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:373
@@ -3460,9 +3460,8 @@ msgstr "无效 UV 索引: %d"
 msgid "Failed to create a temporary uv layer"
 msgstr "无法创建临时 UV 层"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:731
-#, fuzzy
-msgid " * UV map \"\" not found"
+#: extensions/user_default/mmd_tools/operators/morph.py:734
+msgid " * UV map \"%s\" not found"
 msgstr " * 找不到 UV 贴图 \"%s\""
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:823
@@ -3489,9 +3488,8 @@ msgstr "发生了非预期的错误"
 msgid "No armature modifier found on mesh ''"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:432
-#, fuzzy
-msgid "Base material for  was not found"
+#: extensions/user_default/mmd_tools/operators/morph.py:435
+msgid "Base material for %s was not found"
 msgstr "找不到 %s 的基础材质"
 
 #: extensions/blender_org/mmd_tools/operators/rigid_body.py:54
@@ -3579,9 +3577,8 @@ msgstr "未能翻译 %d 个名称，参见文本编辑器中的 '%s'"
 msgid "Root object not found"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:93
-#, fuzzy
-msgid "Failed to load dictionary: "
+#: extensions/user_default/mmd_tools/operators/translations.py:87
+msgid "Failed to load dictionary: %s"
 msgstr "未能加载词典: %s"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:453
@@ -3638,9 +3635,9 @@ msgstr "加载"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:68
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:78
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:182
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:212
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:152
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:187
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:217
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:157
 msgctxt "Operator"
 msgid "Apply"
 msgstr "应用"
@@ -3653,14 +3650,12 @@ msgstr "目标骨骼"
 msgid "Offset is auto-calculated during export."
 msgstr "偏移量会在导出模型时自动计算。"
 
-#: extensions/blender_org/mmd_tools/panels/prop_bone.py:26
-#, fuzzy
-msgid "IK Angle {}"
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:27
+msgid "IK Angle {%s}"
 msgstr "IK角度 {%s}"
 
-#: extensions/blender_org/mmd_tools/panels/prop_bone.py:28
-#, fuzzy
-msgid "IK Angle ()"
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:29
+msgid "IK Angle (%s)"
 msgstr "IK角度 (%s)"
 
 #: extensions/blender_org/mmd_tools/panels/prop_camera.py:35
@@ -3748,34 +3743,58 @@ msgctxt "Operator"
 msgid "Reset"
 msgstr "重设"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:280
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:276
 msgid "Migrating from old vertex group ordering to bone_id system"
 msgstr "从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:305
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:301
 msgid "Successfully migrated  bones from vertex groups to bone_id system"
 msgstr "成功从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:544
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:591
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:572
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
 msgctxt "Operator"
 msgid "Fix Bone Order"
 msgstr "修复骨骼顺序"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:590
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:618
 msgid "Total Bones: %d"
 msgstr "骨骼数量: %d"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:33
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:79
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:75
 msgid "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:255
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:166
+msgid "Cleaned  invalid bone reference(s)."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:199
+msgid "Bone order did not converge after 10 iterations"
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:251
 msgid "Converting layer collections to MMD collections"
 msgstr "将分层集合转换为 MMD 集合"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:558
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:317
+msgid "Operation cancelled: No active MMD model found."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:322
+msgid "Operation cancelled: Armature not found for MMD model ''."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:329
+msgid "Successfully cleaned or removed  invalid bone reference(s)."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:331
+msgid "No invalid bone references were found."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:586
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20
 #: extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21
@@ -3785,12 +3804,12 @@ msgstr "将分层集合转换为 MMD 集合"
 msgid "Select a MMD Model"
 msgstr "选择一个MMD模型"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:563
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:591
 msgid "The armature object of active MMD model can't be found"
 msgstr "找不到选中MMD模型的骨架"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:74
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:197
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:202
 msgctxt "Operator"
 msgid "Select"
 msgstr "选择"
@@ -3810,7 +3829,7 @@ msgstr "变形"
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:175
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:187
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:69
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:338
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:363
 #: extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:81
 msgctxt "Operator"
 msgid "Move To Top"
@@ -3819,14 +3838,14 @@ msgstr "移至顶部"
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:176
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:188
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:70
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:339
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:364
 #: extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:82
 msgctxt "Operator"
 msgid "Move To Bottom"
 msgstr "移至底部"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:185
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:329
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:354
 msgctxt "Operator"
 msgid "Delete All"
 msgstr "删除全部"
@@ -4015,78 +4034,78 @@ msgctxt "Operator"
 msgid "Edge Preview"
 msgstr "边缘预览"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:102
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:107
 msgid "Material Offsets (%d)"
 msgstr "材质偏移 (%d)"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:181
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:208
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:186
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:213
 msgctxt "Operator"
 msgid "View"
 msgstr "显示"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:183
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:209
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:153
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:127
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:188
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:214
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:158
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:132
 msgctxt "Operator"
 msgid "Clear"
 msgstr "清除"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:188
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:193
 msgid "Bone Offsets (%d)"
 msgstr "骨骼偏移 (%d)"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:211
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:198
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:216
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:203
 msgctxt "Operator"
 msgid "Edit"
 msgstr "编辑"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:231
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:236
 msgid "Group Offsets (%d)"
 msgstr "群组偏移 (%d)"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:60
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:65
 msgid "Morph Settings"
 msgstr "变形设置"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:97
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:102
 msgid "Not found"
 msgstr "未找到"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:115
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:120
 msgid "This is not a valid base material"
 msgstr "不是有效的基础材质"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:177
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:182
 msgid "Armature not found"
 msgstr "找不到骨架"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:199
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:204
 msgctxt "Operator"
 msgid "Update"
 msgstr "更新"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:220
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:225
 msgid "Scale"
 msgstr "缩放"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:222
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:227
 msgid "UV Offsets (%d)"
 msgstr "UV偏移 (%d)"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:331
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356
 msgctxt "Operator"
 msgid "Bind morphs to .placeholder"
 msgstr "将变形绑定到.placeholder"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:332
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:357
 msgctxt "Operator"
 msgid "Unbind morphs from .placeholder"
 msgstr "解绑变形与.placeholder"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:124
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:129
 msgid "This offset affects all materials"
 msgstr "该偏移影响所有材质"
 

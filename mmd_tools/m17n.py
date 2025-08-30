@@ -3805,7 +3805,7 @@ translations_tuple = (
         ("*", "MMD Bone Tools"),
         (("bpy.types.BONE_PT_mmd_tools_bone",), ()),
         ("ja_JP", "MMDボーンツール", (False, ())),
-        ("zh_HANS", "MMD Tools", (True, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "MMD Joint"),
