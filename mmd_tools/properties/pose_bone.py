@@ -54,6 +54,10 @@ def _mmd_bone_set_additional_transform_bone(prop: "MMDBone", value: str):
     prop["additional_transform_bone_id"] = target_bone_id
 
 
+def _mmd_bone_update_display_connection(prop: "MMDBone", context: bpy.types.Context):
+    pass  # Empty function is sufficient to trigger UI update
+
+
 def _mmd_bone_get_display_connection_bone(prop: "MMDBone"):
     arm = prop.id_data
     bone_id = prop.get("display_connection_bone_id", -1)
@@ -229,6 +233,7 @@ class MMDBone(bpy.types.PropertyGroup):
         name="Display Connection Bone ID",
         description="Bone ID for display connection (PMX displayConnection)",
         default=-1,
+        update=_mmd_bone_update_display_connection,
     )
 
     display_connection_type: bpy.props.EnumProperty(
