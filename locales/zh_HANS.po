@@ -130,23 +130,6 @@ msgstr "弹簧目标"
 msgid "Validation Results"
 msgstr "检测结果"
 
-#. :src: bpy.types.Prefs.gizmo_action
-msgid "Activate Gizmo"
-msgstr ""
-
-#. :src: bpy.types.Prefs.spacebar_action:'PLAY'
-msgid "Toggle animation playback ('Shift-Space' for Tools)"
-msgstr ""
-
-#. :src: bpy.types.Prefs.spacebar_action:'TOOL'
-msgid ""
-"Open the popup tool-bar\n"
-"When 'Space' is held and used as a modifier:\n"
-"• Pressing the tools binding key switches to it immediately.\n"
-"• Dragging the cursor over a tool and releasing activates it (like a pie menu).\n"
-"For Play use 'Shift-Space'"
-msgstr ""
-
 #. :src: bpy.types.OBJECT_MT_mmd_tools_bone_order_menu
 #, fuzzy
 msgid "Bone Order Menu"
@@ -2390,42 +2373,6 @@ msgstr "切换 MMD IK"
 #. :src: bpy.types.PoseBone.mmd_ik_toggle
 msgid "MMD IK toggle is used to import/export animation of IK on-off"
 msgstr "在启用或关闭逆向运动学的情况下导入或导出动画"
-
-#. :src: bpy.types.CollectionProperty
-msgid "Collection Definition"
-msgstr ""
-
-#. :src: bpy.types.CollectionProperty
-msgid "RNA collection property to define lists, arrays and mappings"
-msgstr ""
-
-#. :src: bpy.types.CollectionProperty.fixed_type
-msgid "Pointer Type"
-msgstr ""
-
-#. :src: bpy.types.CollectionProperty.fixed_type
-msgid "Fixed pointer type, empty if variable type"
-msgstr ""
-
-#. :src: bpy.types.StringProperty
-msgid "String Definition"
-msgstr ""
-
-#. :src: bpy.types.StringProperty
-msgid "RNA text string property definition"
-msgstr ""
-
-#. :src: bpy.types.StringProperty.default
-msgid "String default value"
-msgstr ""
-
-#. :src: bpy.types.StringProperty.length_max
-msgid "Maximum Length"
-msgstr ""
-
-#. :src: bpy.types.StringProperty.length_max
-msgid "Maximum length of the string, 0 means unlimited"
-msgstr ""
 
 #. :src: bpy.types.BoneMorph
 msgid "Bone Morph"

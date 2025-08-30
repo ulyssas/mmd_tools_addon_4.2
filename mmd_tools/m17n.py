@@ -247,27 +247,6 @@ translations_tuple = (
         ("zh_HANS", "检测结果", (False, ())),
     ),
     (
-        ("*", "Activate Gizmo"),
-        (("bpy.types.Prefs.gizmo_action",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "Toggle animation playback ('Shift-Space' for Tools)"),
-        (("bpy.types.Prefs.spacebar_action:'PLAY'",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        (
-            "*",
-            "Open the popup tool-bar\nWhen 'Space' is held and used as a modifier:\n• Pressing the tools binding key switches to it immediately.\n• Dragging the cursor over a tool and releasing activates it (like a pie menu).\nFor Play use 'Shift-Space'",
-        ),
-        (("bpy.types.Prefs.spacebar_action:'TOOL'",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
         ("*", "Bone Order Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_bone_order_menu",), ()),
         ("ja_JP", "ボーン順序", (True, ())),
@@ -3962,60 +3941,6 @@ translations_tuple = (
         (("bpy.types.PoseBone.mmd_ik_toggle",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "在启用或关闭逆向运动学的情况下导入或导出动画", (False, ())),
-    ),
-    (
-        ("*", "Collection Definition"),
-        (("bpy.types.CollectionProperty",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "RNA collection property to define lists, arrays and mappings"),
-        (("bpy.types.CollectionProperty",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "Pointer Type"),
-        (("bpy.types.CollectionProperty.fixed_type",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "Fixed pointer type, empty if variable type"),
-        (("bpy.types.CollectionProperty.fixed_type",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "String Definition"),
-        (("bpy.types.StringProperty",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "RNA text string property definition"),
-        (("bpy.types.StringProperty",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "String default value"),
-        (("bpy.types.StringProperty.default",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "Maximum Length"),
-        (("bpy.types.StringProperty.length_max",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "Maximum length of the string, 0 means unlimited"),
-        (("bpy.types.StringProperty.length_max",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Bone Morph"),
