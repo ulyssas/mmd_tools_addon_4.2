@@ -2377,9 +2377,8 @@ msgid "MMD Model Information"
 msgstr ""
 
 #. :src: bpy.types.RIGID_PT_mmd_tools_bone
-#, fuzzy
 msgid "MMD Rigid Body"
-msgstr "MMD剛体選択"
+msgstr "MMD剛体"
 
 #. :src: bpy.types.PoseBone.mmd_ik_toggle
 msgid "MMD IK Toggle"

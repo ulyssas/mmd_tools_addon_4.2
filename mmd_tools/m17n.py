@@ -3927,8 +3927,8 @@ translations_tuple = (
     (
         ("*", "MMD Rigid Body"),
         (("bpy.types.RIGID_PT_mmd_tools_bone",), ()),
-        ("ja_JP", "MMD剛体選択", (True, ())),
-        ("zh_HANS", "刚体", (True, ())),
+        ("ja_JP", "MMD剛体", (True, ())),
+        ("zh_HANS", "MMD刚体", (True, ())),
     ),
     (
         ("*", "MMD IK Toggle"),

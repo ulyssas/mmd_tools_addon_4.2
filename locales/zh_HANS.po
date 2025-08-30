@@ -2366,7 +2366,7 @@ msgstr ""
 
 #. :src: bpy.types.RIGID_PT_mmd_tools_bone
 msgid "MMD Rigid Body"
-msgstr "MMD 刚体"
+msgstr "MMD刚体"
 
 #. :src: bpy.types.PoseBone.mmd_ik_toggle
 msgid "MMD IK Toggle"
