@@ -280,7 +280,7 @@ translations_tuple = (
         ("*", "Rigidbody Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_rigidbody_menu",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "刚体", (True, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Rigidbody Select Menu"),
@@ -675,7 +675,7 @@ translations_tuple = (
         ("Operator", "Clean Invalid Bone References"),
         (("bpy.types.MMD_TOOLS_OT_clean_invalid_bone_id_references",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "清理无效骨骼引用", (False, ())),
     ),
     (
         (
@@ -1524,7 +1524,7 @@ translations_tuple = (
         ("*", "IK Angle Limits"),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "IK 角度限制", (False, ())),
     ),
     (
         ("*", "Choose how to handle IK angle limits during export"),
@@ -1536,7 +1536,7 @@ translations_tuple = (
         ("*", "Export All Limits"),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'EXPORT_ALL'",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "导出所有限制", (False, ())),
     ),
     (
         (
@@ -1551,7 +1551,7 @@ translations_tuple = (
         ("*", "Ignore All Limits"),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'IGNORE_ALL'",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "忽略所有限制", (False, ())),
     ),
     (
         (
@@ -1571,7 +1571,7 @@ translations_tuple = (
             (),
         ),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "覆盖控制", (False, ())),
     ),
     (
         (
@@ -1734,7 +1734,7 @@ translations_tuple = (
         ("*", "Sharp Edge Angle"),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "锐边角度", (False, ())),
     ),
     (
         (
@@ -1870,7 +1870,7 @@ translations_tuple = (
         ("*", "Preserve Animation Curves"),
         (("bpy.types.MMD_TOOLS_OT_export_vmd.preserve_curves",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "保持动画曲线", (False, ())),
     ),
     (
         (
@@ -2015,7 +2015,7 @@ translations_tuple = (
         ("Operator", "Fix Bone Issues"),
         (("bpy.types.MMD_TOOLS_OT_fix_bone_issues",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "修复骨骼问题", (False, ())),
     ),
     (
         ("*", "Fix bone name encoding issues automatically"),
@@ -2042,7 +2042,7 @@ translations_tuple = (
         ("Operator", "Fix Morph Issues"),
         (("bpy.types.MMD_TOOLS_OT_fix_morph_issues",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "修复变形问题", (False, ())),
     ),
     (
         ("*", "Fix morph name issues automatically"),
@@ -2054,7 +2054,7 @@ translations_tuple = (
         ("Operator", "Fix Texture Issues"),
         (("bpy.types.MMD_TOOLS_OT_fix_texture_issues",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "修复贴图问题", (False, ())),
     ),
     (
         ("*", "Fix texture name and path issues automatically"),
@@ -5907,7 +5907,11 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "名称 %d の翻訳に失敗しました, テキストエディタで '%s' を確認してください", (False, ())),
+        (
+            "ja_JP",
+            "名称 %d の翻訳に失敗しました, テキストエディタで '%s' を確認してください",
+            (False, ()),
+        ),
         ("zh_HANS", "未能翻译 %d 个名称，参见文本编辑器中的 '%s'", (False, ())),
     ),
     (
@@ -6456,25 +6460,25 @@ translations_tuple = (
         ("*", "Quick Fixes:"),
         (("extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:48",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "快速修復:", (False, ())),
+        ("zh_HANS", "快速修复:", (False, ())),
     ),
     (
         ("Operator", "Fix Bones"),
         (("extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:53",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "修復骨骼", (False, ())),
+        ("zh_HANS", "修复骨骼", (False, ())),
     ),
     (
         ("Operator", "Fix Morphs"),
         (("extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:56",), ()),
         ("ja_JP", "モーフ", (True, ())),
-        ("zh_HANS", "修復变形", (False, ())),
+        ("zh_HANS", "修复变形", (False, ())),
     ),
     (
         ("Operator", "Fix Textures"),
         (("extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:59",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "修復贴图", (False, ())),
+        ("zh_HANS", "修复贴图", (False, ())),
     ),
     (
         ("*", "Run validation to see results"),
