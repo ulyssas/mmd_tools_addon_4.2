@@ -14,52 +14,52 @@ msgid "Path for textures shared between models"
 msgstr "模型间共用纹理的路径"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_export_preset
-msgid "Default PMX Export Preset"
-msgstr ""
+msgid "Default PMX Export Operator Preset"
+msgstr "默认PMX导出操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_export_preset
 msgid "Default preset to use for PMX export operations"
-msgstr ""
+msgstr "默认PMX导出操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_import_preset
-msgid "Default PMX Import Preset"
-msgstr ""
+msgid "Default PMX Import Operator Preset"
+msgstr "默认PMX导入操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_import_preset
 msgid "Default preset to use for PMX import operations"
-msgstr ""
+msgstr "默认PMX导入操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_export_preset
-msgid "Default VMD Export Preset"
-msgstr ""
+msgid "Default VMD Export Operator Preset"
+msgstr "默认VMD导出操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_export_preset
 msgid "Default preset to use for VMD export operations"
-msgstr ""
+msgstr "默认VMD导出操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_import_preset
-msgid "Default VMD Import Preset"
-msgstr ""
+msgid "Default VMD Import Operator Preset"
+msgstr "默认VMD导入操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_import_preset
 msgid "Default preset to use for VMD import operations"
-msgstr ""
+msgstr "默认VMD导入操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_export_preset
-msgid "Default VPD Export Preset"
-msgstr ""
+msgid "Default VPD Export Operator Preset"
+msgstr "默认VPD导出操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_export_preset
 msgid "Default preset to use for VPD export operations"
-msgstr ""
+msgstr "默认VPD导出操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_import_preset
-msgid "Default VPD Import Preset"
-msgstr ""
+msgid "Default VPD Import Operator Preset"
+msgstr "默认VPD导入操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_import_preset
 msgid "Default preset to use for VPD import operations"
-msgstr ""
+msgstr "默认VPD导入操作项预设"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.dictionary_folder
 msgid "Dictionary Folder"
@@ -128,7 +128,7 @@ msgstr "弹簧目标"
 
 #. :src: bpy.types.Scene.mmd_validation_results
 msgid "Validation Results"
-msgstr ""
+msgstr "检测结果"
 
 #. :src: bpy.types.Prefs.gizmo_action
 msgid "Activate Gizmo"
@@ -1036,7 +1036,7 @@ msgstr "导出前在预设中进行翻译"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.vertex_splitting
 msgid "Vertex Splitting"
-msgstr ""
+msgstr "顶点分裂"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.vertex_splitting
 msgid ""
@@ -3651,7 +3651,7 @@ msgstr "目标骨骼"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:100
 msgid "Offset is auto-calculated during export."
-msgstr ""
+msgstr "偏移量会在导出模型时自动计算。"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:26
 #, fuzzy
@@ -4165,8 +4165,8 @@ msgid "Bake"
 msgstr "烘焙"
 
 #: extensions/blender_org/mmd_tools/preferences.py:136
-msgid "Default Presets:"
-msgstr ""
+msgid "Default Operator Presets:"
+msgstr "默认操作项预设:"
 
 #: extensions/blender_org/mmd_tools/preferences.py:137
 msgid "PMX Import"

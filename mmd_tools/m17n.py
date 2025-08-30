@@ -51,7 +51,7 @@ translations_tuple = (
         ("zh_HANS", "模型间共用纹理的路径", (False, ())),
     ),
     (
-        ("*", "Default PMX Export Preset"),
+        ("*", "Default PMX Export Operator Preset"),
         (("bpy.types.MMDToolsAddonPreferences.default_pmx_export_preset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -63,7 +63,7 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Default PMX Import Preset"),
+        ("*", "Default PMX Import Operator Preset"),
         (("bpy.types.MMDToolsAddonPreferences.default_pmx_import_preset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -75,7 +75,7 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Default VMD Export Preset"),
+        ("*", "Default VMD Export Operator Preset"),
         (("bpy.types.MMDToolsAddonPreferences.default_vmd_export_preset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -87,7 +87,7 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Default VMD Import Preset"),
+        ("*", "Default VMD Import Operator Preset"),
         (("bpy.types.MMDToolsAddonPreferences.default_vmd_import_preset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -99,7 +99,7 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Default VPD Export Preset"),
+        ("*", "Default VPD Export Operator Preset"),
         (("bpy.types.MMDToolsAddonPreferences.default_vpd_export_preset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -111,7 +111,7 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Default VPD Import Preset"),
+        ("*", "Default VPD Import Operator Preset"),
         (("bpy.types.MMDToolsAddonPreferences.default_vpd_import_preset",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -6787,7 +6787,7 @@ translations_tuple = (
         ("zh_HANS", "烘焙", (False, ())),
     ),
     (
-        ("*", "Default Presets:"),
+        ("*", "Default Operator Presets:"),
         (("extensions/blender_org/mmd_tools/preferences.py:136",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),

@@ -14,7 +14,7 @@ msgid "Path for textures shared between models"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_export_preset
-msgid "Default PMX Export Preset"
+msgid "Default PMX Export Operator Preset"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_export_preset
@@ -22,7 +22,7 @@ msgid "Default preset to use for PMX export operations"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_import_preset
-msgid "Default PMX Import Preset"
+msgid "Default PMX Import Operator Preset"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_pmx_import_preset
@@ -30,7 +30,7 @@ msgid "Default preset to use for PMX import operations"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_export_preset
-msgid "Default VMD Export Preset"
+msgid "Default VMD Export Operator Preset"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_export_preset
@@ -38,7 +38,7 @@ msgid "Default preset to use for VMD export operations"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_import_preset
-msgid "Default VMD Import Preset"
+msgid "Default VMD Import Operator Preset"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vmd_import_preset
@@ -46,7 +46,7 @@ msgid "Default preset to use for VMD import operations"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_export_preset
-msgid "Default VPD Export Preset"
+msgid "Default VPD Export Operator Preset"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_export_preset
@@ -54,7 +54,7 @@ msgid "Default preset to use for VPD export operations"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_import_preset
-msgid "Default VPD Import Preset"
+msgid "Default VPD Import Operator Preset"
 msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.default_vpd_import_preset
@@ -4163,7 +4163,7 @@ msgid "Bake"
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/preferences.py:136
-msgid "Default Presets:"
+msgid "Default Operator Presets:"
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/preferences.py:137
