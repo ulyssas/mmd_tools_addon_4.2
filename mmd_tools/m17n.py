@@ -5516,6 +5516,30 @@ translations_tuple = (
         ("zh_HANS", '已导出 MMD 模型"%s"至"%s"', (False, ())),
     ),
     (
+        ("*", "Object '': Merged  materials"),
+        (("extensions/blender_org/mmd_tools/operators/material.py:180",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Object '' has no materials"),
+        (("extensions/blender_org/mmd_tools/operators/material.py:120",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "No materials to merge in object ''"),
+        (("extensions/blender_org/mmd_tools/operators/material.py:146",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Same Texture '': Merged materials [] into ''"),
+        (("extensions/blender_org/mmd_tools/operators/material.py:184",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Select a MMD model"),
         (
             (
@@ -5725,10 +5749,40 @@ translations_tuple = (
         ("zh_HANS", ' * 找不到 UV 贴图 "%s"', (False, ())),
     ),
     (
+        ("*", "Failed to create morph slider system"),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:823",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Bone morph '' not found in morph sliders"),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:832",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Created shape key '' on mesh ''"),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:887",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Error during conversion: "),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:943",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "An unexpected error happened"),
         (("extensions/blender_org/mmd_tools/operators/morph.py:326",), ()),
         ("ja_JP", "予期しないエラーが発生しました", (False, ())),
         ("zh_HANS", "发生了非预期的错误", (False, ())),
+    ),
+    (
+        ("*", "No armature modifier found on mesh ''"),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:874",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Base material for %s was not found"),
@@ -5857,10 +5911,40 @@ translations_tuple = (
         ("zh_HANS", "未能翻译 %d 个名称，参见文本编辑器中的 '%s'", (False, ())),
     ),
     (
+        ("*", "Root object not found"),
+        (
+            (
+                "extensions/blender_org/mmd_tools/operators/translations.py:438",
+                "extensions/blender_org/mmd_tools/operators/translations.py:486",
+            ),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Failed to load dictionary: %s"),
         (("extensions/user_default/mmd_tools/operators/translations.py:87",), ()),
         ("ja_JP", "辞書の読み込みに失敗しました: %s", (False, ())),
         ("zh_HANS", "未能加载词典: %s", (False, ())),
+    ),
+    (
+        ("*", "Failed to write CSV: "),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:453",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Failed to read CSV: "),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:554",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Missing required headers in CSV: , "),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:501",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Information:"),
@@ -5954,6 +6038,12 @@ translations_tuple = (
         (("extensions/blender_org/mmd_tools/panels/prop_bone.py:98",), ()),
         ("ja_JP", "対象ボーン", (False, ())),
         ("zh_HANS", "目标骨骼", (False, ())),
+    ),
+    (
+        ("*", "Offset is auto-calculated during export."),
+        (("extensions/blender_org/mmd_tools/panels/prop_bone.py:100",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "偏移量会在导出模型时自动计算。", (False, ())),
     ),
     (
         ("*", "IK Angle {%s}"),
