@@ -1508,8 +1508,8 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "ボーン順序", (True, ())),
-        ("zh_HANS", "修复骨骼顺序", (True, ())),
+        ("ja_JP", "ボーン順序を修正", (False, ())),
+        ("zh_HANS", "修复骨骼顺序", (False, ())),
     ),
     (
         (
@@ -4833,7 +4833,7 @@ translations_tuple = (
         ("*", "English name"),
         (("bpy.types.MMDRoot.show_english_name",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "英文名", (True, ())),
+        ("zh_HANS", "英文名", (False, ())),
     ),
     (
         ("*", "Toggle English name display"),
@@ -4844,8 +4844,8 @@ translations_tuple = (
     (
         ("*", "Japanese name"),
         (("bpy.types.MMDRoot.show_japanese_name",), ()),
-        ("ja_JP", "日本語", (True, ())),
-        ("zh_HANS", "日文名", (True, ())),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "日文名", (False, ())),
     ),
     (
         ("*", "Toggle Japanese name display"),
@@ -6232,7 +6232,7 @@ translations_tuple = (
             ),
             (),
         ),
-        ("ja_JP", "ボーン順序", (True, ())),
+        ("ja_JP", "ボーン順序を修正", (False, ())),
         ("zh_HANS", "修复骨骼顺序", (False, ())),
     ),
     (

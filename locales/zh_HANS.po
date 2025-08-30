@@ -911,7 +911,6 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.fix_bone_order
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
-#, fuzzy
 msgid "Fix Bone Order"
 msgstr "修复骨骼顺序"
 
@@ -2925,7 +2924,6 @@ msgid "Show the armature object of the MMD model"
 msgstr "显示MMD模型的骨架物体"
 
 #. :src: bpy.types.MMDRoot.show_english_name
-#, fuzzy
 msgid "English name"
 msgstr "英文名"
 
@@ -2934,7 +2932,6 @@ msgid "Toggle English name display"
 msgstr ""
 
 #. :src: bpy.types.MMDRoot.show_japanese_name
-#, fuzzy
 msgid "Japanese name"
 msgstr "日文名"
 

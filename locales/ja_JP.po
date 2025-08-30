@@ -916,9 +916,8 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.fix_bone_order
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
-#, fuzzy
 msgid "Fix Bone Order"
-msgstr "ボーン順序"
+msgstr "ボーン順序を修正"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.fix_bone_order
 msgid "Automatically fix bone order before export. This ensures bones are ordered correctly for MMD compatibility."
@@ -2942,9 +2941,8 @@ msgid "Toggle English name display"
 msgstr ""
 
 #. :src: bpy.types.MMDRoot.show_japanese_name
-#, fuzzy
 msgid "Japanese name"
-msgstr "日本語"
+msgstr ""
 
 #. :src: bpy.types.MMDRoot.show_japanese_name
 msgid "Toggle Japanese name display"
@@ -3767,10 +3765,9 @@ msgstr ""
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:572
 #: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
-#, fuzzy
 msgctxt "Operator"
 msgid "Fix Bone Order"
-msgstr "ボーン順序"
+msgstr "ボーン順序を修正"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:618
 msgid "Total Bones: %d"
