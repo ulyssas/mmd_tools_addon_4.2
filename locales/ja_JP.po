@@ -3377,16 +3377,18 @@ msgctxt "Operator"
 msgid "Select MMD Rigid Body"
 msgstr "MMD剛体選択"
 
-#: extensions/user_default/mmd_tools/operators/fileio.py:210
-msgid "Imported MMD model from \"%s\""
+#: extensions/blender_org/mmd_tools/operators/fileio.py:378
+#, fuzzy
+msgid "Imported MMD model from \"\""
 msgstr "MMDモデルを \"%s\" からインポートしました"
 
 #: extensions/blender_org/mmd_tools/operators/fileio.py:890
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr ""
 
-#: extensions/user_default/mmd_tools/operators/fileio.py:580
-msgid "Exported MMD model \"%s\" to \"%s\""
+#: extensions/blender_org/mmd_tools/operators/fileio.py:924
+#, fuzzy
+msgid "Exported MMD model \"\" to \"\""
 msgstr "MMDモデル \"%s\" を \"%s\" にエクスポートしました"
 
 #: extensions/blender_org/mmd_tools/operators/material.py:180
@@ -3432,8 +3434,9 @@ msgstr "この操作は既存のFカーブ/アクションを破壊します"
 msgid "Click [OK] to run the operation."
 msgstr "[OK]をクリックして操作を実行してください"
 
-#: extensions/user_default/mmd_tools/operators/misc.py:67
-msgid "Can not move object \"%s\""
+#: extensions/blender_org/mmd_tools/operators/misc.py:66
+#, fuzzy
+msgid "Can not move object \"\""
 msgstr "オブジェクト \"%s\" を移動できません"
 
 #: extensions/blender_org/mmd_tools/operators/misc.py:210
@@ -3477,8 +3480,9 @@ msgstr "まず関連するメッシュを選んでください"
 msgid "The model mesh can't be found"
 msgstr "モデルのメッシュが見つかりません"
 
-#: extensions/user_default/mmd_tools/operators/morph.py:371
-msgid "Material \"%s\" not found"
+#: extensions/blender_org/mmd_tools/operators/morph.py:368
+#, fuzzy
+msgid "Material \"\" not found"
 msgstr "マテリアル \"%s\" が見つかりません"
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:373
@@ -3517,8 +3521,9 @@ msgstr "無効なUVインデックス: %d"
 msgid "Failed to create a temporary uv layer"
 msgstr ""
 
-#: extensions/user_default/mmd_tools/operators/morph.py:734
-msgid " * UV map \"%s\" not found"
+#: extensions/blender_org/mmd_tools/operators/morph.py:731
+#, fuzzy
+msgid " * UV map \"\" not found"
 msgstr " * UVマップ \"%s\" が見つかりません"
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:823
@@ -3545,8 +3550,9 @@ msgstr "予期しないエラーが発生しました"
 msgid "No armature modifier found on mesh ''"
 msgstr ""
 
-#: extensions/user_default/mmd_tools/operators/morph.py:435
-msgid "Base material for %s was not found"
+#: extensions/blender_org/mmd_tools/operators/morph.py:432
+#, fuzzy
+msgid "Base material for  was not found"
 msgstr "%s のベースマテリアルが見つかりませんでした"
 
 #: extensions/blender_org/mmd_tools/operators/rigid_body.py:54
@@ -3634,8 +3640,9 @@ msgstr "名称 %d の翻訳に失敗しました, テキストエディタで '%
 msgid "Root object not found"
 msgstr ""
 
-#: extensions/user_default/mmd_tools/operators/translations.py:87
-msgid "Failed to load dictionary: %s"
+#: extensions/blender_org/mmd_tools/operators/translations.py:93
+#, fuzzy
+msgid "Failed to load dictionary: "
 msgstr "辞書の読み込みに失敗しました: %s"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:453
@@ -3708,12 +3715,14 @@ msgstr "対象ボーン"
 msgid "Offset is auto-calculated during export."
 msgstr ""
 
-#: extensions/user_default/mmd_tools/panels/prop_bone.py:27
-msgid "IK Angle {%s}"
+#: extensions/blender_org/mmd_tools/panels/prop_bone.py:26
+#, fuzzy
+msgid "IK Angle {}"
 msgstr "IK角度 {%s}"
 
-#: extensions/user_default/mmd_tools/panels/prop_bone.py:29
-msgid "IK Angle (%s)"
+#: extensions/blender_org/mmd_tools/panels/prop_bone.py:28
+#, fuzzy
+msgid "IK Angle ()"
 msgstr "IK角度 (%s)"
 
 #: extensions/blender_org/mmd_tools/panels/prop_camera.py:35
