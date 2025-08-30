@@ -438,6 +438,15 @@ class FnModel:
     @staticmethod
     def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
+        # Build bone_id to pose_bone index for fast lookup
+        bone_id_to_pose_bone = {}
+        valid_bones = []
+        for pose_bone in pose_bones:
+            if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone):
+                valid_bones.append(pose_bone)
+                bone_id = pose_bone.mmd_bone.bone_id
+                if bone_id >= 0:
+                    bone_id_to_pose_bone[bone_id] = pose_bone
 
         def get_sort_key(bone):
             """Generate sorting key that only moves bones violating parent-child rules and additional transform rules"""
@@ -470,13 +479,7 @@ class FnModel:
             # Check additional transform constraint
             # additional_transform_bone_id must be smaller than current bone_id when transform_order is the same
             if additional_transform_bone_id >= 0 and current_id >= 0 and additional_transform_bone_id >= current_id:
-                # Find the bone with additional_transform_bone_id to check its transform_order
-                additional_transform_bone = None
-                for pose_bone in pose_bones:
-                    if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone) and pose_bone.mmd_bone.bone_id == additional_transform_bone_id:
-                        additional_transform_bone = pose_bone
-                        break
-
+                additional_transform_bone = bone_id_to_pose_bone.get(additional_transform_bone_id)
                 if additional_transform_bone:
                     additional_transform_order = getattr(additional_transform_bone.mmd_bone, "transform_order", 0)
                     # Only apply constraint when transform_order is the same
@@ -490,13 +493,10 @@ class FnModel:
             # Keep original position - use current bone_id for sorting
             return (current_id, current_id, bone.name)
 
-        # 1. Get valid bones (non-shadow bones) and sort them
-        valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
-
         # Sort - only bones violating rules will be moved
         valid_bones.sort(key=get_sort_key)
 
-        # 2. Create a translation map from old bone_id to new bone_id
+        # Create a translation map from old bone_id to new bone_id
         id_translation_map = {}
         bone_to_new_id_map = {}
         for i, bone in enumerate(valid_bones):
@@ -507,13 +507,13 @@ class FnModel:
                     id_translation_map[old_id] = new_id
             bone_to_new_id_map[bone.name] = new_id
 
-        # 3. Assign the new IDs to the bones themselves
+        # Assign the new IDs to the bones themselves
         for bone in valid_bones:
             new_id = bone_to_new_id_map[bone.name]
             if bone.mmd_bone.bone_id != new_id:
                 bone.mmd_bone.bone_id = new_id
 
-        # 4. Batch update all references (morphs and other bones) using the translation map
+        # Batch update all references (morphs and other bones) using the translation map
         if not id_translation_map:  # No changes needed
             return
 
