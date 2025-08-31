@@ -829,7 +829,7 @@ class __PmxExporter:
         return None
 
     def __get_pmx_morph_map(self, root):
-        assert root is not None, "root should not be None when this method is called"
+        assert root is not None, "root should not be None when __get_pmx_morph_map is called"
 
         morph_map = {}
         index = 0
@@ -1185,7 +1185,7 @@ class __PmxExporter:
 
         # Process UV layers
         bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
-        self.__add_uv_count = min(max(0, len(bl_add_uvs)), 4)
+        self.__add_uv_count = max(self.__add_uv_count, min(len(bl_add_uvs), 4))
 
         # Process faces from triangulated mesh
         class _DummyUV:
