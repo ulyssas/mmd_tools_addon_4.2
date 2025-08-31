@@ -198,7 +198,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         else:
             self.report({"WARNING"}, "Bone order did not converge after 10 iterations")
 
-        # Apply additional transformation (Assembly -> Bone button) (Very Slow)
+        # Apply additional transform (Assembly -> Bone button) (Very Slow)
         MigrationFnBone.fix_mmd_ik_limit_override(armature)
         FnBone.apply_additional_transformation(armature)
 

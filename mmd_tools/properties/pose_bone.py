@@ -11,7 +11,7 @@ from . import patch_library_overridable
 
 def _mmd_bone_update_additional_transform(prop: "MMDBone", context: bpy.types.Context):
     prop["is_additional_transform_dirty"] = True
-    # Apply additional transformation (Assembly -> Bone button) (Very Slow)
+    # Apply additional transform (Assembly -> Bone button) (Very Slow)
     p_bone = context.active_pose_bone
     if p_bone and p_bone.mmd_bone.as_pointer() == prop.as_pointer():
         FnBone.apply_additional_transformation(prop.id_data)

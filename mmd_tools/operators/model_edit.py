@@ -85,6 +85,9 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
         # Restore original active_layer_collection
         context.view_layer.active_layer_collection = orig_active_layer_collection
 
+        bpy.ops.object.mode_set(mode="OBJECT")
+        parent_armature_object = FnModel.find_armature_object(parent_root_object)
+        FnContext.set_active_and_select_single_object(context, parent_armature_object)
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.armature.parent_set(type="OFFSET")
 
@@ -167,15 +170,17 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         separate_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in context.selected_bones}
         deform_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in target_armature_object.data.edit_bones if b.use_deform}
-
         mmd_root_object: bpy.types.Object = FnModel.find_root_object(context.active_object)
         mmd_model = Model(mmd_root_object)
         mmd_model_mesh_objects: List[bpy.types.Object] = list(mmd_model.meshes())
-
         mmd_model_mesh_objects = list(self.select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        # Clean additional transform
+        FnContext.set_active_and_select_single_object(context, mmd_root_object)
+        bpy.ops.mmd_tools.clean_additional_transform()
 
         # Create new separate model first
-        bpy.ops.object.mode_set(mode="OBJECT")
         separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, obj_name=mmd_root_object.name, add_root_bone=False)
         separate_model.initialDisplayFrames()
         separate_root_object = separate_model.rootObject()
@@ -281,6 +286,13 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             },
         )
 
+        # Apply additional transform
+        FnContext.set_active_and_select_single_object(context, mmd_root_object)
+        bpy.ops.mmd_tools.apply_additional_transform()
+        FnContext.set_active_and_select_single_object(context, separate_root_object)
+        bpy.ops.mmd_tools.apply_additional_transform()
+
+        # Return state
         FnContext.set_active_and_select_single_object(context, separate_root_object)
 
     def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:

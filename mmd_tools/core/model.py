@@ -642,13 +642,20 @@ class FnModel:
             if parent_armature_object and child_armature_object:
                 if parent_armature_object.name in bpy.context.view_layer.objects.keys() and child_armature_object.name in bpy.context.view_layer.objects.keys():
                     try:
+                        # Clean additional transform
                         bpy.ops.object.mode_set(mode="OBJECT")
                         bpy.ops.object.select_all(action="DESELECT")
+                        bpy.context.view_layer.objects.active = parent_root_object
+                        bpy.ops.mmd_tools.clean_additional_transform()
+                        bpy.context.view_layer.objects.active = child_root_object
+                        bpy.ops.mmd_tools.clean_additional_transform()
 
+                        # Join
+                        bpy.ops.object.mode_set(mode="OBJECT")
+                        bpy.ops.object.select_all(action="DESELECT")
                         parent_armature_object.select_set(True)
                         bpy.context.view_layer.objects.active = parent_armature_object
                         child_armature_object.select_set(True)
-
                         bpy.ops.object.join()
                     finally:
                         # Restore material references
@@ -756,7 +763,8 @@ class FnModel:
             except Exception:
                 logging.exception("Error removing child root object")
 
-        # Clean and reapply additional transformations to properly set up all bones and constraints
+        # Apply additional transform
+        bpy.context.view_layer.objects.active = parent_root_object
         bpy.ops.mmd_tools.clean_additional_transform()
         bpy.ops.mmd_tools.apply_additional_transform()
 
