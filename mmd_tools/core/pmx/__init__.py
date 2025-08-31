@@ -671,10 +671,14 @@ class Vertex:
         fs.writeVector(self.co)
         fs.writeVector(self.normal)
         fs.writeVector(self.uv)
+
+        assert len(self.additional_uvs) <= fs.header().additional_uvs
         for i in self.additional_uvs:
+            assert len(i) == 4
             fs.writeVector(i)
         for i in range(fs.header().additional_uvs - len(self.additional_uvs)):
             fs.writeVector((0, 0, 0, 0))
+
         self.weight.save(fs)
         fs.writeFloat(self.edge_scale)
 
