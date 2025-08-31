@@ -617,9 +617,7 @@ class FnModel:
             bpy.ops.object.mode_set(mode="OBJECT")
 
             # Apply mmd_root transform
-            bpy.ops.object.select_all(action="DESELECT")
-            child_root_object.select_set(True)
-            bpy.context.view_layer.objects.active = child_root_object
+            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
             bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
             # Update bone IDs
@@ -644,17 +642,14 @@ class FnModel:
                     try:
                         # Clean additional transform
                         bpy.ops.object.mode_set(mode="OBJECT")
-                        bpy.ops.object.select_all(action="DESELECT")
-                        bpy.context.view_layer.objects.active = parent_root_object
+                        FnContext.set_active_and_select_single_object(bpy.context, parent_root_object)
                         bpy.ops.mmd_tools.clean_additional_transform()
-                        bpy.context.view_layer.objects.active = child_root_object
+                        FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
                         bpy.ops.mmd_tools.clean_additional_transform()
 
                         # Join
                         bpy.ops.object.mode_set(mode="OBJECT")
-                        bpy.ops.object.select_all(action="DESELECT")
-                        parent_armature_object.select_set(True)
-                        bpy.context.view_layer.objects.active = parent_armature_object
+                        FnContext.set_active_and_select_single_object(bpy.context, parent_armature_object)
                         child_armature_object.select_set(True)
                         bpy.ops.object.join()
                     finally:

@@ -190,8 +190,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         # Now separate armature bones from original model
         separate_armature_object: Optional[bpy.types.Object] = None
         if self.separate_armature:
-            target_armature_object.select_set(True)
-            context.view_layer.objects.active = target_armature_object
+            FnContext.set_active_and_select_single_object(context, target_armature_object)
             bpy.ops.object.mode_set(mode="EDIT")
 
             # Re-select the bones that should be separated (they might have been deselected)
