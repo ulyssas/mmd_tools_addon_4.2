@@ -312,6 +312,8 @@ class MMDToolsCleanInvalidBoneIdReferences(bpy.types.Operator):
         return FnModel.find_root_object(context.active_object) is not None
 
     def execute(self, context):
+        self.report({"INFO"}, "Cleaning invalid bone references...")
+
         root = FnModel.find_root_object(context.active_object)
         if not root:
             self.report({"WARNING"}, "Operation cancelled: No active MMD model found.")
