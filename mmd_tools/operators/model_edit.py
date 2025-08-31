@@ -19,6 +19,7 @@ class NoModelSelectedError(Exception):
 class ModelJoinByBonesOperator(bpy.types.Operator):
     bl_idname = "mmd_tools.model_join_by_bones"
     bl_label = "Model Join by Bones"
+    bl_description = "Join multiple MMD models into one.\nWARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together."
     bl_options = {"REGISTER", "UNDO"}
 
     join_type: bpy.props.EnumProperty(

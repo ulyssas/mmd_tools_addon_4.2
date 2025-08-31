@@ -595,9 +595,7 @@ class FnModel:
 
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):
-        # Ensure we are in object mode
-        if bpy.context.mode != "OBJECT":
-            bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.mode_set(mode="OBJECT")
 
         parent_armature_object = FnModel.find_armature_object(parent_root_object)
 
@@ -616,9 +614,13 @@ class FnModel:
             if child_armature_object is None:
                 continue
 
-            # Ensure we're in the correct mode
-            if bpy.context.mode != "OBJECT":
-                bpy.ops.object.mode_set(mode="OBJECT")
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+            # Apply mmd_root transform
+            bpy.ops.object.select_all(action="DESELECT")
+            child_root_object.select_set(True)
+            bpy.context.view_layer.objects.active = child_root_object
+            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
             # Update bone IDs
             child_pose_bones = child_armature_object.pose.bones
@@ -636,47 +638,24 @@ class FnModel:
                         related_meshes[material_morph_data] = material_morph_data.related_mesh_data
                         material_morph_data.related_mesh_data = None
 
-            # Store world coordinate positions of child mesh objects
-            child_mesh_transforms = {}
-            try:
-                for mesh in FnModel.__iterate_child_mesh_objects(child_armature_object):
-                    if mesh.name in bpy.context.view_layer.objects.keys():
-                        # Store the original world coordinate matrix
-                        child_mesh_transforms[mesh.name] = mesh.matrix_world.copy()
-            finally:
-                # Restore material references
-                for material_morph_data, mesh_data in related_meshes.items():
-                    material_morph_data.related_mesh_data = mesh_data
-
-            # Merge armatures - using a safer method
+            # Merge armatures
             if parent_armature_object and child_armature_object:
-                if (parent_armature_object.name in bpy.context.view_layer.objects.keys() and
-                    child_armature_object.name in bpy.context.view_layer.objects.keys()):
+                if parent_armature_object.name in bpy.context.view_layer.objects.keys() and child_armature_object.name in bpy.context.view_layer.objects.keys():
                     try:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
-
-                        # Clear all selections
+                        bpy.ops.object.mode_set(mode="OBJECT")
                         bpy.ops.object.select_all(action="DESELECT")
 
-                        # Select and activate the parent armature
                         parent_armature_object.select_set(True)
                         bpy.context.view_layer.objects.active = parent_armature_object
-
-                        # Select the child armature
                         child_armature_object.select_set(True)
 
-                        # Execute the join - after merging, objects will remain at the parent armature's position
                         bpy.ops.object.join()
+                    finally:
+                        # Restore material references
+                        for material_morph_data, mesh_data in related_meshes.items():
+                            material_morph_data.related_mesh_data = mesh_data
 
-                    except Exception:
-                        logging.exception("Error joining armatures")
-                        # Ensure we exit special modes regardless of what happened
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
-
-            # Update mesh armature modifiers and restore positions
+            # Update mesh armature modifiers
             mesh_objects = list(FnModel.__iterate_child_mesh_objects(parent_armature_object))
             for mesh in mesh_objects:
                 if mesh.name not in bpy.context.view_layer.objects.keys():
@@ -695,10 +674,6 @@ class FnModel:
 
                 armature_modifier.object = parent_armature_object
 
-                # If this mesh was originally part of the child model, restore its world coordinate position
-                if mesh.name in child_mesh_transforms:
-                    mesh.matrix_world = child_mesh_transforms[mesh.name]
-
             # Handle rigid bodies
             child_rigid_group_object = FnModel.find_rigid_group_object(child_root_object)
             if child_rigid_group_object and child_rigid_group_object.name in bpy.context.view_layer.objects.keys():
@@ -708,20 +683,11 @@ class FnModel:
                     rigid_objects = [obj for obj in FnModel.iterate_rigid_body_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if rigid_objects:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
-
+                        bpy.ops.object.mode_set(mode="OBJECT")
                         for rigid_obj in rigid_objects:
-                            # Save world coordinate position
-                            original_matrix_world = rigid_obj.matrix_world.copy()
-
                             # Set parent object
                             rigid_obj.parent = parent_rigid_group_object
                             rigid_obj.parent_type = "OBJECT"
-
-                            # Restore world coordinate position
-                            rigid_obj.matrix_world = original_matrix_world
 
                     # Safely remove the original group
                     try:
@@ -730,7 +696,7 @@ class FnModel:
                     except Exception:
                         logging.exception("Error removing rigid group")
 
-            # Handle joints - similar to the rigid body approach
+            # Handle joints
             child_joint_group_object = FnModel.find_joint_group_object(child_root_object)
             if child_joint_group_object and child_joint_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_joint_group_object = FnModel.find_joint_group_object(parent_root_object)
@@ -738,20 +704,11 @@ class FnModel:
                     joint_objects = [obj for obj in FnModel.iterate_joint_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if joint_objects:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
-
+                        bpy.ops.object.mode_set(mode="OBJECT")
                         for joint_obj in joint_objects:
-                            # Save world coordinate position
-                            original_matrix_world = joint_obj.matrix_world.copy()
-
                             # Set parent object
                             joint_obj.parent = parent_joint_group_object
                             joint_obj.parent_type = "OBJECT"
-
-                            # Restore world coordinate position
-                            joint_obj.matrix_world = original_matrix_world
 
                     # Safely remove the original group
                     try:
@@ -760,7 +717,7 @@ class FnModel:
                     except Exception:
                         logging.exception("Error removing joint group")
 
-            # Handle temporary objects - similar approach
+            # Handle temporary objects
             child_temporary_group_object = FnModel.find_temporary_group_object(child_root_object)
             if child_temporary_group_object and child_temporary_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_temporary_group_object = FnModel.find_temporary_group_object(parent_root_object)
@@ -768,20 +725,11 @@ class FnModel:
                     temp_objects = [obj for obj in FnModel.iterate_temporary_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if temp_objects:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
-
+                        bpy.ops.object.mode_set(mode="OBJECT")
                         for temp_obj in temp_objects:
-                            # Save world coordinate position
-                            original_matrix_world = temp_obj.matrix_world.copy()
-
                             # Set parent object
                             temp_obj.parent = parent_temporary_group_object
                             temp_obj.parent_type = "OBJECT"
-
-                            # Restore world coordinate position
-                            temp_obj.matrix_world = original_matrix_world
 
                     # Safely remove child objects and groups
                     try:
