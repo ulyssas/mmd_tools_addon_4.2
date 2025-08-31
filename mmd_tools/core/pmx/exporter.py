@@ -1185,7 +1185,7 @@ class __PmxExporter:
 
         # Process UV layers
         bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
-        self.__add_uv_count = max(self.__add_uv_count, min(len(bl_add_uvs), 4))
+        self.__add_uv_count = min(max(self.__add_uv_count, len(bl_add_uvs)), 4)
 
         # Process faces from triangulated mesh
         class _DummyUV:
