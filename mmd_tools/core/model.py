@@ -596,14 +596,17 @@ class FnModel:
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):
         bpy.ops.object.mode_set(mode="OBJECT")
-
-        parent_armature_object = FnModel.find_armature_object(parent_root_object)
-
-        # Deselect all objects to ensure a clean selection state before operations
         bpy.ops.object.select_all(action="DESELECT")
-
+        parent_armature_object = FnModel.find_armature_object(parent_root_object)
         # Get the maximum bone ID of parent model's armature to avoid ID conflicts during merging
         max_bone_id = FnModel.get_max_bone_id(parent_armature_object.pose.bones)
+
+        # Reset object visibility
+        FnContext.set_active_and_select_single_object(bpy.context, parent_root_object)
+        bpy.ops.mmd_tools.reset_object_visibility()
+        for child_root_object in child_root_objects:
+            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
+            bpy.ops.mmd_tools.reset_object_visibility()
 
         # Process each child model
         for child_root_object in child_root_objects:
@@ -615,10 +618,6 @@ class FnModel:
                 continue
 
             bpy.ops.object.mode_set(mode="OBJECT")
-
-            # Apply mmd_root transform
-            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
-            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
             # Update bone IDs
             child_pose_bones = child_armature_object.pose.bones
