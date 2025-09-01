@@ -11,8 +11,8 @@ import idprop
 import rna_prop_ui
 from mathutils import Vector
 
-from .. import MMD_TOOLS_VERSION, bpyutils
-from ..bpyutils import FnContext, Props
+from .. import MMD_TOOLS_VERSION
+from ..bpyutils import FnContext, Props, createObject, duplicateObject, edit_object
 from . import rigid_body
 from .morph import FnMorph
 from .rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
@@ -1024,7 +1024,7 @@ class Model:
             bone_name_english = "Root"
 
             # Create the root bone
-            with bpyutils.edit_object(armature_object) as data:
+            with edit_object(armature_object) as data:
                 bone = data.edit_bones.new(name=bone_name)
                 bone.head = (0.0, 0.0, 0.0)
                 bone.tail = (0.0, 0.0, getattr(root, Props.empty_display_size))
@@ -1485,7 +1485,7 @@ class Model:
         logging.debug("-" * 60)
         logging.debug(" creating ncc, counts: %d", total_len)
 
-        ncc_obj = bpyutils.createObject(name="ncc", object_data=None)
+        ncc_obj = createObject(name="ncc", object_data=None)
         ncc_obj.location = [0, 0, 0]
         setattr(ncc_obj, Props.empty_display_type, "ARROWS")
         setattr(ncc_obj, Props.empty_display_size, 0.5 * getattr(self.__root, Props.empty_display_size))
@@ -1497,7 +1497,7 @@ class Model:
         rb = ncc_obj.rigid_body_constraint
         rb.disable_collisions = True
 
-        ncc_objs = bpyutils.duplicateObject(ncc_obj, total_len)
+        ncc_objs = duplicateObject(ncc_obj, total_len)
         logging.debug(" created %d ncc.", len(ncc_objs))
 
         for ncc_obj, pair in zip(ncc_objs, nonCollisionJointTable, strict=False):
@@ -1572,7 +1572,7 @@ class Model:
         armature_object = self.armature()
 
         armature: bpy.types.Armature
-        with bpyutils.edit_object(armature_object) as armature:
+        with edit_object(armature_object) as armature:
             edit_bones = armature.edit_bones
             rigid_body_object: bpy.types.Object
             for rigid_body_object in self.rigidBodies():
