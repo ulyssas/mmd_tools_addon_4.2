@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Set
 import bmesh
 import bpy
 import numpy as np
+from mathutils import Matrix
 
 from ..bpyutils import FnContext, select_object
 from ..core.model import FnModel, Model
@@ -178,6 +179,10 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         mmd_model_mesh_objects = list(self.select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
         bpy.ops.object.mode_set(mode="OBJECT")
 
+        # Store original transform matrix for root object
+        original_matrix_world = mmd_root_object.matrix_world.copy()
+        mmd_root_object.matrix_world = Matrix.Identity(4)
+
         # Reset object visibility
         FnContext.set_active_and_select_single_object(context, mmd_root_object)
         bpy.ops.mmd_tools.reset_object_visibility()
@@ -279,12 +284,6 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + list(separate_mesh_objects)):
             bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-        # Apply transform to separated objects
-        bpy.ops.object.select_all(action="DESELECT")
-        for separate_mesh in separate_mesh_objects:
-            separate_mesh.select_set(True)
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-
         # Replace mesh armature modifier.object
         for separate_mesh in separate_mesh_objects:
             armature_modifier: Optional[bpy.types.ArmatureModifier] = next(iter([m for m in separate_mesh.modifiers if m.type == "ARMATURE"]), None)
@@ -327,8 +326,9 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         FnContext.set_active_and_select_single_object(context, separate_root_object)
         bpy.ops.mmd_tools.apply_additional_transform()
 
-        # Return state
-        FnContext.set_active_and_select_single_object(context, separate_root_object)
+        # Restore original transform matrix for root object
+        mmd_root_object.matrix_world = original_matrix_world
+        separate_root_object.matrix_world = original_matrix_world
 
     def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
         mesh2selected_vertex_count: Dict[bpy.types.Object, int] = {}
