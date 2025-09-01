@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optio
 import bpy
 import idprop
 import rna_prop_ui
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 from .. import MMD_TOOLS_VERSION
-from ..bpyutils import FnContext, Props, createObject, duplicateObject, edit_object
+from ..bpyutils import FnContext, Props, createObject, duplicateObject, edit_object, select_object
 from . import rigid_body
 from .morph import FnMorph
 from .rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
@@ -595,11 +595,23 @@ class FnModel:
 
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):
+        if not parent_root_object or not child_root_objects:
+            return
+
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
         parent_armature_object = FnModel.find_armature_object(parent_root_object)
         # Get the maximum bone ID of parent model's armature to avoid ID conflicts during merging
         max_bone_id = FnModel.get_max_bone_id(parent_armature_object.pose.bones)
+
+        # Store original transform matrix for parent root object
+        original_matrix_world = parent_root_object.matrix_world.copy()
+        parent_root_object.matrix_world = Matrix.Identity(4)
+        # Apply child transform
+        for child_root_object in child_root_objects:
+            child_root_object.matrix_world = original_matrix_world.inverted() @ child_root_object.matrix_world
+            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
+            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
         # Reset object visibility
         FnContext.set_active_and_select_single_object(bpy.context, parent_root_object)
@@ -607,6 +619,9 @@ class FnModel:
         for child_root_object in child_root_objects:
             FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
             bpy.ops.mmd_tools.reset_object_visibility()
+
+        # Store material morph references for all child models
+        related_meshes = {}
 
         # Process each child model
         for child_root_object in child_root_objects:
@@ -627,77 +642,63 @@ class FnModel:
             FnModel.realign_bone_ids(max_bone_id + 1, child_bone_morphs, child_pose_bones)
             max_bone_id = FnModel.get_max_bone_id(child_pose_bones)
 
-            # Save material morph references
-            related_meshes = {}
+            # Save material morph references for this child model
             for material_morph in child_root_object.mmd_root.material_morphs:
                 for material_morph_data in material_morph.data:
                     if material_morph_data.related_mesh_data is not None:
                         related_meshes[material_morph_data] = material_morph_data.related_mesh_data
                         material_morph_data.related_mesh_data = None
 
-            # Merge armatures
-            if parent_armature_object and child_armature_object:
-                if parent_armature_object.name in bpy.context.view_layer.objects.keys() and child_armature_object.name in bpy.context.view_layer.objects.keys():
-                    try:
-                        # Clean additional transform
-                        bpy.ops.object.mode_set(mode="OBJECT")
-                        FnContext.set_active_and_select_single_object(bpy.context, parent_root_object)
-                        bpy.ops.mmd_tools.clean_additional_transform()
-                        FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
-                        bpy.ops.mmd_tools.clean_additional_transform()
+            # Move mesh objects to parent armature using parent_set
+            mesh_objects = list(FnModel.__iterate_child_mesh_objects(child_armature_object))
+            if mesh_objects:
+                # Use parent_set with keep_transform=True for meshes
+                with select_object(parent_armature_object, objects=[parent_armature_object] + mesh_objects):
+                    bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                        # Join
-                        bpy.ops.object.mode_set(mode="OBJECT")
-                        FnContext.set_active_and_select_single_object(bpy.context, parent_armature_object)
-                        child_armature_object.select_set(True)
-                        bpy.ops.object.join()
-                    finally:
-                        # Restore material references
-                        for material_morph_data, mesh_data in related_meshes.items():
-                            material_morph_data.related_mesh_data = mesh_data
+                # After parenting with keep_transform=True, the meshes have the correct world transform,
+                # but their local transform contains the offset. We need to apply this transform
+                # to bake it into the vertex data and reset the local transform (aligning the pivot).
+                for mesh in mesh_objects:
+                    FnContext.set_active_and_select_single_object(bpy.context, mesh)
+                    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
-            # Update mesh armature modifiers
-            mesh_objects = list(FnModel.__iterate_child_mesh_objects(parent_armature_object))
-            for mesh in mesh_objects:
-                if mesh.name not in bpy.context.view_layer.objects.keys():
-                    continue
+                # Update mesh armature modifiers to point to parent armature
+                for mesh in mesh_objects:
+                    if mesh.name not in bpy.context.view_layer.objects.keys():
+                        continue
 
-                # Handle armature modifiers
-                armature_modifier = None
-                for mod in mesh.modifiers:
-                    if mod.type == "ARMATURE":
-                        if mod.name == "mmd_armature" or mod.object is None:
-                            armature_modifier = mod
-                            break
+                    # Handle armature modifiers
+                    armature_modifier = None
+                    for mod in mesh.modifiers:
+                        if mod.type == "ARMATURE":
+                            if mod.name == "mmd_armature" or mod.object is None:
+                                armature_modifier = mod
+                                break
 
-                if armature_modifier is None:
-                    armature_modifier = mesh.modifiers.new("mmd_armature", "ARMATURE")
+                    if armature_modifier is None:
+                        armature_modifier = mesh.modifiers.new("mmd_armature", "ARMATURE")
 
-                armature_modifier.object = parent_armature_object
+                    armature_modifier.object = parent_armature_object
 
-            # Handle rigid bodies
+            # Handle rigid bodies using parent_set
             child_rigid_group_object = FnModel.find_rigid_group_object(child_root_object)
             if child_rigid_group_object and child_rigid_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_rigid_group_object = FnModel.find_rigid_group_object(parent_root_object)
                 if parent_rigid_group_object and parent_rigid_group_object.name in bpy.context.view_layer.objects.keys():
-                    # Safely handle each rigid body
+                    # Get all rigid body objects
                     rigid_objects = [obj for obj in FnModel.iterate_rigid_body_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if rigid_objects:
-                        bpy.ops.object.mode_set(mode="OBJECT")
-                        for rigid_obj in rigid_objects:
-                            # Set parent object
-                            rigid_obj.parent = parent_rigid_group_object
-                            rigid_obj.parent_type = "OBJECT"
+                        # Use parent_set with keep_transform=True for rigid bodies
+                        with select_object(parent_rigid_group_object, objects=[parent_rigid_group_object] + rigid_objects):
+                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                    # Safely remove the original group
-                    try:
-                        if child_rigid_group_object.name in bpy.data.objects:
-                            bpy.data.objects.remove(child_rigid_group_object)
-                    except Exception:
-                        logging.exception("Error removing rigid group")
+                    # Remove the original group
+                    if child_rigid_group_object.name in bpy.data.objects:
+                        bpy.data.objects.remove(child_rigid_group_object)
 
-            # Handle joints
+            # Handle joints using parent_set
             child_joint_group_object = FnModel.find_joint_group_object(child_root_object)
             if child_joint_group_object and child_joint_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_joint_group_object = FnModel.find_joint_group_object(parent_root_object)
@@ -705,20 +706,14 @@ class FnModel:
                     joint_objects = [obj for obj in FnModel.iterate_joint_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if joint_objects:
-                        bpy.ops.object.mode_set(mode="OBJECT")
-                        for joint_obj in joint_objects:
-                            # Set parent object
-                            joint_obj.parent = parent_joint_group_object
-                            joint_obj.parent_type = "OBJECT"
+                        # Use parent_set with keep_transform=True for joints
+                        with select_object(parent_joint_group_object, objects=[parent_joint_group_object] + joint_objects):
+                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                    # Safely remove the original group
-                    try:
-                        if child_joint_group_object.name in bpy.data.objects:
-                            bpy.data.objects.remove(child_joint_group_object)
-                    except Exception:
-                        logging.exception("Error removing joint group")
+                    # Remove the original group
+                    bpy.data.objects.remove(child_joint_group_object)
 
-            # Handle temporary objects
+            # Handle temporary objects using parent_set
             child_temporary_group_object = FnModel.find_temporary_group_object(child_root_object)
             if child_temporary_group_object and child_temporary_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_temporary_group_object = FnModel.find_temporary_group_object(parent_root_object)
@@ -726,41 +721,54 @@ class FnModel:
                     temp_objects = [obj for obj in FnModel.iterate_temporary_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if temp_objects:
-                        bpy.ops.object.mode_set(mode="OBJECT")
-                        for temp_obj in temp_objects:
-                            # Set parent object
-                            temp_obj.parent = parent_temporary_group_object
-                            temp_obj.parent_type = "OBJECT"
+                        # Use parent_set with keep_transform=True for temporary objects
+                        with select_object(parent_temporary_group_object, objects=[parent_temporary_group_object] + temp_objects):
+                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                    # Safely remove child objects and groups
-                    try:
-                        child_objects = [obj for obj in FnModel.iterate_child_objects(child_temporary_group_object) if obj.name in bpy.data.objects]
-                        for obj in child_objects:
-                            bpy.data.objects.remove(obj)
-
-                        if child_temporary_group_object.name in bpy.data.objects:
-                            bpy.data.objects.remove(child_temporary_group_object)
-                    except Exception:
-                        logging.exception("Error removing temporary objects")
+                    # Remove child objects and groups
+                    child_objects = list(FnModel.iterate_child_objects(child_temporary_group_object))
+                    for obj in child_objects:
+                        bpy.data.objects.remove(obj)
+                    bpy.data.objects.remove(child_temporary_group_object)
 
             # Copy MMD root properties
-            try:
-                FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
-            except Exception:
-                logging.exception("Error copying MMD root")
+            FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
 
-            # Safely remove empty child root objects
-            try:
-                if child_root_object and len(child_root_object.children) == 0:
-                    if child_root_object.name in bpy.data.objects:
-                        bpy.data.objects.remove(child_root_object)
-            except Exception:
-                logging.exception("Error removing child root object")
+        # Clean additional transform before join
+        bpy.ops.object.mode_set(mode="OBJECT")
+        FnContext.set_active_and_select_single_object(bpy.context, parent_root_object)
+        bpy.ops.mmd_tools.clean_additional_transform()
+        for child_root_object in child_root_objects:
+            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
+            bpy.ops.mmd_tools.clean_additional_transform()
 
-        # Apply additional transform
+        # Join all child armatures to parent armature
+        bpy.ops.object.mode_set(mode="OBJECT")
+        child_armature_objects = [FnModel.find_armature_object(child_root) for child_root in child_root_objects if FnModel.find_armature_object(child_root) is not None]
+        armature_data_to_remove = [child_arm.data for child_arm in child_armature_objects if child_arm.data]
+        if child_armature_objects:
+            with select_object(parent_armature_object, objects=[parent_armature_object] + child_armature_objects):
+                bpy.ops.object.join()
+        for armature_data in armature_data_to_remove:
+            if armature_data and armature_data.users == 0:
+                bpy.data.armatures.remove(armature_data)
+
+        # Apply additional transform after join
         bpy.context.view_layer.objects.active = parent_root_object
         bpy.ops.mmd_tools.clean_additional_transform()
         bpy.ops.mmd_tools.apply_additional_transform()
+
+        # Remove empty child root objects
+        for child_root_object in child_root_objects:
+            assert len(child_root_object.children) == 0
+            bpy.data.objects.remove(child_root_object)
+
+        # Restore material morph references for all child models
+        for material_morph_data, mesh_data in related_meshes.items():
+            material_morph_data.related_mesh_data = mesh_data
+
+        # Restore original transform matrix for parent root object
+        parent_root_object.matrix_world = original_matrix_world
 
     @staticmethod
     def _add_armature_modifier(mesh_object: bpy.types.Object, armature_object: bpy.types.Object) -> bpy.types.ArmatureModifier:
