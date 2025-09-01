@@ -22,9 +22,11 @@ jobs:
           sudo apt-get install -y jq > /dev/null 2>&1
 
       - name: Download latest Blender release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Fetching latest Blender version..."
-          TAGS_RESPONSE=$(curl -s https://api.github.com/repos/blender/blender/tags)
+          TAGS_RESPONSE=$(curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/blender/blender/tags)
 
           LATEST_VERSION=$(echo "$TAGS_RESPONSE" | jq -r '.[0].name' | sed 's/^v//')
           echo "Latest Blender version: ${LATEST_VERSION}"
