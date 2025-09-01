@@ -598,6 +598,8 @@ class FnModel:
         if not parent_root_object or not child_root_objects:
             return
 
+        context = FnContext.ensure_context()
+
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
         parent_armature_object = FnModel.find_armature_object(parent_root_object)
@@ -610,14 +612,14 @@ class FnModel:
         # Apply child transform
         for child_root_object in child_root_objects:
             child_root_object.matrix_world = original_matrix_world.inverted() @ child_root_object.matrix_world
-            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
+            FnContext.set_active_and_select_single_object(context, child_root_object)
             bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
         # Reset object visibility
-        FnContext.set_active_and_select_single_object(bpy.context, parent_root_object)
+        FnContext.set_active_and_select_single_object(context, parent_root_object)
         bpy.ops.mmd_tools.reset_object_visibility()
         for child_root_object in child_root_objects:
-            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
+            FnContext.set_active_and_select_single_object(context, child_root_object)
             bpy.ops.mmd_tools.reset_object_visibility()
 
         # Store material morph references for all child models
@@ -660,7 +662,7 @@ class FnModel:
                 # but their local transform contains the offset. We need to apply this transform
                 # to bake it into the vertex data and reset the local transform (aligning the pivot).
                 for mesh in mesh_objects:
-                    FnContext.set_active_and_select_single_object(bpy.context, mesh)
+                    FnContext.set_active_and_select_single_object(context, mesh)
                     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
                 # Update mesh armature modifiers to point to parent armature
@@ -736,10 +738,10 @@ class FnModel:
 
         # Clean additional transform before join
         bpy.ops.object.mode_set(mode="OBJECT")
-        FnContext.set_active_and_select_single_object(bpy.context, parent_root_object)
+        FnContext.set_active_and_select_single_object(context, parent_root_object)
         bpy.ops.mmd_tools.clean_additional_transform()
         for child_root_object in child_root_objects:
-            FnContext.set_active_and_select_single_object(bpy.context, child_root_object)
+            FnContext.set_active_and_select_single_object(context, child_root_object)
             bpy.ops.mmd_tools.clean_additional_transform()
 
         # Join all child armatures to parent armature
@@ -754,7 +756,7 @@ class FnModel:
                 bpy.data.armatures.remove(armature_data)
 
         # Apply additional transform after join
-        bpy.context.view_layer.objects.active = parent_root_object
+        FnContext.set_active_object(context, parent_root_object)
         bpy.ops.mmd_tools.clean_additional_transform()
         bpy.ops.mmd_tools.apply_additional_transform()
 
