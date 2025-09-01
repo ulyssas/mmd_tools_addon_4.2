@@ -11,7 +11,7 @@ from . import patch_library_overridable
 
 def _mmd_bone_update_additional_transform(prop: "MMDBone", context: bpy.types.Context):
     prop["is_additional_transform_dirty"] = True
-    # Apply additional transformation (Assembly -> Bone button) (Very Slow)
+    # Apply additional transform (Assembly -> Bone button) (Very Slow)
     p_bone = context.active_pose_bone
     if p_bone and p_bone.mmd_bone.as_pointer() == prop.as_pointer():
         FnBone.apply_additional_transformation(prop.id_data)
@@ -39,11 +39,23 @@ def _mmd_bone_get_additional_transform_bone(prop: "MMDBone"):
 def _mmd_bone_set_additional_transform_bone(prop: "MMDBone", value: str):
     arm = prop.id_data
     prop["is_additional_transform_dirty"] = True
+
     if value not in arm.pose.bones.keys():
         prop["additional_transform_bone_id"] = -1
         return
+
     pose_bone = arm.pose.bones[value]
-    prop["additional_transform_bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
+    target_bone_id = FnBone.get_or_assign_bone_id(pose_bone)
+
+    if prop["bone_id"] == target_bone_id:
+        prop["additional_transform_bone_id"] = -1
+        return
+
+    prop["additional_transform_bone_id"] = target_bone_id
+
+
+def _mmd_bone_update_display_connection(prop: "MMDBone", context: bpy.types.Context):
+    pass  # Empty function is sufficient to trigger UI update
 
 
 def _mmd_bone_get_display_connection_bone(prop: "MMDBone"):
@@ -59,11 +71,19 @@ def _mmd_bone_get_display_connection_bone(prop: "MMDBone"):
 
 def _mmd_bone_set_display_connection_bone(prop: "MMDBone", value: str):
     arm = prop.id_data
+
     if value not in arm.pose.bones.keys():
         prop["display_connection_bone_id"] = -1
         return
+
     pose_bone = arm.pose.bones[value]
-    prop["display_connection_bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
+    target_bone_id = FnBone.get_or_assign_bone_id(pose_bone)
+
+    if prop["bone_id"] == target_bone_id:
+        prop["display_connection_bone_id"] = -1
+        return
+
+    prop["display_connection_bone_id"] = target_bone_id
 
 
 class MMDBone(bpy.types.PropertyGroup):
@@ -213,6 +233,7 @@ class MMDBone(bpy.types.PropertyGroup):
         name="Display Connection Bone ID",
         description="Bone ID for display connection (PMX displayConnection)",
         default=-1,
+        update=_mmd_bone_update_display_connection,
     )
 
     display_connection_type: bpy.props.EnumProperty(

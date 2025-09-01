@@ -7,6 +7,8 @@ from typing import Dict, List, Optional, Set
 
 import bmesh
 import bpy
+import numpy as np
+from mathutils import Matrix
 
 from ..bpyutils import FnContext, select_object
 from ..core.model import FnModel, Model
@@ -19,6 +21,7 @@ class NoModelSelectedError(Exception):
 class ModelJoinByBonesOperator(bpy.types.Operator):
     bl_idname = "mmd_tools.model_join_by_bones"
     bl_label = "Model Join by Bones"
+    bl_description = "Join multiple MMD models into one.\nWARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together."
     bl_options = {"REGISTER", "UNDO"}
 
     join_type: bpy.props.EnumProperty(
@@ -84,6 +87,9 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
         # Restore original active_layer_collection
         context.view_layer.active_layer_collection = orig_active_layer_collection
 
+        bpy.ops.object.mode_set(mode="OBJECT")
+        parent_armature_object = FnModel.find_armature_object(parent_root_object)
+        FnContext.set_active_and_select_single_object(context, parent_armature_object)
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.armature.parent_set(type="OFFSET")
 
@@ -103,6 +109,7 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
 class ModelSeparateByBonesOperator(bpy.types.Operator):
     bl_idname = "mmd_tools.model_separate_by_bones"
     bl_label = "Model Separate by Bones"
+    bl_description = "Separate MMD model into multiple models based on selected bones.\nWARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together."
     bl_options = {"REGISTER", "UNDO"}
 
     separate_armature: bpy.props.BoolProperty(name="Separate Armature", default=True)
@@ -166,16 +173,26 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         separate_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in context.selected_bones}
         deform_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in target_armature_object.data.edit_bones if b.use_deform}
-
         mmd_root_object: bpy.types.Object = FnModel.find_root_object(context.active_object)
         mmd_model = Model(mmd_root_object)
         mmd_model_mesh_objects: List[bpy.types.Object] = list(mmd_model.meshes())
-
         mmd_model_mesh_objects = list(self.select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        # Store original transform matrix for root object
+        original_matrix_world = mmd_root_object.matrix_world.copy()
+        mmd_root_object.matrix_world = Matrix.Identity(4)
+
+        # Reset object visibility
+        FnContext.set_active_and_select_single_object(context, mmd_root_object)
+        bpy.ops.mmd_tools.reset_object_visibility()
+
+        # Clean additional transform
+        FnContext.set_active_and_select_single_object(context, mmd_root_object)
+        bpy.ops.mmd_tools.clean_additional_transform()
 
         # Create new separate model first
-        bpy.ops.object.mode_set(mode="OBJECT")
-        separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
+        separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, obj_name=mmd_root_object.name, add_root_bone=False)
         separate_model.initialDisplayFrames()
         separate_root_object = separate_model.rootObject()
         separate_root_object.matrix_world = mmd_root_object.matrix_world
@@ -184,8 +201,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         # Now separate armature bones from original model
         separate_armature_object: Optional[bpy.types.Object] = None
         if self.separate_armature:
-            target_armature_object.select_set(True)
-            context.view_layer.objects.active = target_armature_object
+            FnContext.set_active_and_select_single_object(context, target_armature_object)
             bpy.ops.object.mode_set(mode="EDIT")
 
             # Re-select the bones that should be separated (they might have been deselected)
@@ -220,6 +236,14 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             separate_mesh_objects = set()
             model2separate_mesh_objects = {}
         else:
+            # Save normal data before separation
+            for mesh_obj in mmd_model_mesh_objects:
+                mesh_data = mesh_obj.data
+                mmd_normal = mesh_data.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
+                normals_data = np.empty(mesh_data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
+                mesh_data.loops.foreach_get("normal", normals_data)
+                mmd_normal.data.foreach_set("vector", normals_data)
+
             # Select meshes
             obj: bpy.types.Object
             for obj in context.view_layer.objects:
@@ -233,6 +257,22 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             bpy.ops.object.mode_set(mode="OBJECT")
 
             model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects, strict=False))
+
+            # Restore normal data for all meshes (original and separated)
+            all_mesh_objects = list(mmd_model_mesh_objects) + list(separate_mesh_objects)
+            for mesh_obj in all_mesh_objects:
+                mesh_data = mesh_obj.data
+                mmd_normal = mesh_data.attributes.get("mmd_normal")
+                if mmd_normal:
+                    normals_data = np.empty(mesh_data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
+                    mmd_normal.data.foreach_get("vector", normals_data)
+
+                    custom_normal_attr = mesh_data.attributes.get("custom_normal")
+                    if not custom_normal_attr:
+                        custom_normal_attr = mesh_data.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
+                    custom_normal_attr.data.foreach_set("vector", normals_data)
+
+                    mesh_data.attributes.remove(mmd_normal)
 
         if self.separate_armature and separate_armature_object:
             separate_armature_data = separate_armature_object.data
@@ -280,7 +320,15 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             },
         )
 
+        # Apply additional transform
+        FnContext.set_active_and_select_single_object(context, mmd_root_object)
+        bpy.ops.mmd_tools.apply_additional_transform()
         FnContext.set_active_and_select_single_object(context, separate_root_object)
+        bpy.ops.mmd_tools.apply_additional_transform()
+
+        # Restore original transform matrix for root object
+        mmd_root_object.matrix_world = original_matrix_world
+        separate_root_object.matrix_world = original_matrix_world
 
     def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
         mesh2selected_vertex_count: Dict[bpy.types.Object, int] = {}

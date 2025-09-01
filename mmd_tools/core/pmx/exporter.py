@@ -417,17 +417,16 @@ class __PmxExporter:
                     pmx_bone.location = boneMap[pmx_bone.parent].location
                 # fmt: on
 
-                if mmd_bone.display_connection_type == "BONE":
-                    if mmd_bone.is_tip:
+                if mmd_bone.is_tip:
+                    if mmd_bone.display_connection_type == "BONE":
                         pmx_bone.displayConnection = -1
-                    else:
-                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
-                elif mmd_bone.display_connection_type == "OFFSET":
-                    if mmd_bone.is_tip:
+                    elif mmd_bone.display_connection_type == "OFFSET":
                         pmx_bone.displayConnection = (0.0, 0.0, 0.0)
-                    else:
-                        tail_loc = __to_pmx_location(p_bone.tail)
-                        pmx_bone.displayConnection = tail_loc - pmx_bone.location
+                elif mmd_bone.display_connection_type == "BONE" and mmd_bone.display_connection_bone_id >= 0:
+                    pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
+                else:  # mmd_bone.display_connection_type == "OFFSET" or display_connection_bone_id invalid
+                    tail_loc = __to_pmx_location(p_bone.tail)
+                    pmx_bone.displayConnection = tail_loc - pmx_bone.location
 
                 if mmd_bone.enabled_fixed_axis:
                     pmx_bone.axis = __to_pmx_axis(mmd_bone.fixed_axis, p_bone)
@@ -830,7 +829,7 @@ class __PmxExporter:
         return None
 
     def __get_pmx_morph_map(self, root):
-        assert root is not None, "root should not be None when this method is called"
+        assert root is not None, "root should not be None when __get_pmx_morph_map is called"
 
         morph_map = {}
         index = 0
@@ -1186,7 +1185,7 @@ class __PmxExporter:
 
         # Process UV layers
         bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
-        self.__add_uv_count = min(max(0, len(bl_add_uvs)), 4)
+        self.__add_uv_count = min(max(self.__add_uv_count, len(bl_add_uvs)), 4)
 
         # Process faces from triangulated mesh
         class _DummyUV:

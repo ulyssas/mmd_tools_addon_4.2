@@ -330,7 +330,7 @@ class TestBone(unittest.TestCase):
     # ********************************************
 
     def test_clean_additional_transformation(self):
-        """Test cleaning additional transformation constraints and shadow bones"""
+        """Test cleaning additional transform constraints and shadow bones"""
         pose_bones = self.test_armature.pose.bones
 
         # Add a test constraint to verify cleanup
@@ -338,7 +338,7 @@ class TestBone(unittest.TestCase):
         constraint = left_arm.constraints.new("COPY_ROTATION")
         constraint.name = "mmd_additional_rotation"
 
-        # Clean additional transformations
+        # Clean additional transform
         FnBone.clean_additional_transformation(self.test_armature)
 
         # Check that constraint was removed
@@ -346,7 +346,7 @@ class TestBone(unittest.TestCase):
         self.assertNotIn("mmd_additional_rotation", constraint_names, "Additional rotation constraint should be removed")
 
     def test_apply_additional_transformation(self):
-        """Test applying additional transformation"""
+        """Test applying additional transform"""
         pose_bones = self.test_armature.pose.bones
 
         # Setup additional transform on a bone
@@ -357,7 +357,7 @@ class TestBone(unittest.TestCase):
         mmd_bone.additional_transform_influence = 0.5
         mmd_bone.is_additional_transform_dirty = True
 
-        # Apply additional transformation
+        # Apply additional transform
         try:
             FnBone.apply_additional_transformation(self.test_armature)
         except Exception as e:

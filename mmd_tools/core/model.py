@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optio
 import bpy
 import idprop
 import rna_prop_ui
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
-from .. import MMD_TOOLS_VERSION, bpyutils
-from ..bpyutils import FnContext, Props
+from .. import MMD_TOOLS_VERSION
+from ..bpyutils import FnContext, Props, edit_object, select_object
 from . import rigid_body
 from .morph import FnMorph
 from .rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
@@ -436,69 +436,67 @@ class FnModel:
                     mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
 
     @staticmethod
-    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones, sorting_method: str = "FIX-MOVE-CHILDREN"):
+    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
+        # Build bone_id to pose_bone index for fast lookup
+        bone_id_to_pose_bone = {}
+        valid_bones = []
+        for pose_bone in pose_bones:
+            if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone):
+                valid_bones.append(pose_bone)
+                bone_id = pose_bone.mmd_bone.bone_id
+                if bone_id >= 0:
+                    bone_id_to_pose_bone[bone_id] = pose_bone
 
-        def get_hierarchy_depth(bone):
-            """Get the depth of bone in the hierarchy (root bones have depth 0)"""
-            depth = 0
-            while bone.parent:
-                depth += 1
-                bone = bone.parent
-            return depth
+        def get_sort_key(bone):
+            """Generate sorting key that only moves bones violating parent-child rules and additional transform rules"""
+            transform_order = getattr(bone.mmd_bone, "transform_order", 0)
+            current_id = bone.mmd_bone.bone_id if bone.mmd_bone.bone_id >= 0 else float("inf")
+            additional_transform_bone_id = getattr(bone.mmd_bone, "additional_transform_bone_id", -1)
 
-        def bone_hierarchy_path(bone):
-            """Build path from root to bone for parent-child hierarchy sorting"""
-            path = []
-            while bone:
-                path.append(bone.name)
-                bone = bone.parent
-            return tuple(reversed(path))
-
-        def get_fix_key_move_children(bone):
-            """Fix mode: move children after their parents (preserve parent positions)"""
-            # Find the maximum ID among ALL ancestors in the hierarchy chain
+            # Check if this bone violates parent-child order rules
+            violation_found = False
             max_ancestor_id = -1
-            temp_parent = bone.parent
+            parent = bone.parent
 
-            while temp_parent:
-                if hasattr(temp_parent, "is_mmd_shadow_bone") and temp_parent.is_mmd_shadow_bone:
-                    temp_parent = temp_parent.parent
+            while parent:
+                if hasattr(parent, "is_mmd_shadow_bone") and parent.is_mmd_shadow_bone:
+                    parent = parent.parent
                     continue
 
-                if temp_parent.mmd_bone.bone_id >= 0:
-                    max_ancestor_id = max(max_ancestor_id, temp_parent.mmd_bone.bone_id)
-                temp_parent = temp_parent.parent
+                parent_transform_order = getattr(parent.mmd_bone, "transform_order", 0)
+                parent_id = parent.mmd_bone.bone_id
 
-            current_id = bone.mmd_bone.bone_id
+                # The rule that can be solved by sorting:
+                # if parent.transform_order == child.transform_order,
+                # then parent.bone_id must be < child.bone_id
+                if parent_transform_order == transform_order and parent_id >= 0 and current_id >= 0 and parent_id >= current_id:
+                    violation_found = True
+                    max_ancestor_id = max(max_ancestor_id, parent_id)
 
-            if max_ancestor_id >= 0 and current_id >= 0 and max_ancestor_id >= current_id:
-                # This bone needs to be moved after ALL ancestors
-                # Use max ancestor ID + small offset + hierarchy depth for stable sorting
-                return (1, max_ancestor_id + 0.1, get_hierarchy_depth(bone), bone.name)
-            # Keep original position
-            return (0, current_id if current_id >= 0 else float("inf"), bone.name)
+                parent = parent.parent
 
-        # 1. Get valid bones (non-shadow bones) and sort them to determine the final order
-        valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
+            # Check additional transform constraint
+            # additional_transform_bone_id must be smaller than current bone_id when transform_order is the same
+            if additional_transform_bone_id >= 0 and current_id >= 0 and additional_transform_bone_id >= current_id:
+                additional_transform_bone = bone_id_to_pose_bone.get(additional_transform_bone_id)
+                if additional_transform_bone:
+                    additional_transform_order = getattr(additional_transform_bone.mmd_bone, "transform_order", 0)
+                    # Only apply constraint when transform_order is the same
+                    if additional_transform_order == transform_order:
+                        violation_found = True
+                        max_ancestor_id = max(max_ancestor_id, additional_transform_bone_id)
 
-        if sorting_method == "REBUILD-DEPTH":
-            # Sort by hierarchy depth, then name (allows chain mixing)
-            valid_bones.sort(key=lambda pb: (get_hierarchy_depth(pb), pb.name))
-        elif sorting_method == "REBUILD-PATH":
-            # Sort by hierarchy path (keeps bone chains together)
-            valid_bones.sort(key=bone_hierarchy_path)
-        else:  # "FIX-MOVE-CHILDREN"
-            # Fix mode: move children after parents (preserve parent positions)
-            valid_bones.sort(key=get_fix_key_move_children)
+            if violation_found:
+                # Move this bone after its ancestors and additional transform dependencies
+                return (max_ancestor_id + 0.1, current_id, bone.name)
+            # Keep original position - use current bone_id for sorting
+            return (current_id, current_id, bone.name)
 
-        # Use conflict-free batch remapping
-        # ---------------------------------
-        # This optimized approach avoids conflicts by first creating a complete map of all
-        # required ID changes, then updating all external references in one pass, and
-        # finally applying the new IDs to the bones themselves.
+        # Sort - only bones violating rules will be moved
+        valid_bones.sort(key=get_sort_key)
 
-        # 2. Create a translation map from old bone_id to new bone_id
+        # Create a translation map from old bone_id to new bone_id
         id_translation_map = {}
         bone_to_new_id_map = {}
         for i, bone in enumerate(valid_bones):
@@ -509,13 +507,13 @@ class FnModel:
                     id_translation_map[old_id] = new_id
             bone_to_new_id_map[bone.name] = new_id
 
-        # 3. Assign the new IDs to the bones themselves
+        # Assign the new IDs to the bones themselves
         for bone in valid_bones:
             new_id = bone_to_new_id_map[bone.name]
             if bone.mmd_bone.bone_id != new_id:
                 bone.mmd_bone.bone_id = new_id
 
-        # 4. Batch update all references (morphs and other bones) using the translation map
+        # Batch update all references (morphs and other bones) using the translation map
         if not id_translation_map:  # No changes needed
             return
 
@@ -567,23 +565,19 @@ class FnModel:
             mmd_bone = bone.mmd_bone
 
             # --- Clean up Additional Transform ---
-            at_bone_id = mmd_bone.additional_transform_bone_id
-            if at_bone_id >= 0 and at_bone_id not in valid_bone_ids:
-                logging.info(f"Resetting invalid additional transform from bone '{bone.name}' (was targeting bone_id {at_bone_id})")
-                mmd_bone.has_additional_rotation = False
-                mmd_bone.has_additional_location = False
+            ref_bone_id = mmd_bone.additional_transform_bone_id
+            if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                 mmd_bone.additional_transform_bone_id = -1
-                mmd_bone.additional_transform_influence = 1.0
                 mmd_bone.is_additional_transform_dirty = True
                 cleaned_count += 1
+                logging.info(f"Cleaned invalid additional transform reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
 
             # --- Clean up Display Connection ---
-            dc_bone_id = mmd_bone.display_connection_bone_id
-            if dc_bone_id >= 0 and dc_bone_id not in valid_bone_ids:
-                logging.info(f"Resetting invalid display connection from bone '{bone.name}' (was targeting bone_id {dc_bone_id})")
+            ref_bone_id = mmd_bone.display_connection_bone_id
+            if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                 mmd_bone.display_connection_bone_id = -1
-                mmd_bone.display_connection_type = "OFFSET"
                 cleaned_count += 1
+                logging.info(f"Cleaned invalid display connection reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
 
         # Step 3: Clean up invalid references within Bone Morphs.
         if bone_morphs:
@@ -591,26 +585,45 @@ class FnModel:
                 morph_data = morph.data
                 for i in range(len(morph_data) - 1, -1, -1):
                     item = morph_data[i]
-                    if item.bone_id >= 0 and item.bone_id not in valid_bone_ids:
-                        logging.info(f"Removing invalid morph item targeting bone_id {item.bone_id} from morph '{morph.name}'")
-                        morph_data.remove(i)
+                    ref_bone_id = item.bone_id
+                    if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
+                        item.bone_id = -1
                         cleaned_count += 1
+                        logging.info(f"Cleaned invalid bone reference on morph '{morph.name}' (bone_id: {ref_bone_id} does not exist)")
 
         return cleaned_count
 
     @staticmethod
     def join_models(parent_root_object: bpy.types.Object, child_root_objects: Iterable[bpy.types.Object]):
-        # Ensure we are in object mode
-        if bpy.context.mode != "OBJECT":
-            bpy.ops.object.mode_set(mode="OBJECT")
+        if not parent_root_object or not child_root_objects:
+            return
 
-        parent_armature_object = FnModel.find_armature_object(parent_root_object)
+        context = FnContext.ensure_context()
 
-        # Deselect all objects to ensure a clean selection state before operations
+        bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.select_all(action="DESELECT")
-
+        parent_armature_object = FnModel.find_armature_object(parent_root_object)
         # Get the maximum bone ID of parent model's armature to avoid ID conflicts during merging
         max_bone_id = FnModel.get_max_bone_id(parent_armature_object.pose.bones)
+
+        # Store original transform matrix for parent root object
+        original_matrix_world = parent_root_object.matrix_world.copy()
+        parent_root_object.matrix_world = Matrix.Identity(4)
+        # Apply child transform
+        for child_root_object in child_root_objects:
+            child_root_object.matrix_world = original_matrix_world.inverted() @ child_root_object.matrix_world
+            FnContext.set_active_and_select_single_object(context, child_root_object)
+            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+
+        # Reset object visibility
+        FnContext.set_active_and_select_single_object(context, parent_root_object)
+        bpy.ops.mmd_tools.reset_object_visibility()
+        for child_root_object in child_root_objects:
+            FnContext.set_active_and_select_single_object(context, child_root_object)
+            bpy.ops.mmd_tools.reset_object_visibility()
+
+        # Store material morph references for all child models
+        related_meshes = {}
 
         # Process each child model
         for child_root_object in child_root_objects:
@@ -621,9 +634,7 @@ class FnModel:
             if child_armature_object is None:
                 continue
 
-            # Ensure we're in the correct mode
-            if bpy.context.mode != "OBJECT":
-                bpy.ops.object.mode_set(mode="OBJECT")
+            bpy.ops.object.mode_set(mode="OBJECT")
 
             # Update bone IDs
             child_pose_bones = child_armature_object.pose.bones
@@ -633,109 +644,63 @@ class FnModel:
             FnModel.realign_bone_ids(max_bone_id + 1, child_bone_morphs, child_pose_bones)
             max_bone_id = FnModel.get_max_bone_id(child_pose_bones)
 
-            # Save material morph references
-            related_meshes = {}
+            # Save material morph references for this child model
             for material_morph in child_root_object.mmd_root.material_morphs:
                 for material_morph_data in material_morph.data:
                     if material_morph_data.related_mesh_data is not None:
                         related_meshes[material_morph_data] = material_morph_data.related_mesh_data
                         material_morph_data.related_mesh_data = None
 
-            # Store world coordinate positions of child mesh objects
-            child_mesh_transforms = {}
-            try:
-                for mesh in FnModel.__iterate_child_mesh_objects(child_armature_object):
-                    if mesh.name in bpy.context.view_layer.objects.keys():
-                        # Store the original world coordinate matrix
-                        child_mesh_transforms[mesh.name] = mesh.matrix_world.copy()
-            finally:
-                # Restore material references
-                for material_morph_data, mesh_data in related_meshes.items():
-                    material_morph_data.related_mesh_data = mesh_data
+            # Move mesh objects to parent armature using parent_set
+            mesh_objects = list(FnModel.__iterate_child_mesh_objects(child_armature_object))
+            if mesh_objects:
+                # Use parent_set with keep_transform=True for meshes
+                with select_object(parent_armature_object, objects=[parent_armature_object] + mesh_objects):
+                    bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-            # Merge armatures - using a safer method
-            if parent_armature_object and child_armature_object:
-                if (parent_armature_object.name in bpy.context.view_layer.objects.keys() and
-                    child_armature_object.name in bpy.context.view_layer.objects.keys()):
-                    try:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
+                # After parenting with keep_transform=True, the meshes have the correct world transform,
+                # but their local transform contains the offset. We need to apply this transform
+                # to bake it into the vertex data and reset the local transform (aligning the pivot).
+                for mesh in mesh_objects:
+                    FnContext.set_active_and_select_single_object(context, mesh)
+                    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
-                        # Clear all selections
-                        bpy.ops.object.select_all(action="DESELECT")
+                # Update mesh armature modifiers to point to parent armature
+                for mesh in mesh_objects:
+                    if mesh.name not in bpy.context.view_layer.objects.keys():
+                        continue
 
-                        # Select and activate the parent armature
-                        parent_armature_object.select_set(True)
-                        bpy.context.view_layer.objects.active = parent_armature_object
+                    # Handle armature modifiers
+                    armature_modifier = None
+                    for mod in mesh.modifiers:
+                        if mod.type == "ARMATURE":
+                            if mod.name == "mmd_armature" or mod.object is None:
+                                armature_modifier = mod
+                                break
 
-                        # Select the child armature
-                        child_armature_object.select_set(True)
+                    if armature_modifier is None:
+                        armature_modifier = mesh.modifiers.new("mmd_armature", "ARMATURE")
 
-                        # Execute the join - after merging, objects will remain at the parent armature's position
-                        bpy.ops.object.join()
+                    armature_modifier.object = parent_armature_object
 
-                    except Exception:
-                        logging.exception("Error joining armatures")
-                        # Ensure we exit special modes regardless of what happened
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
-
-            # Update mesh armature modifiers and restore positions
-            mesh_objects = list(FnModel.__iterate_child_mesh_objects(parent_armature_object))
-            for mesh in mesh_objects:
-                if mesh.name not in bpy.context.view_layer.objects.keys():
-                    continue
-
-                # Handle armature modifiers
-                armature_modifier = None
-                for mod in mesh.modifiers:
-                    if mod.type == "ARMATURE":
-                        if mod.name == "mmd_armature" or mod.object is None:
-                            armature_modifier = mod
-                            break
-
-                if armature_modifier is None:
-                    armature_modifier = mesh.modifiers.new("mmd_armature", "ARMATURE")
-
-                armature_modifier.object = parent_armature_object
-
-                # If this mesh was originally part of the child model, restore its world coordinate position
-                if mesh.name in child_mesh_transforms:
-                    mesh.matrix_world = child_mesh_transforms[mesh.name]
-
-            # Handle rigid bodies
+            # Handle rigid bodies using parent_set
             child_rigid_group_object = FnModel.find_rigid_group_object(child_root_object)
             if child_rigid_group_object and child_rigid_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_rigid_group_object = FnModel.find_rigid_group_object(parent_root_object)
                 if parent_rigid_group_object and parent_rigid_group_object.name in bpy.context.view_layer.objects.keys():
-                    # Safely handle each rigid body
+                    # Get all rigid body objects
                     rigid_objects = [obj for obj in FnModel.iterate_rigid_body_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if rigid_objects:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
+                        # Use parent_set with keep_transform=True for rigid bodies
+                        with select_object(parent_rigid_group_object, objects=[parent_rigid_group_object] + rigid_objects):
+                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                        for rigid_obj in rigid_objects:
-                            # Save world coordinate position
-                            original_matrix_world = rigid_obj.matrix_world.copy()
+                    # Remove the original group
+                    if child_rigid_group_object.name in bpy.data.objects:
+                        bpy.data.objects.remove(child_rigid_group_object)
 
-                            # Set parent object
-                            rigid_obj.parent = parent_rigid_group_object
-                            rigid_obj.parent_type = "OBJECT"
-
-                            # Restore world coordinate position
-                            rigid_obj.matrix_world = original_matrix_world
-
-                    # Safely remove the original group
-                    try:
-                        if child_rigid_group_object.name in bpy.data.objects:
-                            bpy.data.objects.remove(child_rigid_group_object)
-                    except Exception:
-                        logging.exception("Error removing rigid group")
-
-            # Handle joints - similar to the rigid body approach
+            # Handle joints using parent_set
             child_joint_group_object = FnModel.find_joint_group_object(child_root_object)
             if child_joint_group_object and child_joint_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_joint_group_object = FnModel.find_joint_group_object(parent_root_object)
@@ -743,29 +708,14 @@ class FnModel:
                     joint_objects = [obj for obj in FnModel.iterate_joint_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if joint_objects:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
+                        # Use parent_set with keep_transform=True for joints
+                        with select_object(parent_joint_group_object, objects=[parent_joint_group_object] + joint_objects):
+                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                        for joint_obj in joint_objects:
-                            # Save world coordinate position
-                            original_matrix_world = joint_obj.matrix_world.copy()
+                    # Remove the original group
+                    bpy.data.objects.remove(child_joint_group_object)
 
-                            # Set parent object
-                            joint_obj.parent = parent_joint_group_object
-                            joint_obj.parent_type = "OBJECT"
-
-                            # Restore world coordinate position
-                            joint_obj.matrix_world = original_matrix_world
-
-                    # Safely remove the original group
-                    try:
-                        if child_joint_group_object.name in bpy.data.objects:
-                            bpy.data.objects.remove(child_joint_group_object)
-                    except Exception:
-                        logging.exception("Error removing joint group")
-
-            # Handle temporary objects - similar approach
+            # Handle temporary objects using parent_set
             child_temporary_group_object = FnModel.find_temporary_group_object(child_root_object)
             if child_temporary_group_object and child_temporary_group_object.name in bpy.context.view_layer.objects.keys():
                 parent_temporary_group_object = FnModel.find_temporary_group_object(parent_root_object)
@@ -773,49 +723,54 @@ class FnModel:
                     temp_objects = [obj for obj in FnModel.iterate_temporary_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
 
                     if temp_objects:
-                        # Ensure we're in object mode
-                        if bpy.context.mode != "OBJECT":
-                            bpy.ops.object.mode_set(mode="OBJECT")
+                        # Use parent_set with keep_transform=True for temporary objects
+                        with select_object(parent_temporary_group_object, objects=[parent_temporary_group_object] + temp_objects):
+                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                        for temp_obj in temp_objects:
-                            # Save world coordinate position
-                            original_matrix_world = temp_obj.matrix_world.copy()
-
-                            # Set parent object
-                            temp_obj.parent = parent_temporary_group_object
-                            temp_obj.parent_type = "OBJECT"
-
-                            # Restore world coordinate position
-                            temp_obj.matrix_world = original_matrix_world
-
-                    # Safely remove child objects and groups
-                    try:
-                        child_objects = [obj for obj in FnModel.iterate_child_objects(child_temporary_group_object) if obj.name in bpy.data.objects]
-                        for obj in child_objects:
-                            bpy.data.objects.remove(obj)
-
-                        if child_temporary_group_object.name in bpy.data.objects:
-                            bpy.data.objects.remove(child_temporary_group_object)
-                    except Exception:
-                        logging.exception("Error removing temporary objects")
+                    # Remove child objects and groups
+                    child_objects = list(FnModel.iterate_child_objects(child_temporary_group_object))
+                    for obj in child_objects:
+                        bpy.data.objects.remove(obj)
+                    bpy.data.objects.remove(child_temporary_group_object)
 
             # Copy MMD root properties
-            try:
-                FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
-            except Exception:
-                logging.exception("Error copying MMD root")
+            FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
 
-            # Safely remove empty child root objects
-            try:
-                if child_root_object and len(child_root_object.children) == 0:
-                    if child_root_object.name in bpy.data.objects:
-                        bpy.data.objects.remove(child_root_object)
-            except Exception:
-                logging.exception("Error removing child root object")
+        # Clean additional transform before join
+        bpy.ops.object.mode_set(mode="OBJECT")
+        FnContext.set_active_and_select_single_object(context, parent_root_object)
+        bpy.ops.mmd_tools.clean_additional_transform()
+        for child_root_object in child_root_objects:
+            FnContext.set_active_and_select_single_object(context, child_root_object)
+            bpy.ops.mmd_tools.clean_additional_transform()
 
-        # Clean and reapply additional transformations to properly set up all bones and constraints
+        # Join all child armatures to parent armature
+        bpy.ops.object.mode_set(mode="OBJECT")
+        child_armature_objects = [FnModel.find_armature_object(child_root) for child_root in child_root_objects if FnModel.find_armature_object(child_root) is not None]
+        armature_data_to_remove = [child_arm.data for child_arm in child_armature_objects if child_arm.data]
+        if child_armature_objects:
+            with select_object(parent_armature_object, objects=[parent_armature_object] + child_armature_objects):
+                bpy.ops.object.join()
+        for armature_data in armature_data_to_remove:
+            if armature_data and armature_data.users == 0:
+                bpy.data.armatures.remove(armature_data)
+
+        # Apply additional transform after join
+        FnContext.set_active_object(context, parent_root_object)
         bpy.ops.mmd_tools.clean_additional_transform()
         bpy.ops.mmd_tools.apply_additional_transform()
+
+        # Remove empty child root objects
+        for child_root_object in child_root_objects:
+            assert len(child_root_object.children) == 0
+            bpy.data.objects.remove(child_root_object)
+
+        # Restore material morph references for all child models
+        for material_morph_data, mesh_data in related_meshes.items():
+            material_morph_data.related_mesh_data = mesh_data
+
+        # Restore original transform matrix for parent root object
+        parent_root_object.matrix_world = original_matrix_world
 
     @staticmethod
     def _add_armature_modifier(mesh_object: bpy.types.Object, armature_object: bpy.types.Object) -> bpy.types.ArmatureModifier:
@@ -1079,7 +1034,7 @@ class Model:
             bone_name_english = "Root"
 
             # Create the root bone
-            with bpyutils.edit_object(armature_object) as data:
+            with edit_object(armature_object) as data:
                 bone = data.edit_bones.new(name=bone_name)
                 bone.head = (0.0, 0.0, 0.0)
                 bone.tail = (0.0, 0.0, getattr(root, Props.empty_display_size))
@@ -1536,11 +1491,13 @@ class Model:
         if total_len < 1:
             return
 
+        context = FnContext.ensure_context()
+
         start_time = time.time()
         logging.debug("-" * 60)
         logging.debug(" creating ncc, counts: %d", total_len)
 
-        ncc_obj = bpyutils.createObject(name="ncc", object_data=None)
+        ncc_obj = FnContext.new_and_link_object(context, name="ncc", object_data=None)
         ncc_obj.location = [0, 0, 0]
         setattr(ncc_obj, Props.empty_display_type, "ARROWS")
         setattr(ncc_obj, Props.empty_display_size, 0.5 * getattr(self.__root, Props.empty_display_size))
@@ -1552,7 +1509,7 @@ class Model:
         rb = ncc_obj.rigid_body_constraint
         rb.disable_collisions = True
 
-        ncc_objs = bpyutils.duplicateObject(ncc_obj, total_len)
+        ncc_objs = FnContext.duplicate_object(context, ncc_obj, total_len)
         logging.debug(" created %d ncc.", len(ncc_objs))
 
         for ncc_obj, pair in zip(ncc_objs, nonCollisionJointTable, strict=False):
@@ -1627,7 +1584,7 @@ class Model:
         armature_object = self.armature()
 
         armature: bpy.types.Armature
-        with bpyutils.edit_object(armature_object) as armature:
+        with edit_object(armature_object) as armature:
             edit_bones = armature.edit_bones
             rigid_body_object: bpy.types.Object
             for rigid_body_object in self.rigidBodies():

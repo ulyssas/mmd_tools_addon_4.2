@@ -191,7 +191,7 @@ class TestModelEdit(unittest.TestCase):
             bpy.ops.mmd_tools.export_pmx(
                 filepath=export_path,
                 scale=1,
-                copy_textures=False,
+                copy_textures=True,
                 sort_materials=False,
                 log_level="ERROR",
             )
@@ -443,19 +443,6 @@ class TestModelEdit(unittest.TestCase):
 
             print(f"Joining using bones: '{neck_bone.name}' from '{first_model_arm.name}' and '{head_bone.name}' from '{second_model_arm_with_head.name}'")
 
-            # First, collect the objects to be removed
-            objects_to_remove = []
-            for obj in bpy.data.objects:
-                if obj.type == "ARMATURE" and obj not in {first_model_arm, second_model_arm_with_head}:
-                    objects_to_remove.append(obj)
-                elif obj.mmd_type == "ROOT" and obj not in {first_model_root, second_model_root}:
-                    objects_to_remove.append(obj)
-            # Then remove them in a separate loop
-            for obj in objects_to_remove:
-                if obj.name in bpy.data.objects:
-                    print(f"Removing unnecessary object: {obj.name} ({obj.type})")
-                    bpy.data.objects.remove(obj)
-
             # Select the specific armatures again and enter pose mode on the first armature
             bpy.ops.object.select_all(action="DESELECT")
             first_model_arm.select_set(True)
@@ -532,7 +519,7 @@ class TestModelEdit(unittest.TestCase):
             bpy.ops.mmd_tools.export_pmx(
                 filepath=output_pmx,
                 scale=1,
-                copy_textures=False,
+                copy_textures=True,
                 sort_materials=False,
                 log_level="ERROR",
             )
