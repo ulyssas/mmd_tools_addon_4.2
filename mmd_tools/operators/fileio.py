@@ -296,15 +296,15 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Will not use dot, e.g. if renaming bones, will use _R instead of .R",
         default=False,
     )
-    bone_disp_mode: bpy.props.EnumProperty(
-        name="Bone Display Mode",
-        items=get_armature_display_items,
-        description="Change how bones look in viewport.",
-    )
     dictionary: bpy.props.EnumProperty(
         name="Rename Bones To English",
         items=DictionaryEnum.get_dictionary_items,
         description="Translate bone names from Japanese to English using selected dictionary",
+    )
+    bone_disp_mode: bpy.props.EnumProperty(
+        name="Bone Display Mode",
+        items=get_armature_display_items,
+        description="Change how bones look in viewport.",
     )
     use_mipmap: bpy.props.BoolProperty(
         name="use MIP maps for UV textures",
