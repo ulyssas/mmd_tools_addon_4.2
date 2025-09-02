@@ -170,23 +170,6 @@ msgstr "剛体選択"
 msgid "MMD UuuNyaa"
 msgstr "MMD UuuNyaa"
 
-#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones
-msgctxt "Operator"
-msgid "Add Missing Vertex Groups from Bones"
-msgstr "ボーンから不足している頂点グループを追加"
-
-#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones
-msgid "Add the missing vertex groups to the selected mesh"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones.search_in_all_meshes
-msgid "Search in all meshes"
-msgstr "全てのメッシュで検索"
-
-#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones.search_in_all_meshes
-msgid "Search for vertex groups in all meshes"
-msgstr ""
-
 #. :src: bpy.types.MMD_TOOLS_OT_apply_additional_transform
 msgctxt "Operator"
 msgid "Apply Additional Transform"
