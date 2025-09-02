@@ -12,7 +12,7 @@ import rna_prop_ui
 from mathutils import Matrix, Vector
 
 from .. import MMD_TOOLS_VERSION
-from ..bpyutils import FnContext, Props, edit_object, select_object
+from ..bpyutils import FnContext, Props, createObject, duplicateObject, edit_object, select_object
 from . import rigid_body
 from .morph import FnMorph
 from .rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
@@ -1491,13 +1491,11 @@ class Model:
         if total_len < 1:
             return
 
-        context = FnContext.ensure_context()
-
         start_time = time.time()
         logging.debug("-" * 60)
         logging.debug(" creating ncc, counts: %d", total_len)
 
-        ncc_obj = FnContext.new_and_link_object(context, name="ncc", object_data=None)
+        ncc_obj = createObject(name="ncc", object_data=None)
         ncc_obj.location = [0, 0, 0]
         setattr(ncc_obj, Props.empty_display_type, "ARROWS")
         setattr(ncc_obj, Props.empty_display_size, 0.5 * getattr(self.__root, Props.empty_display_size))
@@ -1509,7 +1507,7 @@ class Model:
         rb = ncc_obj.rigid_body_constraint
         rb.disable_collisions = True
 
-        ncc_objs = FnContext.duplicate_object(context, ncc_obj, total_len)
+        ncc_objs = duplicateObject(ncc_obj, total_len)
         logging.debug(" created %d ncc.", len(ncc_objs))
 
         for ncc_obj, pair in zip(ncc_objs, nonCollisionJointTable, strict=False):
