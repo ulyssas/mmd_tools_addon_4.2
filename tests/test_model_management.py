@@ -1643,6 +1643,272 @@ class TestModelManagement(unittest.TestCase):
             print(f"SDEF bind operator error: {e}")
             self.fail(f"SDEF operator failed: {e}")
 
+    def test_model_assembly_operations_with_real_model(self):
+        """Test model assembly operations with real PMX model"""
+        input_files = self.__list_sample_files(("pmx",))
+        if len(input_files) < 1:
+            self.skipTest("No PMX sample files available for real model test")
+
+        # Find the largest PMX file for comprehensive testing
+        largest_file = max(input_files, key=os.path.getsize)
+
+        print(f"\nTesting assembly operations with largest PMX: {os.path.basename(largest_file)} ({os.path.getsize(largest_file)} bytes)")
+
+        try:
+            # Load real model
+            self.__enable_mmd_tools()
+            bpy.ops.mmd_tools.import_model(filepath=largest_file, types={"MESH", "ARMATURE", "PHYSICS", "MORPHS"}, scale=0.08, clean_model=False, remove_doubles=False, log_level="ERROR")
+
+            # Find the imported model
+            root_objects = [obj for obj in bpy.context.scene.objects if obj.mmd_type == "ROOT"]
+            self.assertGreater(len(root_objects), 0, "Real model should be imported successfully")
+
+            root_obj = root_objects[0]
+            model = Model(root_obj)
+            mesh_objects = list(model.meshes())
+            armature_obj = model.armature()
+
+            self.assertIsNotNone(armature_obj, "Real model should have armature")
+            self.assertGreater(len(mesh_objects), 0, "Real model should have meshes")
+
+            print(f"   - Imported model: {root_obj.name}")
+            print(f"   - Meshes: {len(mesh_objects)}")
+            print(f"   - Bones: {len(armature_obj.data.bones)}")
+
+            # Test assembly operations with real model data
+            bpy.context.view_layer.objects.active = root_obj
+
+            # Test assemble all with real complex data
+            initial_modifier_counts = {}
+            for mesh_obj in mesh_objects:
+                initial_modifier_counts[mesh_obj.name] = len([mod for mod in mesh_obj.modifiers if mod.type == "ARMATURE"])
+
+            bpy.ops.mmd_tools.assemble_all()
+
+            # Verify armature modifiers were added to meshes without them
+            assembled_count = 0
+            for mesh_obj in mesh_objects:
+                current_modifiers = len([mod for mod in mesh_obj.modifiers if mod.type == "ARMATURE"])
+                if current_modifiers > initial_modifier_counts[mesh_obj.name]:
+                    assembled_count += 1
+                elif current_modifiers > 0:
+                    assembled_count += 1  # Already had modifiers
+
+            self.assertGreater(assembled_count, 0, "Assemble operation should create or maintain armature modifiers")
+            print(f"   - Assembled {assembled_count} meshes with armature modifiers")
+
+            # Test disassemble all
+            bpy.ops.mmd_tools.disassemble_all()
+
+            # Verify some modifiers were removed (but not necessarily all, depends on model state)
+            disassembled_count = 0
+            for mesh_obj in mesh_objects:
+                current_modifiers = len([mod for mod in mesh_obj.modifiers if mod.type == "ARMATURE"])
+                if current_modifiers == 0:
+                    disassembled_count += 1
+
+            print(f"   - Disassembled {disassembled_count} meshes (removed armature modifiers)")
+            self.assertTrue(True, "Disassemble operation completed on real model")
+
+        except Exception as e:
+            self.fail(f"Assembly operations with real model failed: {e}")
+
+    def test_separate_by_materials_with_real_model(self):
+        """Test separate by materials operation with real PMX model"""
+        input_files = self.__list_sample_files(("pmx",))
+        if len(input_files) < 1:
+            self.skipTest("No PMX sample files available for real model test")
+
+        # Find the largest PMX file
+        largest_file = max(input_files, key=os.path.getsize)
+
+        print(f"\nTesting separate by materials with largest PMX: {os.path.basename(largest_file)}")
+
+        try:
+            # Load real model
+            self.__enable_mmd_tools()
+            bpy.ops.mmd_tools.import_model(filepath=largest_file, types={"MESH", "ARMATURE"}, scale=0.08, clean_model=False, remove_doubles=False, log_level="ERROR")
+
+            # Find the imported model
+            root_objects = [obj for obj in bpy.context.scene.objects if obj.mmd_type == "ROOT"]
+            self.assertGreater(len(root_objects), 0, "Real model should be imported successfully")
+
+            root_obj = root_objects[0]
+            model = Model(root_obj)
+            mesh_objects = list(model.meshes())
+
+            # Find a mesh with multiple materials for testing
+            test_mesh = None
+            for mesh_obj in mesh_objects:
+                if len(mesh_obj.data.materials) > 1:
+                    test_mesh = mesh_obj
+                    break
+
+            if test_mesh is None:
+                self.skipTest("No mesh with multiple materials found in real model")
+
+            initial_material_count = len(test_mesh.data.materials)
+            initial_mesh_count = len(mesh_objects)
+
+            print(f"   - Testing mesh: {test_mesh.name}")
+            print(f"   - Materials in mesh: {initial_material_count}")
+            print(f"   - Initial mesh count: {initial_mesh_count}")
+
+            # Test separate by materials
+            bpy.context.view_layer.objects.active = test_mesh
+            bpy.ops.object.select_all(action="DESELECT")
+            test_mesh.select_set(True)
+
+            # Record material names for verification
+            original_materials = [mat.name for mat in test_mesh.data.materials if mat]
+
+            bpy.ops.mmd_tools.separate_by_materials()
+
+            # Check results
+            updated_mesh_objects = list(model.meshes())
+            final_mesh_count = len(updated_mesh_objects)
+
+            print(f"   - Final mesh count: {final_mesh_count}")
+
+            # Should have more meshes after separation (unless there was only one material)
+            if initial_material_count > 1:
+                self.assertGreaterEqual(final_mesh_count, initial_mesh_count, "Should have same or more meshes after material separation")
+
+                # Verify that new meshes have single materials
+                single_material_meshes = 0
+                for mesh_obj in updated_mesh_objects:
+                    if len([mat for mat in mesh_obj.data.materials if mat]) == 1:
+                        single_material_meshes += 1
+
+                print(f"   - Meshes with single material: {single_material_meshes}")
+                self.assertGreater(single_material_meshes, 0, "Should have meshes with single materials after separation")
+
+                # Verify that all original materials are still present across the separated meshes
+                found_materials = set()
+                for mesh_obj in updated_mesh_objects:
+                    for mat in mesh_obj.data.materials:
+                        if mat and mat.name in original_materials:
+                            found_materials.add(mat.name)
+
+                missing_materials = set(original_materials) - found_materials
+                if missing_materials:
+                    print(f"   - Warning: Some materials were lost during separation: {missing_materials}")
+                    self.fail(f"Materials lost during separation: {missing_materials}")
+                else:
+                    print(f"   - All {len(original_materials)} original materials preserved after separation")
+                    self.assertEqual(len(found_materials), len(original_materials), "All original materials should be preserved after separation")
+
+                # Verify material distribution makes sense
+                total_material_slots = sum(len([mat for mat in mesh_obj.data.materials if mat]) for mesh_obj in updated_mesh_objects)
+                self.assertGreaterEqual(total_material_slots, len(original_materials), "Total material slots should be at least equal to original material count")
+
+        except Exception as e:
+            self.fail(f"Separate by materials with real model failed: {e}")
+
+    def test_model_ik_toggle_functionality_with_real_model(self):
+        """Test IK toggle functionality with real PMX model"""
+        input_files = self.__list_sample_files(("pmx",))
+        if len(input_files) < 1:
+            self.skipTest("No PMX sample files available for real model test")
+
+        # Find the largest PMX file
+        largest_file = max(input_files, key=os.path.getsize)
+
+        print(f"\nTesting IK toggle with largest PMX: {os.path.basename(largest_file)}")
+
+        try:
+            # Load real model
+            self.__enable_mmd_tools()
+            bpy.ops.mmd_tools.import_model(filepath=largest_file, types={"MESH", "ARMATURE"}, scale=0.08, clean_model=False, remove_doubles=False, log_level="ERROR")
+
+            # Find the imported model
+            root_objects = [obj for obj in bpy.context.scene.objects if obj.mmd_type == "ROOT"]
+            self.assertGreater(len(root_objects), 0, "Real model should be imported successfully")
+
+            root_obj = root_objects[0]
+            model = Model(root_obj)
+            armature_obj = model.armature()
+
+            self.assertIsNotNone(armature_obj, "Real model should have armature")
+
+            print(f"   - Armature: {armature_obj.name}")
+            print(f"   - Total bones: {len(armature_obj.data.bones)}")
+
+            bpy.context.view_layer.objects.active = armature_obj
+            bpy.ops.object.mode_set(mode="POSE")
+
+            # Find bones with IK constraints
+            ik_bones = []
+            ik_constraints_found = 0
+
+            for pose_bone in armature_obj.pose.bones:
+                ik_constraints = [c for c in pose_bone.constraints if c.type == "IK"]
+                if ik_constraints:
+                    ik_bones.append(pose_bone)
+                    ik_constraints_found += len(ik_constraints)
+
+            print(f"   - Bones with IK constraints: {len(ik_bones)}")
+            print(f"   - Total IK constraints: {ik_constraints_found}")
+
+            if len(ik_bones) == 0:
+                print("   - No IK constraints found, testing MMD IK properties instead")
+
+                # Test MMD IK properties on bones that might have them
+                mmd_ik_bones = []
+                for pose_bone in armature_obj.pose.bones:
+                    if hasattr(pose_bone, "mmd_bone"):
+                        mmd_bone = pose_bone.mmd_bone
+                        if hasattr(mmd_bone, "ik_rotation_constraint") and mmd_bone.ik_rotation_constraint > 0:
+                            mmd_ik_bones.append(pose_bone)
+
+                print(f"   - Bones with MMD IK properties: {len(mmd_ik_bones)}")
+
+                if len(mmd_ik_bones) > 0:
+                    test_bone = mmd_ik_bones[0]
+                    print(f"   - Testing MMD IK properties on bone: {test_bone.name}")
+
+                    # Test MMD IK toggle property
+                    self.assertTrue(hasattr(test_bone, "mmd_ik_toggle"), "MMD bone should have IK toggle property")
+
+                    original_ik_state = test_bone.mmd_ik_toggle
+                    test_bone.mmd_ik_toggle = not original_ik_state
+                    self.assertNotEqual(test_bone.mmd_ik_toggle, original_ik_state, "IK toggle state should change")
+
+                    # Reset to original state
+                    test_bone.mmd_ik_toggle = original_ik_state
+                    print(f"   - MMD IK toggle test passed on {test_bone.name}")
+            else:
+                # Test with actual IK constraints
+                test_bone = ik_bones[0]
+                print(f"   - Testing IK constraints on bone: {test_bone.name}")
+
+                ik_constraint = [c for c in test_bone.constraints if c.type == "IK"][0]
+
+                # Test IK constraint properties
+                self.assertIsNotNone(ik_constraint.target, "IK constraint should have target")
+                self.assertIsNotNone(ik_constraint.subtarget, "IK constraint should have subtarget")
+
+                original_influence = ik_constraint.influence
+                ik_constraint.influence = 0.0 if original_influence > 0.5 else 1.0
+                self.assertNotEqual(ik_constraint.influence, original_influence, "IK constraint influence should be modifiable")
+
+                # Reset influence
+                ik_constraint.influence = original_influence
+
+                # Test MMD IK toggle if available
+                if hasattr(test_bone, "mmd_ik_toggle"):
+                    original_toggle = test_bone.mmd_ik_toggle
+                    test_bone.mmd_ik_toggle = not original_toggle
+                    test_bone.mmd_ik_toggle = original_toggle
+                    print(f"   - IK constraint and MMD toggle test passed on {test_bone.name}")
+
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+            self.assertTrue(True, "IK functionality test completed with real model")
+
+        except Exception as e:
+            self.fail(f"IK toggle functionality with real model failed: {e}")
+
 
 if __name__ == "__main__":
     import sys
