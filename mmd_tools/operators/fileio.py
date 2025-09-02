@@ -187,6 +187,13 @@ def load_default_settings_from_preferences(operator, context, preset_property_na
         return False
 
 
+def get_armature_display_items(self, context):
+    # https://docs.blender.org/api/current/bpy.props.html#bpy.props.EnumProperty
+    # self & context are required, even though they are not used in function
+    enum_items = bpy.types.Armature.bl_rna.properties["display_type"].enum_items
+    return [(item.identifier, item.name, "") for item in enum_items]
+
+
 class PreferencesMixin:
     """Mixin for operators that load default settings from preferences"""
 
@@ -289,6 +296,11 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="Will not use dot, e.g. if renaming bones, will use _R instead of .R",
         default=False,
     )
+    bone_disp_mode: bpy.props.EnumProperty(
+        name="Bone Display Mode",
+        items=get_armature_display_items,
+        description="Change how bones look in viewport.",
+    )
     dictionary: bpy.props.EnumProperty(
         name="Rename Bones To English",
         items=DictionaryEnum.get_dictionary_items,
@@ -370,6 +382,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 apply_bone_fixed_axis=self.apply_bone_fixed_axis,
                 rename_LR_bones=self.rename_bones,
                 use_underscore=self.use_underscore,
+                bone_disp_mode=self.bone_disp_mode,
                 translator=self.__translator,
                 use_mipmap=self.use_mipmap,
                 sph_blend_factor=self.sph_blend_factor,
