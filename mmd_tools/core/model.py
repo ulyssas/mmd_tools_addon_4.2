@@ -812,31 +812,6 @@ class FnModel:
                 FnModel._add_armature_modifier(mesh_object, armature_object)
 
     @staticmethod
-    def add_missing_vertex_groups_from_bones(root_object: bpy.types.Object, mesh_object: bpy.types.Object, search_in_all_meshes: bool):
-        armature_object = FnModel.find_armature_object(root_object)
-        if armature_object is None:
-            raise ValueError(f"Armature object not found in {root_object}")
-
-        vertex_group_names: Set[str] = set()
-
-        search_meshes = FnModel.iterate_mesh_objects(root_object) if search_in_all_meshes else [mesh_object]
-
-        for search_mesh in search_meshes:
-            vertex_group_names.update(search_mesh.vertex_groups.keys())
-
-        pose_bone: bpy.types.PoseBone
-        for pose_bone in armature_object.pose.bones:
-            pose_bone_name = pose_bone.name
-
-            if pose_bone_name in vertex_group_names:
-                continue
-
-            if pose_bone_name.startswith("_"):
-                continue
-
-            mesh_object.vertex_groups.new(name=pose_bone_name)
-
-    @staticmethod
     def change_mmd_ik_loop_factor(root_object: bpy.types.Object, new_ik_loop_factor: int):
         mmd_root = root_object.mmd_root
         old_ik_loop_factor = mmd_root.ik_loop_factor

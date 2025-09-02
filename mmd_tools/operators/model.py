@@ -190,36 +190,6 @@ class SetupBoneLocalAxes(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class AddMissingVertexGroupsFromBones(bpy.types.Operator):
-    bl_idname = "mmd_tools.add_missing_vertex_groups_from_bones"
-    bl_label = "Add Missing Vertex Groups from Bones"
-    bl_description = "Add the missing vertex groups to the selected mesh"
-    bl_options = {"REGISTER", "UNDO"}
-
-    search_in_all_meshes: bpy.props.BoolProperty(
-        name="Search in all meshes",
-        description="Search for vertex groups in all meshes",
-        default=False,
-    )
-
-    @classmethod
-    def poll(cls, context: bpy.types.Context):
-        return FnModel.find_root_object(context.active_object) is not None
-
-    def execute(self, context: bpy.types.Context):
-        active_object: bpy.types.Object = context.active_object
-        root_object = FnModel.find_root_object(active_object)
-        assert root_object is not None
-
-        bone_order_mesh_object = FnModel.find_bone_order_mesh_object(root_object)
-        if bone_order_mesh_object is None:
-            return {"CANCELLED"}
-
-        FnModel.add_missing_vertex_groups_from_bones(root_object, bone_order_mesh_object, self.search_in_all_meshes)
-
-        return {"FINISHED"}
-
-
 class CreateMMDModelRoot(bpy.types.Operator):
     bl_idname = "mmd_tools.create_mmd_model_root_object"
     bl_label = "Create a MMD Model Root Object"

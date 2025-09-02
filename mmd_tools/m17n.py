@@ -306,40 +306,6 @@ translations_tuple = (
         ("zh_HANS", "MMD UuuNyaa", (False, ())),
     ),
     (
-        ("Operator", "Add Missing Vertex Groups from Bones"),
-        (("bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones",), ()),
-        ("ja_JP", "ボーンから不足している頂点グループを追加", (False, ())),
-        ("zh_HANS", "从骨骼中添加缺失的顶点组", (False, ())),
-    ),
-    (
-        ("*", "Add the missing vertex groups to the selected mesh"),
-        (("bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将丢失的顶点组添加至选中的网格", (False, ())),
-    ),
-    (
-        ("*", "Search in all meshes"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones.search_in_all_meshes",
-            ),
-            (),
-        ),
-        ("ja_JP", "全てのメッシュで検索", (False, ())),
-        ("zh_HANS", "在所有网格中搜索", (False, ())),
-    ),
-    (
-        ("*", "Search for vertex groups in all meshes"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones.search_in_all_meshes",
-            ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "在所有网格中搜索顶点组", (False, ())),
-    ),
-    (
         ("Operator", "Apply Additional Transform"),
         (("bpy.types.MMD_TOOLS_OT_apply_additional_transform",), ()),
         ("ja_JP", "", (False, ())),
