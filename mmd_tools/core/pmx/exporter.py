@@ -300,7 +300,7 @@ class __PmxExporter:
                         except PermissionError:
                             logging.warning(f"Permission denied. Could not copy texture to '{full_dest_path}'. Skipping.")
                         except Exception as e:
-                            logging.error(f"An unexpected error occurred while copying external texture: {e}")
+                            logging.exception(f"An unexpected error occurred while copying external texture: {e}")
                 else:
                     logging.warning("Source for texture '%s' not found. Cannot copy.", src_path)
 
