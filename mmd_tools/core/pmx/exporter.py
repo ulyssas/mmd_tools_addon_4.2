@@ -358,7 +358,7 @@ class __PmxExporter:
         world_mat = arm.matrix_world
         r = {}
 
-        sorted_bones = sorted(pose_bones, key=lambda x: x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"))
+        sorted_bones = sorted(pose_bones, key=lambda x: (x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"), x.name))
 
         pmx_matrix = world_mat * self.__scale
         pmx_matrix[1], pmx_matrix[2] = pmx_matrix[2].copy(), pmx_matrix[1].copy()
