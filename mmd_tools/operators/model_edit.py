@@ -230,13 +230,9 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             )
         }
 
-        separate_mesh_objects: Set[bpy.types.Object]
-        model2separate_mesh_objects: Dict[bpy.types.Object, bpy.types.Object]
-        if len(mmd_model_mesh_objects) == 0:
-            separate_mesh_objects = set()
-            model2separate_mesh_objects = {}
-        else:
-            # Save normal data before separation
+        separate_mesh_objects: List[bpy.types.Object] = []
+        model2separate_mesh_objects: Dict[bpy.types.Object, bpy.types.Object] = {}
+        if len(mmd_model_mesh_objects) > 0:
             for mesh_obj in mmd_model_mesh_objects:
                 mesh_data = mesh_obj.data
                 mmd_normal = mesh_data.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
@@ -253,7 +249,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             # Separate mesh by selected vertices
             bpy.ops.object.mode_set(mode="EDIT")
             bpy.ops.mesh.separate(type="SELECTED")
-            separate_mesh_objects: List[bpy.types.Object] = [m for m in context.selected_objects if m.type == "MESH" and m not in mmd_model_mesh_objects]
+            separate_mesh_objects = [m for m in context.selected_objects if m.type == "MESH" and m not in mmd_model_mesh_objects]
             bpy.ops.object.mode_set(mode="OBJECT")
 
             model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects, strict=False))
@@ -281,8 +277,9 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             if separate_armature_data.users == 0:
                 bpy.data.armatures.remove(separate_armature_data)
 
-        with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + list(separate_mesh_objects)):
-            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+        if separate_mesh_objects:
+            with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + separate_mesh_objects):
+                bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
         # Replace mesh armature modifier.object
         for separate_mesh in separate_mesh_objects:
@@ -292,11 +289,13 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
             armature_modifier.object = separate_model_armature_object
 
-        with select_object(separate_model.rigidGroupObject(), objects=[separate_model.rigidGroupObject()] + list(separate_rigid_bodies)):
-            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+        if separate_rigid_bodies:
+            with select_object(separate_model.rigidGroupObject(), objects=[separate_model.rigidGroupObject()] + list(separate_rigid_bodies)):
+                bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-        with select_object(separate_model.jointGroupObject(), objects=[separate_model.jointGroupObject()] + list(separate_joints)):
-            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+        if separate_joints:
+            with select_object(separate_model.jointGroupObject(), objects=[separate_model.jointGroupObject()] + list(separate_joints)):
+                bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
         # Move separate objects to new collection
         mmd_layer_collection = FnContext.find_user_layer_collection_by_object(context, mmd_root_object)
@@ -307,8 +306,10 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         if mmd_layer_collection.name != separate_layer_collection.name:
             for separate_object in itertools.chain(separate_mesh_objects, separate_rigid_bodies, separate_joints):
-                separate_layer_collection.collection.objects.link(separate_object)
-                mmd_layer_collection.collection.objects.unlink(separate_object)
+                if separate_object.name not in separate_layer_collection.collection.objects:
+                    separate_layer_collection.collection.objects.link(separate_object)
+                if separate_object.name in mmd_layer_collection.collection.objects:
+                    mmd_layer_collection.collection.objects.unlink(separate_object)
 
         FnModel.copy_mmd_root(
             separate_root_object,
