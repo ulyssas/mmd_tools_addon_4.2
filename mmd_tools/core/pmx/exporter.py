@@ -283,14 +283,24 @@ class __PmxExporter:
                 # Handle packed images first by extracting them
                 if packed_image:
                     logging.info("Extracting packed texture '%s' -> '%s'", packed_image.name, full_dest_path)
-                    with open(full_dest_path, "wb") as f:
-                        f.write(packed_image.packed_file.data)
+                    try:
+                        with open(full_dest_path, "wb") as f:
+                            f.write(packed_image.packed_file.data)
+                    except PermissionError:
+                        logging.warning(f"Permission denied. Could not write texture to '{full_dest_path}'. Skipping.")
+                    except Exception as e:
+                        logging.exception(f"An unexpected error occurred while writing packed texture: {e}")
 
                 # If not packed, handle existing external files by copying them
                 elif os.path.isfile(src_path):
                     if os.path.normcase(src_path) != os.path.normcase(full_dest_path):
                         logging.info("Copying external texture '%s' -> '%s'", src_path, full_dest_path)
-                        shutil.copy2(src_path, full_dest_path)
+                        try:
+                            shutil.copy2(src_path, full_dest_path)
+                        except PermissionError:
+                            logging.warning(f"Permission denied. Could not copy texture to '{full_dest_path}'. Skipping.")
+                        except Exception as e:
+                            logging.error(f"An unexpected error occurred while copying external texture: {e}")
                 else:
                     logging.warning("Source for texture '%s' not found. Cannot copy.", src_path)
 
