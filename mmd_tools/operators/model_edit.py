@@ -364,6 +364,9 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         mmd_root_object.matrix_world = original_matrix_world
         separate_root_object.matrix_world = original_matrix_world
 
+        # End state
+        FnContext.set_active_and_select_single_object(context, separate_root_object)
+
     def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
         mesh2selected_vertex_count: Dict[bpy.types.Object, int] = {}
         target_bmesh: bmesh.types.BMesh = bmesh.new()
