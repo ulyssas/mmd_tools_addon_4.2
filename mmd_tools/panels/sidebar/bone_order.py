@@ -166,7 +166,6 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
             self.report({"INFO"}, f"Cleaned {cleaned_count} invalid bone reference(s).")
 
         # Trigger mode switch to sync newly created bones from Edit mode
-        bpy.context.view_layer.objects.active = armature
         current_mode = armature.mode
         bpy.ops.object.mode_set(mode="OBJECT")
         bpy.ops.object.mode_set(mode=current_mode)
