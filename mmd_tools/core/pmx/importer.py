@@ -903,6 +903,7 @@ class PMXImporter:
         self.__spa_blend_factor = args.get("spa_blend_factor", 1.0)
         self.__fix_ik_links = args.get("fix_ik_links", False)
         self.__apply_bone_fixed_axis = args.get("apply_bone_fixed_axis", False)
+        self.__bone_disp_mode = args.get("bone_disp_mode", "OCTAHEDRAL")
         self.__translator = args.get("translator")
 
         logging.info("****************************************")
@@ -944,6 +945,7 @@ class PMXImporter:
                 self.__translateBoneNames()
             if self.__apply_bone_fixed_axis:
                 FnBone.apply_bone_fixed_axis(self.__armObj)
+            self.__armObj.data.display_type = self.__bone_disp_mode
             FnBone.apply_additional_transformation(self.__armObj)
 
         if "PHYSICS" in types:
