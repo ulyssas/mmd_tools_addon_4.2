@@ -126,13 +126,13 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
             existing_custom_normal = meshData.attributes.get("custom_normal")
             if existing_custom_normal:
                 if existing_custom_normal.data_type == "INT16_2D":
-                    normals_data = np.empty(meshData.attributes.domain_size("CORNER") * 2, dtype=np.int16)
+                    normals_data = np.empty(len(meshData.loops) * 2, dtype=np.int16)
                     existing_custom_normal.data.foreach_get("value", normals_data)
                     mmd_normal = meshData.attributes.new("mmd_normal", "INT16_2D", "CORNER")
                     mmd_normal_name = mmd_normal.name
                     mmd_normal.data.foreach_set("value", normals_data)
                 elif existing_custom_normal.data_type == "FLOAT_VECTOR":
-                    normals_data = np.empty(meshData.attributes.domain_size("CORNER") * 3, dtype=np.float32)
+                    normals_data = np.empty(len(meshData.loops) * 3, dtype=np.float32)
                     existing_custom_normal.data.foreach_get("vector", normals_data)
                     mmd_normal = meshData.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
                     mmd_normal_name = mmd_normal.name
@@ -156,14 +156,14 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
                 mmd_normal = i.data.attributes.get(mmd_normal_name)
                 if mmd_normal:
                     if mmd_normal.data_type == "INT16_2D":
-                        normals_data = np.empty(i.data.attributes.domain_size("CORNER") * 2, dtype=np.int16)
+                        normals_data = np.empty(len(i.data.loops) * 2, dtype=np.int16)
                         mmd_normal.data.foreach_get("value", normals_data)
                         custom_normal_attr = i.data.attributes.get("custom_normal")
                         if not custom_normal_attr:
                             custom_normal_attr = i.data.attributes.new("custom_normal", "INT16_2D", "CORNER")
                         custom_normal_attr.data.foreach_set("value", normals_data)
                     elif mmd_normal.data_type == "FLOAT_VECTOR":
-                        normals_data = np.empty(i.data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
+                        normals_data = np.empty(len(i.data.loops) * 3, dtype=np.float32)
                         mmd_normal.data.foreach_get("vector", normals_data)
                         custom_normal_attr = i.data.attributes.get("custom_normal")
                         if not custom_normal_attr:
