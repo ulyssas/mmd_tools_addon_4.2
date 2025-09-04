@@ -369,6 +369,7 @@ class __PmxExporter:
         r = {}
 
         sorted_bones = sorted(pose_bones, key=lambda x: (x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"), x.name))
+        bone_id_map = {p_bone.mmd_bone.bone_id: p_bone for p_bone in sorted_bones}
 
         pmx_matrix = world_mat * self.__scale
         pmx_matrix[1], pmx_matrix[2] = pmx_matrix[2].copy(), pmx_matrix[1].copy()
@@ -433,7 +434,16 @@ class __PmxExporter:
                     elif mmd_bone.display_connection_type == "OFFSET":
                         pmx_bone.displayConnection = (0.0, 0.0, 0.0)
                 elif mmd_bone.display_connection_type == "BONE" and mmd_bone.display_connection_bone_id >= 0:
-                    pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
+                    target_bone_id = mmd_bone.display_connection_bone_id
+                    target_p_bone = bone_id_map.get(target_bone_id)
+
+                    # Force OFFSET if target bone is too far.
+                    if target_p_bone and (target_p_bone.head - p_bone.tail).length > 0.01:
+                        logging.warning('Bone "%s": Target bone "%s" is too far. Automatically switching display connection to OFFSET.', p_bone.name, target_p_bone.name)
+                        tail_loc = __to_pmx_location(p_bone.tail)
+                        pmx_bone.displayConnection = tail_loc - pmx_bone.location
+                    else:
+                        pmx_bone.displayConnection = target_bone_id
                 else:  # mmd_bone.display_connection_type == "OFFSET" or display_connection_bone_id invalid
                     tail_loc = __to_pmx_location(p_bone.tail)
                     pmx_bone.displayConnection = tail_loc - pmx_bone.location
