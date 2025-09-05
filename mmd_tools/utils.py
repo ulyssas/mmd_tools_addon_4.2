@@ -115,8 +115,9 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
         selectAObject(meshObj)
         return
 
-    dummy_parent = bpy.data.objects.new(name="tmp", object_data=None)
+    dummy_parent = None
     try:
+        dummy_parent = bpy.data.objects.new(name="tmp", object_data=None)
         matrix_parent_inverse = meshObj.matrix_parent_inverse.copy()
         prev_parent = meshObj.parent
         meshObj.parent = dummy_parent

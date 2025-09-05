@@ -299,7 +299,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
                             custom_normal_attr = mesh_data.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
                         custom_normal_attr.data.foreach_set("vector", normals_data)
                     else:
-                        raise TypeError(f"Unsupported temp_normal data type: '{temp_normal_attr.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
+                        raise TypeError(f"Unsupported custom_normal data type: '{temp_normal_attr.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
                 finally:
                     mesh_data.attributes.remove(temp_normal_attr)
 
