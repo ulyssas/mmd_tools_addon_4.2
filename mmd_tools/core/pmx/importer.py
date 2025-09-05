@@ -961,7 +961,7 @@ class PMXImporter:
             self.__importMaterials()
             self.__importFaces()
             self.__meshObj.data.update()
-            if bpy.app.version < (4, 5):
+            if bpy.app.version < (6, 0):
                 self.__assignCustomNormals_legacy()
             else:
                 self.__assignCustomNormals()
