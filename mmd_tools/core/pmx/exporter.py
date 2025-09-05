@@ -1234,7 +1234,7 @@ class __PmxExporter:
                             is_sharp = True
                             break
                         if len(edge.link_faces) == 2:
-                            if edge.calc_face_angle() > self.__sharp_edge_angle:
+                            if edge.calc_face_angle() >= self.__sharp_edge_angle:
                                 is_sharp = True
                                 break
                         elif len(edge.link_faces) != 2:
