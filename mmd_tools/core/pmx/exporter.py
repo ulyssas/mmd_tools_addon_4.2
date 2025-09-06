@@ -18,6 +18,7 @@ from ...operators.misc import MoveObject
 from ...utils import saferelpath
 from .. import pmx
 from ..material import FnMaterial
+from ..model import FnModel
 from ..morph import FnMorph
 from ..sdef import FnSDEF
 from ..translations import FnTranslations
@@ -1440,7 +1441,7 @@ class __PmxExporter:
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)
 
-        bpy.ops.mmd_tools.clean_invalid_bone_id_references()
+        FnModel.clean_invalid_bone_id_references(root)
         if args.get("fix_bone_order", True):
             bpy.ops.mmd_tools.fix_bone_order()
 
