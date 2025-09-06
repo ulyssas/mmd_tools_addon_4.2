@@ -770,7 +770,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
             ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).", 0),
-            ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle or manual marking. (Recommended for most models)", 1),
+            ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle or manual marking.", 1),
             ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.", 2),
         ],
         default="SMOOTH_KEEP_SHARP",
