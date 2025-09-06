@@ -2136,6 +2136,18 @@ translations_tuple = (
         ("zh_HANS", "应用骨骼的固定坐标轴，使其适合被 Blender 处理", (False, ())),
     ),
     (
+        ("*", "Bone Display Mode"),
+        (("bpy.types.MMD_TOOLS_OT_import_model.bone_disp_mode",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "骨骼显示样式", (False, ())),
+    ),
+    (
+        ("*", "Change how bones look in viewport."),
+        (("bpy.types.MMD_TOOLS_OT_import_model.bone_disp_mode",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Clean Model"),
         (("bpy.types.MMD_TOOLS_OT_import_model.clean_model",), ()),
         ("ja_JP", "モデルをクリーン", (False, ())),
@@ -5545,19 +5557,19 @@ translations_tuple = (
     ),
     (
         ("*", 'Imported MMD model from ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:378",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:391",), ()),
         ("ja_JP", 'MMDモデルを "%s" からインポートしました', (True, ())),
         ("zh_HANS", '已从"%s"导入 MMD 模型', (True, ())),
     ),
     (
         ("*", '[Skipped] The armature object of MMD model "" can\'t be found'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:878",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:891",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", '[跳过] 找不到 MMD 模型"%s"的骨架数据', (True, ())),
     ),
     (
         ("*", 'Exported MMD model "" to ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:911",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:924",), ()),
         ("ja_JP", 'MMDモデル "%s" を "%s" にエクスポートしました', (True, ())),
         ("zh_HANS", '已导出 MMD 模型"%s"至"%s"', (True, ())),
     ),
