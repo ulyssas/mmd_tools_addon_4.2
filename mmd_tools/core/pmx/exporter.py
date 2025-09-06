@@ -1219,7 +1219,7 @@ class __PmxExporter:
 
         # Build per-face vertex sharp status lookup table
         vertex_sharp_status = {}
-        if self.__keep_sharp:
+        if self.__normal_handling == "KEEP_SHARP":
             bm_sharp = bmesh.new()
             bm_sharp.from_mesh(base_mesh)
             bm_sharp.faces.ensure_lookup_table()
@@ -1261,7 +1261,7 @@ class __PmxExporter:
             face_area = face.area
 
             # Retrieve sharp vertex status using pre-computed lookup table
-            if self.__keep_sharp:
+            if self.__normal_handling == "KEEP_SHARP":
                 v0_is_sharp = vertex_sharp_status.get((face.index, face.vertices[0]), False)
                 v1_is_sharp = vertex_sharp_status.get((face.index, face.vertices[1]), False)
                 v2_is_sharp = vertex_sharp_status.get((face.index, face.vertices[2]), False)
@@ -1269,7 +1269,7 @@ class __PmxExporter:
                 v0_is_sharp = v1_is_sharp = v2_is_sharp = False
 
             # Convert face UV to vertex UV
-            if self.__vertex_splitting:
+            if self.__normal_handling == "VERTEX_SPLITTING":
                 v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
                 v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
                 v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
@@ -1449,8 +1449,7 @@ class __PmxExporter:
 
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
-        self.__vertex_splitting = args.get("vertex_splitting", False)
-        self.__keep_sharp = args.get("keep_sharp", True)
+        self.__normal_handling = args.get("normal_handling", "KEEP_SHARP")
         self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(30))
         self.__export_vertex_colors_as_adduv2 = args.get("export_vertex_colors_as_adduv2", False)
         self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
@@ -1509,8 +1508,7 @@ class __PmxExporter:
         face_diff = final_face_count - original_face_count
         triangulation_ratio = final_face_count / original_face_count if original_face_count > 0 else 0
         logging.info("Changes in Vertex and Face Count:")
-        logging.info("  Vertex Splitting for Normals: %s", "Enabled" if self.__vertex_splitting else "Disabled")
-        logging.info("  Keep Sharp: %s", "Enabled" if self.__keep_sharp else "Disabled")
+        logging.info("  Normal Handling: %s", self.__normal_handling)
         logging.info("  Sharp Edge Angle: %.1f degrees", math.degrees(self.__sharp_edge_angle))
         logging.info("  Vertices: Original %d -> Output %d (%+d)", original_vertex_count, final_vertex_count, vertex_diff)
         logging.info("  Faces: Original %d -> Output %d (%+d)", original_face_count, final_face_count, face_diff)
