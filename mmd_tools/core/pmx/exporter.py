@@ -1246,12 +1246,12 @@ class __PmxExporter:
                         if not edge.smooth:
                             is_sharp = True
                             break
+                        # Check if edge is boundary or non-manifold
+                        if len(edge.link_faces) != 2:
+                            is_sharp = True
+                            break
                         # Check if edge angle exceeds threshold
-                        if len(edge.link_faces) == 2:
-                            if edge.calc_face_angle() >= self.__sharp_edge_angle:
-                                is_sharp = True
-                                break
-                        elif len(edge.link_faces) != 2:
+                        if edge.calc_face_angle() >= self.__sharp_edge_angle:
                             is_sharp = True
                             break
                     vertex_sharp_status[face.index, vertex.index] = is_sharp
