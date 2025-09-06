@@ -1641,16 +1641,20 @@ translations_tuple = (
         ("*", "Normal Handling"),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "法线处理", (False, ())),
     ),
     (
         (
             "*",
-            "How to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
+            "Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         ),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        (
+            "zh_HANS",
+            "选择导出时如何处理法线。这会影响顶点数量、边数量以及网格拓扑，通过拆分顶点和边来保留拆边法线。",
+            (False, ()),
+        ),
     ),
     (
         ("*", "Preserve All Normals"),
@@ -1661,7 +1665,7 @@ translations_tuple = (
             (),
         ),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "保留所有法线", (False, ())),
     ),
     (
         (
@@ -1684,7 +1688,7 @@ translations_tuple = (
             (),
         ),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "平滑(保留锐边)", (False, ())),
     ),
     (
         (
@@ -1705,7 +1709,7 @@ translations_tuple = (
             (),
         ),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "平滑所有法线", (False, ())),
     ),
     (
         (

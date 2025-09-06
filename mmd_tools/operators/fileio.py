@@ -754,7 +754,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     )
     normal_handling: bpy.props.EnumProperty(
         name="Normal Handling",
-        description="How to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
+        description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
             ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).", 0),
             ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle, seams, or manual marking. (Recommended for most models)", 1),

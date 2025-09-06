@@ -985,7 +985,7 @@ msgid "Normal Handling"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling
-msgid "How to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals."
+msgid "Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
