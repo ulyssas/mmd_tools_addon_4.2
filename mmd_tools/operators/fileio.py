@@ -754,20 +754,17 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     )
     normal_handling: bpy.props.EnumProperty(
         name="Normal Handling",
-        description="Choose how to handle vertex normals during export",
+        description="How to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
-            ("VERTEX_SPLITTING", "Vertex Splitting",
-            "Split vertices when the same vertex has different normals. "
-            "WARNING: This will increase vertex count and may break model geometry.", 0),
-            ("KEEP_SHARP", "Keep Sharp (Weighted Average)",
-            "Use angle * area weighted averaging for normals while preserving sharp edges. "
-            "Sharp edges are determined by the Sharp Edge Angle setting.", 1),
+            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).", 0),
+            ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle, seams, or manual marking. (Recommended for most models)", 1),
+            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.", 2),
         ],
-        default="KEEP_SHARP",
+        default="SMOOTH_KEEP_SHARP",
     )
     sharp_edge_angle: bpy.props.FloatProperty(
         name="Sharp Edge Angle",
-        description="Angle threshold for determining sharp edges when Keep Sharp is enabled. Edges with angles greater than this value will be considered sharp.\nNote that manually marked sharp edges are also considered sharp.",
+        description="Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved.",
         default=math.radians(30),
         min=0.0,
         max=math.radians(180.0),

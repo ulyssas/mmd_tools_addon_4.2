@@ -1219,7 +1219,7 @@ class __PmxExporter:
 
         # Build per-face vertex sharp status lookup table
         vertex_sharp_status = {}
-        if self.__normal_handling == "KEEP_SHARP":
+        if self.__normal_handling == "SMOOTH_KEEP_SHARP":
             bm_sharp = bmesh.new()
             bm_sharp.from_mesh(base_mesh)
             bm_sharp.faces.ensure_lookup_table()
@@ -1260,23 +1260,18 @@ class __PmxExporter:
             a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
             face_area = face.area
 
-            # Retrieve sharp vertex status using pre-computed lookup table
-            if self.__normal_handling == "KEEP_SHARP":
+            if self.__normal_handling == "PRESERVE_ALL_NORMALS":
+                v0_is_sharp = v1_is_sharp = v2_is_sharp = True
+            elif self.__normal_handling == "SMOOTH_KEEP_SHARP":
                 v0_is_sharp = vertex_sharp_status.get((face.index, face.vertices[0]), False)
                 v1_is_sharp = vertex_sharp_status.get((face.index, face.vertices[1]), False)
                 v2_is_sharp = vertex_sharp_status.get((face.index, face.vertices[2]), False)
-            else:
+            elif self.__normal_handling == "SMOOTH_ALL_NORMALS":
                 v0_is_sharp = v1_is_sharp = v2_is_sharp = False
 
-            # Convert face UV to vertex UV
-            if self.__normal_handling == "VERTEX_SPLITTING":
-                v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
-                v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
-                v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
-            else:
-                v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, v0_is_sharp)
-                v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, v1_is_sharp)
-                v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, v2_is_sharp)
+            v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, v0_is_sharp)
+            v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, v1_is_sharp)
+            v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, v2_is_sharp)
 
             t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)
@@ -1449,7 +1444,7 @@ class __PmxExporter:
 
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
-        self.__normal_handling = args.get("normal_handling", "KEEP_SHARP")
+        self.__normal_handling = args.get("normal_handling", "SMOOTH_KEEP_SHARP")
         self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(30))
         self.__export_vertex_colors_as_adduv2 = args.get("export_vertex_colors_as_adduv2", False)
         self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
