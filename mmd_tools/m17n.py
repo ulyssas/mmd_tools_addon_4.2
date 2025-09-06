@@ -1693,7 +1693,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Automatically smooth normals while respecting sharp edges defined by angle, seams, or manual marking. (Recommended for most models)",
+            "Automatically smooth normals while respecting sharp edges defined by angle or manual marking. (Recommended for most models)",
         ),
         (
             ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'",),
