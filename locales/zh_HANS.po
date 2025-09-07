@@ -83,7 +83,7 @@ msgstr "卡通纹理路径. 通常是 MikuMikuDance 安装路径下的 Data 目�
 
 #. :src: bpy.types.Object.mmd_type
 msgid "Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)"
-msgstr "该物体的内部 MMD 类型（切勿直接改动）"
+msgstr "该物体的内部 MMD 类型(切勿直接改动)"
 
 #. :src: bpy.types.Object.mmd_type:'RIGID_GRP_OBJ'
 msgid "Rigid Body Grp Empty"
@@ -2121,15 +2121,16 @@ msgid "Select the bone assigned to this offset in the armature"
 msgstr "在骨架中选中与此偏移相关的骨骼"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
 msgctxt "Operator"
 msgid "Separate by Materials (High Risk)"
-msgstr "按材质分离"
+msgstr "按材质分开(高风险)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
 msgid ""
 "Separate the mesh into multiple objects based on materials.\n"
-"WARNING: This operation is not reversible. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\n"
-"There may be other issues as well. Use with caution."
+"HIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\n"
+"Known issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys
@@ -2679,7 +2680,7 @@ msgstr "相机是否是透视相机"
 
 #. :src: bpy.types.MMDDisplayItem
 msgid "PMX 表示項目(表示枠内の1項目)"
-msgstr "PMX 表示（表示枠中的一项）"
+msgstr "PMX 表示(表示枠中的一项)"
 
 #. :src: bpy.types.MMDDisplayItem.type
 msgid "Select item type"
@@ -3757,25 +3758,25 @@ msgctxt "Operator"
 msgid "Reset"
 msgstr "重设"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:275
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:276
 msgid "Migrating from old vertex group ordering to bone_id system"
 msgstr "从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:300
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:301
 msgid "Successfully migrated  bones from vertex groups to bone_id system"
 msgstr "成功从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:314
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:315
 msgid "Cleaning invalid bone references..."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:573
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:620
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:568
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:615
 msgctxt "Operator"
 msgid "Fix Bone Order"
 msgstr "修复骨骼顺序"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614
 msgid "Total Bones: %d"
 msgstr "骨骼数量: %d"
 
@@ -3784,35 +3785,31 @@ msgstr "骨骼数量: %d"
 msgid "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:166
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:163
 msgid "Cleaned  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:198
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:199
 msgid "Bone order did not converge after 10 iterations"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:250
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:251
 msgid "Converting layer collections to MMD collections"
 msgstr "将分层集合转换为 MMD 集合"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:318
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:319
 msgid "Operation cancelled: No active MMD model found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:323
-msgid "Operation cancelled: Armature not found for MMD model ''."
-msgstr ""
-
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:330
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:325
 msgid "Successfully cleaned or removed  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:332
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:327
 msgid "No invalid bone references were found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:582
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20
 #: extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21
@@ -3822,7 +3819,7 @@ msgstr ""
 msgid "Select a MMD Model"
 msgstr "选择一个MMD模型"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:592
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587
 msgid "The armature object of active MMD model can't be found"
 msgstr "找不到选中MMD模型的骨架"
 
@@ -4008,11 +4005,6 @@ msgstr "IK切换:"
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:137
 msgid "Mesh:"
 msgstr "网格:"
-
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
-msgctxt "Operator"
-msgid "Separate by Materials (High Risk)"
-msgstr "按材质分开"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:144
 msgid "Material:"

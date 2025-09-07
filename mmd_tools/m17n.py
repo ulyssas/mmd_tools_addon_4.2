@@ -3601,9 +3601,21 @@ translations_tuple = (
         ("zh_HANS", "在骨架中选中与此偏移相关的骨骼", (False, ())),
     ),
     (
+        ("Operator", "Separate by Materials (High Risk)"),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_separate_by_materials",
+                "extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139",
+            ),
+            (),
+        ),
+        ("ja_JP", "マテリアルで分離(高リスク)", (False, ())),
+        ("zh_HANS", "按材质分开(高风险)", (False, ())),
+    ),
+    (
         (
             "*",
-            "Separate the mesh into multiple objects based on materials.\nWARNING: This operation is not reversible. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nThere may be other issues as well. Use with caution.",
+            "Separate the mesh into multiple objects based on materials.\nHIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nKnown issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first.",
         ),
         (("bpy.types.MMD_TOOLS_OT_separate_by_materials",), ()),
         ("ja_JP", "", (False, ())),
@@ -6265,19 +6277,19 @@ translations_tuple = (
     ),
     (
         ("*", "Migrating from old vertex group ordering to bone_id system"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:275",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:276",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "从旧的顶点组排序迁移至新的骨骼 ID 系统", (False, ())),
     ),
     (
         ("*", "Successfully migrated  bones from vertex groups to bone_id system"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:300",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:301",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "成功从旧的顶点组排序迁移至新的骨骼 ID 系统", (False, ())),
     ),
     (
         ("*", "Cleaning invalid bone references..."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:314",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:315",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -6285,8 +6297,8 @@ translations_tuple = (
         ("Operator", "Fix Bone Order"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:573",
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:620",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:568",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:615",
             ),
             (),
         ),
@@ -6297,8 +6309,8 @@ translations_tuple = (
         ("*", "Total Bones: %d"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619",
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614",
             ),
             (),
         ),
@@ -6322,43 +6334,37 @@ translations_tuple = (
     ),
     (
         ("*", "Cleaned  invalid bone reference(s)."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:166",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:163",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Bone order did not converge after 10 iterations"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:198",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:199",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Converting layer collections to MMD collections"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:250",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:251",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将分层集合转换为 MMD 集合", (False, ())),
     ),
     (
         ("*", "Operation cancelled: No active MMD model found."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:318",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "Operation cancelled: Armature not found for MMD model ''."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:323",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:319",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Successfully cleaned or removed  invalid bone reference(s)."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:330",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:325",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "No invalid bone references were found."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:332",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:327",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -6366,7 +6372,7 @@ translations_tuple = (
         ("*", "Select a MMD Model"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:582",
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22",
                 "extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20",
                 "extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21",
@@ -6381,7 +6387,7 @@ translations_tuple = (
     ),
     (
         ("*", "The armature object of active MMD model can't be found"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:592",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587",), ()),
         ("ja_JP", "選択中のMMDモデルのアーマチュアが見つかりません", (False, ())),
         ("zh_HANS", "找不到选中MMD模型的骨架", (False, ())),
     ),
@@ -6684,12 +6690,6 @@ translations_tuple = (
         (("extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:137",), ()),
         ("ja_JP", "メッシュ:", (False, ())),
         ("zh_HANS", "网格:", (False, ())),
-    ),
-    (
-        ("Operator", "Separate by Materials (High Risk)"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139",), ()),
-        ("ja_JP", "マテリアルで分離(高リスク)", (False, ())),
-        ("zh_HANS", "按材质分开(高风险)", (False, ())),
     ),
     (
         ("*", "Material:"),
