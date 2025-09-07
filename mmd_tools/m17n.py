@@ -172,7 +172,7 @@ translations_tuple = (
         ("*", "Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)"),
         (("bpy.types.Object.mmd_type",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "该物体的内部 MMD 类型（切勿直接改动）", (False, ())),
+        ("zh_HANS", "该物体的内部 MMD 类型(切勿直接改动)", (False, ())),
     ),
     (
         ("*", "Rigid Body Grp Empty"),
@@ -3601,12 +3601,6 @@ translations_tuple = (
         ("zh_HANS", "在骨架中选中与此偏移相关的骨骼", (False, ())),
     ),
     (
-        ("Operator", "Separate By Materials"),
-        (("bpy.types.MMD_TOOLS_OT_separate_by_materials",), ()),
-        ("ja_JP", "マテリアルで分離", (True, ())),
-        ("zh_HANS", "按材质分离", (False, ())),
-    ),
-    (
         (
             "*",
             "Separate the mesh into multiple objects based on materials.\nWARNING: This operation is not reversible. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nThere may be other issues as well. Use with caution.",
@@ -4484,7 +4478,7 @@ translations_tuple = (
         ("*", "PMX 表示項目(表示枠内の1項目)"),
         (("bpy.types.MMDDisplayItem",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "PMX 表示（表示枠中的一项）", (False, ())),
+        ("zh_HANS", "PMX 表示(表示枠中的一项)", (False, ())),
     ),
     (
         ("*", "Select item type"),
@@ -6692,10 +6686,10 @@ translations_tuple = (
         ("zh_HANS", "网格:", (False, ())),
     ),
     (
-        ("Operator", "Separate by Materials"),
+        ("Operator", "Separate by Materials (High Risk)"),
         (("extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139",), ()),
-        ("ja_JP", "マテリアルで分離", (False, ())),
-        ("zh_HANS", "按材质分开", (False, ())),
+        ("ja_JP", "マテリアルで分離(高リスク)", (False, ())),
+        ("zh_HANS", "按材质分开(高风险)", (False, ())),
     ),
     (
         ("*", "Material:"),

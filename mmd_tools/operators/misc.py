@@ -130,8 +130,8 @@ class CleanShapeKeys(bpy.types.Operator):
 
 class SeparateByMaterials(bpy.types.Operator):
     bl_idname = "mmd_tools.separate_by_materials"
-    bl_label = "Separate By Materials"
-    bl_description = "Separate the mesh into multiple objects based on materials.\nWARNING: This operation is not reversible. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nThere may be other issues as well. Use with caution."
+    bl_label = "Separate by Materials (High Risk)"
+    bl_description = "Separate the mesh into multiple objects based on materials.\nHIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nKnown issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first."
     bl_options = {"REGISTER", "UNDO"}
 
     clean_shape_keys: bpy.props.BoolProperty(
