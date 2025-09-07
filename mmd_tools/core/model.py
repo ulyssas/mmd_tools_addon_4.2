@@ -664,84 +664,48 @@ class FnModel:
             # Move mesh objects to parent armature using parent_set
             mesh_objects = list(FnModel.__iterate_child_mesh_objects(child_armature_object))
             if mesh_objects:
-                # Use parent_set with keep_transform=True for meshes
                 with select_object(parent_armature_object, objects=[parent_armature_object] + mesh_objects):
                     bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-                # After parenting with keep_transform=True, the meshes have the correct world transform,
-                # but their local transform contains the offset. We need to apply this transform
-                # to bake it into the vertex data and reset the local transform (aligning the pivot).
                 for mesh in mesh_objects:
                     FnContext.set_active_and_select_single_object(context, mesh)
                     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
-                # Update mesh armature modifiers to point to parent armature
                 for mesh in mesh_objects:
-                    if mesh.name not in bpy.context.view_layer.objects.keys():
-                        continue
-
-                    # Handle armature modifiers
-                    armature_modifier = None
-                    for mod in mesh.modifiers:
-                        if mod.type == "ARMATURE":
-                            if mod.name == "mmd_armature" or mod.object is None:
-                                armature_modifier = mod
-                                break
-
+                    armature_modifier = next((mod for mod in mesh.modifiers if mod.type == "ARMATURE"), None)
                     if armature_modifier is None:
                         armature_modifier = mesh.modifiers.new("mmd_armature", "ARMATURE")
-
                     armature_modifier.object = parent_armature_object
 
-            # Handle rigid bodies using parent_set
+            # Handle rigid bodies
             child_rigid_group_object = FnModel.find_rigid_group_object(child_root_object)
-            if child_rigid_group_object and child_rigid_group_object.name in bpy.context.view_layer.objects.keys():
-                parent_rigid_group_object = FnModel.find_rigid_group_object(parent_root_object)
-                if parent_rigid_group_object and parent_rigid_group_object.name in bpy.context.view_layer.objects.keys():
-                    # Get all rigid body objects
-                    rigid_objects = [obj for obj in FnModel.iterate_rigid_body_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
+            if child_rigid_group_object:
+                parent_rigid_group_object = FnModel.ensure_rigid_group_object(context, parent_root_object)
+                rigid_objects = list(FnModel.iterate_rigid_body_objects(child_root_object))
+                if rigid_objects:
+                    with select_object(parent_rigid_group_object, objects=[parent_rigid_group_object] + rigid_objects):
+                        bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+                bpy.data.objects.remove(child_rigid_group_object)
 
-                    if rigid_objects:
-                        # Use parent_set with keep_transform=True for rigid bodies
-                        with select_object(parent_rigid_group_object, objects=[parent_rigid_group_object] + rigid_objects):
-                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
-
-                    # Remove the original group
-                    if child_rigid_group_object.name in bpy.data.objects:
-                        bpy.data.objects.remove(child_rigid_group_object)
-
-            # Handle joints using parent_set
+            # Handle joints
             child_joint_group_object = FnModel.find_joint_group_object(child_root_object)
-            if child_joint_group_object and child_joint_group_object.name in bpy.context.view_layer.objects.keys():
-                parent_joint_group_object = FnModel.find_joint_group_object(parent_root_object)
-                if parent_joint_group_object and parent_joint_group_object.name in bpy.context.view_layer.objects.keys():
-                    joint_objects = [obj for obj in FnModel.iterate_joint_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
+            if child_joint_group_object:
+                parent_joint_group_object = FnModel.ensure_joint_group_object(context, parent_root_object)
+                joint_objects = list(FnModel.iterate_joint_objects(child_root_object))
+                if joint_objects:
+                    with select_object(parent_joint_group_object, objects=[parent_joint_group_object] + joint_objects):
+                        bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+                bpy.data.objects.remove(child_joint_group_object)
 
-                    if joint_objects:
-                        # Use parent_set with keep_transform=True for joints
-                        with select_object(parent_joint_group_object, objects=[parent_joint_group_object] + joint_objects):
-                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
-
-                    # Remove the original group
-                    bpy.data.objects.remove(child_joint_group_object)
-
-            # Handle temporary objects using parent_set
+            # Handle temporary objects
             child_temporary_group_object = FnModel.find_temporary_group_object(child_root_object)
-            if child_temporary_group_object and child_temporary_group_object.name in bpy.context.view_layer.objects.keys():
-                parent_temporary_group_object = FnModel.find_temporary_group_object(parent_root_object)
-                if parent_temporary_group_object and parent_temporary_group_object.name in bpy.context.view_layer.objects.keys():
-                    temp_objects = [obj for obj in FnModel.iterate_temporary_objects(child_root_object) if obj.name in bpy.context.view_layer.objects.keys()]
-
-                    if temp_objects:
-                        # Use parent_set with keep_transform=True for temporary objects
-                        with select_object(parent_temporary_group_object, objects=[parent_temporary_group_object] + temp_objects):
-                            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
-
-                    # Remove child objects and groups
-                    child_objects = list(FnModel.iterate_child_objects(child_temporary_group_object))
-                    for obj in child_objects:
-                        bpy.data.objects.remove(obj)
-                    bpy.data.objects.remove(child_temporary_group_object)
+            if child_temporary_group_object:
+                parent_temporary_group_object = FnModel.ensure_temporary_group_object(context, parent_root_object)
+                temp_objects = list(FnModel.iterate_temporary_objects(child_root_object))
+                if temp_objects:
+                    with select_object(parent_temporary_group_object, objects=[parent_temporary_group_object] + temp_objects):
+                        bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+                bpy.data.objects.remove(child_temporary_group_object)
 
             # Copy MMD root properties
             FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
