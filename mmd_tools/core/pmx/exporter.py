@@ -1079,34 +1079,63 @@ class __PmxExporter:
 
         # Use try-finally pattern to guarantee temporary modifier cleanup, preventing scene pollution
         base_mesh = None
+        temp_smooth_mod = None
+        temp_normal_mod = None
         temp_tri_mod = None
+        original_smooth_states = None
         try:
+            # Clear any existing mesh data before processing
+            _to_mesh_clear(meshObj, base_mesh)
+
+            # SMOOTH_KEEP_SHARP: Apply smooth shading while preserving sharp edges
+            if self.__normal_handling == "SMOOTH_KEEP_SHARP":
+                # Save original smooth states
+                original_smooth_states = [False] * len(meshObj.data.polygons)
+                meshObj.data.polygons.foreach_get("use_smooth", original_smooth_states)
+
+                # Add smooth by angle modifier
+                modifiers_count = len(meshObj.modifiers)
+                with FnContext.temp_override_objects(FnContext.ensure_context(), active_object=meshObj, selected_objects=[meshObj]):
+                    bpy.ops.object.modifier_add_node_group(asset_library_type="ESSENTIALS", asset_library_identifier="", relative_asset_identifier="geometry_nodes/smooth_by_angle.blend/NodeTree/Smooth by Angle", use_selected_objects=False)
+                if modifiers_count == len(meshObj.modifiers):  # modifier_add_node_group failed to add a modifier to the active object automatically
+                    temp_smooth_mod = meshObj.modifiers.new(name="temp_smooth_by_angle_modifier", type="NODES")
+                    temp_smooth_mod.node_group = bpy.data.node_groups.get("Smooth by Angle")
+                temp_smooth_mod = meshObj.modifiers[-1]
+                temp_smooth_mod.name = "temp_smooth_by_angle_modifier"
+                temp_smooth_mod["Input_1"] = self.__sharp_edge_angle
+                meshObj.data.polygons.foreach_set("use_smooth", [True] * len(meshObj.data.polygons))
+
+                # # Add weighted normal modifier (High Risk)
+                # temp_normal_mod = meshObj.modifiers.new(name="temp_weighted_normal_modifier", type="WEIGHTED_NORMAL")
+                # temp_normal_mod.mode = "FACE_AREA_WITH_ANGLE"
+                # temp_normal_mod.keep_sharp = True
+
             # Check if triangulation is needed
             base_mesh = _to_mesh(meshObj)
             needs_triangulation = any(len(poly.vertices) > 3 for poly in base_mesh.polygons)
             if needs_triangulation:
-                logging.debug(" - Mesh needs triangulation")
-                _to_mesh_clear(meshObj, base_mesh)
-
-                face_count_before = len(meshObj.data.polygons)
-
+                # Add triangulation modifier
                 temp_tri_mod = meshObj.modifiers.new(name="temp_triangulate_modifier", type="TRIANGULATE")
                 temp_tri_mod.quad_method = "BEAUTY"
                 temp_tri_mod.ngon_method = "BEAUTY"
                 temp_tri_mod.keep_custom_normals = True
 
-                # Re-evaluate mesh with all modifiers applied
-                base_mesh = _to_mesh(meshObj)
-                face_count_after = len(base_mesh.polygons)
-                logging.debug("   - Triangulation completed using modifier (%d -> %d faces)", face_count_before, face_count_after)
-            else:
-                logging.debug(" - Mesh does not need triangulation")
+            # Re-evaluate mesh with all modifiers applied
+            base_mesh = _to_mesh(meshObj)
         except Exception:
             logging.exception("Error occurred while applying mesh modifiers")
             raise
         finally:
+            # Restore original smooth states
+            if original_smooth_states is not None:
+                meshObj.data.polygons.foreach_set("use_smooth", original_smooth_states)
+            # Clean up modifiers in reverse order
             if temp_tri_mod:
                 meshObj.modifiers.remove(temp_tri_mod)
+            if temp_normal_mod:
+                meshObj.modifiers.remove(temp_normal_mod)
+            if temp_smooth_mod:
+                meshObj.modifiers.remove(temp_smooth_mod)
 
         # Process vertex groups after triangulation
         vg_to_bone = {i: bone_map[x.name] for i, x in enumerate(meshObj.vertex_groups) if x.name in bone_map}
@@ -1229,34 +1258,6 @@ class __PmxExporter:
         def _UVWrapper(x):
             return (_DummyUV(x[i : i + 3]) for i in range(0, len(x), 3))
 
-        # Build per-face vertex sharp status lookup table
-        vertex_sharp_status = {}
-        if self.__normal_handling == "SMOOTH_KEEP_SHARP":
-            bm_sharp = bmesh.new()
-            bm_sharp.from_mesh(base_mesh)
-            bm_sharp.faces.ensure_lookup_table()
-            bm_sharp.verts.ensure_lookup_table()
-
-            for face in bm_sharp.faces:
-                for vertex in face.verts:
-                    is_sharp = False
-                    face_edges = [e for e in vertex.link_edges if face in e.link_faces]
-                    for edge in face_edges:
-                        # Check if edge is marked as sharp
-                        if not edge.smooth:
-                            is_sharp = True
-                            break
-                        # Check if edge is boundary or non-manifold
-                        if len(edge.link_faces) != 2:
-                            is_sharp = True
-                            break
-                        # Check if edge angle exceeds threshold
-                        if edge.calc_face_angle() >= self.__sharp_edge_angle:
-                            is_sharp = True
-                            break
-                    vertex_sharp_status[face.index, vertex.index] = is_sharp
-            bm_sharp.free()
-
         material_faces = {}
         uv_data = base_mesh.uv_layers.active
         if uv_data:
@@ -1277,9 +1278,7 @@ class __PmxExporter:
             if self.__normal_handling == "PRESERVE_ALL_NORMALS":
                 v0_is_sharp = v1_is_sharp = v2_is_sharp = True
             elif self.__normal_handling == "SMOOTH_KEEP_SHARP":
-                v0_is_sharp = vertex_sharp_status.get((face.index, face.vertices[0]), False)
-                v1_is_sharp = vertex_sharp_status.get((face.index, face.vertices[1]), False)
-                v2_is_sharp = vertex_sharp_status.get((face.index, face.vertices[2]), False)
+                v0_is_sharp = v1_is_sharp = v2_is_sharp = True  # Already smoothed using modifier
             elif self.__normal_handling == "SMOOTH_ALL_NORMALS":
                 v0_is_sharp = v1_is_sharp = v2_is_sharp = False
 
