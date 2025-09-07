@@ -690,11 +690,12 @@ class __PmxExporter:
         モデル中心座標から離れている位置で使用されているマテリアルほどリストの後ろ側にくるように。
         かなりいいかげんな実装
         """
-        center = Vector([0, 0, 0])
         vertices = self.__model.vertices
         vert_num = len(vertices)
-        for v in self.__model.vertices:
-            center += Vector(v.co) / vert_num
+        if vert_num > 0:
+            center = sum((Vector(v.co) for v in vertices), Vector((0, 0, 0))) / vert_num
+        else:
+            center = Vector((0, 0, 0))
 
         faces = self.__model.faces
         offset = 0
