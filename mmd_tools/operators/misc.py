@@ -158,6 +158,11 @@ class SeparateByMaterials(bpy.types.Operator):
     def execute(self, context):
         obj = context.active_object
         root = FnModel.find_root_object(obj)
+
+        # Sep by Mat crashes Blender if used after morph assembly
+        rig = Model(root)
+        rig.morph_slider.unbind()
+
         if root is None:
             self.__separate_by_materials(obj)
         else:
