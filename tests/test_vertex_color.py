@@ -647,8 +647,6 @@ class TestVertexColorExporter(unittest.TestCase):
         else:
             print("  !! Vertex count mismatch - may indicate vertex sharing/splitting issues")
 
-        return analysis
-
     def test_bmesh_triangulation_diagnostic(self):
         """
         DIAGNOSTIC test that compares triangulation but doesn't fail
@@ -705,9 +703,6 @@ class TestVertexColorExporter(unittest.TestCase):
         print("  • The vertex indices are different between the two approaches")
         print("  • The exporter needs to correctly remap vertex colors during triangulation")
         print("  • This is for DIAGNOSTIC purposes only - not a pass/fail test")
-
-        # Return diagnostic info without failing
-        return {"original_face_loops": original_face_loops, "exported_faces": [list(face) for face in result_model.faces]}
 
     def test_diagnosis_loop_vertex_mapping(self):
         """Diagnose the correspondence between loop indices and vertex indices"""
@@ -840,8 +835,6 @@ class TestVertexColorExporter(unittest.TestCase):
         for original_color in original_colors:
             if color_counts.get(original_color, 0) == 0:
                 self.fail(f"Color {original_color} not found in exported vertices")
-
-        return {"original_colors": original_colors, "exported_colors": exported_color_set, "vertices_with_colors": vertices_with_colors, "color_distribution": color_counts}
 
 
 if __name__ == "__main__":
