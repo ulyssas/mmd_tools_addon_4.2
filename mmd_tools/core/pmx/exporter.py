@@ -983,11 +983,8 @@ class __PmxExporter:
         vertices.append(n)
         return n
 
-    def __convertFaceUVToVertexUVSmooth(self, vert_index, uv, normal, vertices_map, face_area, loop_angle, is_sharp_vertex):
+    def __convertFaceUVToVertexUVSmooth(self, vert_index, uv, normal, vertices_map, face_area, loop_angle):
         """Convert face UV to vertex UV with weighted normal averaging."""
-        if is_sharp_vertex:
-            return self.__convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map)
-
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
@@ -1264,16 +1261,14 @@ class __PmxExporter:
             a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
             face_area = face.area
 
-            if self.__normal_handling == "PRESERVE_ALL_NORMALS":
-                v0_is_sharp = v1_is_sharp = v2_is_sharp = True
-            elif self.__normal_handling == "SMOOTH_KEEP_SHARP":
-                v0_is_sharp = v1_is_sharp = v2_is_sharp = True  # Already smoothed using modifier
-            elif self.__normal_handling == "SMOOTH_ALL_NORMALS":
-                v0_is_sharp = v1_is_sharp = v2_is_sharp = False
-
-            v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, v0_is_sharp)
-            v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, v1_is_sharp)
-            v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, v2_is_sharp)
+            if self.__normal_handling == "SMOOTH_ALL_NORMALS":
+                v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
+                v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
+                v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
+            else:  # PRESERVE_ALL_NORMALS, SMOOTH_KEEP_SHARP(Already smoothed using modifier)
+                v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
+                v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
+                v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
 
             t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)
