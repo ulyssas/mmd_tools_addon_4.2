@@ -39,12 +39,6 @@ class _Vertex:
         self.sdef_data = []  # (C, R0, R1)
         self.add_uvs = [None] * 4  # UV1~UV4
 
-        # used for calculate weighted normal
-        self._is_smooth_group = False
-        self._normal_list = []
-        self._area_list = []
-        self._angle_list = []
-
 
 class _Face:
     def __init__(self, vertices, index=-1):
@@ -972,58 +966,52 @@ class __PmxExporter:
 
     @staticmethod
     def __convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map):
-        """
-        Find an existing vertex with identical final properties (UV and Normal),
-        or creates a new 'sharp' vertex if no match is found. This function acts
-        as the final deduplicator for all vertex types.
-        """
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
-        # Search for an existing vertex with identical properties, regardless of its creation method.
-        for i in vertices[1:]:
+        for i in vertices:
+            if i.uv is None:
+                i.uv = uv
+                i.normal = normal
+                return i
             if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
                 return i
-
-        # If no match is found, create a new sharp vertex from the clean template.
-        n = copy.copy(vertices[0])
+        n = copy.copy(vertices[0])  # shallow copy should be fine
         n.uv = uv
         n.normal = normal
-        # The default '_is_smooth_group=False' is correct for a new sharp vertex.
         vertices.append(n)
         return n
 
     def __convertFaceUVToVertexUVSmooth(self, vert_index, uv, normal, vertices_map, face_area, loop_angle, is_sharp_vertex):
-        """
-        Manage smoothing groups. It finds or creates a smooth group container,
-        updates its weighted average normal, and then calls the final deduplicator
-        to register the result.
-        """
+        """Convert face UV to vertex UV with weighted normal averaging."""
         if is_sharp_vertex:
             return self.__convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map)
 
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
-        v = None  # This will hold our target smooth group vertex.
-
-        # Step 1: Find or create the SMOOTH group container for this vertex index.
-        # The container is independent of UVs to correctly average normals across UV seams.
-        for i in vertices[1:]:
-            if i._is_smooth_group:
-                v = i  # Found the single smooth container for this vertex.
+        v = None
+        for i in vertices:
+            if i.uv is None:
+                i.uv = uv
+                v = i
+                break
+            if (i.uv - uv).length < 0.001:  # UV requires exact matching
+                v = i
                 break
 
         if v is None:
-            # No container found, create a new one.
+            # Create new vertex for different UV
             v = copy.copy(vertices[0])
-            # v.uv will be set here, but it's temporary. The final call uses the corner's actual UV.
             v.uv = uv
-            v._is_smooth_group = True
             vertices.append(v)
 
-        # Step 2: Accumulate the current corner's data and recalculate the average normal for the group.
-        # This ensures the smooth group's calculation is always complete and correct.
+        # Initialize averaging lists if needed
+        for attr_name in ["_normal_list", "_area_list", "_angle_list"]:
+            if not hasattr(v, attr_name):
+                setattr(v, attr_name, [])
+
+        # Append current values to averaging lists
         v._normal_list.append(normal)
         v._area_list.append(face_area)
         v._angle_list.append(loop_angle)
@@ -1037,10 +1025,7 @@ class __PmxExporter:
             weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
             v.normal = (weighted_normal_sum / total_weight).normalized()
 
-        # Step 3: Now that the smooth vertex 'v' has its final calculated average normal,
-        # pass it along with the CURRENT corner's UV to the final deduplicator.
-        # This correctly splits vertices based on UVs AFTER normal averaging is complete.
-        return self.__convertFaceUVToVertexUV(vert_index, uv, v.normal, vertices_map)
+        return v
 
     @staticmethod
     def __convertAddUV(vert, adduv, addzw, uv_index, vertices, rip_vertices):
