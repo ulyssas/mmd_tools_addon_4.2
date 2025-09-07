@@ -6587,13 +6587,13 @@ translations_tuple = (
         ("zh_HANS", "翻译", (False, ())),
     ),
     (
-        ("*", "Model Surgery:"),
+        ("*", "Model Surgery (Experimental):"),
         (
             ("extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:38",),
             (),
         ),
-        ("ja_JP", "モデル手術", (False, ())),
-        ("zh_HANS", "模型手术", (False, ())),
+        ("ja_JP", "モデル手術(実験的):", (False, ())),
+        ("zh_HANS", "模型手术(实验性):", (False, ())),
     ),
     (
         ("Operator", "Chop"),

@@ -3941,8 +3941,8 @@ msgid "Translate"
 msgstr "翻译"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:38
-msgid "Model Surgery:"
-msgstr "模型手术"
+msgid "Model Surgery (Experimental):"
+msgstr "模型手术(实验性):"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:44
 msgctxt "Operator"
