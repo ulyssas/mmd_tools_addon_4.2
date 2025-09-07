@@ -643,6 +643,7 @@ def suite():
 
 
 if __name__ == "__main__":
-    # Run tests when executed directly
-    runner = unittest.TextTestRunner(verbosity=2)
-    runner.run(suite())
+    import sys
+
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
+    unittest.main(verbosity=1, exit=True)

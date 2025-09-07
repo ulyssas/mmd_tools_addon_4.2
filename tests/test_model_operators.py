@@ -64,4 +64,4 @@ if __name__ == "__main__":
     import sys
 
     sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
-    unittest.main()
+    unittest.main(verbosity=1, exit=True)

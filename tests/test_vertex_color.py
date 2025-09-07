@@ -840,8 +840,5 @@ class TestVertexColorExporter(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    # Handle command line arguments for unittest
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
-
-    # Run the tests
-    unittest.main(verbosity=2, exit=False)
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    unittest.main(verbosity=1, exit=True)
