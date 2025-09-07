@@ -1178,14 +1178,14 @@ class __PmxExporter:
                 return None
 
         uv_morph_names = {g.index: (n, x) for g, n, x in FnMorph.get_uv_morph_vertex_groups(meshObj)}
-
+        AXIS_MAP = {"X": 0, "Y": 1, "Z": 2, "W": 3}
         def get_uv_offsets(v):
             uv_offsets = {}
             for x in v.groups:
-                if x.group in uv_morph_names and x.weight > 0:
+                if x.weight > 0 and x.group in uv_morph_names:
                     name, axis = uv_morph_names[x.group]
                     d = uv_offsets.setdefault(name, [0, 0, 0, 0])
-                    d["XYZW".index(axis[1])] += -x.weight if axis[0] == "-" else x.weight
+                    d[AXIS_MAP[axis[1]]] += -x.weight if axis[0] == "-" else x.weight
             return uv_offsets
 
         # Create base vertices from triangulated mesh
