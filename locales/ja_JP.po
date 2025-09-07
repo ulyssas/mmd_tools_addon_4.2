@@ -2135,7 +2135,7 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
 msgctxt "Operator"
-msgid "Separate by Materials (High Risk)"
+msgid "Sep by Mat(High Risk)"
 msgstr "マテリアルで分離(高リスク)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials

@@ -3601,7 +3601,7 @@ translations_tuple = (
         ("zh_HANS", "在骨架中选中与此偏移相关的骨骼", (False, ())),
     ),
     (
-        ("Operator", "Separate by Materials (High Risk)"),
+        ("Operator", "Sep by Mat(High Risk)"),
         (
             (
                 "bpy.types.MMD_TOOLS_OT_separate_by_materials",
