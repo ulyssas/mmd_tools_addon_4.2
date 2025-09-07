@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        blender_version: ["4.5", "4.2"]
+        blender_version: ["4.5", "4.4", "4.3", "4.2"]
 
     steps:
       - name: Checkout
@@ -172,9 +172,7 @@ jobs:
       - name: Run critical tests with verbose output
         run: |
           echo "Running a few critical tests with full output for detailed debugging..."
-          blender --background -noaudio --python tests/test_fileio_operators.py -- --verbose
-          blender --background -noaudio --python tests/test_rigid_body.py -- --verbose
-          blender --background -noaudio --python tests/test_utils_unit.py -- --verbose
+          blender --background -noaudio --python tests/test_vertex_color.py -- --verbose
 
       - name: Conditionally disable hard test for specific Blender versions
         if: matrix.blender_version == '4.2' || matrix.blender_version == '4.3' || matrix.blender_version == '4.4' || matrix.blender_version == '4.5'

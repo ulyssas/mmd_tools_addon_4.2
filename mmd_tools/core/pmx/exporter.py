@@ -1095,8 +1095,11 @@ class __PmxExporter:
 
                 # Add smooth by angle modifier
                 modifiers_count = len(meshObj.modifiers)
-                with FnContext.temp_override_objects(FnContext.ensure_context(), active_object=meshObj, selected_objects=[meshObj]):
-                    bpy.ops.object.modifier_add_node_group(asset_library_type="ESSENTIALS", asset_library_identifier="", relative_asset_identifier="geometry_nodes/smooth_by_angle.blend/NodeTree/Smooth by Angle", use_selected_objects=False)
+                try:  # Quick Fix for "RuntimeError: Error: No asset found at path" in Blender 4.3, 4.4, 4.5
+                    with FnContext.temp_override_objects(FnContext.ensure_context(), active_object=meshObj, selected_objects=[meshObj]):
+                        bpy.ops.object.modifier_add_node_group(asset_library_type="ESSENTIALS", asset_library_identifier="", relative_asset_identifier="geometry_nodes/smooth_by_angle.blend/NodeTree/Smooth by Angle", use_selected_objects=False)
+                except Exception:
+                    pass
                 if modifiers_count == len(meshObj.modifiers):  # modifier_add_node_group failed to add a modifier to the active object automatically
                     temp_smooth_mod = meshObj.modifiers.new(name="temp_smooth_by_angle_modifier", type="NODES")
                     temp_smooth_mod.node_group = bpy.data.node_groups.get("Smooth by Angle")
