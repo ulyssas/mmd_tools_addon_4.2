@@ -632,7 +632,6 @@ class TestPmxExporter(unittest.TestCase):
                         copy_textures=False,
                         sort_materials=False,
                         sort_vertices="NONE",
-                        vertex_splitting=False,
                         log_level="ERROR",
                     )
                 except Exception:
@@ -666,5 +665,5 @@ class TestPmxExporter(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
-    unittest.main()
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    unittest.main(verbosity=1, exit=True)

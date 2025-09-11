@@ -671,7 +671,7 @@ class TestPmxExporter(unittest.TestCase):
                 bpy.ops.mmd_tools.import_model(filepath=filepath, types={"MESH", "ARMATURE", "PHYSICS", "MORPHS", "DISPLAY"}, scale=1.0, clean_model=False, remove_doubles=False, log_level="ERROR")
 
                 output_pmx = os.path.join(TESTS_DIR, "output", "%d.pmx" % test_num)
-                bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=1.0, copy_textures=False, sort_materials=False, sort_vertices="NONE", vertex_splitting=False, log_level="ERROR")
+                bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=1.0, copy_textures=False, sort_materials=False, sort_vertices="NONE", log_level="ERROR")
             except Exception as e:
                 self.fail(f"Exception happened during export {output_pmx}: {str(e)}")
 
@@ -706,5 +706,5 @@ class TestPmxExporter(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
-    unittest.main()
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    unittest.main(verbosity=1, exit=True)

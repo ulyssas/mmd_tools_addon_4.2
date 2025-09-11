@@ -130,8 +130,8 @@ class CleanShapeKeys(bpy.types.Operator):
 
 class SeparateByMaterials(bpy.types.Operator):
     bl_idname = "mmd_tools.separate_by_materials"
-    bl_label = "Separate By Materials"
-    bl_description = "Separate the mesh into multiple objects based on materials.\nWARNING: This operation is not reversible. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nThere may be other issues as well. Use with caution."
+    bl_label = "Sep by Mat(High Risk)"
+    bl_description = "Separate by Materials (High Risk)\nSeparate the mesh into multiple objects based on materials.\nHIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nKnown issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first."
     bl_options = {"REGISTER", "UNDO"}
 
     clean_shape_keys: bpy.props.BoolProperty(
@@ -158,6 +158,11 @@ class SeparateByMaterials(bpy.types.Operator):
     def execute(self, context):
         obj = context.active_object
         root = FnModel.find_root_object(obj)
+
+        # Sep by Mat crashes Blender if used after morph assembly
+        rig = Model(root)
+        rig.morph_slider.unbind()
+
         if root is None:
             self.__separate_by_materials(obj)
         else:
