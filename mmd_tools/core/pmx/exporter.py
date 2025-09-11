@@ -1036,7 +1036,7 @@ class __PmxExporter:
             uvzw = i.add_uvs[uv_index]
             if (uvzw[0] - adduv).length < 0.001 and (uvzw[1] - addzw).length < 0.001:
                 return i
-        n = copy.copy(vertices[0])
+        n = copy.copy(vert)
         add_uvs = n.add_uvs.copy()
         add_uvs[uv_index] = (adduv, addzw)
         n.add_uvs = add_uvs
