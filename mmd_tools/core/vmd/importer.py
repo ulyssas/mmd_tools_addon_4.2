@@ -303,7 +303,7 @@ class HasAnimationData:
 
 
 class VMDImporter:
-    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, create_new_action=False, use_nla=False, detect_camera_changes=True, detect_lamp_changes=True):
+    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, use_nla=False, detect_camera_changes=True, detect_lamp_changes=True):
         self.__vmdFile = vmd.File()
         self.__vmdFile.load(filepath=filepath)
         logging.debug(str(self.__vmdFile.header))
@@ -315,7 +315,6 @@ class VMDImporter:
         self.__frame_start = bpy.context.scene.frame_current
         self.__frame_margin = frame_margin if self.__frame_start in {0, 1} else 0  # only applies if current frame is 0 or 1
         self.__mirror = use_mirror
-        self.__create_new_action = create_new_action
         self.__use_nla = use_nla
         self.__detect_camera_changes = detect_camera_changes
         self.__detect_lamp_changes = detect_lamp_changes
@@ -423,7 +422,7 @@ class VMDImporter:
             target.animation_data_create()
 
         if not self.__use_nla:
-            if not self.__create_new_action and target.animation_data.action:
+            if target.animation_data.action:
                 return target.animation_data.action
             target.animation_data.action = action
         else:
@@ -443,7 +442,7 @@ class VMDImporter:
         else:
             animation_data = getattr(target, "animation_data", None)
 
-        if not self.__create_new_action and animation_data and animation_data.action:
+        if animation_data and animation_data.action:
             return animation_data.action
 
         return bpy.data.actions.new(name=action_name)
