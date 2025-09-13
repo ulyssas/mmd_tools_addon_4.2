@@ -463,7 +463,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="Update frame range and frame rate (30 fps)",
         default=True,
     )
-    always_create_new_action: bpy.props.BoolProperty(
+    create_new_action: bpy.props.BoolProperty(
         name="Create New Action",
         description="Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         default=False,
@@ -518,7 +518,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout = self.layout
         layout.prop(self, "scale")
         layout.prop(self, "margin")
-        layout.prop(self, "always_create_new_action")
+        layout.prop(self, "create_new_action")
         layout.prop(self, "use_nla")
 
         layout.prop(self, "bone_mapper")
@@ -577,7 +577,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     use_pose_mode=self.use_pose_mode,
                     frame_margin=self.margin,
                     use_mirror=self.use_mirror,
-                    always_create_new_action=self.always_create_new_action,
+                    create_new_action=self.create_new_action,
                     use_nla=self.use_nla,
                     detect_camera_changes=self.detect_camera_changes,
                     detect_lamp_changes=self.detect_lamp_changes,

@@ -2454,7 +2454,7 @@ translations_tuple = (
             "*",
             "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         ),
-        (("bpy.types.MMD_TOOLS_OT_import_vmd.always_create_new_action",), ()),
+        (("bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),

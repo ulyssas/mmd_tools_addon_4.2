@@ -1434,7 +1434,7 @@ msgid ""
 "- Select the armature: imports only armature animation"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.always_create_new_action
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action
 msgid "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled."
 msgstr ""
 
