@@ -77,29 +77,6 @@ class _InterpolationHelper:
 
 
 class BoneConverter:
-    """
-    Bone transform converter using float64 manual math.
-    Avoids mathutils (float32) and numpy (overhead) for precision and speed.
-    Enhanced precision for critical transforms.
-    """
-
-    # ================ ORIGINAL IMPLEMENTATION (mathutils-based) ================
-    # def __init__(self, pose_bone, scale, invert=False):
-    #     mat = pose_bone.bone.matrix_local.to_3x3()
-    #     mat[1], mat[2] = mat[2].copy(), mat[1].copy()
-    #     self.__mat = mat.transposed()
-    #     self.__scale = scale
-    #     if invert:
-    #         self.__mat.invert()
-    #     self.convert_interpolation = _InterpolationHelper(self.__mat).convert
-    # def convert_location(self, location):
-    #     return (self.__mat @ Vector(location)) * self.__scale
-    # def convert_rotation(self, rotation_xyzw):
-    #     rot = Quaternion()
-    #     rot.x, rot.y, rot.z, rot.w = rotation_xyzw
-    #     return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
-    # ===========================================================================
-
     def __init__(self, pose_bone, scale, invert=False):
         mat = pose_bone.bone.matrix_local.to_3x3()
         mat[1], mat[2] = mat[2].copy(), mat[1].copy()
@@ -107,38 +84,13 @@ class BoneConverter:
         self.__scale = scale
         if invert:
             self.__mat.invert()
-
-        # Pre-compute matrix elements for faster access and higher precision
-        # Note: mathutils uses float32 internally, manual calculation preserves float64
-        m = self.__mat
-        self.__m00, self.__m01, self.__m02 = m[0][0], m[0][1], m[0][2]
-        self.__m10, self.__m11, self.__m12 = m[1][0], m[1][1], m[1][2]
-        self.__m20, self.__m21, self.__m22 = m[2][0], m[2][1], m[2][2]
-
         self.convert_interpolation = _InterpolationHelper(self.__mat).convert
-
     def convert_location(self, location):
-        x, y, z = location[0], location[1], location[2]
-
-        result_x = (self.__m00 * x + self.__m01 * y + self.__m02 * z) * self.__scale
-        result_y = (self.__m10 * x + self.__m11 * y + self.__m12 * z) * self.__scale
-        result_z = (self.__m20 * x + self.__m21 * y + self.__m22 * z) * self.__scale
-
-        return Vector((result_x, result_y, result_z))
-
+        return (self.__mat @ Vector(location)) * self.__scale
     def convert_rotation(self, rotation_xyzw):
         rot = Quaternion()
         rot.x, rot.y, rot.z, rot.w = rotation_xyzw
-
-        axis = rot.axis
-        angle = rot.angle
-
-        axis_x, axis_y, axis_z = axis[0], axis[1], axis[2]
-        new_axis_x = self.__m00 * axis_x + self.__m01 * axis_y + self.__m02 * axis_z
-        new_axis_y = self.__m10 * axis_x + self.__m11 * axis_y + self.__m12 * axis_z
-        new_axis_z = self.__m20 * axis_x + self.__m21 * axis_y + self.__m22 * axis_z
-
-        return Quaternion(Vector((-new_axis_x, -new_axis_y, -new_axis_z)), angle).normalized()
+        return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
 
 
 class BoneConverterPoseMode:
