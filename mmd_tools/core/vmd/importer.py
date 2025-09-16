@@ -88,8 +88,8 @@ class BoneConverter:
     def convert_location(self, location):
         return (self.__mat @ Vector(location)) * self.__scale
     def convert_rotation(self, rotation_xyzw):
-        rot = Quaternion()
-        rot.x, rot.y, rot.z, rot.w = rotation_xyzw
+        x, y, z, w = rotation_xyzw
+        rot = Quaternion((w, x, y, z))
         return Quaternion((self.__mat @ rot.axis) * -1, rot.angle).normalized()
 
 
