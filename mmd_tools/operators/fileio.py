@@ -463,7 +463,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="Update frame range and frame rate (30 fps)",
         default=True,
     )
-    always_create_new_action: bpy.props.BoolProperty(
+    create_new_action: bpy.props.BoolProperty(
         name="Create New Action",
         description="Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         default=False,
@@ -518,7 +518,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout = self.layout
         layout.prop(self, "scale")
         layout.prop(self, "margin")
-        layout.prop(self, "always_create_new_action")
+        layout.prop(self, "create_new_action")
         layout.prop(self, "use_nla")
 
         layout.prop(self, "bone_mapper")
@@ -568,6 +568,11 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     translator=DictionaryEnum.get_translator(self.dictionary),
                 ).init
 
+            if self.files:
+                if self.create_new_action:
+                    for obj in selected_objects:
+                        self.__reset_all_animations(obj)
+
             for file in self.files:
                 start_time = time.time()
                 importer = vmd_importer.VMDImporter(
@@ -577,7 +582,6 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     use_pose_mode=self.use_pose_mode,
                     frame_margin=self.margin,
                     use_mirror=self.use_mirror,
-                    always_create_new_action=self.always_create_new_action,
                     use_nla=self.use_nla,
                     detect_camera_changes=self.detect_camera_changes,
                     detect_lamp_changes=self.detect_lamp_changes,
@@ -601,6 +605,74 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                 logger.removeHandler(handler)
 
         return {"FINISHED"}
+
+    def __reset_all_animations(self, target_obj):
+        """Reset all animation states for the target object and related MMD model objects"""
+        root_object = FnModel.find_root_object(target_obj)
+        objects_to_process = set()
+
+        if root_object:
+            objects_to_process.add(root_object)
+            objects_to_process.add(target_obj)
+            # Add armature object
+            armature_object = FnModel.find_armature_object(root_object)
+            if armature_object:
+                objects_to_process.add(armature_object)
+            # Add all mesh objects
+            objects_to_process.update(FnModel.iterate_mesh_objects(root_object))
+            # Add other group objects if they exist
+            rigid_group = FnModel.find_rigid_group_object(root_object)
+            if rigid_group:
+                objects_to_process.add(rigid_group)
+            joint_group = FnModel.find_joint_group_object(root_object)
+            if joint_group:
+                objects_to_process.add(joint_group)
+            temporary_group = FnModel.find_temporary_group_object(root_object)
+            if temporary_group:
+                objects_to_process.add(temporary_group)
+        else:
+            objects_to_process.add(target_obj)
+
+        # STEP 1: Clear all existing actions first
+        for obj in objects_to_process:
+            # Clear object's own actions
+            if obj.animation_data:
+                obj.animation_data.action = None
+
+            # Clear Shape Keys actions
+            if hasattr(obj, "data") and hasattr(obj.data, "shape_keys") and obj.data.shape_keys:
+                if obj.data.shape_keys.animation_data:
+                    obj.data.shape_keys.animation_data.action = None
+
+            # Clear light data actions
+            if obj.type == "LIGHT" and obj.data.animation_data:
+                obj.data.animation_data.action = None
+
+        # STEP 2: Reset all properties to default states
+        for obj in objects_to_process:
+            if obj.type == "ARMATURE":
+                # Reset armature pose
+                for bone in obj.pose.bones:
+                    bone.location = (0.0, 0.0, 0.0)
+                    bone.rotation_quaternion = (1.0, 0.0, 0.0, 0.0)
+                    bone.rotation_euler = (0.0, 0.0, 0.0)
+                    bone.rotation_axis_angle = (0.0, 0.0, 1.0, 0.0)
+                    bone.scale = (1.0, 1.0, 1.0)
+
+                    # Reset IK settings to default
+                    if hasattr(bone, "mmd_ik_toggle"):
+                        bone.mmd_ik_toggle = True
+
+            elif obj.type == "MESH" and getattr(obj.data, "shape_keys", None):
+                # Reset mesh morphs
+                for shape_key in obj.data.shape_keys.key_blocks:
+                    if shape_key.name != "Basis":  # Don't reset basis shape key
+                        shape_key.value = 0.0
+
+            elif hasattr(obj, "mmd_type") and obj.mmd_type == "ROOT":
+                # Reset root display state
+                if hasattr(obj, "mmd_root") and hasattr(obj.mmd_root, "show_meshes"):
+                    obj.mmd_root.show_meshes = True  # Default to show meshes
 
 
 class ImportVpd(Operator, ImportHelper, PreferencesMixin):
@@ -769,9 +841,9 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         name="Normal Handling",
         description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
-            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).", 0),
+            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.", 0),
             ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle or manual marking.", 1),
-            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.", 2),
+            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count.", 2),
         ],
         default="SMOOTH_KEEP_SHARP",
     )
