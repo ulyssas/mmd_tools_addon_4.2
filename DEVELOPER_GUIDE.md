@@ -127,12 +127,14 @@ You can try to load the specified key binding preset from the Preferences window
 This is likely an upstream issue that can only be resolved by the Blender developers.
 
 ## Release Process
-Currently, only @UuuNyaa has permission to perform release tasks:
+Releases may be performed by maintainers who meet both of the following requirements:
+- Management permissions on this repository
+- A [Blender Extensions](https://extensions.blender.org/add-ons/mmd-tools/) account and membership in the [MMD team](https://extensions.blender.org/team/mmd/)
 
 1. Tag the commit in `main` with the version number (`vMAJOR.MINOR.PATCH`)
 2. Pushing the tag triggers a GitHub Action that builds artifacts and creates a draft release
-3. Manually finalize and publish the GitHub Release draft
-4. Manually upload the artifacts to [Blender Extensions](https://extensions.blender.org/add-ons/mmd-tools/)
+3. Manually finalize and publish the GitHub Release draft (no edits to the Release notes are required)
+4. Manually upload the artifacts to [Blender Extensions](https://extensions.blender.org/add-ons/mmd-tools/). For the Changelog, copy the GitHub Release notes with all @mentions removed.
 
 ## Getting Help
 If you need help with development:
