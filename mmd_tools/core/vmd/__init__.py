@@ -21,6 +21,17 @@ def _decodeCp932String(byteString):
         byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae\x00\x00\x00\x00"
         decoded = "�ｶ�_0_1調整"
     """
+    # Truncate at null terminator (skip first byte) to remove trailing padding
+    # Trailing padding may vary across different VMD files. (\x00, \xfd, etc.)
+    # Before:
+    #     byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae\x00\xfd\xfd\xfd"
+    # After:
+    #     byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae"
+    if len(byteString) > 1:
+        terminator_pos = byteString.find(b"\x00", 1)
+        if terminator_pos != -1:
+            byteString = byteString[:terminator_pos]
+
     decoded = byteString.replace(b"\x00", b"").decode("cp932", errors="replace")
     if byteString[:1] == b"\x00":
         decoded = "\ufffd" + decoded.replace("?", "\ufffd")
