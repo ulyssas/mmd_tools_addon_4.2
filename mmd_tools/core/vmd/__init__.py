@@ -32,9 +32,13 @@ def _decodeCp932String(byteString):
         if terminator_pos != -1:
             byteString = byteString[:terminator_pos]
 
-    decoded = byteString.replace(b"\x00", b"").decode("cp932", errors="replace")
+    # If flag indicates encoding error, replace the encoding replacement character from ? to � for consistency,
+    # avoiding two different replacement characters appearing in console simultaneously
+    # The first character masked by flag is also represented with replacement character
     if byteString[:1] == b"\x00":
-        decoded = "\ufffd" + decoded.replace("?", "\ufffd")
+        decoded = "\ufffd" + byteString[1:].decode("cp932", errors="replace").replace("?", "\ufffd")
+    else:
+        decoded = byteString.decode("cp932", errors="replace")
     return decoded
 
 
