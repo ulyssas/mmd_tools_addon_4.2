@@ -253,13 +253,8 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
                     existing_custom_normal.data.foreach_get("value", normals_data)
                     temp_normal_attr = mesh_data.attributes.new(temp_normal_name, "INT16_2D", "CORNER")
                     temp_normal_attr.data.foreach_set("value", normals_data)
-                elif existing_custom_normal.data_type == "FLOAT_VECTOR":
-                    normals_data = np.empty(len(mesh_data.loops) * 3, dtype=np.float32)
-                    existing_custom_normal.data.foreach_get("vector", normals_data)
-                    temp_normal_attr = mesh_data.attributes.new(temp_normal_name, "FLOAT_VECTOR", "CORNER")
-                    temp_normal_attr.data.foreach_set("vector", normals_data)
                 else:
-                    raise TypeError(f"Unsupported custom_normal data type: '{existing_custom_normal.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
+                    raise TypeError(f"Unsupported custom_normal data type: '{existing_custom_normal.data_type}'. Supported types: 'INT16_2D'")
 
             # Select meshes
             obj: bpy.types.Object
@@ -291,15 +286,8 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
                         if not custom_normal_attr:
                             custom_normal_attr = mesh_data.attributes.new("custom_normal", "INT16_2D", "CORNER")
                         custom_normal_attr.data.foreach_set("value", normals_data)
-                    elif temp_normal_attr.data_type == "FLOAT_VECTOR":
-                        normals_data = np.empty(len(mesh_data.loops) * 3, dtype=np.float32)
-                        temp_normal_attr.data.foreach_get("vector", normals_data)
-                        custom_normal_attr = mesh_data.attributes.get("custom_normal")
-                        if not custom_normal_attr:
-                            custom_normal_attr = mesh_data.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
-                        custom_normal_attr.data.foreach_set("vector", normals_data)
                     else:
-                        raise TypeError(f"Unsupported custom_normal data type: '{temp_normal_attr.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
+                        raise TypeError(f"Unsupported custom_normal data type: '{temp_normal_attr.data_type}'. Supported types: 'INT16_2D'")
                 finally:
                     mesh_data.attributes.remove(temp_normal_attr)
 

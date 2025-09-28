@@ -847,29 +847,6 @@ class PMXImporter:
         armModifier.show_render = armModifier.show_viewport = len(meshObj.data.vertices) > 0
 
     def __assignCustomNormals(self):
-        # Replaced problematic mesh.normals_split_custom_set() and normals_split_custom_set_from_vertices()
-        # with mesh.attributes.new("custom_normal", ...) and custom_normal_attr.data.foreach_set("vector", ...)
-        # to resolve Blender core bugs that corrupt custom normal data.
-
-        mesh: bpy.types.Mesh = self.__meshObj.data
-        logging.info("Setting custom normals...")
-
-        if self.__vertex_map:
-            verts, faces = self.__model.vertices, self.__model.faces
-            custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]
-        else:
-            custom_normals = [(Vector(v.normal).xzy).normalized() for v in self.__model.vertices]
-            custom_normals = [custom_normals[loop.vertex_index] for loop in mesh.loops]
-
-        custom_normal_attr = mesh.attributes.get("custom_normal")
-        if not custom_normal_attr:
-            custom_normal_attr = mesh.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
-        flat_normals = [comp for vec in custom_normals for comp in vec]
-        custom_normal_attr.data.foreach_set("vector", flat_normals)
-
-        logging.info("   - Done!!")
-
-    def __assignCustomNormals_legacy(self):
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
 
@@ -962,10 +939,7 @@ class PMXImporter:
             self.__importMaterials()
             self.__importFaces()
             self.__meshObj.data.update()
-            if bpy.app.version < (6, 0):
-                self.__assignCustomNormals_legacy()
-            else:
-                self.__assignCustomNormals()
+            self.__assignCustomNormals()
             self.__storeVerticesSDEF()
 
         if "ARMATURE" in types:
