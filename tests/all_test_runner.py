@@ -149,7 +149,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Check if the test passed - specifically for unittest output
         output = result.stdout + result.stderr
         success_indicators = {"OK"}
-        failure_indicators = {"FAIL\n", "FAIL:", "ERROR\n", "ERROR:", "skipped", "FAILED", "failures=", "errors=", "skipped="}
+        failure_indicators = {"FAIL\n", "FAIL:", "ERROR\n", "ERROR:", "skipped", "FAILED", "failures=", "errors=", "skipped=", "Traceback"}
 
         has_success = any(indicator in output for indicator in success_indicators)
         has_failure = any(indicator in output for indicator in failure_indicators)
