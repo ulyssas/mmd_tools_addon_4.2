@@ -21,7 +21,7 @@ class NoModelSelectedError(Exception):
 class ModelJoinByBonesOperator(bpy.types.Operator):
     bl_idname = "mmd_tools.model_join_by_bones"
     bl_label = "Model Join by Bones"
-    bl_description = "Join multiple MMD models into one.\nWARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together."
+    bl_description = "Join multiple MMD models into one.\n\nWARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together.\n\nIMPORTANT: Don't use any of the 'Assembly' functions before using this function. This function requires the models to be in a clean state."
     bl_options = {"REGISTER", "UNDO"}
 
     join_type: bpy.props.EnumProperty(
@@ -109,7 +109,7 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
 class ModelSeparateByBonesOperator(bpy.types.Operator):
     bl_idname = "mmd_tools.model_separate_by_bones"
     bl_label = "Model Separate by Bones"
-    bl_description = "Separate MMD model into multiple models based on selected bones.\nWARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together."
+    bl_description = "Separate MMD model into multiple models based on selected bones.\n\nWARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together.\n\nIMPORTANT: Don't use any of the 'Assembly' functions before using this function. This function requires the model to be in a clean state."
     bl_options = {"REGISTER", "UNDO"}
 
     separate_armature: bpy.props.BoolProperty(name="Separate Armature", default=True)
