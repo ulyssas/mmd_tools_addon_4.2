@@ -162,12 +162,12 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         bpy.ops.object.mode_set(mode="EDIT")
         root_bones: Set[bpy.types.EditBone] = set(context.selected_bones)
-
         if self.include_descendant_bones:
             original_active_bone = context.active_bone
             for edit_bone in root_bones:
                 context.active_object.data.edit_bones.active = edit_bone
                 bpy.ops.armature.select_similar(type="CHILDREN", threshold=0.1)
+            self._select_related_ik_bones(target_armature_object)
             if original_active_bone:
                 context.active_object.data.edit_bones.active = original_active_bone
 
@@ -176,7 +176,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         mmd_root_object: bpy.types.Object = FnModel.find_root_object(context.active_object)
         mmd_model = Model(mmd_root_object)
         mmd_model_mesh_objects: List[bpy.types.Object] = list(mmd_model.meshes())
-        mmd_model_mesh_objects = list(self.select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
+        mmd_model_mesh_objects = list(self._select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
         bpy.ops.object.mode_set(mode="OBJECT")
 
         # Store original transform matrix for root object
@@ -355,7 +355,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         # End state
         FnContext.set_active_and_select_single_object(context, separate_root_object)
 
-    def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
+    def _select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
         mesh2selected_vertex_count: Dict[bpy.types.Object, int] = {}
         target_bmesh: bmesh.types.BMesh = bmesh.new()
         for mesh_object in mmd_model_mesh_objects:
@@ -395,3 +395,61 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             target_bmesh.clear()
 
         return mesh2selected_vertex_count
+
+    def _select_related_ik_bones(self, armature_object: bpy.types.Object) -> None:
+        """
+        Expand the current selection to include any full IK systems that are
+        partially selected. An IK system includes the chain bones, the IK
+        target bone, and the pole target bone.
+
+        NOTE: This method operates entirely in EDIT mode and avoids mode switching
+        to prevent segmentation faults.
+        """
+        edit_bones = armature_object.data.edit_bones
+        initial_selection_names = {b.name for b in edit_bones if b.select}
+
+        # Access pose bones constraints directly without mode switching
+        pose_bones = armature_object.pose.bones
+
+        # Find all complete IK systems
+        ik_systems = []
+
+        for pose_bone in pose_bones:
+            for constraint in pose_bone.constraints:
+                if constraint.type == "IK":
+                    # Build the set of bones in this IK system
+                    system_bones = {pose_bone.name}
+
+                    # Add the main IK Target bone
+                    if constraint.target and constraint.subtarget:
+                        system_bones.add(constraint.subtarget)
+
+                    # Add the Pole Target bone
+                    if constraint.pole_target and constraint.pole_subtarget:
+                        system_bones.add(constraint.pole_subtarget)
+
+                    # Add all other bones in the IK chain
+                    current_bone_name = pose_bone.name
+                    chain_count = constraint.chain_count
+
+                    # Walk up the parent chain
+                    for _ in range(chain_count - 1):
+                        if current_bone_name not in edit_bones:
+                            break
+                        current_bone = edit_bones[current_bone_name]
+                        if not current_bone.parent:
+                            break
+                        current_bone_name = current_bone.parent.name
+                        system_bones.add(current_bone_name)
+
+                    ik_systems.append(system_bones)
+
+        # Expand selection to include any related, full IK systems
+        final_selection_names = set(initial_selection_names)
+        for system in ik_systems:
+            if not system.isdisjoint(initial_selection_names):
+                final_selection_names.update(system)
+
+        # Apply the final selection
+        for bone in edit_bones:
+            bone.select = bone.name in final_selection_names
