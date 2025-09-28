@@ -1369,9 +1369,14 @@ class __PmxExporter:
         return _Mesh(material_faces, shape_key_names, material_names)
 
     def __loadMeshData(self, meshObj, bone_map):
+        # Check if object is excluded from view layer
+        if meshObj.name not in bpy.context.view_layer.objects:
+            logging.info("Skipping mesh excluded from view layer: %s", meshObj.name)
+            return _Mesh({}, [], {})
+
         # Check if mesh has valid geometry
         if not meshObj.data or len(meshObj.data.vertices) == 0:
-            logging.warning("Skipping empty mesh: %s", meshObj.name)
+            logging.info("Skipping empty mesh: %s", meshObj.name)
             return _Mesh({}, [], {})
 
         show_only_shape_key = meshObj.show_only_shape_key
