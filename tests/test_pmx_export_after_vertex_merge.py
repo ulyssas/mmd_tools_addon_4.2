@@ -94,7 +94,7 @@ class TestPmxExportVertexMergeBug(unittest.TestCase):
 
         # Export should fail - let it crash
         output_pmx = os.path.join(TESTS_DIR, "output", "merge_bug_test.pmx")
-        bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=12.5, copy_textures=False, sort_materials=False, sort_vertices="NONE", log_level="ERROR")
+        bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=12.5, sort_materials=False, sort_vertices="NONE", log_level="ERROR")
 
 
 if __name__ == "__main__":

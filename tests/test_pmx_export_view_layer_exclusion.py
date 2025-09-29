@@ -102,7 +102,7 @@ class TestPmxExportViewLayerExclusion(unittest.TestCase):
 
         # Export should fail with ReferenceError - let it crash
         output_pmx = os.path.join(TESTS_DIR, "output", "view_layer_exclusion_test.pmx")
-        bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=12.5, copy_textures=False, sort_materials=False, sort_vertices="NONE", log_level="ERROR")
+        bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=12.5, sort_materials=False, sort_vertices="NONE", log_level="ERROR")
 
 
 if __name__ == "__main__":
