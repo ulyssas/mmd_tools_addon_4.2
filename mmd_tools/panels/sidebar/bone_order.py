@@ -479,7 +479,7 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
         count = len(bone.id_data.pose.bones)
         bone_transform_rank = bone_id + bone.mmd_bone.transform_order * count
 
-        row = layout.split(factor=0.45, align=False)
+        row = layout.split(factor=0.4, align=False)
         r0 = row.row()
         r0.label(text=bone.name, translate=False, icon="POSE_HLT" if bone.name in cls._IK_BONES else "BONE_DATA")
         r = r0.row()
@@ -491,7 +491,7 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
         else:
             r.label(text=str(bone_id))
 
-        row_sub = row.split(factor=0.67, align=False)
+        row_sub = row.split(factor=0.5, align=False)
 
         # Display bone relationships
         r = row_sub.row()
@@ -557,6 +557,9 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
         else:
             row.prop(mmd_bone, "transform_after_dynamics", text="", toggle=True, icon="BLANK1")
         row.prop(mmd_bone, "transform_order", text="", slider=bool(mmd_bone.transform_order))
+
+        row.prop(bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if bone.bone.select else "RESTRICT_SELECT_ON")
+        row.prop(bone.bone, "hide", text="", emboss=False, icon_only=True)  # auto icon
 
 
 class MMDBoneOrderMenu(bpy.types.Menu):
