@@ -424,6 +424,8 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
         bones = getattr(data, propname)
         bone_count = len(bones)
 
+        helper_funcs = bpy.types.UI_UL_list
+
         # Filter out shadow bones
         filtered_flags = []
         for bone in bones:
@@ -433,17 +435,44 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
             else:
                 filtered_flags.append(self.bitflag_filter_item)  # Show non-shadow bones
 
-        # Use defined sort order
-        if not self._bone_order_map:
-            # If no sort mapping yet, update once
-            self.update_sorted_bones(data)
+        # Apply name search filter
+        if self.filter_name:
+            filtered_flags = helper_funcs.filter_items_by_name(self.filter_name, self.bitflag_filter_item, bones, "name", reverse=False)
+            # Re-apply shadow bone filter
+            for i, bone in enumerate(bones):
+                is_shadow = getattr(bone, "is_mmd_shadow_bone", False) is True
+                if is_shadow:
+                    filtered_flags[i] = 0
 
+        # Apply invert filter
+        if self.use_filter_invert:
+            for i in range(bone_count):
+                if filtered_flags[i]:
+                    filtered_flags[i] = 0
+                else:
+                    # Only show non-shadow bones when inverted
+                    is_shadow = getattr(bones[i], "is_mmd_shadow_bone", False) is True
+                    if not is_shadow:
+                        filtered_flags[i] = self.bitflag_filter_item
+
+        # Sort items
         ordered_indices = []
-        for i in range(bone_count):
-            if filtered_flags[i]:  # Only sort displayed bones
-                ordered_indices.append(self._bone_order_map.get(i, i))
-            else:
-                ordered_indices.append(i)  # Keep filtered items in original position
+
+        if self.use_filter_sort_alpha:
+            # Sort by name alphabetically
+            ordered_indices = helper_funcs.sort_items_by_name(bones, "name")
+        else:
+            # Sort by bone_id (default)
+            # Use defined sort order
+            if not self._bone_order_map:
+                # If no sort mapping yet, update once
+                self.update_sorted_bones(data)
+
+            for i in range(bone_count):
+                if filtered_flags[i]:  # Only sort displayed bones
+                    ordered_indices.append(self._bone_order_map.get(i, i))
+                else:
+                    ordered_indices.append(i)  # Keep filtered items in original position
 
         return filtered_flags, ordered_indices
 
