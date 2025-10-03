@@ -83,7 +83,7 @@ class PMXImporter:
     def __createObjects(self):
         """Create main objects and link them to scene."""
         pmxModel = self.__model
-        obj_name = self.__safe_name(bpy.path.display_name(pmxModel.filepath), max_length=54)
+        obj_name = self.__safe_name(bpy.path.display_name_from_filepath(pmxModel.filepath), max_length=54)
         self.__rig = Model.create(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
         root = self.__rig.rootObject()
         mmd_root: MMDRoot = root.mmd_root
