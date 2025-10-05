@@ -325,8 +325,8 @@ msgid "Build Rig"
 msgstr "建立骨架"
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig
-msgid "Translate physics of selected object into format usable by Blender"
-msgstr "将选中物体的物理转译为 Blender 可用的形式"
+msgid "Translate physics of selected object into format usable by Blender\n\nWarning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."
+msgstr "将选中物体的物理转译为 Blender 可用的形式\n\n警告:可能导致崩溃和性能问题。建议使用 MMDBridge 以获得更好的稳定性和准确的物理模拟。"
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig.collision_margin
 msgid "The collision margin between rigid bodies. If 0, the default value for each shape is adopted."

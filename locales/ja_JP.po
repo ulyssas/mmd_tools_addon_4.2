@@ -326,7 +326,7 @@ msgid "Build Rig"
 msgstr "ビルドリグ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig
-msgid "Translate physics of selected object into format usable by Blender"
+msgid "Translate physics of selected object into format usable by Blender\n\nWarning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig.collision_margin

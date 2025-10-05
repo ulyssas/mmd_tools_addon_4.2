@@ -46,7 +46,7 @@ The following features are intentionally excluded from MMD Tools:
 - While MMD Tools provides `Assembly -> Physics` functionality, breast physics simulation doesn't closely match MMD behavior
 
 **Recommended Workaround**:
-For physics simulation, we recommend using [mmdbridge](https://github.com/rintrint/mmdbridge) and disabling Blender's rigid body physics entirely by clicking `Remove rigid body world` in Blender.
+For physics simulation, we recommend using [MMDBridge](https://github.com/rintrint/mmdbridge) and disabling Blender's rigid body physics entirely by clicking `Remove rigid body world` in Blender.
 
 **Benefits of this approach**:
 1. Significantly reduces Blender crashes

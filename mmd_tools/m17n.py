@@ -537,10 +537,10 @@ translations_tuple = (
         ("zh_HANS", "建立骨架", (False, ())),
     ),
     (
-        ("*", "Translate physics of selected object into format usable by Blender"),
+        ("*", "Translate physics of selected object into format usable by Blender\n\nWarning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."),
         (("bpy.types.MMD_TOOLS_OT_build_rig",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将选中物体的物理转译为 Blender 可用的形式", (False, ())),
+        ("zh_HANS", "将选中物体的物理转译为 Blender 可用的形式\n\n警告:可能导致崩溃和性能问题。建议使用 MMDBridge 以获得更好的稳定性和准确的物理模拟。", (False, ())),
     ),
     (
         (
