@@ -10,6 +10,7 @@ import bpy
 from mathutils import Quaternion, Vector
 
 from ... import utils
+from ...compat import action
 from .. import vmd
 from ..camera import MMDCamera
 from ..lamp import MMDLamp
@@ -318,14 +319,14 @@ class VMDImporter:
         kp.handle_right = kp.co + Vector((1, 0))
 
     @staticmethod
-    def __keyframe_insert_inner(fcurves: bpy.types.ActionFCurves, path: str, index: int, frame: float, value: float):
+    def __keyframe_insert_inner(fcurves: action.FCurvesCollection, path: str, index: int, frame: float, value: float):
         fcurve = fcurves.find(path, index=index)
         if fcurve is None:
             fcurve = fcurves.new(path, index=index)
         fcurve.keyframe_points.insert(frame, value, options={"FAST"})
 
     @staticmethod
-    def __keyframe_insert(fcurves: bpy.types.ActionFCurves, path: str, frame: float, value: Union[int, float, Vector]):
+    def __keyframe_insert(fcurves: action.FCurvesCollection, path: str, frame: float, value: Union[int, float, Vector]):
         if isinstance(value, (int, float)):
             VMDImporter.__keyframe_insert_inner(fcurves, path, 0, frame, value)
 
