@@ -52,14 +52,13 @@ def selectSingleBone(context, armature, bone_name, reset_pose=False):
     if reset_pose:
         for p_bone in armature.pose.bones:
             p_bone.matrix_basis.identity()
-    armature_bones: bpy.types.ArmatureBones = armature.data.bones
-    i: bpy.types.Bone
-    for i in armature_bones:
-        i.select = i.name == bone_name
-        i.select_head = i.select_tail = i.select
-        if i.select:
-            armature_bones.active = i
-            i.hide = False
+
+    for p_bone in armature.pose.bones:
+        is_target = p_bone.name == bone_name
+        p_bone.select = is_target
+        if is_target:
+            armature.data.bones.active = p_bone.bone
+            p_bone.bone.hide = False
 
 
 __CONVERT_NAME_TO_L_REGEXP = re.compile(r"^(.*)左(.*)$")

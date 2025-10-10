@@ -587,7 +587,7 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
             row.prop(mmd_bone, "transform_after_dynamics", text="", toggle=True, icon="BLANK1")
         row.prop(mmd_bone, "transform_order", text="", slider=bool(mmd_bone.transform_order))
 
-        row.prop(bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if bone.bone.select else "RESTRICT_SELECT_ON")
+        row.prop(bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if bone.select else "RESTRICT_SELECT_ON")
         row.prop(bone.bone, "hide", text="", emboss=False, icon_only=True)  # auto icon
 
 

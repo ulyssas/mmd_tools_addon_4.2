@@ -104,7 +104,7 @@ class MMDBoneHandler(MMDDataHandlerABC):
         cls.prop_restorable(prop_row, mmd_translation_element, "name", pose_bone.name, index)
         cls.prop_restorable(prop_row, mmd_translation_element, "name_j", pose_bone.mmd_bone.name_j, index)
         cls.prop_restorable(prop_row, mmd_translation_element, "name_e", pose_bone.mmd_bone.name_e, index)
-        row.prop(pose_bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if pose_bone.bone.select else "RESTRICT_SELECT_ON")
+        row.prop(pose_bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if pose_bone.select else "RESTRICT_SELECT_ON")
         row.prop(pose_bone.bone, "hide", text="", emboss=False, icon_only=True)
 
     @classmethod
@@ -137,7 +137,7 @@ class MMDBoneHandler(MMDDataHandlerABC):
 
             pose_bone: bpy.types.PoseBone = mmd_translation_element.object.path_resolve(mmd_translation_element.data_path)
 
-            if cls.check_data_visible(filter_selected, filter_visible, pose_bone.bone.select, pose_bone.bone.hide):
+            if cls.check_data_visible(filter_selected, filter_visible, pose_bone.select, pose_bone.bone.hide):
                 continue
 
             if check_blank_name(mmd_translation_element.name_j, mmd_translation_element.name_e):
