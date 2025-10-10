@@ -704,6 +704,8 @@ class PMXImporter:
 
         for morph in (x for x in self.__model.morphs if isinstance(x, pmx.VertexMorph)):
             shapeKey = self.__meshObj.shape_key_add(name=morph.name)
+            shapeKey.value = 0.0
+
             vtx_morph = mmd_root.vertex_morphs.add()
             vtx_morph.name = morph.name
             vtx_morph.name_e = morph.name_e
