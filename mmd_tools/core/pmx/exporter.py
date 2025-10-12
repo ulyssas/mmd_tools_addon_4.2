@@ -1373,6 +1373,8 @@ class __PmxExporter:
 
     def __loadMeshData(self, meshObj, bone_map):
         # Check if object is excluded from view layer
+        # Note: Use meshObj.name instead of meshObj with the 'in' operator,
+        # because bpy_prop_collection.__contains__ expects a string or a tuple of strings.
         if meshObj.name not in bpy.context.view_layer.objects:
             logging.info("Skipping mesh excluded from view layer: %s", meshObj.name)
             return _Mesh({}, [], {})
