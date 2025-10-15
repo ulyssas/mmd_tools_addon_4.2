@@ -38,14 +38,22 @@ def log_message(prefix, message, level="INFO"):
         message (str): Message to log.
         level (str): Log level ('INFO', 'WARNING', 'ERROR').
     """
-    level = level.upper()
-    for line in message.split("\n"):
-        if level == "WARNING":
-            logging.warning("[%s] %s", prefix, line)
-        elif level == "ERROR":
-            logging.error("[%s] %s", prefix, line)
-        else:  # Default to INFO
-            logging.info("[%s] %s", prefix, line)
+    logger = logging.getLogger()
+    original_level = logger.level
+    # Set to DEBUG to ensure all messages are output.
+    logger.setLevel(logging.DEBUG)
+
+    try:
+        level = level.upper()
+        for line in message.split("\n"):
+            if level == "WARNING":
+                logging.warning("[%s] %s", prefix, line)
+            elif level == "ERROR":
+                logging.error("[%s] %s", prefix, line)
+            else:  # Default to INFO
+                logging.info("[%s] %s", prefix, line)
+    finally:
+        logger.setLevel(original_level)
 
 
 class MMDModelValidateBones(Operator):

@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the Blender package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr "Project-Id-Version: MMD Tools 4.5.0 (0)"
+msgstr "Project-Id-Version: MMD Tools 4.5.1 (0)"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
 msgid "Base Texture Folder"
@@ -326,7 +326,10 @@ msgid "Build Rig"
 msgstr "ビルドリグ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig
-msgid "Translate physics of selected object into format usable by Blender"
+msgid ""
+"Translate physics of selected object into format usable by Blender\n"
+"\n"
+"Warning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig.collision_margin
@@ -875,9 +878,37 @@ msgstr ""
 msgid "Export selected MMD model(s) to PMX file(s) (.pmx)"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures
-msgid "Copy textures"
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode
+msgid "Copy Textures"
 msgstr "テクスチャをコピー"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode
+msgid "Choose how to handle texture files during export"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'NONE'
+msgid "Don't Copy"
+msgstr "コピーしない"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'NONE'
+msgid "Don't copy texture files"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'SKIP_EXISTING'
+msgid "Copy (Skip Existing)"
+msgstr "コピー(既存をスキップ)"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'SKIP_EXISTING'
+msgid "Copy textures but skip files that already exist"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'OVERWRITE'
+msgid "Copy (Overwrite)"
+msgstr "コピー(上書き)"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'OVERWRITE'
+msgid "Copy textures and overwrite existing files"
+msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.disable_specular
 msgid "Disable SPH/SPA"
@@ -993,7 +1024,7 @@ msgid "Preserve All Normals"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
-msgid "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model."
+msgid "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range to prevent excessive geometry destruction and an overly fragmented model."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
@@ -1001,7 +1032,7 @@ msgid "Smooth (Keep Sharp)"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
-msgid "Automatically smooth normals while respecting sharp edges defined by angle or manual marking."
+msgid "Shade smooth, keep sharp edges. Balances vertex count and normal preservation."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
@@ -1009,7 +1040,7 @@ msgid "Smooth All Normals"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
-msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count."
+msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
@@ -1030,14 +1061,6 @@ msgstr "ログファイルを作成"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.scale
 msgid "Scaling factor for exporting the model"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
-msgid "Sharp Edge Angle"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
-msgid "Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
@@ -1256,6 +1279,14 @@ msgstr ""
 msgid "Import model file(s) (.pmd, .pmx)"
 msgstr ""
 
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world
+msgid "Add Rigid Body World"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world
+msgid "Automatically add Rigid Body World to the scene when importing physics."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis
 msgid "Apply Bone Fixed Axis"
 msgstr "ボーン修正回転軸を適用"
@@ -1441,10 +1472,6 @@ msgid ""
 "- Select the armature: imports only armature animation"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action
-msgid "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled."
-msgstr ""
-
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper
 msgid "Bone Mapper"
@@ -1472,6 +1499,10 @@ msgstr "リネームしたボーン"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper:'RENAMED_BONES'
 msgid "Rename the bone of motion data to be blender suitable"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action
+msgid "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_camera_changes
@@ -1720,7 +1751,10 @@ msgstr "モデルをボーンで統合"
 #. :src: bpy.types.MMD_TOOLS_OT_model_join_by_bones
 msgid ""
 "Join multiple MMD models into one.\n"
-"WARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together."
+"\n"
+"WARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together.\n"
+"\n"
+"IMPORTANT: Don't use any of the 'Assembly' functions before using this function. This function requires the models to be in a clean state."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_model_join_by_bones.join_type
@@ -1735,7 +1769,10 @@ msgstr "モデルをボーンで分離"
 #. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones
 msgid ""
 "Separate MMD model into multiple models based on selected bones.\n"
-"WARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together."
+"\n"
+"WARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together.\n"
+"\n"
+"IMPORTANT: Don't use any of the 'Assembly' functions before using this function. This function requires the model to be in a clean state."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.boundary_joint_owner
@@ -2140,6 +2177,7 @@ msgstr "マテリアルで分離(高リスク)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
 msgid ""
+"Separate by Materials (High Risk)\n"
 "Separate the mesh into multiple objects based on materials.\n"
 "HIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\n"
 "Known issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first."
@@ -2395,6 +2433,10 @@ msgstr ""
 
 #. :src: bpy.types.PoseBone.mmd_ik_toggle
 msgid "MMD IK toggle is used to import/export animation of IK on-off"
+msgstr ""
+
+#. :src: bpy.types.PoseBone.select
+msgid "Pose bone selection state (compatibility layer for Blender 4.x, forwards to bone.select)"
 msgstr ""
 
 #. :src: bpy.types.BoneMorph
@@ -3332,16 +3374,16 @@ msgctxt "Operator"
 msgid "Select MMD Rigid Body"
 msgstr "MMD剛体選択"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:391
+#: extensions/blender_org/mmd_tools/operators/fileio.py:396
 #, fuzzy
 msgid "Imported MMD model from \"\""
 msgstr "MMDモデルを \"%s\" からインポートしました"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:891
+#: extensions/blender_org/mmd_tools/operators/fileio.py:963
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:924
+#: extensions/blender_org/mmd_tools/operators/fileio.py:995
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "MMDモデル \"%s\" を \"%s\" にエクスポートしました"
@@ -3363,8 +3405,8 @@ msgid "Same Texture '': Merged materials [] into ''"
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/operators/material.py:353
-#: extensions/blender_org/mmd_tools/operators/misc.py:200
-#: extensions/blender_org/mmd_tools/operators/misc.py:246
+#: extensions/blender_org/mmd_tools/operators/misc.py:205
+#: extensions/blender_org/mmd_tools/operators/misc.py:251
 msgid "Select a MMD model"
 msgstr "MMDモデルを選択する"
 
@@ -3381,11 +3423,11 @@ msgstr "Cycles に変更できませんでした"
 msgid "Materials not found"
 msgstr "マテリアルが見つかりません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:307
+#: extensions/blender_org/mmd_tools/operators/misc.py:312
 msgid "This operation will break existing f-curve/action."
 msgstr "この操作は既存のFカーブ/アクションを破壊します"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:308
+#: extensions/blender_org/mmd_tools/operators/misc.py:313
 msgid "Click [OK] to run the operation."
 msgstr "[OK]をクリックして操作を実行してください"
 
@@ -3394,11 +3436,11 @@ msgstr "[OK]をクリックして操作を実行してください"
 msgid "Can not move object \"\""
 msgstr "オブジェクト \"%s\" を移動できません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:210
+#: extensions/blender_org/mmd_tools/operators/misc.py:215
 msgid "The model does not have any meshes"
 msgstr "このモデルにはメッシュがありません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:251
+#: extensions/blender_org/mmd_tools/operators/misc.py:256
 msgid "Model Armature not found"
 msgstr "モデルのアーマチュアが見つかりません"
 
@@ -3407,17 +3449,17 @@ msgstr "モデルのアーマチュアが見つかりません"
 msgid "Active object is not an armature object"
 msgstr "選択中のオブジェクトはアーマチュアではありません"
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:62
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:117
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:162
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:250
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:359
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:454
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:70
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:125
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:170
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:258
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:367
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:462
 msgid "No MMD model selected"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:68
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:256
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:76
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:264
 msgid "No armature found in model"
 msgstr ""
 
@@ -3777,13 +3819,13 @@ msgstr ""
 msgid "Cleaning invalid bone references..."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:568
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:615
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:600
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:647
 msgctxt "Operator"
 msgid "Fix Bone Order"
 msgstr "ボーン順序を修正"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:646
 msgid "Total Bones: %d"
 msgstr "ボーン合計"
 
@@ -3816,7 +3858,7 @@ msgstr ""
 msgid "No invalid bone references were found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:582
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20
 #: extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21
@@ -3826,7 +3868,7 @@ msgstr ""
 msgid "Select a MMD Model"
 msgstr "MMDモデルを選択してください"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
 msgid "The armature object of active MMD model can't be found"
 msgstr "選択中のMMDモデルのアーマチュアが見つかりません"
 
