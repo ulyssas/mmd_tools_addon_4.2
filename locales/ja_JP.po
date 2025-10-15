@@ -326,7 +326,10 @@ msgid "Build Rig"
 msgstr "ビルドリグ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig
-msgid "Translate physics of selected object into format usable by Blender\n\nWarning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."
+msgid ""
+"Translate physics of selected object into format usable by Blender\n"
+"\n"
+"Warning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_build_rig.collision_margin
@@ -1021,7 +1024,7 @@ msgid "Preserve All Normals"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
-msgid "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model."
+msgid "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range to prevent excessive geometry destruction and an overly fragmented model."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
@@ -1029,7 +1032,7 @@ msgid "Smooth (Keep Sharp)"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
-msgid "Automatically smooth normals while respecting sharp edges defined by angle or manual marking."
+msgid "Shade smooth, keep sharp edges. Balances vertex count and normal preservation."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
@@ -1037,7 +1040,7 @@ msgid "Smooth All Normals"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
-msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count."
+msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
@@ -1058,14 +1061,6 @@ msgstr "ログファイルを作成"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.scale
 msgid "Scaling factor for exporting the model"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
-msgid "Sharp Edge Angle"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
-msgid "Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
@@ -1282,6 +1277,14 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model
 msgid "Import model file(s) (.pmd, .pmx)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world
+msgid "Add Rigid Body World"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world
+msgid "Automatically add Rigid Body World to the scene when importing physics."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis
@@ -2432,6 +2435,10 @@ msgstr ""
 msgid "MMD IK toggle is used to import/export animation of IK on-off"
 msgstr ""
 
+#. :src: bpy.types.PoseBone.select
+msgid "Pose bone selection state (compatibility layer for Blender 4.x, forwards to bone.select)"
+msgstr ""
+
 #. :src: bpy.types.BoneMorph
 msgid "Bone Morph"
 msgstr ""
@@ -3367,16 +3374,16 @@ msgctxt "Operator"
 msgid "Select MMD Rigid Body"
 msgstr "MMD剛体選択"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:391
+#: extensions/blender_org/mmd_tools/operators/fileio.py:396
 #, fuzzy
 msgid "Imported MMD model from \"\""
 msgstr "MMDモデルを \"%s\" からインポートしました"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:968
+#: extensions/blender_org/mmd_tools/operators/fileio.py:963
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:1001
+#: extensions/blender_org/mmd_tools/operators/fileio.py:995
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "MMDモデル \"%s\" を \"%s\" にエクスポートしました"
@@ -3442,17 +3449,17 @@ msgstr "モデルのアーマチュアが見つかりません"
 msgid "Active object is not an armature object"
 msgstr "選択中のオブジェクトはアーマチュアではありません"
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:62
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:117
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:162
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:250
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:359
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:454
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:70
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:125
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:170
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:258
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:367
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:462
 msgid "No MMD model selected"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:68
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:256
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:76
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:264
 msgid "No armature found in model"
 msgstr ""
 

@@ -537,10 +537,17 @@ translations_tuple = (
         ("zh_HANS", "建立骨架", (False, ())),
     ),
     (
-        ("*", "Translate physics of selected object into format usable by Blender\n\nWarning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."),
+        (
+            "*",
+            "Translate physics of selected object into format usable by Blender\n\nWarning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation.",
+        ),
         (("bpy.types.MMD_TOOLS_OT_build_rig",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "将选中物体的物理转译为 Blender 可用的形式\n\n警告:可能导致崩溃和性能问题。建议使用 MMDBridge 以获得更好的稳定性和准确的物理模拟。", (False, ())),
+        (
+            "zh_HANS",
+            "将选中物体的物理转译为 Blender 可用的形式\n\n警告:可能导致崩溃和性能问题。建议使用 MMDBridge 以获得更好的稳定性和准确的物理模拟。",
+            (False, ()),
+        ),
     ),
     (
         (
@@ -1706,7 +1713,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.",
+            "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.",
         ),
         (
             (
@@ -1729,7 +1736,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Automatically smooth normals while respecting sharp edges defined by angle or manual marking.",
+            "Shade smooth, keep sharp edges. Balances vertex count and normal preservation.",
         ),
         (
             ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'",),
@@ -1750,7 +1757,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count.",
+            "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.",
         ),
         (
             ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'",),
@@ -1808,21 +1815,6 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_export_pmx.scale",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "导出模型时的缩放比例系数", (False, ())),
-    ),
-    (
-        ("*", "Sharp Edge Angle"),
-        (("bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "锐边角度", (False, ())),
-    ),
-    (
-        (
-            "*",
-            "Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved.",
-        ),
-        (("bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Sort Materials"),
@@ -2158,6 +2150,21 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_import_model",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "导入模型文件 (.pmd, .pmx)", (False, ())),
+    ),
+    (
+        ("*", "Add Rigid Body World"),
+        (("bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "更新刚体世界", (True, ())),
+    ),
+    (
+        (
+            "*",
+            "Automatically add Rigid Body World to the scene when importing physics.",
+        ),
+        (("bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Apply Bone Fixed Axis"),
@@ -4043,6 +4050,15 @@ translations_tuple = (
         ("zh_HANS", "在启用或关闭逆向运动学的情况下导入或导出动画", (False, ())),
     ),
     (
+        (
+            "*",
+            "Pose bone selection state (compatibility layer for Blender 4.x, forwards to bone.select)",
+        ),
+        (("bpy.types.PoseBone.select",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Bone Morph"),
         (("bpy.types.BoneMorph",), ()),
         ("ja_JP", "", (False, ())),
@@ -5599,19 +5615,19 @@ translations_tuple = (
     ),
     (
         ("*", 'Imported MMD model from ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:391",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:396",), ()),
         ("ja_JP", 'MMDモデルを "%s" からインポートしました', (True, ())),
         ("zh_HANS", '已从"%s"导入 MMD 模型', (True, ())),
     ),
     (
         ("*", '[Skipped] The armature object of MMD model "" can\'t be found'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:968",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:963",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", '[跳过] 找不到 MMD 模型"%s"的骨架数据', (True, ())),
     ),
     (
         ("*", 'Exported MMD model "" to ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:1001",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:995",), ()),
         ("ja_JP", 'MMDモデル "%s" を "%s" にエクスポートしました', (True, ())),
         ("zh_HANS", '已导出 MMD 模型"%s"至"%s"', (True, ())),
     ),
@@ -5722,12 +5738,12 @@ translations_tuple = (
         ("*", "No MMD model selected"),
         (
             (
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:62",
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:117",
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:162",
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:250",
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:359",
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:454",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:70",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:125",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:170",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:258",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:367",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:462",
             ),
             (),
         ),
@@ -5738,8 +5754,8 @@ translations_tuple = (
         ("*", "No armature found in model"),
         (
             (
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:68",
-                "extensions/blender_org/mmd_tools/operators/model_validation.py:256",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:76",
+                "extensions/blender_org/mmd_tools/operators/model_validation.py:264",
             ),
             (),
         ),
