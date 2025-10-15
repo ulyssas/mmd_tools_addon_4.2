@@ -2,7 +2,6 @@
 # This file is part of MMD Tools.
 
 import logging
-import math
 import os
 import re
 import time
