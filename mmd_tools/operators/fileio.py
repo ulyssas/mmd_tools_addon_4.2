@@ -852,21 +852,11 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         name="Normal Handling",
         description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
-            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.", 0),
-            ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle or manual marking.", 1),
-            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count.", 2),
+            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.", 0),
+            ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Shade smooth, keep sharp edges. Balances vertex count and normal preservation.", 1),
+            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.", 2),
         ],
         default="SMOOTH_KEEP_SHARP",
-    )
-    sharp_edge_angle: bpy.props.FloatProperty(
-        name="Sharp Edge Angle",
-        description="Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved.",
-        default=math.radians(30),
-        min=0.0,
-        max=math.radians(180.0),
-        step=100,
-        subtype="ANGLE",
-        unit="ROTATION",
     )
     sort_vertices: bpy.props.EnumProperty(
         name="Sort Vertices",
@@ -1001,7 +991,6 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 disable_specular=self.disable_specular,
                 export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
                 normal_handling=self.normal_handling,
-                sharp_edge_angle=self.sharp_edge_angle,
                 ik_angle_limits=self.ik_angle_limits,
             )
             self.report({"INFO"}, f'Exported MMD model "{root.name}" to "{self.filepath}"')

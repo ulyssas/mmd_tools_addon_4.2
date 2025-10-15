@@ -1065,8 +1065,6 @@ class __PmxExporter:
 
         # Use try-finally pattern to guarantee temporary modifier cleanup, preventing scene pollution
         base_mesh = None
-        temp_smooth_mod = None
-        temp_normal_mod = None
         temp_tri_mod = None
         original_smooth_states = None
         try:
@@ -1078,26 +1076,7 @@ class __PmxExporter:
                 # Save original smooth states
                 original_smooth_states = [False] * len(meshObj.data.polygons)
                 meshObj.data.polygons.foreach_get("use_smooth", original_smooth_states)
-
-                # Add smooth by angle modifier
-                modifiers_count = len(meshObj.modifiers)
-                try:  # Quick Fix for "RuntimeError: Error: No asset found at path" in Blender 4.3, 4.4, 4.5
-                    with FnContext.temp_override_objects(FnContext.ensure_context(), active_object=meshObj, selected_objects=[meshObj]):
-                        bpy.ops.object.modifier_add_node_group(asset_library_type="ESSENTIALS", asset_library_identifier="", relative_asset_identifier="geometry_nodes/smooth_by_angle.blend/NodeTree/Smooth by Angle", use_selected_objects=False)
-                except Exception:
-                    pass
-                if modifiers_count == len(meshObj.modifiers):  # modifier_add_node_group failed to add a modifier to the active object automatically
-                    temp_smooth_mod = meshObj.modifiers.new(name="temp_smooth_by_angle_modifier", type="NODES")
-                    temp_smooth_mod.node_group = bpy.data.node_groups.get("Smooth by Angle")
-                temp_smooth_mod = meshObj.modifiers[-1]
-                temp_smooth_mod.name = "temp_smooth_by_angle_modifier"
-                temp_smooth_mod["Input_1"] = self.__sharp_edge_angle
                 meshObj.data.polygons.foreach_set("use_smooth", [True] * len(meshObj.data.polygons))
-
-                # # Add weighted normal modifier (High Risk)
-                # temp_normal_mod = meshObj.modifiers.new(name="temp_weighted_normal_modifier", type="WEIGHTED_NORMAL")
-                # temp_normal_mod.mode = "FACE_AREA_WITH_ANGLE"
-                # temp_normal_mod.keep_sharp = True
 
             # Check if triangulation is needed
             base_mesh = _to_mesh(meshObj)
@@ -1118,13 +1097,9 @@ class __PmxExporter:
             # Restore original smooth states
             if original_smooth_states is not None:
                 meshObj.data.polygons.foreach_set("use_smooth", original_smooth_states)
-            # Clean up modifiers in reverse order
+            # Clean up modifier
             if temp_tri_mod:
                 meshObj.modifiers.remove(temp_tri_mod)
-            if temp_normal_mod:
-                meshObj.modifiers.remove(temp_normal_mod)
-            if temp_smooth_mod:
-                meshObj.modifiers.remove(temp_smooth_mod)
 
         # Process vertex groups after triangulation
         vg_to_bone = {i: bone_map[x.name] for i, x in enumerate(meshObj.vertex_groups) if x.name in bone_map}
@@ -1452,7 +1427,6 @@ class __PmxExporter:
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
         self.__normal_handling = args.get("normal_handling", "SMOOTH_KEEP_SHARP")
-        self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(30))
         self.__export_vertex_colors_as_adduv2 = args.get("export_vertex_colors_as_adduv2", False)
         self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
         sort_vertices = args.get("sort_vertices", "NONE")
@@ -1510,7 +1484,6 @@ class __PmxExporter:
         triangulation_ratio = final_face_count / original_face_count if original_face_count > 0 else 0
         logging.info("Changes in Vertex and Face Count:")
         logging.info("  Normal Handling: %s", self.__normal_handling)
-        logging.info("  Sharp Edge Angle: %.1f degrees", math.degrees(self.__sharp_edge_angle))
         logging.info("  Vertices: Original %d -> Output %d (%+d)", original_vertex_count, final_vertex_count, vertex_diff)
         logging.info("  Faces: Original %d -> Output %d (%+d)", original_face_count, final_face_count, face_diff)
         logging.info("  Face Triangulation Ratio: %.2fx (Output / Original)", triangulation_ratio)
