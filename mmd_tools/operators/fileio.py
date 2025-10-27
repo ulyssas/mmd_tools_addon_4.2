@@ -674,10 +674,11 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     if shape_key.name != "Basis":  # Don't reset basis shape key
                         shape_key.value = 0.0
 
-            elif hasattr(obj, "mmd_type") and obj.mmd_type == "ROOT":
-                # Reset root display state
-                if hasattr(obj, "mmd_root") and hasattr(obj.mmd_root, "show_meshes"):
-                    obj.mmd_root.show_meshes = True  # Default to show meshes
+            # NOTE: Unnecessary for animation import; users expect only bones/morphs reset
+            # elif hasattr(obj, "mmd_type") and obj.mmd_type == "ROOT":
+            #     # Reset root display state
+            #     if hasattr(obj, "mmd_root") and hasattr(obj.mmd_root, "show_meshes"):
+            #         obj.mmd_root.show_meshes = True  # Default to show meshes
 
 
 class ImportVpd(Operator, ImportHelper, PreferencesMixin):
