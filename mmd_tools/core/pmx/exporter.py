@@ -397,9 +397,16 @@ class __PmxExporter:
                 pmx_bone.name = mmd_bone.name_j or bone.name
                 pmx_bone.name_e = mmd_bone.name_e
 
-                pmx_bone.hasAdditionalRotate = mmd_bone.has_additional_rotation
-                pmx_bone.hasAdditionalLocation = mmd_bone.has_additional_location
-                pmx_bone.additionalTransform = [mmd_bone.additional_transform_bone, mmd_bone.additional_transform_influence]
+                if mmd_bone.additional_transform_bone:
+                    pmx_bone.hasAdditionalRotate = mmd_bone.has_additional_rotation
+                    pmx_bone.hasAdditionalLocation = mmd_bone.has_additional_location
+                    pmx_bone.additionalTransform = [mmd_bone.additional_transform_bone, mmd_bone.additional_transform_influence]
+                else:
+                    if mmd_bone.has_additional_rotation or mmd_bone.has_additional_location:
+                        logging.warning(f"Bone {p_bone.name}: Additional Transform is enabled but no target bone is specified. Automatically disabling.")
+                    pmx_bone.hasAdditionalRotate = False
+                    pmx_bone.hasAdditionalLocation = False
+                    pmx_bone.additionalTransform = ["", 1.0]
 
                 pmx_bone.location = __to_pmx_location(p_bone.head)
                 pmx_bone.parent = bone.parent
