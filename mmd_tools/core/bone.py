@@ -453,12 +453,12 @@ class FnBone:
                 remove_constraint(constraints, name)
                 return
             c = TransformConstraintOp.create(constraints, name, map_type)
+            c.target = p_bone.id_data
             # FIXME: Some bones require specific rotation modes to match MMD behavior.
             # Currently using hardcoded bone names as a temporary solution.
             # See https://github.com/MMD-Blender/blender_mmd_tools/issues/242
             if bone_name in {"左肩C", "右肩C", "肩C.L", "肩C.R", "肩C_L", "肩C_R"}:
                 c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for shoulder bones
-            c.target = p_bone.id_data
             shadow_bone.add_constraint(c)
             TransformConstraintOp.update_min_max(c, value, influence)
 
