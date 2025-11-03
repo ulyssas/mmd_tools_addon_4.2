@@ -459,6 +459,7 @@ class FnBone:
             # See https://github.com/MMD-Blender/blender_mmd_tools/issues/242
             if bone_name in {"左肩C", "右肩C", "肩C.L", "肩C.R", "肩C_L", "肩C_R"}:
                 c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for shoulder bones
+            c.mix_mode_rot = "AFTER"  # Use "AFTER" instead of "ADD" to match MMD behavior
             shadow_bone.add_constraint(c)
             TransformConstraintOp.update_min_max(c, value, influence)
 
