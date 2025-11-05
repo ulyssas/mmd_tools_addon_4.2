@@ -655,6 +655,9 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
         # STEP 2: Reset all properties to default states
         for obj in objects_to_process:
+            # NOTE: Intentionally omitted resetting the state of obj.mmd_root.show_meshes
+            # This is because when importing animations, users usually expect only the bones' poses and morphs to be reset.
+            # See https://github.com/MMD-Blender/blender_mmd_tools/issues/290
             if obj.type == "ARMATURE":
                 # Reset armature pose
                 for bone in obj.pose.bones:
@@ -663,22 +666,14 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     bone.rotation_euler = (0.0, 0.0, 0.0)
                     bone.rotation_axis_angle = (0.0, 0.0, 1.0, 0.0)
                     bone.scale = (1.0, 1.0, 1.0)
-
                     # Reset IK settings to default
                     if hasattr(bone, "mmd_ik_toggle"):
                         bone.mmd_ik_toggle = True
-
             elif obj.type == "MESH" and getattr(obj.data, "shape_keys", None):
                 # Reset mesh morphs
                 for shape_key in obj.data.shape_keys.key_blocks:
                     if shape_key.name != "Basis":  # Don't reset basis shape key
                         shape_key.value = 0.0
-
-            # NOTE: Unnecessary for animation import; users expect only bones/morphs reset
-            # elif hasattr(obj, "mmd_type") and obj.mmd_type == "ROOT":
-            #     # Reset root display state
-            #     if hasattr(obj, "mmd_root") and hasattr(obj.mmd_root, "show_meshes"):
-            #         obj.mmd_root.show_meshes = True  # Default to show meshes
 
 
 class ImportVpd(Operator, ImportHelper, PreferencesMixin):
