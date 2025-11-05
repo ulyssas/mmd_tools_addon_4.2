@@ -606,7 +606,7 @@ class TestPmxExporter(unittest.TestCase):
         print(f"\n    Check: {str(check_types)} | Import: {str(import_types)}")
 
         for test_num, filepath in enumerate(input_files):
-            print("\n     - %2d/%d | filepath: %s" % (test_num + 1, len(input_files), filepath))
+            print(f"\n     - {test_num + 1:2d}/{len(input_files)} | filepath: {filepath}")
             try:
                 self.__enable_mmd_tools()
                 file_loader = pmx.load
@@ -625,7 +625,7 @@ class TestPmxExporter(unittest.TestCase):
                 self.fail(f"Exception happened during import {filepath}")
             else:
                 try:
-                    output_pmx = os.path.join(TESTS_DIR, "output", "%d.pmx" % test_num)
+                    output_pmx = os.path.join(TESTS_DIR, "output", f"{test_num}.pmx")
                     bpy.ops.mmd_tools.export_pmx(
                         filepath=output_pmx,
                         scale=1.0,

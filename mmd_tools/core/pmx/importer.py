@@ -370,7 +370,7 @@ class PMXImporter:
                 c = ik_bone.constraints.new(type="LIMIT_ROTATION")
                 c.mute = True
                 c.influence = 0
-                c.name = "mmd_ik_limit_custom%d" % idx
+                c.name = f"mmd_ik_limit_custom{idx}"
                 use_limits = c.use_limit_x = c.use_limit_y = c.use_limit_z = i.maximumAngle is not None
                 if use_limits:
                     minimum, maximum = self.convertIKLimitAngles(i.minimumAngle, i.maximumAngle, pose_bones[i.target].bone.matrix_local)

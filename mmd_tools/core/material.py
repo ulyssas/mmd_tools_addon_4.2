@@ -172,7 +172,7 @@ class FnMaterial:
         mmd_mat: MMDMaterial = self.__material.mmd_material
         if mmd_mat.is_shared_toon_texture:
             shared_toon_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "shared_toon_folder", "")
-            toon_path = os.path.join(shared_toon_folder, "toon%02d.bmp" % (mmd_mat.shared_toon_texture + 1))
+            toon_path = os.path.join(shared_toon_folder, f"toon{mmd_mat.shared_toon_texture + 1:02d}.bmp")
             self.create_toon_texture(str(Path(toon_path).resolve()))
         elif mmd_mat.toon_texture != "":
             self.create_toon_texture(mmd_mat.toon_texture)

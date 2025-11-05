@@ -594,7 +594,7 @@ class ViewUVMorph(bpy.types.Operator):
 
             base_uv_layers = [layer for layer in mesh.uv_layers if not layer.name.startswith("_")]
             if morph.uv_index >= len(base_uv_layers):
-                self.report({"ERROR"}, "Invalid uv index: %d" % morph.uv_index)
+                self.report({"ERROR"}, f"Invalid uv index: {morph.uv_index}")
                 return {"CANCELLED"}
 
             uv_layer_name = base_uv_layers[morph.uv_index].name

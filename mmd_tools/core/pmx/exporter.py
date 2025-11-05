@@ -503,7 +503,7 @@ class __PmxExporter:
         if ik_export_option == "IGNORE_ALL":
             unused_counts = 3
         else:
-            ik_limit_custom = next((c for c in custom_bone.constraints if c.type == "LIMIT_ROTATION" and c.name == "mmd_ik_limit_custom%d" % len(ik_links)), None)
+            ik_limit_custom = next((c for c in custom_bone.constraints if c.type == "LIMIT_ROTATION" and c.name == f"mmd_ik_limit_custom{len(ik_links)}"), None)
             ik_limit_override = next((c for c in pose_bone.constraints if c.type == "LIMIT_ROTATION" and not c.mute), None)
 
             for i, axis in enumerate("xyz"):

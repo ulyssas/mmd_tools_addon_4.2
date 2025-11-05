@@ -42,7 +42,7 @@ class TestPmxImportTime(unittest.TestCase):
         import_types = {"MESH", "ARMATURE", "PHYSICS", "MORPHS", "DISPLAY"}
 
         print("\n=== PMX Import Time Test ===")
-        print("Import types: %s" % str(import_types))
+        print(f"Import types: {str(import_types)}")
 
         total_time = 0
         successful_imports = 0
