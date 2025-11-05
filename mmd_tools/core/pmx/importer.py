@@ -472,13 +472,13 @@ class PMXImporter:
             rot_data = rigid.rotation
             size_data = rigid.size
             if any(math.isnan(val) for val in loc_data):
-                logging.warning(f"Rigid body '{rigid.name}' has invalid location data, using default location")
+                logging.warning("Rigid body '%s' has invalid location data, using default location", rigid.name)
                 loc_data = (0.0, 0.0, 0.0)
             if any(math.isnan(val) for val in rot_data):
-                logging.warning(f"Rigid body '{rigid.name}' has invalid rotation data, using default rotation")
+                logging.warning("Rigid body '%s' has invalid rotation data, using default rotation", rigid.name)
                 rot_data = (0.0, 0.0, 0.0)
             if any(math.isnan(val) for val in size_data):
-                logging.warning(f"Rigid body '{rigid.name}' has invalid size data, using default size")
+                logging.warning("Rigid body '%s' has invalid size data, using default size", rigid.name)
                 size_data = (1.0, 1.0, 1.0)
             loc = Vector(loc_data).xzy * self.__scale
             rot = Vector(rot_data).xzy * -1
@@ -879,7 +879,7 @@ class PMXImporter:
         total_edges = len(mesh.edges)
         sharp_edges = sum(1 for edge in mesh.edges if edge.use_edge_sharp)
         percentage = (sharp_edges / total_edges) * 100 if total_edges > 0 else 0
-        logging.info(f"   - Marked {sharp_edges}/{total_edges} ({percentage:.2f}%) sharp edges with angle: 179 degrees")
+        logging.info("   - Marked %s/%s (%.2f%%) sharp edges with angle: 179 degrees", sharp_edges, total_edges, percentage)
         if self.__vertex_map:
             verts, faces = self.__model.vertices, self.__model.faces
             custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]

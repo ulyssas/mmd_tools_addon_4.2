@@ -145,7 +145,7 @@ class FnMaterial:
             try:
                 return os.path.samefile(img_filepath, filepath)
             except Exception as e:
-                logging.warning(f"Failed to compare files '{img_filepath}' and '{filepath}': {e}")
+                logging.warning("Failed to compare files '%s' and '%s': %s", img_filepath, filepath, e)
         return False
 
     def _load_image(self, filepath):

@@ -291,9 +291,9 @@ class __PmxExporter:
                         with open(full_dest_path, "wb") as f:
                             f.write(packed_image.packed_file.data)
                     except PermissionError:
-                        logging.warning(f"Permission denied. Could not write texture to '{full_dest_path}'. Skipping.")
+                        logging.warning("Permission denied. Could not write texture to '%s'. Skipping.", full_dest_path)
                     except Exception as e:
-                        logging.exception(f"An unexpected error occurred while writing packed texture: {e}")
+                        logging.exception("An unexpected error occurred while writing packed texture: %s", e)
 
                 # If not packed, handle existing external files by copying them
                 elif os.path.isfile(src_path):
@@ -302,9 +302,9 @@ class __PmxExporter:
                         try:
                             shutil.copy2(src_path, full_dest_path)
                         except PermissionError:
-                            logging.warning(f"Permission denied. Could not copy texture to '{full_dest_path}'. Skipping.")
+                            logging.warning("Permission denied. Could not copy texture to '%s'. Skipping.", full_dest_path)
                         except Exception as e:
-                            logging.exception(f"An unexpected error occurred while copying external texture: {e}")
+                            logging.exception("An unexpected error occurred while copying external texture: %s", e)
                 else:
                     logging.warning("Source for texture '%s' not found. Cannot copy.", src_path)
 
@@ -403,7 +403,7 @@ class __PmxExporter:
                     pmx_bone.additionalTransform = [mmd_bone.additional_transform_bone, mmd_bone.additional_transform_influence]
                 else:
                     if mmd_bone.has_additional_rotation or mmd_bone.has_additional_location:
-                        logging.warning(f"Bone {p_bone.name}: Additional Transform is enabled but no target bone is specified. Automatically disabling.")
+                        logging.warning("Bone %s: Additional Transform is enabled but no target bone is specified. Automatically disabling.", p_bone.name)
                     pmx_bone.hasAdditionalRotate = False
                     pmx_bone.hasAdditionalLocation = False
                     pmx_bone.additionalTransform = ["", 1.0]
@@ -896,13 +896,13 @@ class __PmxExporter:
         for obj in rigid_bodies:
             t, r, s = obj.matrix_world.decompose()
             if any(math.isnan(val) for val in t):
-                logging.warning(f"Rigid body '{obj.name}' has invalid position coordinates, using default position")
+                logging.warning("Rigid body '%s' has invalid position coordinates, using default position", obj.name)
                 t = Vector((0.0, 0.0, 0.0))
             if any(math.isnan(val) for val in r):
-                logging.warning(f"Rigid body '{obj.name}' has invalid rotation coordinates, using default rotation")
+                logging.warning("Rigid body '%s' has invalid rotation coordinates, using default rotation", obj.name)
                 r = Euler((0.0, 0.0, 0.0), "YXZ")
             if any(math.isnan(val) for val in s):
-                logging.warning(f"Rigid body '{obj.name}' has invalid scale coordinates, using default scale")
+                logging.warning("Rigid body '%s' has invalid scale coordinates, using default scale", obj.name)
                 s = Vector((1.0, 1.0, 1.0))
             r = r.to_euler("YXZ")
             rb = obj.rigid_body
@@ -1269,11 +1269,11 @@ class __PmxExporter:
         # Export additional UV layers
         for uv_n, uv_tex in enumerate(bl_add_uvs):
             if uv_n > 3:
-                logging.warning(f" * extra addUV{uv_n + 1} ({uv_tex.name}) are not supported")
+                logging.warning(" * extra addUV%s (%s) are not supported", uv_n + 1, uv_tex.name)
                 continue
             uv_data = _UVWrapper(uv_tex.data)
             zw_data = base_mesh.uv_layers.get("_" + uv_tex.name, None)
-            logging.info(f" # exporting addUV{uv_n + 1}: {uv_tex.name} [zw: {zw_data.name if zw_data else zw_data}]")
+            logging.info(" # exporting addUV%s: %s [zw: %s]", uv_n + 1, uv_tex.name, zw_data.name if zw_data else zw_data)
             if zw_data:
                 zw_data = _UVWrapper(zw_data.data)
             else:
@@ -1412,7 +1412,7 @@ class __PmxExporter:
             if root.mmd_root.name:
                 self.__model.name = root.mmd_root.name
             else:
-                logging.warning(f"Model name is empty, using root object name '{root.name}' instead")
+                logging.warning("Model name is empty, using root object name '%s' instead", root.name)
                 self.__model.name = root.name
             self.__model.name_e = root.mmd_root.name_e
             txt = bpy.data.texts.get(root.mmd_root.comment_text, None)
