@@ -557,8 +557,10 @@ class FnMaterial:
             if shader_out_socket:
                 links.new(shader_out_socket, node_output.inputs["Surface"])
             elif color_out_socket:
+                logging.info("Material '%s': MMDShaderDev node group is missing 'Shader' output. Falling back to 'Color' output. Material will render as an emission shader.", mat.name)
                 links.new(color_out_socket, node_output.inputs["Surface"])
             elif alpha_out_socket:
+                logging.warning("Material '%s': MMDShaderDev node group is missing 'Shader' and 'Color' outputs. Falling back to 'Alpha' output. Material will render as grayscale.", mat.name)
                 links.new(alpha_out_socket, node_output.inputs["Surface"])
             else:
                 raise RuntimeError(f"Material '{mat.name}': The 'mmd_shader' node group is invalid or corrupted. It is missing all expected outputs ('Shader', 'Color', and 'Alpha'). Unable to link material output.")
