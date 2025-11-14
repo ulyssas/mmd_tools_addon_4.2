@@ -4,7 +4,6 @@
 import re
 
 from bpy.types import Operator
-from mathutils import Matrix, Quaternion
 
 
 class _SetShadingBase:
@@ -15,22 +14,6 @@ class _SetShadingBase:
         if getattr(context.area, "type", None) == "VIEW_3D":
             return (context.area.spaces[0],)
         return (area.spaces[0] for area in getattr(context.screen, "areas", ()) if area.type == "VIEW_3D")
-
-    @staticmethod
-    def _reset_color_management(context, use_display_device=True):
-        try:
-            context.scene.display_settings.display_device = ("None", "sRGB")[use_display_device]
-        except TypeError:
-            pass
-
-    @staticmethod
-    def _reset_material_shading(context, use_shadeless=False):
-        for i in (x for x in context.scene.objects if x.type == "MESH" and x.mmd_type == "NONE"):
-            for s in i.material_slots:
-                if s.material is None:
-                    continue
-                s.material.use_nodes = False
-                s.material.use_shadeless = use_shadeless
 
     def execute(self, context):
         context.scene.render.engine = "BLENDER_EEVEE_NEXT"
@@ -68,12 +51,7 @@ class ResetShading(Operator, _SetShadingBase):
     bl_description = "Reset to default Blender shading"
 
 
-class FlipPose(Operator):
-    bl_idname = "mmd_tools.flip_pose"
-    bl_label = "Flip Pose"
-    bl_description = "Apply the current pose of selected bones to matching bone on opposite side of X-Axis."
-    bl_options = {"REGISTER", "UNDO"}
-
+class FlipPose:
     # https://docs.blender.org/manual/en/dev/rigging/armatures/bones/editing/naming.html
     __LR_REGEX = [
         {"re": re.compile(r"^(.+)(RIGHT|LEFT)(\.\d+)?$", re.IGNORECASE), "lr": 1},
@@ -115,31 +93,3 @@ class FlipPose(Operator):
                             name += s
                     return name
         return ""
-
-    @staticmethod
-    def __cmul(vec1, vec2):
-        return type(vec1)([x * y for x, y in zip(vec1, vec2, strict=False)])
-
-    @staticmethod
-    def __matrix_compose(loc, rot, scale):
-        return (Matrix.Translation(loc) @ rot.to_matrix().to_4x4()) @ Matrix([(scale[0], 0, 0, 0), (0, scale[1], 0, 0), (0, 0, scale[2], 0), (0, 0, 0, 1)])
-
-    @classmethod
-    def __flip_pose(cls, matrix_basis, bone_src, bone_dest):
-        m = bone_dest.bone.matrix_local.to_3x3().transposed()
-        mi = bone_src.bone.matrix_local.to_3x3().transposed().inverted() if bone_src != bone_dest else m.inverted()
-        loc, rot, scale = matrix_basis.decompose()
-        loc = cls.__cmul(mi @ loc, (-1, 1, 1))
-        rot = cls.__cmul(Quaternion(mi @ rot.axis, rot.angle).normalized(), (1, 1, -1, -1))
-        bone_dest.matrix_basis = cls.__matrix_compose(m @ loc, Quaternion(m @ rot.axis, rot.angle).normalized(), scale)
-
-    @classmethod
-    def poll(cls, context):
-        obj = context.active_object
-        return obj is not None and obj.type == "ARMATURE" and obj.mode == "POSE"
-
-    def execute(self, context):
-        pose_bones = context.active_object.pose.bones
-        for b, mat in [(x, x.matrix_basis.copy()) for x in context.selected_pose_bones]:
-            self.__flip_pose(mat, b, pose_bones.get(self.flip_name(b.name), b))
-        return {"FINISHED"}
