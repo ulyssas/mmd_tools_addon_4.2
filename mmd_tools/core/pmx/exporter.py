@@ -14,6 +14,7 @@ import bpy
 from mathutils import Euler, Matrix, Vector
 
 from ...bpyutils import FnContext
+from ...compat.action_compat import IS_BLENDER_50_UP
 from ...operators.misc import MoveObject
 from ...utils import saferelpath
 from .. import pmx
@@ -412,7 +413,10 @@ class __PmxExporter:
                 pmx_bone.parent = bone.parent
                 # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
                 # This logic is the same as Blender's
-                pmx_bone.visible = not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                if IS_BLENDER_50_UP:
+                    pmx_bone.visible = not p_bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                else:
+                    pmx_bone.visible = not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)

@@ -14,6 +14,7 @@ from mathutils import Matrix, Vector
 
 from ... import bpyutils, utils
 from ...bpyutils import FnContext
+from ...compat.action_compat import IS_BLENDER_50_UP
 from ...operators.misc import MoveObject
 from .. import pmx
 from ..bone import FnBone
@@ -425,7 +426,10 @@ class PMXImporter:
             elif b_bone.name in specialTipBones:
                 mmd_bone.is_tip = True
 
-            b_bone.bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
+            if IS_BLENDER_50_UP:
+                b_bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
+            else:
+                b_bone.bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
 
             if not pmx_bone.isRotatable:
                 b_bone.lock_rotation = [True, True, True]
