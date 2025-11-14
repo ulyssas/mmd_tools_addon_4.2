@@ -16,7 +16,10 @@ class _SetShadingBase:
         return (area.spaces[0] for area in getattr(context.screen, "areas", ()) if area.type == "VIEW_3D")
 
     def execute(self, context):
-        context.scene.render.engine = "BLENDER_EEVEE_NEXT"
+        try:
+            context.scene.render.engine = "BLENDER_EEVEE"  # Blender 5.0+
+        except TypeError:
+            context.scene.render.engine = "BLENDER_EEVEE_NEXT"  # Blender 4.2-4.5
 
         shading_mode = getattr(self, "_shading_mode", None)
         for space in self._get_view3d_spaces(context):

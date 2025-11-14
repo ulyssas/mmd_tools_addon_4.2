@@ -56,7 +56,7 @@ class TestView(unittest.TestCase):
         bpy.ops.mmd_tools.set_glsl_shading()
 
         # Check engine
-        self.assertEqual(self.context.scene.render.engine, "BLENDER_EEVEE_NEXT")
+        self.assertIn(self.context.scene.render.engine, ["BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"])
 
         # Check viewport shading settings
         shading = self.space_3d.shading
@@ -72,7 +72,7 @@ class TestView(unittest.TestCase):
         bpy.ops.mmd_tools.set_shadeless_glsl_shading()
 
         # Check engine
-        self.assertEqual(self.context.scene.render.engine, "BLENDER_EEVEE_NEXT")
+        self.assertIn(self.context.scene.render.engine, ["BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"])
 
         # Check viewport shading settings
         shading = self.space_3d.shading
@@ -88,7 +88,7 @@ class TestView(unittest.TestCase):
         bpy.ops.mmd_tools.reset_shading()
 
         # Check engine
-        self.assertEqual(self.context.scene.render.engine, "BLENDER_EEVEE_NEXT")
+        self.assertIn(self.context.scene.render.engine, ["BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"])
 
         # Check viewport shading settings
         shading = self.space_3d.shading

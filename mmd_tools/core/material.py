@@ -435,7 +435,8 @@ class FnMaterial:
 
             preferred_output_node_target = {
                 "CYCLES": "CYCLES",
-                "BLENDER_EEVEE_NEXT": "EEVEE",
+                "BLENDER_EEVEE": "EEVEE",  # Blender 5.0+
+                "BLENDER_EEVEE_NEXT": "EEVEE",  # Blender 4.2-4.5
             }.get(active_render_engine, "ALL")
 
             tex_node = None
