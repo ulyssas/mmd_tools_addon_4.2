@@ -1188,10 +1188,13 @@ class __PmxExporter:
             ]
 
         # Extract vertex colors as ADD UV2
+        # TODO: Replace base_mesh.vertex_colors with base_mesh.color_attributes
         vertex_colors = None
         vertex_colors_data = None
         if self.__export_vertex_colors_as_adduv2:
             vertex_colors = base_mesh.vertex_colors.active
+            if vertex_colors is None and len(base_mesh.vertex_colors) > 0:
+                vertex_colors = base_mesh.vertex_colors[0]
             if vertex_colors:
                 vertex_colors_data = [c.color for c in vertex_colors.data]
 
