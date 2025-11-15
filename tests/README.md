@@ -96,7 +96,7 @@ C:.
 |           - __init__.py
 |
 +---operators
-|       ✗ animation.py
+|       ✓ animation.py (test_animation.py)
 |       ✓ camera.py (test_camera_system.py)
 |       ✓ display_item.py (test_display_system.py)
 |       ✓ fileio.py (test_fileio_operators.py)
