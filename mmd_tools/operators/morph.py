@@ -902,7 +902,8 @@ class ConvertBoneMorphToVertexMorph(bpy.types.Operator):
 
             if not vertex_morph_exists:
                 mmd_root.active_morph_type = "vertex_morphs"
-                morph, mmd_root.active_morph = ItemOp.add_after(mmd_root.vertex_morphs, mmd_root.active_morph)
+                morph = mmd_root.vertex_morphs.add()
+                mmd_root.active_morph = len(mmd_root.vertex_morphs) - 1
                 morph.name = target_name
 
             # Step 9: Add to facial expression display frame
@@ -1086,11 +1087,9 @@ class ConvertGroupMorphToVertexMorph(bpy.types.Operator):
 
         # If not, create a new vertex morph
         if not vertex_morph_exists:
-            # Switch to vertex morphs panel
             mmd_root.active_morph_type = "vertex_morphs"
-
-            # Add new vertex morph
-            morph, mmd_root.active_morph = ItemOp.add_after(mmd_root.vertex_morphs, mmd_root.active_morph)
+            morph = mmd_root.vertex_morphs.add()
+            mmd_root.active_morph = len(mmd_root.vertex_morphs) - 1
             morph.name = target_name
 
         # Add the new vertex morph to the facial display frame
