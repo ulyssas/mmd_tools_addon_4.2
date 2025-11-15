@@ -1202,3 +1202,69 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
+
+
+# --- Drag and Drop Handlers ---
+
+
+class MMD_PMX_FileHandler(bpy.types.FileHandler):
+    bl_idname = "mmd_tools.pmx_file_handler"
+    bl_label = "MMD PMX/PMD Model"
+    bl_import_operator = "mmd_tools.import_model"
+    bl_file_extensions = ".pmx;.pmd"
+    bl_file_filter = "*.pmx;*.pmd"
+    bl_description = "Import MMD PMX/PMD Model by dropping into Blender"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+
+    def import_drop(self, context, filepath=None, files=None, **kwargs):
+        if files:
+            for f in files:
+                bpy.ops.mmd_tools.import_model(filepath=f["name"])
+        elif filepath:
+            bpy.ops.mmd_tools.import_model(filepath=filepath)
+        return {"FINISHED"}
+
+
+class MMD_VMD_FileHandler(bpy.types.FileHandler):
+    bl_idname = "mmd_tools.vmd_file_handler"
+    bl_label = "MMD VMD Animation"
+    bl_import_operator = "mmd_tools.import_vmd"
+    bl_file_extensions = ".vmd"
+    bl_file_filter = "*.vmd"
+    bl_description = "Import MMD VMD Animation by dropping into Blender"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+
+    def import_drop(self, context, filepath=None, files=None, **kwargs):
+        if files:
+            for f in files:
+                bpy.ops.mmd_tools.import_vmd(filepath=f["name"])
+        elif filepath:
+            bpy.ops.mmd_tools.import_vmd(filepath=filepath)
+        return {"FINISHED"}
+
+
+class MMD_VPD_FileHandler(bpy.types.FileHandler):
+    bl_idname = "mmd_tools.vpd_file_handler"
+    bl_label = "MMD VPD Pose"
+    bl_import_operator = "mmd_tools.import_vpd"
+    bl_file_extensions = ".vpd"
+    bl_file_filter = "*.vpd"
+    bl_description = "Import MMD VPD Pose by dropping into Blender"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+
+    def import_drop(self, context, filepath=None, files=None, **kwargs):
+        if files:
+            for f in files:
+                bpy.ops.mmd_tools.import_vpd(filepath=f["name"])
+        elif filepath:
+            bpy.ops.mmd_tools.import_vpd(filepath=filepath)
+        return {"FINISHED"}
