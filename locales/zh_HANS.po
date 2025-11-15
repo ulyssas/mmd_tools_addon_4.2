@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the Blender package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr "Project-Id-Version: MMD Tools 4.5.1 (0)"
+msgstr "Project-Id-Version: MMD Tools 4.5.2 (0)"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
 msgid "Base Texture Folder"
@@ -1252,15 +1252,6 @@ msgstr "修复贴图问题"
 msgid "Fix texture name and path issues automatically"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_flip_pose
-msgctxt "Operator"
-msgid "Flip Pose"
-msgstr "翻转姿态"
-
-#. :src: bpy.types.MMD_TOOLS_OT_flip_pose
-msgid "Apply the current pose of selected bones to matching bone on opposite side of X-Axis."
-msgstr "将选中骨骼的当前姿态应用于X轴对称的骨骼"
-
 #. :src: bpy.types.MMD_TOOLS_OT_global_translation_popup
 msgctxt "Operator"
 msgid "Global Translation Popup"
@@ -1274,15 +1265,6 @@ msgstr "导入模型文件 (.pmd, .pmx)"
 #. :src: bpy.types.MMD_TOOLS_OT_import_model
 msgid "Import model file(s) (.pmd, .pmx)"
 msgstr "导入模型文件 (.pmd, .pmx)"
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
-#, fuzzy
-msgid "Enable Rigid Body World"
-msgstr "更新刚体世界"
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
-msgid "Automatically enable Rigid Body World to the scene when importing physics."
-msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis
 msgid "Apply Bone Fixed Axis"
@@ -1319,6 +1301,14 @@ msgstr "将骨骼重命名为英文"
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd.dictionary
 msgid "Translate bone names from Japanese to English using selected dictionary"
 msgstr "使用选中的词典将骨骼名从日语翻译为英语"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
+msgid "Enable Rigid Body World"
+msgstr "开启刚体世界环境"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
+msgid "Automatically enable Rigid Body World to the scene when importing physics."
+msgstr "导入物理时自动开启刚体世界环境。"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
 msgid "Automatically fix bone order after import. This ensures bones are ordered correctly for MMD compatibility."
@@ -3375,12 +3365,12 @@ msgstr "选择MMD刚体"
 msgid "Imported MMD model from \"\""
 msgstr "已从\"%s\"导入 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:963
+#: extensions/blender_org/mmd_tools/operators/fileio.py:959
 #, fuzzy
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr "[跳过] 找不到 MMD 模型\"%s\"的骨架数据"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:995
+#: extensions/blender_org/mmd_tools/operators/fileio.py:991
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "已导出 MMD 模型\"%s\"至\"%s\""
@@ -3408,8 +3398,8 @@ msgid "Select a MMD model"
 msgstr "选择 MMD 模型"
 
 #: extensions/blender_org/mmd_tools/operators/material.py:364
-msgid "Created %d toon edge(s)"
-msgstr "已创建 %d 条卡通边缘"
+msgid "Created  toon edge(s)"
+msgstr "已创建  条卡通边缘"
 
 #: extensions/blender_org/mmd_tools/operators/material.py:49
 msgid " * Failed to change to Cycles render engine."
@@ -3441,8 +3431,8 @@ msgstr "该模型不具有任何网格"
 msgid "Model Armature not found"
 msgstr "找不到模型的骨架"
 
-#: extensions/blender_org/mmd_tools/operators/model.py:151
-#: extensions/blender_org/mmd_tools/operators/model.py:182
+#: extensions/blender_org/mmd_tools/operators/model.py:154
+#: extensions/blender_org/mmd_tools/operators/model.py:185
 msgid "Active object is not an armature object"
 msgstr "选中的物体不是骨架物体"
 
@@ -3509,8 +3499,8 @@ msgid "Please select a mesh object"
 msgstr "选择网格物体"
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:597
-msgid "Invalid uv index: %d"
-msgstr "无效 UV 索引: %d"
+msgid "Invalid uv index: "
+msgstr "无效 UV 索引: "
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:607
 msgid "Failed to create a temporary uv layer"
@@ -3562,76 +3552,76 @@ msgstr "选择两个或更多 MMD 刚体"
 msgid "Binded  of  selected mesh(es)"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:273
+#: extensions/blender_org/mmd_tools/operators/translations.py:269
 msgid "Filter"
 msgstr "筛选"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:277
+#: extensions/blender_org/mmd_tools/operators/translations.py:273
 msgid "is Blank:"
 msgstr "是空白:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:280
+#: extensions/blender_org/mmd_tools/operators/translations.py:276
 msgid "Japanese"
 msgstr "日文"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:282
+#: extensions/blender_org/mmd_tools/operators/translations.py:278
 msgid "English"
 msgstr "英文"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:310
+#: extensions/blender_org/mmd_tools/operators/translations.py:306
 msgid "Select the target column for Batch Operations:"
 msgstr "选择批量操作的目标列:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:334
+#: extensions/blender_org/mmd_tools/operators/translations.py:330
 msgid "Batch Operation:"
 msgstr "批量操作:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:342
+#: extensions/blender_org/mmd_tools/operators/translations.py:338
 msgid "Preset"
 msgstr "预设"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:345
+#: extensions/blender_org/mmd_tools/operators/translations.py:341
 msgctxt "Operator"
 msgid "Execute"
 msgstr "执行"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:349
+#: extensions/blender_org/mmd_tools/operators/translations.py:345
 msgid "Dictionaries:"
 msgstr "词典:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:351
+#: extensions/blender_org/mmd_tools/operators/translations.py:347
 msgid "to_english"
 msgstr "to_english"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:355
+#: extensions/blender_org/mmd_tools/operators/translations.py:351
 msgid "replace"
 msgstr "替换"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:360
+#: extensions/blender_org/mmd_tools/operators/translations.py:356
 msgid "CSV:"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:362
+#: extensions/blender_org/mmd_tools/operators/translations.py:358
 msgctxt "Operator"
 msgid "Import CSV"
 msgstr "导入 CSV"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:363
+#: extensions/blender_org/mmd_tools/operators/translations.py:359
 msgctxt "Operator"
 msgid "Export CSV"
 msgstr "导出 CSV"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:456
+#: extensions/blender_org/mmd_tools/operators/translations.py:447
 msgid "Exported to "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:112
-#: extensions/blender_org/mmd_tools/operators/translations.py:403
-msgid "Failed to translate %d names, see '%s' in text editor"
-msgstr "未能翻译 %d 个名称，参见文本编辑器中的 '%s'"
+#: extensions/blender_org/mmd_tools/operators/translations.py:110
+#: extensions/blender_org/mmd_tools/operators/translations.py:397
+msgid "Failed to translate  names, see '' in text editor"
+msgstr "未能翻译  个名称，参见文本编辑器中的 ''"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:438
-#: extensions/blender_org/mmd_tools/operators/translations.py:486
+#: extensions/blender_org/mmd_tools/operators/translations.py:429
+#: extensions/blender_org/mmd_tools/operators/translations.py:477
 msgid "Root object not found"
 msgstr ""
 
@@ -3640,15 +3630,15 @@ msgstr ""
 msgid "Failed to load dictionary: "
 msgstr "未能加载词典: %s"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:453
+#: extensions/blender_org/mmd_tools/operators/translations.py:444
 msgid "Failed to write CSV: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:554
+#: extensions/blender_org/mmd_tools/operators/translations.py:545
 msgid "Failed to read CSV: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:501
+#: extensions/blender_org/mmd_tools/operators/translations.py:492
 msgid "Missing required headers in CSV: , "
 msgstr ""
 
