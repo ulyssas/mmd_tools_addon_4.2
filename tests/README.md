@@ -104,7 +104,7 @@ C:.
 |       ✓ fileio.py (test_fileio_operators.py)
 |       ✓ lamp.py (test_lamp_system.py)
 |       ✓ material.py (test_material_system.py)
-|       ✗ misc.py
+|       ✓ misc.py (test_misc.py)
 |       ✓ model.py (test_model_operators.py)
 |       ✓ model_edit.py (test_model_edit.py)
 |       ✓ model_validation.py (test_model_debug.py)
