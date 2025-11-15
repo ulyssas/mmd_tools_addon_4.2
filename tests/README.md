@@ -112,7 +112,7 @@ C:.
 |       ✓ rigid_body.py (test_rigid_body.py)
 |       ✓ sdef.py (test_sdef_system.py)
 |       ✗ translations.py
-|       ✗ view.py
+|       ✓ view.py (test_view.py)
 |       - __init__.py
 |
 +---panels
@@ -122,7 +122,7 @@ C:.
 |   |   ✓ prop_material.py (test_material_system.py)
 |   |   ✗ prop_object.py
 |   |   ✗ prop_physics.py
-|   |   ✗ shading.py
+|   |   ✓ shading.py (test_view.py)
 |   |   - __init__.py
 |   |
 |   \---sidebar
