@@ -1268,3 +1268,30 @@ class MMD_VPD_FileHandler(bpy.types.FileHandler):
         elif filepath:
             bpy.ops.mmd_tools.import_vpd(filepath=filepath)
         return {"FINISHED"}
+
+
+# --- Keymap Registration ---
+
+
+addon_keymaps = []
+
+
+def register():
+    wm = bpy.context.window_manager
+    kc = wm.keyconfigs.addon
+    if not kc:
+        return
+
+    # Assign Ctrl + E as the hotkey for PMX export.
+    km = kc.keymaps.new(name="Screen", space_type="EMPTY")
+    kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", ctrl=True, alt=False)
+    addon_keymaps.append((km, kmi))
+
+
+def unregister():
+    for km, kmi in addon_keymaps:
+        try:
+            km.keymap_items.remove(kmi)
+        except Exception:
+            pass
+    addon_keymaps.clear()
