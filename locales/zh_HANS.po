@@ -81,6 +81,18 @@ msgstr "共用的卡通纹理文件夹"
 msgid "Directory path to toon textures. This is normally the \"Data\" directory within of your MikuMikuDance directory"
 msgstr "卡通纹理路径. 通常是 MikuMikuDance 安装路径下的 Data 目录"
 
+#. :src: bpy.types.mmd_tools.pmx_file_handler
+msgid "MMD PMX/PMD Model"
+msgstr ""
+
+#. :src: bpy.types.mmd_tools.vmd_file_handler
+msgid "MMD VMD Animation"
+msgstr ""
+
+#. :src: bpy.types.mmd_tools.vpd_file_handler
+msgid "MMD VPD Pose"
+msgstr ""
+
 #. :src: bpy.types.Object.mmd_type
 msgid "Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)"
 msgstr "该物体的内部 MMD 类型(切勿直接改动)"
@@ -131,14 +143,12 @@ msgid "Validation Results"
 msgstr "检测结果"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_bone_order_menu
-#, fuzzy
 msgid "Bone Order Menu"
 msgstr "骨骼顺序"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_display_item_frame_menu
-#, fuzzy
 msgid "Display Item Frame Menu"
-msgstr "添加表示枠"
+msgstr "显示项目帧"
 
 #. :src: bpy.types.OBJECT_MT_mmd_tools_display_item_menu
 msgid "Display Item Menu"
@@ -228,6 +238,20 @@ msgstr "将网格附加至模型"
 #. :src: bpy.types.MMD_TOOLS_OT_attach_meshes
 msgid "Finds existing meshes and attaches them to the selected MMD model"
 msgstr "寻找现存的网格, 并将其附加到选中的 MMD 模型上"
+
+#. :src: bpy.types.MMD_TOOLS_OT_batch_convert_bone_morph_to_vertex_morph
+#. :src: bpy.types.MMD_TOOLS_OT_batch_convert_group_morph_to_vertex_morph
+msgctxt "Operator"
+msgid "Batch Convert To Vertex Morph"
+msgstr "批量转换到顶点变形"
+
+#. :src: bpy.types.MMD_TOOLS_OT_batch_convert_bone_morph_to_vertex_morph
+msgid "Convert all bone morphs into vertex morphs"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_batch_convert_group_morph_to_vertex_morph
+msgid "Convert all group morphs (containing vertex morphs) into vertex morphs"
+msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup
 msgctxt "Operator"
@@ -444,7 +468,7 @@ msgstr "清除所有 UV 变形的临时数据"
 #. :src: bpy.types.MMD_TOOLS_OT_convert_bone_morph_to_vertex_morph
 #. :src: bpy.types.MMD_TOOLS_OT_convert_group_morph_to_vertex_morph
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:191
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:234
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:235
 msgctxt "Operator"
 msgid "Convert To Vertex Morph"
 msgstr "转换到顶点变形"
@@ -2364,7 +2388,6 @@ msgid "Display Panel"
 msgstr "显示面板"
 
 #. :src: bpy.types.OBJECT_PT_mmd_tools_joint_list
-#, fuzzy
 msgid "Joints"
 msgstr "关节"
 
@@ -3450,8 +3473,16 @@ msgstr ""
 msgid "No armature found in model"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:1095
+#: extensions/blender_org/mmd_tools/operators/morph.py:984
+msgid "Batch conversion complete: Converted  bone morphs."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/morph.py:1132
 msgid "Successfully converted vertex morphs in group to vertex morph '' and added to facial display frame"
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/morph.py:1179
+msgid "Batch conversion complete: Converted  group morphs."
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:295
@@ -3478,15 +3509,15 @@ msgstr "临时材质\"%s\"已占用"
 msgid "No active bone morph"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:940
+#: extensions/blender_org/mmd_tools/operators/morph.py:941
 msgid "Successfully converted bone morph '' to vertex morph ''. Created shape keys: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:976
+#: extensions/blender_org/mmd_tools/operators/morph.py:1015
 msgid "No active group morph"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:987
+#: extensions/blender_org/mmd_tools/operators/morph.py:1026
 msgid "The group morph does not contain any vertex morphs to convert"
 msgstr ""
 
@@ -3523,7 +3554,7 @@ msgstr ""
 msgid "Created shape key '' on mesh ''"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:943
+#: extensions/blender_org/mmd_tools/operators/morph.py:944
 msgid "Error during conversion: "
 msgstr ""
 
@@ -3685,7 +3716,7 @@ msgstr "加载"
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:68
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:78
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:187
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:217
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:218
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:157
 msgctxt "Operator"
 msgid "Apply"
@@ -3860,7 +3891,7 @@ msgid "The armature object of active MMD model can't be found"
 msgstr "找不到选中MMD模型的骨架"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:74
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:202
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:203
 msgctxt "Operator"
 msgid "Select"
 msgstr "选择"
@@ -3880,7 +3911,7 @@ msgstr "变形"
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:175
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:187
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:69
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:363
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:365
 #: extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:81
 msgctxt "Operator"
 msgid "Move To Top"
@@ -3889,14 +3920,14 @@ msgstr "移至顶部"
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:176
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:188
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:70
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:364
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:366
 #: extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:82
 msgctxt "Operator"
 msgid "Move To Bottom"
 msgstr "移至底部"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:185
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:354
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356
 msgctxt "Operator"
 msgid "Delete All"
 msgstr "删除全部"
@@ -4085,30 +4116,30 @@ msgid "Material Offsets (%d)"
 msgstr "材质偏移 (%d)"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:186
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:213
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:214
 msgctxt "Operator"
 msgid "View"
 msgstr "显示"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:188
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:214
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:215
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:158
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:132
 msgctxt "Operator"
 msgid "Clear"
 msgstr "清除"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:193
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:194
 msgid "Bone Offsets (%d)"
 msgstr "骨骼偏移 (%d)"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:216
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:203
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:217
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:204
 msgctxt "Operator"
 msgid "Edit"
 msgstr "编辑"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:236
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:238
 msgid "Group Offsets (%d)"
 msgstr "群组偏移 (%d)"
 
@@ -4128,25 +4159,25 @@ msgstr "不是有效的基础材质"
 msgid "Armature not found"
 msgstr "找不到骨架"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:204
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:205
 msgctxt "Operator"
 msgid "Update"
 msgstr "更新"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:225
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:226
 msgid "Scale"
 msgstr "缩放"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:227
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:228
 msgid "UV Offsets (%d)"
 msgstr "UV偏移 (%d)"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:358
 msgctxt "Operator"
 msgid "Bind morphs to .placeholder"
 msgstr "将变形绑定到.placeholder"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:357
+#: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:359
 msgctxt "Operator"
 msgid "Unbind morphs from .placeholder"
 msgstr "解绑变形与.placeholder"

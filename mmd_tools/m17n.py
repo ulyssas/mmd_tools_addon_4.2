@@ -169,6 +169,24 @@ translations_tuple = (
         ),
     ),
     (
+        ("*", "MMD PMX/PMD Model"),
+        (("bpy.types.mmd_tools.pmx_file_handler",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "MMD VMD Animation"),
+        (("bpy.types.mmd_tools.vmd_file_handler",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "MMD VPD Pose"),
+        (("bpy.types.mmd_tools.vpd_file_handler",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)"),
         (("bpy.types.Object.mmd_type",), ()),
         ("ja_JP", "", (False, ())),
@@ -249,14 +267,14 @@ translations_tuple = (
     (
         ("*", "Bone Order Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_bone_order_menu",), ()),
-        ("ja_JP", "ボーン順序", (True, ())),
-        ("zh_HANS", "骨骼顺序", (True, ())),
+        ("ja_JP", "ボーン順序", (False, ())),
+        ("zh_HANS", "骨骼顺序", (False, ())),
     ),
     (
         ("*", "Display Item Frame Menu"),
         (("bpy.types.OBJECT_MT_mmd_tools_display_item_frame_menu",), ()),
-        ("ja_JP", "表示項目フレームを追加", (True, ())),
-        ("zh_HANS", "添加表示枠", (True, ())),
+        ("ja_JP", "表示項目フレーム", (False, ())),
+        ("zh_HANS", "显示项目帧", (False, ())),
     ),
     (
         ("*", "Display Item Menu"),
@@ -388,6 +406,30 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_attach_meshes",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "寻找现存的网格, 并将其附加到选中的 MMD 模型上", (False, ())),
+    ),
+    (
+        ("Operator", "Batch Convert To Vertex Morph"),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_batch_convert_bone_morph_to_vertex_morph",
+                "bpy.types.MMD_TOOLS_OT_batch_convert_group_morph_to_vertex_morph",
+            ),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "批量转换到顶点变形", (False, ())),
+    ),
+    (
+        ("*", "Convert all bone morphs into vertex morphs"),
+        (("bpy.types.MMD_TOOLS_OT_batch_convert_bone_morph_to_vertex_morph",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Convert all group morphs (containing vertex morphs) into vertex morphs"),
+        (("bpy.types.MMD_TOOLS_OT_batch_convert_group_morph_to_vertex_morph",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("Operator", "Setup Bone Fixed Axis"),
@@ -739,7 +781,7 @@ translations_tuple = (
                 "bpy.types.MMD_TOOLS_OT_convert_bone_morph_to_vertex_morph",
                 "bpy.types.MMD_TOOLS_OT_convert_group_morph_to_vertex_morph",
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:191",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:234",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:235",
             ),
             (),
         ),
@@ -3959,8 +4001,8 @@ translations_tuple = (
     (
         ("*", "Joints"),
         (("bpy.types.OBJECT_PT_mmd_tools_joint_list",), ()),
-        ("ja_JP", "ジョイント", (True, ())),
-        ("zh_HANS", "关节", (True, ())),
+        ("ja_JP", "ジョイント", (False, ())),
+        ("zh_HANS", "关节", (False, ())),
     ),
     (
         ("*", "MMD Light Tools"),
@@ -5748,11 +5790,23 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
+        ("*", "Batch conversion complete: Converted  bone morphs."),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:984",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         (
             "*",
             "Successfully converted vertex morphs in group to vertex morph '' and added to facial display frame",
         ),
-        (("extensions/blender_org/mmd_tools/operators/morph.py:1095",), ()),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:1132",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Batch conversion complete: Converted  group morphs."),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:1179",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -5803,19 +5857,19 @@ translations_tuple = (
             "*",
             "Successfully converted bone morph '' to vertex morph ''. Created shape keys: ",
         ),
-        (("extensions/blender_org/mmd_tools/operators/morph.py:940",), ()),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:941",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "No active group morph"),
-        (("extensions/blender_org/mmd_tools/operators/morph.py:976",), ()),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:1015",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "The group morph does not contain any vertex morphs to convert"),
-        (("extensions/blender_org/mmd_tools/operators/morph.py:987",), ()),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:1026",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -5869,7 +5923,7 @@ translations_tuple = (
     ),
     (
         ("*", "Error during conversion: "),
-        (("extensions/blender_org/mmd_tools/operators/morph.py:943",), ()),
+        (("extensions/blender_org/mmd_tools/operators/morph.py:944",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -6130,7 +6184,7 @@ translations_tuple = (
                 "extensions/blender_org/mmd_tools/panels/prop_bone.py:68",
                 "extensions/blender_org/mmd_tools/panels/prop_bone.py:78",
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:187",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:217",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:218",
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:157",
             ),
             (),
@@ -6433,7 +6487,7 @@ translations_tuple = (
         (
             (
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:74",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:202",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:203",
             ),
             (),
         ),
@@ -6471,7 +6525,7 @@ translations_tuple = (
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:175",
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:187",
                 "extensions/blender_org/mmd_tools/panels/sidebar/joints.py:69",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:363",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:365",
                 "extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:81",
             ),
             (),
@@ -6486,7 +6540,7 @@ translations_tuple = (
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:176",
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:188",
                 "extensions/blender_org/mmd_tools/panels/sidebar/joints.py:70",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:364",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:366",
                 "extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:82",
             ),
             (),
@@ -6499,7 +6553,7 @@ translations_tuple = (
         (
             (
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:185",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:354",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356",
             ),
             (),
         ),
@@ -6799,7 +6853,7 @@ translations_tuple = (
         (
             (
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:186",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:213",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:214",
             ),
             (),
         ),
@@ -6811,7 +6865,7 @@ translations_tuple = (
         (
             (
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:188",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:214",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:215",
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:158",
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:132",
             ),
@@ -6824,8 +6878,8 @@ translations_tuple = (
         ("*", "Bone Offsets (%d)"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:193",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:193",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:194",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:194",
             ),
             (),
         ),
@@ -6836,8 +6890,8 @@ translations_tuple = (
         ("Operator", "Edit"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:216",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:203",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:217",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:204",
             ),
             (),
         ),
@@ -6848,8 +6902,8 @@ translations_tuple = (
         ("*", "Group Offsets (%d)"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:236",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:236",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:238",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:238",
             ),
             (),
         ),
@@ -6882,13 +6936,13 @@ translations_tuple = (
     ),
     (
         ("Operator", "Update"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:204",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:205",), ()),
         ("ja_JP", "更新", (False, ())),
         ("zh_HANS", "更新", (False, ())),
     ),
     (
         ("*", "Scale"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:225",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:226",), ()),
         ("ja_JP", "スケール", (False, ())),
         ("zh_HANS", "缩放", (False, ())),
     ),
@@ -6896,8 +6950,8 @@ translations_tuple = (
         ("*", "UV Offsets (%d)"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:227",
-                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:227",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:228",
+                "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:228",
             ),
             (),
         ),
@@ -6906,13 +6960,13 @@ translations_tuple = (
     ),
     (
         ("Operator", "Bind morphs to .placeholder"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:358",), ()),
         ("ja_JP", "モーフを.placeholderへバインド", (False, ())),
         ("zh_HANS", "将变形绑定到.placeholder", (False, ())),
     ),
     (
         ("Operator", "Unbind morphs from .placeholder"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:357",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:359",), ()),
         ("ja_JP", "モーフを.placeholderからバインド解除", (False, ())),
         ("zh_HANS", "解绑变形与.placeholder", (False, ())),
     ),
