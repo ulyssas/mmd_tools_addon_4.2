@@ -1207,8 +1207,8 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
 # --- Drag and Drop Handlers ---
 
 
-class MMD_PMX_FileHandler(bpy.types.FileHandler):
-    bl_idname = "mmd_tools.pmx_file_handler"
+class MMD_FH_PMX(bpy.types.FileHandler):
+    bl_idname = "MMD_FH_PMX"
     bl_label = "MMD PMX/PMD Model"
     bl_import_operator = "mmd_tools.import_model"
     bl_file_extensions = ".pmx;.pmd"
@@ -1228,8 +1228,8 @@ class MMD_PMX_FileHandler(bpy.types.FileHandler):
         return {"FINISHED"}
 
 
-class MMD_VMD_FileHandler(bpy.types.FileHandler):
-    bl_idname = "mmd_tools.vmd_file_handler"
+class MMD_FH_VMD(bpy.types.FileHandler):
+    bl_idname = "MMD_FH_VMD"
     bl_label = "MMD VMD Animation"
     bl_import_operator = "mmd_tools.import_vmd"
     bl_file_extensions = ".vmd"
@@ -1249,8 +1249,8 @@ class MMD_VMD_FileHandler(bpy.types.FileHandler):
         return {"FINISHED"}
 
 
-class MMD_VPD_FileHandler(bpy.types.FileHandler):
-    bl_idname = "mmd_tools.vpd_file_handler"
+class MMD_FH_VPD(bpy.types.FileHandler):
+    bl_idname = "MMD_FH_VPD"
     bl_label = "MMD VPD Pose"
     bl_import_operator = "mmd_tools.import_vpd"
     bl_file_extensions = ".vpd"
