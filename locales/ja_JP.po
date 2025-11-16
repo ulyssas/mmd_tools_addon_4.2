@@ -2309,12 +2309,12 @@ msgstr "モーフ接頭辞を使用"
 msgid "Add/remove prefix to English name of morph"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_validate_bone_limits
+#. :src: bpy.types.MMD_TOOLS_OT_validate_bones
 msgctxt "Operator"
 msgid "Validate Bone Limits"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_validate_bone_limits
+#. :src: bpy.types.MMD_TOOLS_OT_validate_bones
 msgid "Check for bone name encoding issues"
 msgstr ""
 

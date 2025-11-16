@@ -2300,12 +2300,12 @@ msgstr "使用变形前缀"
 msgid "Add/remove prefix to English name of morph"
 msgstr "添加或删除变形英文名的前缀"
 
-#. :src: bpy.types.MMD_TOOLS_OT_validate_bone_limits
+#. :src: bpy.types.MMD_TOOLS_OT_validate_bones
 msgctxt "Operator"
 msgid "Validate Bone Limits"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_validate_bone_limits
+#. :src: bpy.types.MMD_TOOLS_OT_validate_bones
 msgid "Check for bone name encoding issues"
 msgstr ""
 

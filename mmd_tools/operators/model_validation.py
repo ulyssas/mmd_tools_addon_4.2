@@ -59,7 +59,7 @@ def log_message(prefix, message, level="INFO"):
 class MMDModelValidateBones(Operator):
     """Check MMD model bones for encoding issues and name length limits"""
 
-    bl_idname = "mmd_tools.validate_bone_limits"
+    bl_idname = "mmd_tools.validate_bones"
     bl_label = "Validate Bone Limits"
     bl_description = "Check for bone name encoding issues"
     bl_options = {"REGISTER", "UNDO"}

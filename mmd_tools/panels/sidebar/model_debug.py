@@ -26,7 +26,7 @@ class MMDModelDebugPanel(PT_ProductionPanelBase, bpy.types.Panel):
         # Validation buttons section
         grid = col.grid_flow(row_major=True)
         row = grid.row(align=True)
-        row.operator("mmd_tools.validate_bone_limits", text="Check Bones", icon="BONE_DATA")
+        row.operator("mmd_tools.validate_bones", text="Check Bones", icon="BONE_DATA")
         row.operator("mmd_tools.validate_morphs", text="Check Morphs", icon="SHAPEKEY_DATA")
         row.operator("mmd_tools.validate_textures", text="Check Textures", icon="TEXTURE")
 

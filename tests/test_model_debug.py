@@ -170,7 +170,7 @@ class TestModelDebug(unittest.TestCase):
     # Test Methods
     # ********************************************
 
-    def test_1_validate_bone_limits(self):
+    def test_1_validate_bones(self):
         """Test if bone validation runs without errors"""
         print()
         self.__create_test_bone_with_invalid_name()
@@ -179,7 +179,7 @@ class TestModelDebug(unittest.TestCase):
         bpy.context.view_layer.objects.active = self.root_object
 
         # Run validation using operator
-        result = bpy.ops.mmd_tools.validate_bone_limits()
+        result = bpy.ops.mmd_tools.validate_bones()
 
         # Check if the operation completed
         self.assertEqual(set(result), {"FINISHED"})
@@ -245,7 +245,7 @@ class TestModelDebug(unittest.TestCase):
         bpy.context.view_layer.objects.active = self.root_object
 
         # First validate to get initial state
-        bpy.ops.mmd_tools.validate_bone_limits()
+        bpy.ops.mmd_tools.validate_bones()
         before_fix = bpy.context.scene.mmd_validation_results
         print("Before fix:")
         print(before_fix)
@@ -264,7 +264,7 @@ class TestModelDebug(unittest.TestCase):
         print()
 
         # Run validation again to see if issues were fixed
-        bpy.ops.mmd_tools.validate_bone_limits()
+        bpy.ops.mmd_tools.validate_bones()
         after_fix = bpy.context.scene.mmd_validation_results
         print("After fix:")
         print(after_fix)

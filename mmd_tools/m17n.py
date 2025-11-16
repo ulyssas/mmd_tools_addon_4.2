@@ -3877,13 +3877,13 @@ translations_tuple = (
     ),
     (
         ("Operator", "Validate Bone Limits"),
-        (("bpy.types.MMD_TOOLS_OT_validate_bone_limits",), ()),
+        (("bpy.types.MMD_TOOLS_OT_validate_bones",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Check for bone name encoding issues"),
-        (("bpy.types.MMD_TOOLS_OT_validate_bone_limits",), ()),
+        (("bpy.types.MMD_TOOLS_OT_validate_bones",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
