@@ -454,19 +454,14 @@ class FnBone:
                 return
             c = TransformConstraintOp.create(constraints, name, map_type)
             c.target = p_bone.id_data
-            # NOTE: 肩C, 目戻, and 腰キャンセル bones require reversed euler order to match MMD behavior
+            # NOTE: According to MMD behavior:
+            # Negative influence (influence < 0) is used to cancel rotation (e.g., 肩C, 目戻, 腰キャンセル) and requires reversed ZYX Euler order.
+            # Positive influence (influence >= 0) is used to add rotation and uses standard XYZ Euler order.
             # See https://github.com/MMD-Blender/blender_mmd_tools/issues/242
-            # fmt: off
-            special_bones = {
-                "左肩C", "右肩C", "肩C.L", "肩C.R", "肩C_L", "肩C_R",
-                "左目戻", "右目戻", "目戻.L", "目戻.R", "目戻_L", "目戻_R",
-                "腰キャンセル左", "腰キャンセル右", "腰キャンセル.L", "腰キャンセル.R", "腰キャンセル_L", "腰キャンセル_R",
-            }
-            # fmt: on
-            if bone_name in special_bones:
-                c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for 肩C, 目戻, and 腰キャンセル bones
+            if influence < 0:
+                c.from_rotation_mode = "ZYX"
             else:
-                c.from_rotation_mode = "XYZ"  # Explicitly set to "XYZ" instead of "AUTO"
+                c.from_rotation_mode = "XYZ"
             c.to_euler_order = "XYZ"  # Explicitly set to "XYZ" instead of "AUTO"
             c.mix_mode_rot = "AFTER"  # Use "AFTER" instead of "ADD" to match MMD behavior
             shadow_bone.add_constraint(c)
