@@ -454,10 +454,17 @@ class FnBone:
                 return
             c = TransformConstraintOp.create(constraints, name, map_type)
             c.target = p_bone.id_data
-            # NOTE: 肩C bones require reversed euler order to match MMD behavior
+            # NOTE: 肩C, 目戻, and 腰キャンセル bones require reversed euler order to match MMD behavior
             # See https://github.com/MMD-Blender/blender_mmd_tools/issues/242
-            if bone_name in {"左肩C", "右肩C", "肩C.L", "肩C.R", "肩C_L", "肩C_R"}:
-                c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for 肩C bones
+            # fmt: off
+            special_bones = {
+                "左肩C", "右肩C", "肩C.L", "肩C.R", "肩C_L", "肩C_R",
+                "左目戻", "右目戻", "目戻.L", "目戻.R", "目戻_L", "目戻_R",
+                "腰キャンセル左", "腰キャンセル右", "腰キャンセル.L", "腰キャンセル.R", "腰キャンセル_L", "腰キャンセル_R",
+            }
+            # fmt: on
+            if bone_name in special_bones:
+                c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for 肩C, 目戻, and 腰キャンセル bones
             else:
                 c.from_rotation_mode = "XYZ"  # Explicitly set to "XYZ" instead of "AUTO"
             c.to_euler_order = "XYZ"  # Explicitly set to "XYZ" instead of "AUTO"
