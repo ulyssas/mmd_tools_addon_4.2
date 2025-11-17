@@ -847,11 +847,10 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         name="Normal Handling",
         description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
-            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.", 0),
-            ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Shade smooth, keep sharp edges. Balances vertex count and normal preservation.", 1),
-            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.", 2),
+            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range. Avoid exporting an overly fragmented model.", 0),
+            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count. When using this option, please verify whether the exported model is excessively smooth.", 1),
         ],
-        default="SMOOTH_KEEP_SHARP",
+        default="PRESERVE_ALL_NORMALS",
     )
     sort_vertices: bpy.props.EnumProperty(
         name="Sort Vertices",
