@@ -1078,6 +1078,7 @@ class __PmxExporter:
         base_mesh = None
         temp_tri_mod = None
         original_smooth_states = None
+        original_sharp_edges = None
         try:
             # Clear any existing mesh data before processing
             _to_mesh_clear(meshObj, base_mesh)
@@ -1087,7 +1088,22 @@ class __PmxExporter:
                 # Save original smooth states
                 original_smooth_states = [False] * len(meshObj.data.polygons)
                 meshObj.data.polygons.foreach_get("use_smooth", original_smooth_states)
+                # Mark smooth edges
                 meshObj.data.polygons.foreach_set("use_smooth", [True] * len(meshObj.data.polygons))
+
+                # Save original sharp states
+                original_sharp_edges = [False] * len(meshObj.data.edges)
+                meshObj.data.edges.foreach_get("use_edge_sharp", original_sharp_edges)
+                # Mark sharp edges
+                bm = bmesh.new()
+                bm.from_mesh(meshObj.data)
+                for e in bm.edges:
+                    angle = e.calc_face_angle(None)  # return None when the edge doesn't have 2 faces
+                    if angle is not None and angle > math.radians(30):
+                        e.smooth = False
+                bm.to_mesh(meshObj.data)
+                bm.free()
+                meshObj.data.update()
 
             # Check if triangulation is needed
             base_mesh = _to_mesh(meshObj)
@@ -1108,6 +1124,9 @@ class __PmxExporter:
             # Restore original smooth states
             if original_smooth_states is not None:
                 meshObj.data.polygons.foreach_set("use_smooth", original_smooth_states)
+            # Restore original sharp states
+            if original_sharp_edges is not None:
+                meshObj.data.edges.foreach_set("use_edge_sharp", original_sharp_edges)
             # Clean up modifier
             if temp_tri_mod:
                 meshObj.modifiers.remove(temp_tri_mod)
@@ -1257,7 +1276,7 @@ class __PmxExporter:
                 v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
                 v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
                 v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
-            else:  # PRESERVE_ALL_NORMALS, SMOOTH_KEEP_SHARP(Already smoothed using modifier)
+            else:  # PRESERVE_ALL_NORMALS, SMOOTH_KEEP_SHARP(Already smoothed before)
                 v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
                 v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
                 v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
