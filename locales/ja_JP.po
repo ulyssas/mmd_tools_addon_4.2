@@ -81,15 +81,15 @@ msgstr "共有トゥーンテクスチャフォルダ"
 msgid "Directory path to toon textures. This is normally the \"Data\" directory within of your MikuMikuDance directory"
 msgstr "トゥーンテクスチャのパス. 通常は MikuMikuDance の Data ディレクトリ内にあります"
 
-#. :src: bpy.types.mmd_tools.pmx_file_handler
+#. :src: bpy.types.MMD_FH_PMX
 msgid "MMD PMX/PMD Model"
 msgstr ""
 
-#. :src: bpy.types.mmd_tools.vmd_file_handler
+#. :src: bpy.types.MMD_FH_VMD
 msgid "MMD VMD Animation"
 msgstr ""
 
-#. :src: bpy.types.mmd_tools.vpd_file_handler
+#. :src: bpy.types.MMD_FH_VPD
 msgid "MMD VPD Pose"
 msgstr ""
 
@@ -1048,15 +1048,7 @@ msgid "Preserve All Normals"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
-msgid "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range to prevent excessive geometry destruction and an overly fragmented model."
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
-msgid "Smooth (Keep Sharp)"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
-msgid "Shade smooth, keep sharp edges. Balances vertex count and normal preservation."
+msgid "Export existing normals without any changes. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range. Avoid exporting an overly fragmented model."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
@@ -1064,7 +1056,7 @@ msgid "Smooth All Normals"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
-msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count."
+msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count. When using this option, please verify whether the exported model is excessively smooth."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
@@ -2315,7 +2307,7 @@ msgid "Validate Bone Limits"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_bones
-msgid "Check for bone name encoding issues"
+msgid "Check MMD model bones for encoding issues and name length limits"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_morphs
@@ -2324,7 +2316,7 @@ msgid "Validate Morphs"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_morphs
-msgid "Check for morph name issues and duplicates"
+msgid "Check MMD model morphs for encoding issues, name length limits, and duplicate names"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_textures
@@ -2333,7 +2325,7 @@ msgid "Validate Textures"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_textures
-msgid "Check for texture path and name issues"
+msgid "Check MMD model textures for missing files, path conflicts, and duplicate filenames"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_view_bone_morph
@@ -3392,11 +3384,11 @@ msgstr "MMD剛体選択"
 msgid "Imported MMD model from \"\""
 msgstr "MMDモデルを \"%s\" からインポートしました"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:959
+#: extensions/blender_org/mmd_tools/operators/fileio.py:958
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:991
+#: extensions/blender_org/mmd_tools/operators/fileio.py:990
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "MMDモデル \"%s\" を \"%s\" にエクスポートしました"
@@ -3585,76 +3577,76 @@ msgstr "2つ以上のMMD剛体を選択してください"
 msgid "Binded  of  selected mesh(es)"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:269
+#: extensions/blender_org/mmd_tools/operators/translations.py:271
 msgid "Filter"
 msgstr "フィルタ"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:273
+#: extensions/blender_org/mmd_tools/operators/translations.py:275
 msgid "is Blank:"
 msgstr "空白のみ:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:276
+#: extensions/blender_org/mmd_tools/operators/translations.py:278
 msgid "Japanese"
 msgstr "日本語"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:278
+#: extensions/blender_org/mmd_tools/operators/translations.py:280
 msgid "English"
 msgstr "英語"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:306
+#: extensions/blender_org/mmd_tools/operators/translations.py:308
 msgid "Select the target column for Batch Operations:"
 msgstr "一括操作の対象列を選択:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:330
+#: extensions/blender_org/mmd_tools/operators/translations.py:332
 msgid "Batch Operation:"
 msgstr "一括操作:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:338
+#: extensions/blender_org/mmd_tools/operators/translations.py:340
 msgid "Preset"
 msgstr "プリセット"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:341
+#: extensions/blender_org/mmd_tools/operators/translations.py:343
 msgctxt "Operator"
 msgid "Execute"
 msgstr "実行"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:345
+#: extensions/blender_org/mmd_tools/operators/translations.py:347
 msgid "Dictionaries:"
 msgstr "辞書:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:347
+#: extensions/blender_org/mmd_tools/operators/translations.py:349
 msgid "to_english"
 msgstr "to_english"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:351
+#: extensions/blender_org/mmd_tools/operators/translations.py:353
 msgid "replace"
 msgstr "置換"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:356
+#: extensions/blender_org/mmd_tools/operators/translations.py:358
 msgid "CSV:"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:358
+#: extensions/blender_org/mmd_tools/operators/translations.py:360
 msgctxt "Operator"
 msgid "Import CSV"
 msgstr "インポート CSV"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:359
+#: extensions/blender_org/mmd_tools/operators/translations.py:361
 msgctxt "Operator"
 msgid "Export CSV"
 msgstr "エクスポート CSV"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:447
+#: extensions/blender_org/mmd_tools/operators/translations.py:449
 msgid "Exported to "
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:110
-#: extensions/blender_org/mmd_tools/operators/translations.py:397
+#: extensions/blender_org/mmd_tools/operators/translations.py:399
 msgid "Failed to translate  names, see '' in text editor"
 msgstr "名称  の翻訳に失敗しました, テキストエディタで '' を確認してください"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:429
-#: extensions/blender_org/mmd_tools/operators/translations.py:477
+#: extensions/blender_org/mmd_tools/operators/translations.py:431
+#: extensions/blender_org/mmd_tools/operators/translations.py:479
 msgid "Root object not found"
 msgstr ""
 
@@ -3663,15 +3655,15 @@ msgstr ""
 msgid "Failed to load dictionary: "
 msgstr "辞書の読み込みに失敗しました: %s"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:444
+#: extensions/blender_org/mmd_tools/operators/translations.py:446
 msgid "Failed to write CSV: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:545
+#: extensions/blender_org/mmd_tools/operators/translations.py:547
 msgid "Failed to read CSV: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:492
+#: extensions/blender_org/mmd_tools/operators/translations.py:494
 msgid "Missing required headers in CSV: , "
 msgstr ""
 

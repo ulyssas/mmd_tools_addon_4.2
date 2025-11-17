@@ -170,19 +170,19 @@ translations_tuple = (
     ),
     (
         ("*", "MMD PMX/PMD Model"),
-        (("bpy.types.mmd_tools.pmx_file_handler",), ()),
+        (("bpy.types.MMD_FH_PMX",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "MMD VMD Animation"),
-        (("bpy.types.mmd_tools.vmd_file_handler",), ()),
+        (("bpy.types.MMD_FH_VMD",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "MMD VPD Pose"),
-        (("bpy.types.mmd_tools.vpd_file_handler",), ()),
+        (("bpy.types.MMD_FH_VPD",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -1755,33 +1755,12 @@ translations_tuple = (
     (
         (
             "*",
-            "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.",
+            "Export existing normals without any changes. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range. Avoid exporting an overly fragmented model.",
         ),
         (
             (
                 "bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'",
             ),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
-        ("*", "Smooth (Keep Sharp)"),
-        (
-            ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'",),
-            (),
-        ),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "平滑(保留锐边)", (False, ())),
-    ),
-    (
-        (
-            "*",
-            "Shade smooth, keep sharp edges. Balances vertex count and normal preservation.",
-        ),
-        (
-            ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'",),
             (),
         ),
         ("ja_JP", "", (False, ())),
@@ -1799,7 +1778,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.",
+            "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count. When using this option, please verify whether the exported model is excessively smooth.",
         ),
         (
             ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'",),
@@ -3882,7 +3861,7 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Check for bone name encoding issues"),
+        ("*", "Check MMD model bones for encoding issues and name length limits"),
         (("bpy.types.MMD_TOOLS_OT_validate_bones",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -3894,7 +3873,10 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Check for morph name issues and duplicates"),
+        (
+            "*",
+            "Check MMD model morphs for encoding issues, name length limits, and duplicate names",
+        ),
         (("bpy.types.MMD_TOOLS_OT_validate_morphs",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -3906,7 +3888,10 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        ("*", "Check for texture path and name issues"),
+        (
+            "*",
+            "Check MMD model textures for missing files, path conflicts, and duplicate filenames",
+        ),
         (("bpy.types.MMD_TOOLS_OT_validate_textures",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
@@ -5648,13 +5633,13 @@ translations_tuple = (
     ),
     (
         ("*", '[Skipped] The armature object of MMD model "" can\'t be found'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:959",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:958",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", '[跳过] 找不到 MMD 模型"%s"的骨架数据', (True, ())),
     ),
     (
         ("*", 'Exported MMD model "" to ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:991",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:990",), ()),
         ("ja_JP", 'MMDモデル "%s" を "%s" にエクスポートしました', (True, ())),
         ("zh_HANS", '已导出 MMD 模型"%s"至"%s"', (True, ())),
     ),
@@ -5965,91 +5950,91 @@ translations_tuple = (
     ),
     (
         ("*", "Filter"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:269",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:271",), ()),
         ("ja_JP", "フィルタ", (False, ())),
         ("zh_HANS", "筛选", (False, ())),
     ),
     (
         ("*", "is Blank:"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:273",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:275",), ()),
         ("ja_JP", "空白のみ:", (False, ())),
         ("zh_HANS", "是空白:", (False, ())),
     ),
     (
         ("*", "Japanese"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:276",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:278",), ()),
         ("ja_JP", "日本語", (False, ())),
         ("zh_HANS", "日文", (False, ())),
     ),
     (
         ("*", "English"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:278",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:280",), ()),
         ("ja_JP", "英語", (False, ())),
         ("zh_HANS", "英文", (False, ())),
     ),
     (
         ("*", "Select the target column for Batch Operations:"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:306",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:308",), ()),
         ("ja_JP", "一括操作の対象列を選択:", (False, ())),
         ("zh_HANS", "选择批量操作的目标列:", (False, ())),
     ),
     (
         ("*", "Batch Operation:"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:330",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:332",), ()),
         ("ja_JP", "一括操作:", (False, ())),
         ("zh_HANS", "批量操作:", (False, ())),
     ),
     (
         ("*", "Preset"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:338",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:340",), ()),
         ("ja_JP", "プリセット", (False, ())),
         ("zh_HANS", "预设", (False, ())),
     ),
     (
         ("Operator", "Execute"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:341",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:343",), ()),
         ("ja_JP", "実行", (False, ())),
         ("zh_HANS", "执行", (False, ())),
     ),
     (
         ("*", "Dictionaries:"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:345",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:347",), ()),
         ("ja_JP", "辞書:", (False, ())),
         ("zh_HANS", "词典:", (False, ())),
     ),
     (
         ("*", "to_english"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:347",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:349",), ()),
         ("ja_JP", "to_english", (False, ())),
         ("zh_HANS", "to_english", (False, ())),
     ),
     (
         ("*", "replace"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:351",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:353",), ()),
         ("ja_JP", "置換", (False, ())),
         ("zh_HANS", "替换", (False, ())),
     ),
     (
         ("*", "CSV:"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:356",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:358",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("Operator", "Import CSV"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:358",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:360",), ()),
         ("ja_JP", "インポート CSV", (False, ())),
         ("zh_HANS", "导入 CSV", (False, ())),
     ),
     (
         ("Operator", "Export CSV"),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:359",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:361",), ()),
         ("ja_JP", "エクスポート CSV", (False, ())),
         ("zh_HANS", "导出 CSV", (False, ())),
     ),
     (
         ("*", "Exported to "),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:447",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:449",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -6058,7 +6043,7 @@ translations_tuple = (
         (
             (
                 "extensions/blender_org/mmd_tools/operators/translations.py:110",
-                "extensions/blender_org/mmd_tools/operators/translations.py:397",
+                "extensions/blender_org/mmd_tools/operators/translations.py:399",
             ),
             (),
         ),
@@ -6073,8 +6058,8 @@ translations_tuple = (
         ("*", "Root object not found"),
         (
             (
-                "extensions/blender_org/mmd_tools/operators/translations.py:429",
-                "extensions/blender_org/mmd_tools/operators/translations.py:477",
+                "extensions/blender_org/mmd_tools/operators/translations.py:431",
+                "extensions/blender_org/mmd_tools/operators/translations.py:479",
             ),
             (),
         ),
@@ -6089,19 +6074,19 @@ translations_tuple = (
     ),
     (
         ("*", "Failed to write CSV: "),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:444",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:446",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Failed to read CSV: "),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:545",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:547",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Missing required headers in CSV: , "),
-        (("extensions/blender_org/mmd_tools/operators/translations.py:492",), ()),
+        (("extensions/blender_org/mmd_tools/operators/translations.py:494",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
