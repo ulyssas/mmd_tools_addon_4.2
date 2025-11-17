@@ -53,6 +53,7 @@ def unregister():
 # Import modules
 #################################################
 
+
 def get_all_submodules(directory, package_name):
     return list(iter_submodules(directory, package_name))
 
@@ -74,6 +75,7 @@ def iter_submodule_names(path, root=""):
 
 # Find classes to register
 #################################################
+
 
 def get_ordered_classes_to_register(modules):
     return toposort(get_register_deps_dict(modules))
@@ -143,6 +145,7 @@ def iter_classes_in_module(module):
 
 
 def get_register_base_types():
+    # fmt: off
     return {getattr(bpy.types, name) for name in [
         "Panel", "Operator", "PropertyGroup",
         "AddonPreferences", "Header", "Menu",
@@ -151,10 +154,12 @@ def get_register_base_types():
         "Gizmo", "GizmoGroup",
         "FileHandler",
     ]}
+    # fmt: on
 
 
 # Find order to register to solve dependencies
 #################################################
+
 
 def toposort(deps_dict):
     # Test for circular dependencies

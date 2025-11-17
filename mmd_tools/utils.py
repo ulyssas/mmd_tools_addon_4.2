@@ -84,11 +84,11 @@ __CONVERT_R_TO_NAME_REGEXP = re.compile(r"(?P<lr>(?P<separator>[._])[rR])(?P<aft
 def convertLRToName(name):
     match = __CONVERT_L_TO_NAME_REGEXP.search(name)
     if match:
-        return f"左{name[0:match.start()]}{match['after']}{name[match.end():]}"
+        return f"左{name[0 : match.start()]}{match['after']}{name[match.end() :]}"
 
     match = __CONVERT_R_TO_NAME_REGEXP.search(name)
     if match:
-        return f"右{name[0:match.start()]}{match['after']}{name[match.end():]}"
+        return f"右{name[0 : match.start()]}{match['after']}{name[match.end() :]}"
 
     return name
 

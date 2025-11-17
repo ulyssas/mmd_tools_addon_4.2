@@ -157,7 +157,8 @@ class TranslateMMDModel(bpy.types.Operator):
         comment_e_text = bpy.data.texts.get(mmd_root.comment_e_text, None)
         if comment_text and comment_e_text:
             comment_e = self.translate(
-                comment_text.as_string(), comment_e_text.as_string(),
+                comment_text.as_string(),
+                comment_e_text.as_string(),
             )
             comment_e_text.from_string(comment_e)
 
@@ -188,7 +189,8 @@ class TranslateMMDModel(bpy.types.Operator):
             if m is None:
                 continue
             m.mmd_material.name_e = self.translate(
-                m.mmd_material.name_j, m.mmd_material.name_e,
+                m.mmd_material.name_j,
+                m.mmd_material.name_e,
             )
 
     def translate_display(self, rig):
