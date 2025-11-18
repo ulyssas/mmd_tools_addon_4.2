@@ -490,7 +490,7 @@ class FnMaterial:
 
         # delete bsdf node if it's there
         if m.use_nodes:
-            nodes_to_remove = [n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED" or n.type == "EMISSION" or n.type.startswith("BSDF_")]
+            nodes_to_remove = [n for n in m.node_tree.nodes if n.type == "EMISSION" or n.type.startswith("BSDF_")]
             for n in nodes_to_remove:
                 m.node_tree.nodes.remove(n)
 

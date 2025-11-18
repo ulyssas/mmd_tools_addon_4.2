@@ -302,11 +302,11 @@ class CleanupTexture(Operator):
                 if not i.material.use_nodes:
                     i.material.use_nodes = True
 
-                # remove texture if it's empty
+                # remove texture if it's empty (or newly created)
                 mat = i.material
                 fnMat = FnMaterial(mat)
                 tex = fnMat.get_texture()
-                if tex is not None and tex.image.filepath == "":
+                if tex is not None and (not tex.image or tex.image.filepath == ""):
                     fnMat.remove_texture()
                     count += 1
 
