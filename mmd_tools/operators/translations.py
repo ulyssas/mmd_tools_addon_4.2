@@ -107,11 +107,7 @@ class TranslateMMDModel(bpy.types.Operator):
         translator = self.__translator
         txt = translator.save_fails()
         if translator.fails:
-            self.report(
-                {"WARNING"},
-                "Failed to translate %d names, see '%s' in text editor"
-                % (len(translator.fails), txt.name),
-            )
+            self.report({"WARNING"}, f"Failed to translate {len(translator.fails)} names, see '{txt.name}' in text editor")
         return {"FINISHED"}
 
     def translate(self, name_j, name_e):
@@ -161,7 +157,8 @@ class TranslateMMDModel(bpy.types.Operator):
         comment_e_text = bpy.data.texts.get(mmd_root.comment_e_text, None)
         if comment_text and comment_e_text:
             comment_e = self.translate(
-                comment_text.as_string(), comment_e_text.as_string(),
+                comment_text.as_string(),
+                comment_e_text.as_string(),
             )
             comment_e_text.from_string(comment_e)
 
@@ -192,7 +189,8 @@ class TranslateMMDModel(bpy.types.Operator):
             if m is None:
                 continue
             m.mmd_material.name_e = self.translate(
-                m.mmd_material.name_j, m.mmd_material.name_e,
+                m.mmd_material.name_j,
+                m.mmd_material.name_e,
             )
 
     def translate_display(self, rig):
@@ -398,12 +396,7 @@ class ExecuteTranslationBatchOperator(bpy.types.Operator):
 
         fails, text = FnTranslations.execute_translation_batch(root)
         if fails:
-            self.report(
-                {"WARNING"},
-                "Failed to translate %d names, see '%s' in text editor"
-                % (len(fails), text.name),
-            )
-
+            self.report({"WARNING"}, f"Failed to translate {len(fails)} names, see '{text.name}' in text editor")
         return {"FINISHED"}
 
 

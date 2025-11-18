@@ -61,11 +61,7 @@ class TestVPDImporter(unittest.TestCase):
         bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
-            addon_enable = (
-                bpy.ops.wm.addon_enable
-                if "addon_enable" in dir(bpy.ops.wm)
-                else bpy.ops.preferences.addon_enable
-            )
+            addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
             addon_enable(
                 module="bl_ext.blender_org.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
@@ -224,5 +220,5 @@ class TestVPDImporter(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
     unittest.main(verbosity=1, exit=True)

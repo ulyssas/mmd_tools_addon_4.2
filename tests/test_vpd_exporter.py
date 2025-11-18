@@ -62,11 +62,7 @@ class TestVPDExporter(unittest.TestCase):
         bpy.ops.wm.read_homefile(use_empty=True)
         pref = getattr(bpy.context, "preferences", None) or bpy.context.user_preferences
         if not pref.addons.get("mmd_tools", None):
-            addon_enable = (
-                bpy.ops.wm.addon_enable
-                if "addon_enable" in dir(bpy.ops.wm)
-                else bpy.ops.preferences.addon_enable
-            )
+            addon_enable = bpy.ops.wm.addon_enable if "addon_enable" in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
             addon_enable(
                 module="bl_ext.blender_org.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
@@ -484,22 +480,17 @@ class TestVPDExporter(unittest.TestCase):
 
                     # Check output for CURRENT pose type
                     if pose_type == "CURRENT":
-                        self.assertTrue(os.path.exists(output_path),
-                                       f"VPD file not created for {pose_type}, use_pose_mode={use_pose_mode}")
-                        self.assertTrue(os.path.getsize(output_path) > 0,
-                                       f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
+                        self.assertTrue(os.path.exists(output_path), f"VPD file not created for {pose_type}, use_pose_mode={use_pose_mode}")
+                        self.assertTrue(os.path.getsize(output_path) > 0, f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
 
                         # Check content (without assuming Japanese characters work correctly)
                         with open(output_path, encoding="cp932", errors="replace") as f:
                             content = f.read()
                             # Check for markers that should be present in any VPD file
-                            self.assertIn("Vocaloid Pose Data file", content,
-                                         "Missing VPD header")
-                            self.assertIn("Bone", content,
-                                         "No bone data found in VPD file")
+                            self.assertIn("Vocaloid Pose Data file", content, "Missing VPD header")
+                            self.assertIn("Bone", content, "No bone data found in VPD file")
                             if mesh_obj:
-                                self.assertIn("Morph", content,
-                                             "No morph data found in VPD file")
+                                self.assertIn("Morph", content, "No morph data found in VPD file")
 
                     # For ALL pose type, check if multiple files are created
                     if pose_type == "ALL":
@@ -509,14 +500,10 @@ class TestVPDExporter(unittest.TestCase):
                             if file.startswith("Pose_") and file.endswith(".vpd"):
                                 found_pose_files = True
                                 pose_file_path = os.path.join(OUTPUT_DIR, file)
-                                self.assertTrue(os.path.getsize(pose_file_path) > 0,
-                                               f"Pose file {file} is empty")
+                                self.assertTrue(os.path.getsize(pose_file_path) > 0, f"Pose file {file} is empty")
 
                         # Only assert if markers should have been created
-                        if hasattr(armature, "animation_data") and armature.animation_data and \
-                           hasattr(armature.animation_data, "action") and armature.animation_data.action and \
-                           hasattr(armature.animation_data.action, "pose_markers") and \
-                           len(armature.animation_data.action.pose_markers) > 0:
+                        if hasattr(armature, "animation_data") and armature.animation_data and hasattr(armature.animation_data, "action") and armature.animation_data.action and hasattr(armature.animation_data.action, "pose_markers") and len(armature.animation_data.action.pose_markers) > 0:
                             self.assertTrue(found_pose_files, "No pose files created for ALL export")
 
                     print(f"ok Successfully tested: pose_type={pose_type}, use_pose_mode={use_pose_mode}")
@@ -654,5 +641,5 @@ class TestVPDExporter(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
     unittest.main(verbosity=1, exit=True)

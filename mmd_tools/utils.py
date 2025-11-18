@@ -44,7 +44,7 @@ def selectSingleBone(context, armature, bone_name, reset_pose=False):
     try:
         bpy.ops.object.mode_set(mode="OBJECT")
     except Exception as e:
-        logging.warning(f"Failed to set object mode: {e}")
+        logging.warning("Failed to set object mode: %s", e)
     for i in context.selected_objects:
         i.select_set(False)
     FnContext.set_active_object(context, armature)
@@ -84,11 +84,11 @@ __CONVERT_R_TO_NAME_REGEXP = re.compile(r"(?P<lr>(?P<separator>[._])[rR])(?P<aft
 def convertLRToName(name):
     match = __CONVERT_L_TO_NAME_REGEXP.search(name)
     if match:
-        return f"左{name[0:match.start()]}{match['after']}{name[match.end():]}"
+        return f"左{name[0 : match.start()]}{match['after']}{name[match.end() :]}"
 
     match = __CONVERT_R_TO_NAME_REGEXP.search(name)
     if match:
-        return f"右{name[0:match.start()]}{match['after']}{name[match.end():]}"
+        return f"右{name[0 : match.start()]}{match['after']}{name[match.end() :]}"
 
     return name
 

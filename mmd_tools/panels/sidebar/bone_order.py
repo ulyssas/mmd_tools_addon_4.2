@@ -364,7 +364,7 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
                         bone_chain = [bone] + bone.parent_recursive
 
                     # Add all bones in IK chain
-                    for linked_bone in bone_chain[:constraint.chain_count]:
+                    for linked_bone in bone_chain[: constraint.chain_count]:
                         cls._IK_MAP.setdefault(hash(linked_bone), []).append(constraint.subtarget)
 
         # Process special IK connections

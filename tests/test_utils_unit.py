@@ -126,7 +126,7 @@ class TestUtilsUnit(unittest.TestCase):
             ("左足首", "足首.L"),  # Left ankle
             ("右足首", "足首.R"),  # Right ankle
             ("胴体", "胴体"),  # Torso (no conversion needed)
-            ("頭", "頭"),       # Head (no conversion needed)
+            ("頭", "頭"),  # Head (no conversion needed)
         ]
 
         # Test with default delimiter (dot)
@@ -148,7 +148,7 @@ class TestUtilsUnit(unittest.TestCase):
             ("腕_L", "左腕"),  # Left arm with underscore
             ("腕_R", "右腕"),  # Right arm with underscore
             ("胴体", "胴体"),  # Torso (no conversion needed)
-            ("頭", "頭"),       # Head (no conversion needed)
+            ("頭", "頭"),  # Head (no conversion needed)
         ]
 
         for input_name, expected_output in test_cases:
@@ -289,12 +289,12 @@ class TestUtilsUnit(unittest.TestCase):
         """Test if int2base correctly converts integers to different bases"""
         # Test cases
         test_cases = [
-            (10, 2, "1010"),      # Decimal to binary
-            (10, 16, "A"),        # Decimal to hex
-            (255, 16, "FF"),      # Decimal to hex
-            (9, 3, "100"),        # Decimal to base 3
-            (-10, 16, "-A"),      # Negative number
-            (0, 10, "0"),         # Zero
+            (10, 2, "1010"),  # Decimal to binary
+            (10, 16, "A"),  # Decimal to hex
+            (255, 16, "FF"),  # Decimal to hex
+            (9, 3, "100"),  # Decimal to base 3
+            (-10, 16, "-A"),  # Negative number
+            (0, 10, "0"),  # Zero
         ]
 
         for input_int, base, expected_output in test_cases:
@@ -312,20 +312,17 @@ class TestUtilsUnit(unittest.TestCase):
 
         # Test with different strategies
         base_path = os.path.basename("path/to/file.txt")
-        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "inside"), base_path,
-                        "Inside strategy should return basename")
+        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "inside"), base_path, "Inside strategy should return basename")
 
         # Use os.path.relpath for the expected result of "outside" strategy
         # This is what the implementation actually returns when drives are the same
         expected_outside = os.path.relpath("path/to/file.txt", "different/path") if os.name != "nt" or not os.path.splitdrive("path/to/file.txt")[0] else ".." + os.sep + base_path
-        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "outside"),
-                        expected_outside, "Outside strategy should return proper relative path")
+        self.assertEqual(saferelpath("path/to/file.txt", "different/path", "outside"), expected_outside, "Outside strategy should return proper relative path")
 
         # Test absolute strategy
         if os.name == "posix":  # Unix-like system
             full_path = os.path.abspath("path/to/file.txt")
-            self.assertEqual(saferelpath("path/to/file.txt", "different/path", "absolute"), full_path,
-                            "Absolute strategy should return absolute path")
+            self.assertEqual(saferelpath("path/to/file.txt", "different/path", "absolute"), full_path, "Absolute strategy should return absolute path")
 
     def test_ItemOp_get_by_index(self):
         """Test if ItemOp.get_by_index correctly retrieves items by index"""
@@ -341,6 +338,7 @@ class TestUtilsUnit(unittest.TestCase):
 
     def test_deprecated_decorator(self):
         """Test if the deprecated decorator correctly marks functions as deprecated"""
+
         # Create a test function with the deprecated decorator
         @deprecated(deprecated_in="1.0.0", details="Use new_function instead")
         def old_function():
@@ -366,5 +364,5 @@ class TestUtilsUnit(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
     unittest.main(verbosity=1, exit=True)

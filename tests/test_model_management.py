@@ -653,7 +653,7 @@ class TestModelManagement(unittest.TestCase):
         bpy.context.view_layer.objects.active = root_obj
 
         # Test validation operators
-        validation_operators = ["mmd_tools.validate_bone_limits", "mmd_tools.validate_morphs", "mmd_tools.validate_textures"]
+        validation_operators = ["mmd_tools.validate_bones", "mmd_tools.validate_morphs", "mmd_tools.validate_textures"]
 
         for op_name in validation_operators:
             try:
@@ -1913,5 +1913,5 @@ class TestModelManagement(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
     unittest.main(verbosity=1, exit=True)
