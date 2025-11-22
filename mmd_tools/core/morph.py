@@ -26,7 +26,7 @@ class FnMorph:
             return
         assert FnContext.get_active_object(FnContext.ensure_context()) == obj
         if obj.data.shape_keys is None:
-            bpy.ops.object.shape_key_add()
+            obj.shape_key_add(name="Basis", from_mix=False)
 
         def __move_to_bottom(key_blocks, name):
             obj.active_shape_key_index = key_blocks.find(name)

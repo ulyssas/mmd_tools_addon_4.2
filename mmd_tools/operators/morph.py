@@ -1070,11 +1070,7 @@ class ConvertGroupMorphToVertexMorph(bpy.types.Operator):
                         bpy.ops.object.shape_key_remove()
 
                 # Add shape key from mix
-                bpy.ops.object.shape_key_add(from_mix=True)
-
-                # Rename the newly created shape key
-                new_key = obj.data.shape_keys.key_blocks[-1]
-                new_key.name = target_name
+                obj.shape_key_add(name=target_name, from_mix=True)
 
         # Check if a vertex morph with the target name already exists
         vertex_morph_exists = False

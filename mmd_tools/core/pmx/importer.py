@@ -112,7 +112,7 @@ class PMXImporter:
             assert len(self.__meshObj.data.shape_keys.key_blocks) > 1
             return
         FnContext.set_active_object(self.__targetContext, self.__meshObj)
-        bpy.ops.object.shape_key_add()
+        self.__meshObj.shape_key_add(name="Basis", from_mix=False)
 
     def __importVertexGroup(self):
         vgroups = self.__meshObj.vertex_groups
