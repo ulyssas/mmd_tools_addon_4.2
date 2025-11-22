@@ -3,6 +3,7 @@
 
 import bpy
 
+from ...compat.action_compat import IS_BLENDER_50_UP
 from ...core.bone import BONE_COLLECTION_NAME_DUMMY, BONE_COLLECTION_NAME_SHADOW, FnBone, MigrationFnBone
 from ...core.model import FnModel
 from . import PT_ProductionPanelBase
@@ -587,8 +588,13 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
             row.prop(mmd_bone, "transform_after_dynamics", text="", toggle=True, icon="BLANK1")
         row.prop(mmd_bone, "transform_order", text="", slider=bool(mmd_bone.transform_order))
 
-        row.prop(bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if bone.select else "RESTRICT_SELECT_ON")
-        row.prop(bone.bone, "hide", text="", emboss=False, icon_only=True)  # auto icon
+        # https://docs.blender.org/api/current/bpy.types.UILayout.html#bpy.types.UILayout.prop
+        if IS_BLENDER_50_UP:
+            row.prop(bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF", invert_checkbox=True)
+            row.prop(bone, "hide", text="", emboss=False, icon_only=True, icon="HIDE_OFF", invert_checkbox=False)
+        else:
+            row.prop(bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if bone.select else "RESTRICT_SELECT_ON")
+            row.prop(bone.bone, "hide", text="", emboss=False, icon_only=True, icon="HIDE_OFF", invert_checkbox=False)
 
 
 class MMDBoneOrderMenu(bpy.types.Menu):
