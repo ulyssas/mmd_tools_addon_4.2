@@ -632,9 +632,6 @@ class FnModel:
             FnContext.set_active_and_select_single_object(context, child_root_object)
             bpy.ops.mmd_tools.reset_object_visibility()
 
-        # Store material morph references for all child models
-        related_meshes = {}
-
         # Process each child model
         for child_root_object in child_root_objects:
             if child_root_object is None:
@@ -654,11 +651,12 @@ class FnModel:
             FnModel.realign_bone_ids(max_bone_id + 1, child_bone_morphs, child_pose_bones)
             max_bone_id = FnModel.get_max_bone_id(child_pose_bones)
 
-            # Save material morph references for this child model
+            # Store material morph mapping: (MorphName, Index) -> MeshObject
+            child_morph_links = []
             for material_morph in child_root_object.mmd_root.material_morphs:
-                for material_morph_data in material_morph.data:
+                for i, material_morph_data in enumerate(material_morph.data):
                     if material_morph_data.related_mesh_data is not None:
-                        related_meshes[material_morph_data] = material_morph_data.related_mesh_data
+                        child_morph_links.append((material_morph.name, i, material_morph_data.related_mesh_data))
                         material_morph_data.related_mesh_data = None
 
             # Move mesh objects to parent armature using parent_set
@@ -710,6 +708,14 @@ class FnModel:
             # Copy MMD root properties
             FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
 
+            # Restore material morph references
+            parent_morphs = parent_root_object.mmd_root.material_morphs
+            for morph_name, idx, mesh_data in child_morph_links:
+                if morph_name in parent_morphs:
+                    target_morph_data = parent_morphs[morph_name].data
+                    if idx < len(target_morph_data):
+                        target_morph_data[idx].related_mesh_data = mesh_data
+
         # Clean additional transform before join
         bpy.ops.object.mode_set(mode="OBJECT")
         FnContext.set_active_and_select_single_object(context, parent_root_object)
@@ -738,10 +744,6 @@ class FnModel:
         for child_root_object in child_root_objects:
             assert len(child_root_object.children) == 0
             bpy.data.objects.remove(child_root_object)
-
-        # Restore material morph references for all child models
-        for material_morph_data, mesh_data in related_meshes.items():
-            material_morph_data.related_mesh_data = mesh_data
 
         # Restore original transform matrix for parent root object
         parent_root_object.matrix_world = original_matrix_world
