@@ -518,9 +518,11 @@ class FnModel:
 
         # Assign the new IDs to the bones themselves
         for bone in valid_bones:
+            old_id = bone.mmd_bone.bone_id
             new_id = bone_to_new_id_map[bone.name]
-            if bone.mmd_bone.bone_id != new_id:
+            if old_id != new_id:
                 bone.mmd_bone.bone_id = new_id
+                logging.info("Bone ID changed: %s: %d -> %d", bone.name, old_id, new_id)
 
         # Batch update all references (morphs and other bones) using the translation map
         if not id_translation_map:  # No changes needed
