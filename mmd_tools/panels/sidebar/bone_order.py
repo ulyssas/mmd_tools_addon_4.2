@@ -496,7 +496,7 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
             layout.label(text=bone.name if bone else "", translate=False, icon="GROUP_BONE" if bone else "MESH_DATA")
             return
 
-        bone_id = bone.mmd_bone.bone_id if bone.mmd_bone.bone_id >= 0 else -1
+        bone_id = bone.mmd_bone.bone_id
 
         # Check for duplicate bone_id
         has_duplicate = False
@@ -506,8 +506,15 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
                     has_duplicate = True
                     break
 
-        count = len(bone.id_data.pose.bones)
-        bone_transform_rank = bone_id + bone.mmd_bone.transform_order * count
+        def get_bone_transform_rank(bone):
+            """Get bone transform rank as tuple for comparison"""
+            return (
+                bone.mmd_bone.transform_after_dynamics,
+                bone.mmd_bone.transform_order,
+                bone.mmd_bone.bone_id,
+            )
+
+        bone_transform_rank = get_bone_transform_rank(bone)
 
         row = layout.split(factor=0.4, align=False)
         r0 = row.row()
@@ -529,10 +536,10 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
         # Display parent bone
         bone_parent = bone.parent
         if bone_parent:
-            parent_bone_id = bone_parent.mmd_bone.bone_id if bone_parent.mmd_bone.bone_id >= 0 else -1
+            parent_bone_id = bone_parent.mmd_bone.bone_id
             parent_icon = "ERROR"
             if parent_bone_id >= 0:
-                if bone_transform_rank >= (parent_bone_id + bone_parent.mmd_bone.transform_order * count):
+                if bone_transform_rank >= get_bone_transform_rank(bone_parent):
                     parent_icon = "FILE_PARENT"
             r.label(text=str(parent_bone_id), icon=parent_icon)
         else:
@@ -545,10 +552,10 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
             append_bone_name = mmd_bone.additional_transform_bone
             if append_bone_name in bone.id_data.pose.bones:
                 append_bone = bone.id_data.pose.bones[append_bone_name]
-                append_bone_id = append_bone.mmd_bone.bone_id if append_bone.mmd_bone.bone_id >= 0 else -1
+                append_bone_id = append_bone.mmd_bone.bone_id
 
                 icon = "ERROR"
-                if append_bone_id >= 0 and bone_transform_rank >= (append_bone_id + append_bone.mmd_bone.transform_order * count):
+                if append_bone_id >= 0 and bone_transform_rank >= get_bone_transform_rank(append_bone):
                     if mmd_bone.has_additional_rotation and mmd_bone.has_additional_location:
                         icon = "IPO_QUAD"
                     elif mmd_bone.has_additional_rotation:
@@ -563,13 +570,13 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
         ik_bones_data = []
         for ik_bone_name in cls._IK_MAP.get(hash(bone), []):
             ik_bone = bone.id_data.pose.bones[ik_bone_name]
-            ik_bone_id = ik_bone.mmd_bone.bone_id if ik_bone.mmd_bone.bone_id >= 0 else -1
+            ik_bone_id = ik_bone.mmd_bone.bone_id
             is_ik_chain = hash(bone) != cls._IK_BONES.get(ik_bone_name)
 
             icon = "LINKED" if is_ik_chain else "HOOK"
             if ik_bone_id < 0:
                 icon = "ERROR"
-            elif is_ik_chain and bone_transform_rank > (ik_bone_id + ik_bone.mmd_bone.transform_order * count):
+            elif is_ik_chain and bone_transform_rank > get_bone_transform_rank(ik_bone):
                 icon = "ERROR"
 
             # Store for sorting

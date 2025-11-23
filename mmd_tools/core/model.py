@@ -450,9 +450,10 @@ class FnModel:
 
         def get_sort_key(bone):
             """Generate sorting key that only moves bones violating parent-child rules and additional transform rules"""
-            transform_order = getattr(bone.mmd_bone, "transform_order", 0)
+            transform_after_dynamics = bone.mmd_bone.transform_after_dynamics
+            transform_order = bone.mmd_bone.transform_order
             current_id = bone.mmd_bone.bone_id if bone.mmd_bone.bone_id >= 0 else float("inf")
-            additional_transform_bone_id = getattr(bone.mmd_bone, "additional_transform_bone_id", -1)
+            additional_transform_bone_id = bone.mmd_bone.additional_transform_bone_id
 
             # Check if this bone violates parent-child order rules
             violation_found = False
@@ -464,28 +465,36 @@ class FnModel:
                     parent = parent.parent
                     continue
 
-                parent_transform_order = getattr(parent.mmd_bone, "transform_order", 0)
+                parent_transform_after_dynamics = parent.mmd_bone.transform_after_dynamics
+                parent_transform_order = parent.mmd_bone.transform_order
                 parent_id = parent.mmd_bone.bone_id
 
                 # The rule that can be solved by sorting:
-                # if parent.transform_order == child.transform_order,
-                # then parent.bone_id must be < child.bone_id
-                if parent_transform_order == transform_order and parent_id >= 0 and current_id >= 0 and parent_id >= current_id:
+                # When transform_after_dynamics and transform_order are both equal,
+                # parent.bone_id must be < child.bone_id
+                if (parent_transform_after_dynamics == transform_after_dynamics and
+                    parent_transform_order == transform_order and
+                    parent_id >= 0 and current_id >= 0 and
+                    parent_id >= current_id):
                     violation_found = True
                     max_ancestor_id = max(max_ancestor_id, parent_id)
 
                 parent = parent.parent
 
             # Check additional transform constraint
-            # additional_transform_bone_id must be smaller than current bone_id when transform_order is the same
-            if additional_transform_bone_id >= 0 and current_id >= 0 and additional_transform_bone_id >= current_id:
+            # additional_transform_bone must have smaller transform rank
+            if additional_transform_bone_id >= 0 and current_id >= 0:
                 additional_transform_bone = bone_id_to_pose_bone.get(additional_transform_bone_id)
                 if additional_transform_bone:
-                    additional_transform_order = getattr(additional_transform_bone.mmd_bone, "transform_order", 0)
-                    # Only apply constraint when transform_order is the same
-                    if additional_transform_order == transform_order:
-                        violation_found = True
-                        max_ancestor_id = max(max_ancestor_id, additional_transform_bone_id)
+                    additional_transform_after_dynamics = additional_transform_bone.mmd_bone.transform_after_dynamics
+                    additional_transform_order = additional_transform_bone.mmd_bone.transform_order
+
+                    # Only apply constraint when transform_after_dynamics and transform_order are both the same
+                    if (additional_transform_after_dynamics == transform_after_dynamics and
+                        additional_transform_order == transform_order):
+                        if additional_transform_bone_id >= current_id:
+                            violation_found = True
+                            max_ancestor_id = max(max_ancestor_id, additional_transform_bone_id)
 
             if violation_found:
                 # Move this bone after its ancestors and additional transform dependencies
