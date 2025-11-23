@@ -3,6 +3,7 @@
 
 import bpy
 
+from ... import utils
 from ...compat.action_compat import IS_BLENDER_50_UP
 from ...core.bone import BONE_COLLECTION_NAME_DUMMY, BONE_COLLECTION_NAME_SHADOW, FnBone, MigrationFnBone
 from ...core.model import FnModel
@@ -203,6 +204,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         MigrationFnBone.fix_mmd_ik_limit_override(armature)
         FnBone.apply_additional_transformation(armature)
 
+        utils.selectAObject(root)
         return {"FINISHED"}
 
     def check_and_rename_collections(self, armature_object):
