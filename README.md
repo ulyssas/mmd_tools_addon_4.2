@@ -62,6 +62,20 @@ For physics simulation, we recommend using [MMDBridge](https://github.com/rintri
 1. Significantly reduces Blender crashes
 2. Physics effects match MMD exactly without having to manually recreate breast physics
 3. Better overall performance
+4. Resolves IK solver differences between Blender and MMD
+
+### IK Solver Differences
+
+**Issue**: When importing VMD motion data created in MMD, the resulting poses differ from the original.
+
+**Details**:
+
+- Blender uses its own IK solver implementation which produces different results compared to MMD's IK solver
+- This causes noticeable differences in character poses, especially for legs, arms, and other IK-controlled bones
+- Manual adjustment is required to fix the difference when working in Blender
+
+**Recommended Workaround**:
+Using [MMDBridge](https://github.com/rintrint/mmdbridge) ensures IK calculations are performed using MMD's native solver, providing consistent results with MMD.
 
 ## Contributing
 
