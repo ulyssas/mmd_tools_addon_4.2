@@ -169,9 +169,9 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
             return {"FINISHED"}
 
         # Trigger mode switch to sync newly created bones from Edit mode
-        current_mode = armature.mode
-        bpy.ops.object.mode_set(mode="OBJECT")
-        bpy.ops.object.mode_set(mode=current_mode)
+        if context.active_object == armature and armature.mode == "EDIT":
+            bpy.ops.object.mode_set(mode="OBJECT")
+            bpy.ops.object.mode_set(mode="EDIT")
 
         # Migrate bone layers from Blender 3.6 and earlier to bone collections in newer versions
         self.check_and_rename_collections(armature)
