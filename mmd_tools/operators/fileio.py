@@ -357,7 +357,6 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -544,7 +543,6 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
@@ -775,7 +773,6 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
@@ -962,7 +959,6 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -1103,7 +1099,6 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         logger = logging.getLogger()
@@ -1204,7 +1199,6 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
