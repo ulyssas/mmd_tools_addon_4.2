@@ -825,7 +825,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_pmx"
     bl_label = "Export PMX File (.pmx)"
     bl_description = "Export selected MMD model(s) to PMX file(s) (.pmx)"
-    bl_options = {"PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     filename_ext = ".pmx"
     filter_glob: bpy.props.StringProperty(default="*.pmx", options={"HIDDEN"})
@@ -1040,7 +1040,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vmd"
     bl_label = "Export VMD File (.vmd)"
     bl_description = "Export motion data of active object to a VMD file (.vmd)\nBehavior varies depending on the active object:\n- Active object is the root (cross under the model): exports both armature and morph animations\n- Active object is the model: exports only morph animation\n- Active object is the armature: exports only armature animation"
-    bl_options = {"PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     filename_ext = ".vmd"
     filter_glob: bpy.props.StringProperty(default="*.vmd", options={"HIDDEN"})
@@ -1153,7 +1153,7 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
     bl_description = "Export active rig's Action Pose to VPD file(s) (.vpd)\nBehavior varies depending on the active object:\n- Active object is the root (cross under the model): exports both armature pose and morphs\n- Active object is the model: exports only morphs\n- Active object is the armature: exports only armature pose"
-    bl_options = {"PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     filename_ext = ".vpd"
     filter_glob: bpy.props.StringProperty(default="*.vpd", options={"HIDDEN"})
