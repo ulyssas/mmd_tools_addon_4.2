@@ -1219,14 +1219,6 @@ class MMD_FH_PMX(bpy.types.FileHandler):
     def poll_drop(cls, context):
         return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
 
-    def import_drop(self, context, filepath=None, files=None, **kwargs):
-        if files:
-            for f in files:
-                bpy.ops.mmd_tools.import_model(filepath=f["name"])
-        elif filepath:
-            bpy.ops.mmd_tools.import_model(filepath=filepath)
-        return {"FINISHED"}
-
 
 class MMD_FH_VMD(bpy.types.FileHandler):
     bl_idname = "MMD_FH_VMD"
@@ -1240,14 +1232,6 @@ class MMD_FH_VMD(bpy.types.FileHandler):
     def poll_drop(cls, context):
         return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
 
-    def import_drop(self, context, filepath=None, files=None, **kwargs):
-        if files:
-            for f in files:
-                bpy.ops.mmd_tools.import_vmd(filepath=f["name"])
-        elif filepath:
-            bpy.ops.mmd_tools.import_vmd(filepath=filepath)
-        return {"FINISHED"}
-
 
 class MMD_FH_VPD(bpy.types.FileHandler):
     bl_idname = "MMD_FH_VPD"
@@ -1260,14 +1244,6 @@ class MMD_FH_VPD(bpy.types.FileHandler):
     @classmethod
     def poll_drop(cls, context):
         return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
-
-    def import_drop(self, context, filepath=None, files=None, **kwargs):
-        if files:
-            for f in files:
-                bpy.ops.mmd_tools.import_vpd(filepath=f["name"])
-        elif filepath:
-            bpy.ops.mmd_tools.import_vpd(filepath=filepath)
-        return {"FINISHED"}
 
 
 # --- Keymap Registration ---
