@@ -215,7 +215,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_model"
     bl_label = "Import Model File (.pmd, .pmx)"
     bl_description = "Import model file(s) (.pmd, .pmx)"
-    bl_options = {"REGISTER", "UNDO", "PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
     directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
@@ -421,7 +421,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vmd"
     bl_label = "Import VMD File (.vmd)"
     bl_description = "Import a VMD file to selected objects (.vmd)\nBehavior varies depending on the selected object:\n- Select the root (cross under the model): imports both armature and morph animations\n- Select the model: imports only morph animation\n- Select the armature: imports only armature animation"
-    bl_options = {"REGISTER", "UNDO", "PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
     directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
@@ -705,7 +705,7 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vpd"
     bl_label = "Import VPD File (.vpd)"
     bl_description = "Import VPD file(s) to selected rig's Action Pose (.vpd)\nBehavior varies depending on the selected object:\n- Select the root (cross under the model): applies both armature pose and morphs\n- Select the model: applies only morphs\n- Select the armature: applies only armature pose"
-    bl_options = {"REGISTER", "UNDO", "PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
     directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
