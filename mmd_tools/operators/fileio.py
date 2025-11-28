@@ -340,20 +340,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
 
     def invoke(self, context, event):
         self.load_preferences_on_invoke(context, "default_pmx_import_preset")
-
-        # If filepath is set (e.g. Drag & Drop), use a concise dialog instead of the file browser.
-        if self.properties.is_property_set("filepath"):
-            return context.window_manager.invoke_props_dialog(
-                self,
-                width=300,
-                title=", ".join(os.path.basename(f.name) for f in self.files),
-                confirm_text=self.bl_label,
-                cancel_default=False,
-                text_ctxt="Operator",
-                translate=True,
-            )
-
-        return super().invoke(context, event)
+        return self.invoke_popup(context)
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
@@ -526,20 +513,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
     def invoke(self, context, event):
         self.load_preferences_on_invoke(context, "default_vmd_import_preset")
-
-        # If filepath is set (e.g. Drag & Drop), use a concise dialog instead of the file browser.
-        if self.properties.is_property_set("filepath"):
-            return context.window_manager.invoke_props_dialog(
-                self,
-                width=300,
-                title=", ".join(os.path.basename(f.name) for f in self.files),
-                confirm_text=self.bl_label,
-                cancel_default=False,
-                text_ctxt="Operator",
-                translate=True,
-            )
-
-        return super().invoke(context, event)
+        return self.invoke_popup(context)
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
@@ -756,20 +730,7 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
 
     def invoke(self, context, event):
         self.load_preferences_on_invoke(context, "default_vpd_import_preset")
-
-        # If filepath is set (e.g. Drag & Drop), use a concise dialog instead of the file browser.
-        if self.properties.is_property_set("filepath"):
-            return context.window_manager.invoke_props_dialog(
-                self,
-                width=300,
-                title=", ".join(os.path.basename(f.name) for f in self.files),
-                confirm_text=self.bl_label,
-                cancel_default=False,
-                text_ctxt="Operator",
-                translate=True,
-            )
-
-        return super().invoke(context, event)
+        return self.invoke_popup(context)
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
