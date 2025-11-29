@@ -270,7 +270,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     )
     fix_ik_links: bpy.props.BoolProperty(
         name="Fix IK Links",
-        description="Fix IK links to be blender suitable",
+        description="Fix IK links to be blender suitable. This aligns heads and tails across the bone chain.",
         default=False,
     )
     ik_loop_factor: bpy.props.IntProperty(

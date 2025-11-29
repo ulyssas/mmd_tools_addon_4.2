@@ -1863,10 +1863,10 @@ translations_tuple = (
         ("zh_HANS", "修复IK关联", (False, ())),
     ),
     (
-        ("*", "Fix IK links to be blender suitable"),
+        ("*", "Fix IK links to be blender suitable. This aligns heads and tails across the bone chain."),
         (("bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links",), ()),
         ("ja_JP", "", (False, ())),
-        ("zh_HANS", "修复逆向运动学关联，使其适合被 Blender 处理", (False, ())),
+        ("zh_HANS", "修复逆向运动学关联，使其适合被 Blender 处理。此操作修正骨链骨骼间的头尾对齐。", (False, ())),
     ),
     (
         ("*", "IK Loop Factor"),
