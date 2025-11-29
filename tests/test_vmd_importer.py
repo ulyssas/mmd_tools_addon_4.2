@@ -999,7 +999,18 @@ class TestVMDImporter(unittest.TestCase):
         armature.select_set(True)
 
         # First import with create_new_action=False
-        bpy.ops.mmd_tools.import_vmd(files=[{"name": os.path.basename(vmd_files[0])}], directory=os.path.dirname(vmd_files[0]), scale=0.08, margin=0, bone_mapper="PMX", use_pose_mode=False, use_mirror=False, update_scene_settings=False, create_new_action=False, use_nla=False)
+        bpy.ops.mmd_tools.import_vmd(
+            files=[{"name": os.path.basename(vmd_files[0])}],
+            directory=os.path.dirname(vmd_files[0]),
+            scale=0.08,
+            margin=0,
+            bone_mapper="PMX",
+            use_pose_mode=False,
+            use_mirror=False,
+            update_scene_settings=False,
+            create_new_action=False,
+            use_nla=False,
+        )
 
         first_action = None
         if armature.animation_data:
@@ -1007,7 +1018,18 @@ class TestVMDImporter(unittest.TestCase):
             self.assertIsNotNone(first_action, "First action should be created")
 
         # Second import with create_new_action=True
-        bpy.ops.mmd_tools.import_vmd(files=[{"name": os.path.basename(vmd_files[0])}], directory=os.path.dirname(vmd_files[0]), scale=0.08, margin=0, bone_mapper="PMX", use_pose_mode=False, use_mirror=False, update_scene_settings=False, create_new_action=True, use_nla=False)
+        bpy.ops.mmd_tools.import_vmd(
+            files=[{"name": os.path.basename(vmd_files[0])}],
+            directory=os.path.dirname(vmd_files[0]),
+            scale=0.08,
+            margin=0,
+            bone_mapper="PMX",
+            use_pose_mode=False,
+            use_mirror=False,
+            update_scene_settings=False,
+            create_new_action=True,
+            use_nla=False,
+        )
 
         if armature.animation_data and first_action:
             second_action = armature.animation_data.action

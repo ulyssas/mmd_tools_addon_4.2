@@ -298,8 +298,7 @@ class FnModel:
             current_id = new_bone_id
 
             # Sort all pose bones by bone ID
-            sorted_bones = sorted([pb for pb in pose_bones if pb.mmd_bone.bone_id >= new_bone_id],
-                                key=lambda pb: pb.mmd_bone.bone_id)
+            sorted_bones = sorted([pb for pb in pose_bones if pb.mmd_bone.bone_id >= new_bone_id], key=lambda pb: pb.mmd_bone.bone_id)
 
             # Add bones to shift until we find a gap
             for pb in sorted_bones:
@@ -472,10 +471,7 @@ class FnModel:
                 # The rule that can be solved by sorting:
                 # When transform_after_dynamics and transform_order are both equal,
                 # parent.bone_id must be < child.bone_id
-                if (parent_transform_after_dynamics == transform_after_dynamics and
-                    parent_transform_order == transform_order and
-                    parent_id >= 0 and current_id >= 0 and
-                    parent_id >= current_id):
+                if parent_transform_after_dynamics == transform_after_dynamics and parent_transform_order == transform_order and parent_id >= 0 and current_id >= 0 and parent_id >= current_id:
                     violation_found = True
                     max_ancestor_id = max(max_ancestor_id, parent_id)
 
@@ -490,8 +486,7 @@ class FnModel:
                     additional_transform_order = additional_transform_bone.mmd_bone.transform_order
 
                     # Only apply constraint when transform_after_dynamics and transform_order are both the same
-                    if (additional_transform_after_dynamics == transform_after_dynamics and
-                        additional_transform_order == transform_order):
+                    if additional_transform_after_dynamics == transform_after_dynamics and additional_transform_order == transform_order:
                         if additional_transform_bone_id >= current_id:
                             violation_found = True
                             max_ancestor_id = max(max_ancestor_id, additional_transform_bone_id)

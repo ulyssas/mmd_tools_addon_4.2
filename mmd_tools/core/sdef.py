@@ -110,7 +110,7 @@ class FnSDEF:
                     # preprocessing
                     w0, w1 = bgs[0].weight, bgs[1].weight
                     # w0 + w1 == 1
-                    w0 /= (w0 + w1)
+                    w0 /= w0 + w1
                     w1 = 1 - w0
 
                     c, r0, r1 = sdef_c[i].co, sdef_r0[i].co, sdef_r1[i].co
