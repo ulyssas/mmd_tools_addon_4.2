@@ -1086,8 +1086,6 @@ class _PMXCleaner:
             return None
 
         # clean face
-        # def face_key_func(f):
-        #     return frozenset(vertex_map[x][0] for x in f)
         def face_key_func(f):
             return frozenset({vertex_map[x][0]: tuple(pmx_vertices[x].uv) for x in f}.items())
         cls.__clean_pmx_faces(pmx_model.faces, pmx_model.materials, face_key_func)
