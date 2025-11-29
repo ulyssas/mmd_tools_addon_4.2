@@ -844,14 +844,6 @@ class PMXImporter:
         armModifier.show_render = armModifier.show_viewport = len(meshObj.data.vertices) > 0
 
     def __assignCustomNormals(self):
-        # NOTE: This uses the older Blender API instead of the newer mesh.attributes approach
-        # because it requires "INT16_2D" format for proper functionality.
-        # Manual calculation of normals in INT16_2D format is overly complex.
-        # The newer implementation was removed in commit [ad47b9a] due to these issues.
-        # The current implementation uses normals_split_custom_set() with 179-degree sharp edge
-        # marking as a workaround. While not ideal, this remains the most practical solution
-        # for preserving custom normals in most cases.
-
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
         # CRITICAL: Mark sharp edges (based on angle) BEFORE setting custom normals
