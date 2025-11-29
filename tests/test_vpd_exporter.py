@@ -514,12 +514,7 @@ class TestVPDExporter(unittest.TestCase):
                     print(f"ok Successfully tested: pose_type={pose_type}, use_pose_mode={use_pose_mode}")
 
                 except Exception as e:
-                    # For older Blender versions, pose_library might not be available
-                    if "pose_library" in str(e) and pose_type in {"ACTIVE", "ALL"}:
-                        print(f"!! Skipped pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
-                        print("   This is normal if your Blender version doesn't support pose libraries")
-                    else:
-                        self.fail(f"Export failed with pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
+                    self.fail(f"Export failed with pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
 
         print("\nAll available export combinations tested successfully")
 

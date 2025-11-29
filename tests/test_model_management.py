@@ -359,9 +359,8 @@ class TestModelManagement(unittest.TestCase):
         # Test separate by materials with actual mesh data
         try:
             bpy.ops.mmd_tools.separate_by_materials()
-            self.assertTrue(True, "Separate by materials operation completed with mesh data")
         except Exception as e:
-            self.assertTrue(True, f"Separate by materials with mesh data handled: {e}")
+            self.fail(f"Separate by materials failed unexpectedly: {e}")
 
         # Test join meshes with actual mesh data
         bpy.context.view_layer.objects.active = root_obj
@@ -385,10 +384,8 @@ class TestModelManagement(unittest.TestCase):
         # Test separate by materials without mesh data
         try:
             bpy.ops.mmd_tools.separate_by_materials()
-            self.assertTrue(True, "Separate by materials operation completed without mesh data")
         except Exception as e:
-            # This is expected to fail or warn with no mesh data
-            self.assertTrue(True, f"Separate by materials without mesh data expected behavior: {e}")
+            self.fail(f"Separate by materials failed unexpectedly: {e}")
 
         # Test join meshes without mesh data
         bpy.context.view_layer.objects.active = root_obj
