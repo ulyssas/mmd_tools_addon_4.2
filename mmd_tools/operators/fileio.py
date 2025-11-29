@@ -14,7 +14,7 @@ from bpy_extras.io_utils import ExportHelper, ImportHelper
 
 from .. import auto_scene_setup
 from ..core.camera import MMDCamera
-from ..core.lamp import MMDLamp
+from ..core.light import MMDLight
 from ..core.model import FnModel, Model
 from ..core.pmd import importer as pmd_importer
 from ..core.pmx import exporter as pmx_exporter
@@ -483,14 +483,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts.",
         default=True,
     )
-    detect_lamp_changes: bpy.props.BoolProperty(
-        # TODO: Update all instances of "lamp" to "light" throughout the repository to align with Blender 2.80+ API changes.
-        # This includes:
-        #   - Variable names and references
-        #   - Class/type checks (LAMP -> LIGHT)
-        #   - Documentation and comments
-        #   - Function parameters and return values
-        # This change is necessary since Blender 2.80 renamed the "Lamp" type to "Light".
+    detect_light_changes: bpy.props.BoolProperty(
         name="Detect Light Cut",
         description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
         default=True,
@@ -533,7 +526,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout.prop(self, "use_pose_mode")
         layout.prop(self, "use_mirror")
         layout.prop(self, "detect_camera_changes")
-        layout.prop(self, "detect_lamp_changes")
+        layout.prop(self, "detect_light_changes")
 
         layout.prop(self, "update_scene_settings")
 
@@ -588,7 +581,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     use_mirror=self.use_mirror,
                     use_nla=self.use_nla,
                     detect_camera_changes=self.detect_camera_changes,
-                    detect_lamp_changes=self.detect_lamp_changes,
+                    detect_light_changes=self.detect_light_changes,
                 )
 
                 for i in selected_objects:
@@ -1049,7 +1042,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             return True
         if obj.mmd_type == "NONE" and (obj.type == "ARMATURE" or getattr(obj.data, "shape_keys", None)):
             return True
-        if MMDCamera.isMMDCamera(obj) or MMDLamp.isMMDLamp(obj):
+        if MMDCamera.isMMDCamera(obj) or MMDLight.isMMDLight(obj):
             return True
 
         return False
@@ -1094,8 +1087,8 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
                 for i in context.selected_objects:
                     if MMDCamera.isMMDCamera(i):
                         params["camera"] = i
-                    elif MMDLamp.isMMDLamp(i):
-                        params["lamp"] = i
+                    elif MMDLight.isMMDLight(i):
+                        params["light"] = i
 
             start_time = time.time()
             vmd_exporter.VMDExporter().export(**params)

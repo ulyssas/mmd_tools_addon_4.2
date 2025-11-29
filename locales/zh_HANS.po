@@ -578,16 +578,16 @@ msgstr "烘焙动画时至摄像机源的最小距离"
 msgid "Scaling factor for initializing the camera"
 msgstr "初始化相机的比例系数"
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgctxt "Operator"
 msgid "Convert to MMD Light"
 msgstr "转换为MMD灯光"
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgid "Create a light rig for MMD"
 msgstr "创建 MMD 光源绑定"
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp.scale
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light.scale
 msgid "Scaling factor for initializing the light"
 msgstr "初始化灯光的比例系数"
 
@@ -1516,11 +1516,11 @@ msgstr "检测镜头切换"
 msgid "When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts."
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_light_changes
 msgid "Detect Light Cut"
 msgstr "检测灯光切换"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_light_changes
 msgid "When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes."
 msgstr ""
 
@@ -3765,12 +3765,12 @@ msgid "Distance"
 msgstr "距离"
 
 #: extensions/blender_org/mmd_tools/panels/prop_camera.py:43
-#: extensions/blender_org/mmd_tools/panels/prop_lamp.py:35
+#: extensions/blender_org/mmd_tools/panels/prop_light.py:35
 msgctxt "Operator"
 msgid "Convert"
 msgstr "转换"
 
-#: extensions/blender_org/mmd_tools/panels/prop_lamp.py:33
+#: extensions/blender_org/mmd_tools/panels/prop_light.py:33
 msgid "Light Source"
 msgstr "光源"
 
