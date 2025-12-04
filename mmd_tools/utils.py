@@ -120,6 +120,11 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
     meshObj.active_shape_key_index = 0
     try:
         if keep_normals:
+            # Remove existing "mmd_normal" attribute if it exists to avoid Blender auto-renaming
+            existing_attr = meshData.attributes.get("mmd_normal")
+            if existing_attr is not None:
+                meshData.attributes.remove(existing_attr)
+
             mmd_normal = meshData.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
             normals_data = np.empty(len(meshData.loops) * 3, dtype=np.float32)
             meshData.loops.foreach_get("normal", normals_data)
