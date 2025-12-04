@@ -42,7 +42,7 @@ class MoveObject(bpy.types.Operator, utils.ItemMoveOp):
     def set_index(cls, obj, index):
         m = cls.__PREFIX_REGEXP.match(obj.name)
         name = m.group("name") if m else obj.name
-        obj.name = f"{utils.int2base(index, 36, 3)}_{name}"
+        obj.name = f"{index:03d}_{name}"
 
     @classmethod
     def get_name(cls, obj, prefix=None):
