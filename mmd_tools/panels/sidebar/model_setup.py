@@ -136,6 +136,7 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
         col = self.layout.column(align=True)
         col.label(text="Mesh:", icon="MESH_DATA")
         grid = col.grid_flow(row_major=True, align=True)
+        grid.row(align=True).operator("mmd_tools.separate_by_parts", text="Sep by Parts", icon="MOD_EXPLODE")
         grid.row(align=True).operator("mmd_tools.separate_by_materials", text="Sep by Mat(High Risk)", icon="MOD_EXPLODE")
         grid.row(align=True).operator("mmd_tools.join_meshes", text="Join", icon="MESH_CUBE")
 
