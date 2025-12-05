@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Callable, Dict, Optional, Set, Tuple
 
 import bpy
 
-from ..compat.action_compat import IS_BLENDER_50_UP
+from ..compat.versions import IS_BLENDER_50_UP
 from ..translations import DictionaryEnum
 from ..utils import convertLRToName, convertNameToLR
 from .bone import FnBone

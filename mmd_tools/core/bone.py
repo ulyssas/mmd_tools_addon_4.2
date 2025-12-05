@@ -9,7 +9,7 @@ from mathutils import Vector
 
 from .. import bpyutils
 from ..bpyutils import TransformConstraintOp
-from ..compat.action_compat import IS_BLENDER_50_UP
+from ..compat.versions import IS_BLENDER_50_UP
 from ..utils import ItemOp
 
 if TYPE_CHECKING:
