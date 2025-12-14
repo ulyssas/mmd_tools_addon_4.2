@@ -243,8 +243,11 @@ class SeparateByMaterials(bpy.types.Operator):
                 FnMorph.clean_uv_morph_vertex_groups(mesh)
                 if len(mesh.data.materials) > 0:
                     mat = mesh.data.materials[0]
-                    idx = mat_names.index(getattr(mat, "name", None))
-                    MoveObject.set_index(mesh, idx)
+                    # Restore object index based on material list order
+                    mat_name = getattr(mat, "name", None)
+                    if mat_name in mat_names:
+                        idx = mat_names.index(mat_name)
+                        MoveObject.set_index(mesh, idx)
 
             for morph in root.mmd_root.material_morphs:
                 FnMorph(morph, rig).update_mat_related_mesh()
