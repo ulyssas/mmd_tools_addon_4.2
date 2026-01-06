@@ -520,6 +520,11 @@ class FnMaterial:
 
         node_shader = nodes.get("mmd_shader", None)
         if node_shader is None:
+            # Remove default Principled BSDF node created by Blender 5.0+ when initializing mmd_shader
+            default_bsdf = nodes.get("Principled BSDF")
+            if default_bsdf:
+                nodes.remove(default_bsdf)
+
             node_shader: bpy.types.ShaderNodeGroup = nodes.new("ShaderNodeGroup")
             node_shader.name = "mmd_shader"
             node_shader.location = (0, 300)
