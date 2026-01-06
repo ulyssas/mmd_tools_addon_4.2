@@ -7,10 +7,6 @@ name: Release
 
 jobs:
   release:
-    # Note: `github.event.base_ref` is equal to `refs/heads/main` when the workflow is triggered
-    # by a branch, or a lightweight tag (_not_ an annotated tag), placed on the last commit of the `main` branch
-    if: github.event.base_ref == 'refs/heads/main'
-
     runs-on: ubuntu-latest
 
     steps:
