@@ -451,8 +451,10 @@ class AddJoint(bpy.types.Operator):
             return {"CANCELLED"}
 
         FnContext.select_single_object(context, root_object).select_set(False)
-        if context.scene.rigidbody_world is None:
+
+        if bpy.ops.rigidbody.world_add.poll():
             bpy.ops.rigidbody.world_add()
+            context.scene.rigidbody_world.enabled = False
 
         for pair in self.__enumerate_rigid_pair(bone_map):
             joint = self.__add_joint(context, root_object, pair, bone_map)

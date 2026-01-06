@@ -321,11 +321,6 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="The diffuse color factor of texture slot for .spa textures",
         default=1.0,
     )
-    enable_rigid_body_world: bpy.props.BoolProperty(
-        name="Enable Rigid Body World",
-        description="Automatically enable Rigid Body World to the scene when importing physics.",
-        default=False,
-    )
     log_level: bpy.props.EnumProperty(
         name="Log level",
         description="Select log level",
@@ -391,7 +386,6 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 use_mipmap=self.use_mipmap,
                 sph_blend_factor=self.sph_blend_factor,
                 spa_blend_factor=self.spa_blend_factor,
-                enable_rigid_body_world=self.enable_rigid_body_world,
             )
             self.report({"INFO"}, f'Imported MMD model from "{self.filepath}"')
         except Exception:
