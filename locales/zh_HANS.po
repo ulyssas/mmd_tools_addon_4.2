@@ -372,7 +372,7 @@ msgstr "装配物理时创建的额外非碰撞约束的距离比例"
 
 #. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor
 #: extensions/blender_org/mmd_tools/panels/prop_object.py:34
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:167
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
 msgctxt "Operator"
 msgid "Change MMD IK Loop Factor"
 msgstr "改变MMD IK循环系数"
@@ -1268,6 +1268,15 @@ msgstr "修复贴图问题"
 msgid "Fix texture name and path issues automatically"
 msgstr ""
 
+#. :src: bpy.types.MMD_TOOLS_OT_flip_pose
+msgctxt "Operator"
+msgid "Flip Pose"
+msgstr "MMD翻转姿态"
+
+#. :src: bpy.types.MMD_TOOLS_OT_flip_pose
+msgid "Apply the current pose of selected bones to matching bone on opposite side of X-Axis."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_global_translation_popup
 msgctxt "Operator"
 msgid "Global Translation Popup"
@@ -1317,14 +1326,6 @@ msgstr "将骨骼重命名为英文"
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd.dictionary
 msgid "Translate bone names from Japanese to English using selected dictionary"
 msgstr "使用选中的词典将骨骼名从日语翻译为英语"
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
-msgid "Enable Rigid Body World"
-msgstr "开启刚体世界环境"
-
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
-msgid "Automatically enable Rigid Body World to the scene when importing physics."
-msgstr "导入物理时自动开启刚体世界环境。"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
 msgid "Automatically fix bone order after import. This ensures bones are ordered correctly for MMD compatibility."
@@ -1746,7 +1747,7 @@ msgstr "移除活动材质的主纹理"
 #. :src: bpy.types.MMD_TOOLS_OT_material_setup_texture
 msgctxt "Operator"
 msgid "Setup Texture"
-msgstr ""
+msgstr "设置纹理节点"
 
 #. :src: bpy.types.MMD_TOOLS_OT_material_setup_texture
 msgid ""
@@ -2188,7 +2189,7 @@ msgid "Select the bone assigned to this offset in the armature"
 msgstr "在骨架中选中与此偏移相关的骨骼"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:140
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
 msgctxt "Operator"
 msgid "Sep by Mat(High Risk)"
 msgstr "按材质分开(高风险)"
@@ -2212,7 +2213,7 @@ msgid "Remove unused shape keys of separated objects"
 msgstr "清除分离物体未使用的形态键"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:138
 msgctxt "Operator"
 msgid "Sep by Parts"
 msgstr "按部件分开"
@@ -2927,7 +2928,7 @@ msgid "SubTexture"
 msgstr "次纹理"
 
 #. :src: bpy.types.MMDMaterial.toon_texture
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:149
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:148
 msgid "Toon Texture"
 msgstr "卡通纹理"
 
@@ -3409,17 +3410,17 @@ msgctxt "Operator"
 msgid "Select MMD Rigid Body"
 msgstr "选择MMD刚体"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:396
+#: extensions/blender_org/mmd_tools/operators/fileio.py:390
 #, fuzzy
 msgid "Imported MMD model from \"\""
 msgstr "已从\"%s\"导入 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:958
+#: extensions/blender_org/mmd_tools/operators/fileio.py:952
 #, fuzzy
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr "[跳过] 找不到 MMD 模型\"%s\"的骨架数据"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:990
+#: extensions/blender_org/mmd_tools/operators/fileio.py:984
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "已导出 MMD 模型\"%s\"至\"%s\""
@@ -3449,8 +3450,8 @@ msgid "Removed  texture nodes."
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/operators/material.py:417
-#: extensions/blender_org/mmd_tools/operators/misc.py:271
-#: extensions/blender_org/mmd_tools/operators/misc.py:317
+#: extensions/blender_org/mmd_tools/operators/misc.py:274
+#: extensions/blender_org/mmd_tools/operators/misc.py:320
 msgid "Select a MMD model"
 msgstr "选择 MMD 模型"
 
@@ -3467,11 +3468,11 @@ msgstr " * 未能改变至 Cycles 渲染引擎"
 msgid "Materials not found"
 msgstr "找不到材质"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:378
+#: extensions/blender_org/mmd_tools/operators/misc.py:381
 msgid "This operation will break existing f-curve/action."
 msgstr "这一操作将破坏现有的函数曲线/动作"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:379
+#: extensions/blender_org/mmd_tools/operators/misc.py:382
 msgid "Click [OK] to run the operation."
 msgstr "点击[确定]来运行操作"
 
@@ -3480,11 +3481,11 @@ msgstr "点击[确定]来运行操作"
 msgid "Can not move object \"\""
 msgstr "无法移动物体\"%s\""
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:281
+#: extensions/blender_org/mmd_tools/operators/misc.py:284
 msgid "The model does not have any meshes"
 msgstr "该模型不具有任何网格"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:322
+#: extensions/blender_org/mmd_tools/operators/misc.py:325
 msgid "Model Armature not found"
 msgstr "找不到模型的骨架"
 
@@ -4056,7 +4057,7 @@ msgid "Peel"
 msgstr "剥去"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:62
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:141
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:140
 msgctxt "Operator"
 msgid "Join"
 msgstr "合并"
@@ -4099,47 +4100,47 @@ msgstr "SDEF"
 msgid "Property"
 msgstr "属性"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:129
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:128
 msgid "IK Toggle:"
 msgstr "IK切换:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:137
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:136
 msgid "Mesh:"
 msgstr "网格:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:145
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:144
 msgid "Material:"
 msgstr "材质:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:150
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:149
 msgid "Sphere Texture"
 msgstr "球体纹理"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:155
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:154
 msgctxt "Operator"
 msgid "Convert to Blender"
 msgstr "转换给Blender"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:157
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:156
 msgctxt "Operator"
 msgid "Convert to MMD"
 msgstr "转换给MMD"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:158
 msgctxt "Operator"
 msgid "Setup Textures"
-msgstr ""
+msgstr "设置纹理节点"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:160
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
 msgctxt "Operator"
 msgid "Texture Cleanup"
-msgstr ""
+msgstr "清理纹理节点"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:164
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:163
 msgid "Misc:"
 msgstr "杂项:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:165
 msgctxt "Operator"
 msgid "(Experimental) Global Translation"
 msgstr "(实验性) 全局翻译"
@@ -4150,7 +4151,7 @@ msgctxt "Operator"
 msgid "Physics"
 msgstr "物理"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:152
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:151
 msgctxt "Operator"
 msgid "Edge Preview"
 msgstr "边缘预览"
