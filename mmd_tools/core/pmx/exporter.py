@@ -237,32 +237,41 @@ class __PmxExporter:
         original_paths = {texture: texture.path for texture in self.__model.textures}
 
         # Step 1: Set PMX texture relative paths
-        tex_dir_fallback = os.path.join(output_dir, "textures")
         tex_dir_preference = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
+
+        def __calculate_parent_dirname(current_path):
+            abs_path = os.path.abspath(current_path)
+            dirname = os.path.dirname(abs_path)
+            return os.path.basename(dirname)
 
         for texture in self.__model.textures:
             current_path = original_paths[texture]
 
-            # Calculate the ideal destination filename and directory based on preference
-            dst_name = os.path.basename(current_path)
-            tex_dir = output_dir  # Restart to the default directory at each loop
+            # dst_rel_path: The final relative path intended for the PMX model (e.g., "clothes/shirt.png")
+            dst_rel_path = ""
+
+            # 1. Attempt to calculate the relative path using 'base_folder' or 'tex_dir_preference'
             if base_folder:
-                dst_name = saferelpath(current_path, base_folder, strategy="outside")
-                if dst_name.startswith(".."):
+                dst_rel_path = saferelpath(current_path, base_folder, strategy="outside")
+                if dst_rel_path.startswith(".."):
                     if tex_dir_preference:
-                        dst_name = saferelpath(current_path, tex_dir_preference, strategy="outside")
-                    if dst_name.startswith(".."):
+                        dst_rel_path = saferelpath(current_path, tex_dir_preference, strategy="outside")
+
+                    # If both fail (path starts with ".."), reset to empty to trigger the fallback logic below
+                    if dst_rel_path.startswith(".."):
                         logging.warning("The texture %s is not inside the base texture folder", current_path)
-                        dst_name = os.path.basename(current_path)
-                        tex_dir = tex_dir_fallback
-            else:
-                tex_dir = tex_dir_fallback
+                        dst_rel_path = ""
 
-            # Determine the full destination path and the final PMX relative path
-            full_dest_path = os.path.join(tex_dir, dst_name)
-            final_relative_path = os.path.relpath(full_dest_path, start=output_dir).replace("\\", "/")
+            # 2. Fallback: Use the parent folder name
+            # Logic: C:\Users\user\Desktop\clothes\test.png -> clothes/test.png
+            # Logic: C:\test.png -> test.png (parent_dirname is empty)
+            if not dst_rel_path:
+                filename = os.path.basename(current_path)
+                parent_dir = __calculate_parent_dirname(current_path)
+                dst_rel_path = os.path.join(parent_dir, filename)
 
-            texture.path = final_relative_path
+            # 3. Determine the final PMX relative path
+            texture.path = dst_rel_path.replace("\\", "/")
 
         # Step 2: Copy textures
         if copy_textures_mode in {"SKIP_EXISTING", "OVERWRITE"}:
