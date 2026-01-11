@@ -71,6 +71,36 @@ class MoveDisplayItemFrame(Operator, ItemMoveOp):
         return {"FINISHED"}
 
 
+class UnlockDisplayItemFrame(Operator):
+    bl_idname = "mmd_tools.display_item_frame_unlock"
+    bl_label = "Unlock Display Item Frame"
+    bl_description = "Unlock display item frame to change its name"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+
+    type: bpy.props.EnumProperty(
+        name="Type",
+        description="Select type",
+        items=[
+            ("UNLOCK", "Unlock Display Frame", "Unlock display item frame to change its name", "UNLOCKED", 0),
+            ("LOCK", "Lock Display Frame", "Lock display item frame", "LOCKED", 1),
+        ],
+        default="UNLOCK",
+    )
+
+    def execute(self, context):
+        obj = context.active_object
+        root = FnModel.find_root_object(obj)
+        mmd_root = root.mmd_root
+        frame = ItemOp.get_by_index(mmd_root.display_item_frames, mmd_root.active_display_item_frame)
+        if frame is None:
+            return {"CANCELLED"}
+        if self.type == "UNLOCK":
+            frame.is_special = False
+        elif self.type == "LOCK":
+            frame.is_special = True
+        return {"FINISHED"}
+
+
 class AddDisplayItem(Operator):
     bl_idname = "mmd_tools.display_item_add"
     bl_label = "Add Display Item"

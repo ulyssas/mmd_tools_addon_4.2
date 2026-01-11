@@ -1060,10 +1060,40 @@ translations_tuple = (
         ("zh_HANS", "移除显示项目帧", (False, ())),
     ),
     (
+        ("Operator", "Unlock Display Item Frame"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock",), ()),
+        ("ja_JP", "表示枠をアンロック", (False, ())),
+        ("zh_HANS", "移动显示项目帧", (True, ())),
+    ),
+    (
         ("*", "Remove active display item frame from the list"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_remove",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "从列表中移除活动的表示枠", (False, ())),
+    ),
+    (
+        ("*", "Unlock display item frame to change its name"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock", "bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'UNLOCK'"), ()),
+        ("ja_JP", "表示項目フレームをアンロックして名称を変更する", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Unlock Display Frame"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'UNLOCK'",), ()),
+        ("ja_JP", "表示枠をアンロック", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Lock Display Frame"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'LOCK'",), ()),
+        ("ja_JP", "表示枠をロック", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Lock display item frame"),
+        (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'LOCK'",), ()),
+        ("ja_JP", "表示項目フレームをロック", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("Operator", "Move Display Item"),
@@ -5482,8 +5512,8 @@ translations_tuple = (
         ("Operator", "Move To Top"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:175",
-                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:187",
+                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:177",
+                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:189",
                 "extensions/blender_org/mmd_tools/panels/sidebar/joints.py:69",
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:365",
                 "extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:81",
@@ -5497,8 +5527,8 @@ translations_tuple = (
         ("Operator", "Move To Bottom"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:176",
-                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:188",
+                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:178",
+                "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:190",
                 "extensions/blender_org/mmd_tools/panels/sidebar/joints.py:70",
                 "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:366",
                 "extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:82",
@@ -5510,7 +5540,7 @@ translations_tuple = (
     ),
     (
         ("Operator", "Delete All"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:185", "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356"), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:187", "extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356"), ()),
         ("ja_JP", "全て削除", (False, ())),
         ("zh_HANS", "删除全部", (False, ())),
     ),

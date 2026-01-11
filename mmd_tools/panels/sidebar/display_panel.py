@@ -172,6 +172,8 @@ class MMDDisplayItemFrameMenu(bpy.types.Menu):
         layout = self.layout
         layout.operator_enum("mmd_tools.display_item_quick_setup", "type")
         layout.separator()
+        layout.operator_enum("mmd_tools.display_item_frame_unlock", "type")
+        layout.separator()
         layout.operator("mmd_tools.display_item_frame_move", icon="TRIA_UP_BAR", text="Move To Top").type = "TOP"
         layout.operator("mmd_tools.display_item_frame_move", icon="TRIA_DOWN_BAR", text="Move To Bottom").type = "BOTTOM"
 
