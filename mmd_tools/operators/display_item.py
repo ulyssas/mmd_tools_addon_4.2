@@ -87,11 +87,21 @@ class UnlockDisplayItemFrame(Operator):
         default="UNLOCK",
     )
 
+    index: bpy.props.IntProperty(
+        name="Index",
+        description="Index of the frame to unlock",
+        default=-1,
+        options={"SKIP_SAVE", "HIDDEN"},
+    )
+
     def execute(self, context):
         obj = context.active_object
         root = FnModel.find_root_object(obj)
         mmd_root = root.mmd_root
-        frame = ItemOp.get_by_index(mmd_root.display_item_frames, mmd_root.active_display_item_frame)
+
+        target_index = self.index if self.index >= 0 else mmd_root.active_display_item_frame
+        frame = ItemOp.get_by_index(mmd_root.display_item_frames, target_index)
+
         if frame is None:
             return {"CANCELLED"}
         if self.type == "UNLOCK":

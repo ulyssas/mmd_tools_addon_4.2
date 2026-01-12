@@ -1063,7 +1063,7 @@ translations_tuple = (
         ("Operator", "Unlock Display Item Frame"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock",), ()),
         ("ja_JP", "表示枠をアンロック", (False, ())),
-        ("zh_HANS", "移动显示项目帧", (True, ())),
+        ("zh_HANS", "解锁表示枠", (False, ())),
     ),
     (
         ("*", "Remove active display item frame from the list"),
@@ -1075,25 +1075,25 @@ translations_tuple = (
         ("*", "Unlock display item frame to change its name"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock", "bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'UNLOCK'"), ()),
         ("ja_JP", "表示項目フレームをアンロックして名称を変更する", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "解锁显示项目帧以编辑名称", (False, ())),
     ),
     (
         ("*", "Unlock Display Frame"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'UNLOCK'",), ()),
         ("ja_JP", "表示枠をアンロック", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "解锁表示枠", (False, ())),
     ),
     (
         ("*", "Lock Display Frame"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'LOCK'",), ()),
         ("ja_JP", "表示枠をロック", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "锁定表示枠", (False, ())),
     ),
     (
         ("*", "Lock display item frame"),
         (("bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'LOCK'",), ()),
         ("ja_JP", "表示項目フレームをロック", (False, ())),
-        ("zh_HANS", "", (False, ())),
+        ("zh_HANS", "锁定显示项目帧", (False, ())),
     ),
     (
         ("Operator", "Move Display Item"),
