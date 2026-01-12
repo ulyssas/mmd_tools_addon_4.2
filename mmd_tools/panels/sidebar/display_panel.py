@@ -83,10 +83,18 @@ class MMD_ROOT_UL_display_item_frames(bpy.types.UIList):
                 row.label(text=frame.name, translate=False)
                 row = row.row(align=True)
                 row.label(text=frame.name_e, translate=False)
-                row.label(text="", icon="LOCKED")
+
+                op = row.operator("mmd_tools.display_item_frame_unlock", text="", icon="LOCKED", emboss=False)
+                op.type = "UNLOCK"
+                op.index = _index
             else:
                 row.prop(frame, "name", text="", emboss=False)
+                row = row.row(align=True)
                 row.prop(frame, "name_e", text="", emboss=True)
+
+                op = row.operator("mmd_tools.display_item_frame_unlock", text="", icon="UNLOCKED", emboss=False)
+                op.type = "LOCK"
+                op.index = _index
         elif self.layout_type == "COMPACT":
             pass
         elif self.layout_type == "GRID":
