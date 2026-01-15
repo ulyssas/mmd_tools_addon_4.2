@@ -266,6 +266,24 @@ class MMDMaterial(bpy.types.PropertyGroup):
         update=_mmd_material_update_toon_texture,
     )
 
+    texture_rel_path: bpy.props.StringProperty(
+        name="Texture Relative Path",
+        description="The relative path used for PMX export.",
+        default="",
+    )
+
+    sphere_texture_rel_path: bpy.props.StringProperty(
+        name="Sphere Texture Relative Path",
+        description="The relative path used for PMX export.",
+        default="",
+    )
+
+    toon_texture_rel_path: bpy.props.StringProperty(
+        name="Toon Texture Relative Path",
+        description="The relative path used for PMX export.",
+        default="",
+    )
+
     comment: bpy.props.StringProperty(
         name="Comment",
         description="Comment",

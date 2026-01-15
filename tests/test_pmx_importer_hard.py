@@ -649,9 +649,6 @@ class TestPmxImporter(unittest.TestCase):
         mmd_root = root_obj.mmd_root
         self.assertIsNotNone(mmd_root.name, "Should have model name")
 
-        # Check import folder property
-        self.assertIn("import_folder", root_obj, "Should have import_folder property")
-
         # Check comment texts
         if mmd_root.comment_text:
             comment_text = bpy.data.texts.get(mmd_root.comment_text)

@@ -97,6 +97,7 @@ class MMDTexturePanel(Panel):
             else:
                 r.operator("mmd_tools.material_remove_texture", text="Remove", icon="PANEL_CLOSE")
                 r.label(icon="ERROR")
+            col.prop(mmd_material, "texture_rel_path")
         else:
             r.operator("mmd_tools.material_open_texture", text="Add", icon="FILE_FOLDER")
 
@@ -111,6 +112,7 @@ class MMDTexturePanel(Panel):
             else:
                 r.operator("mmd_tools.material_remove_sphere_texture", text="Remove", icon="PANEL_CLOSE")
                 r.label(icon="ERROR")
+            col.prop(mmd_material, "sphere_texture_rel_path")
         else:
             r.operator("mmd_tools.material_open_sphere_texture", text="Add", icon="FILE_FOLDER")
         col.row(align=True).prop(mmd_material, "sphere_texture_type", expand=True)
@@ -124,3 +126,6 @@ class MMDTexturePanel(Panel):
         r = col.row()
         r.active = not mmd_material.is_shared_toon_texture
         r.prop(mmd_material, "toon_texture")
+        r = col.row()
+        r.active = not mmd_material.is_shared_toon_texture
+        r.prop(mmd_material, "toon_texture_rel_path")

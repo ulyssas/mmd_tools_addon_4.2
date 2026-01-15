@@ -15,7 +15,6 @@ from mathutils import Euler, Matrix, Vector
 
 from ...bpyutils import FnContext
 from ...operators.misc import MoveObject
-from ...utils import saferelpath
 from .. import pmx
 from ..bone import FnBone
 from ..material import FnMaterial
@@ -216,70 +215,40 @@ class __PmxExporter:
         if sort_vertices:
             self.__sortVertices()
 
-    def __exportTexture(self, filepath):
+    def __exportTexture(self, filepath, rel_path_hint=""):
         if filepath.strip() == "":
             return -1
         # Use bpy.path to resolve '//' in .blend relative filepaths
         filepath = bpy.path.abspath(filepath)
         filepath = os.path.abspath(filepath)
+        target_pmx_path = rel_path_hint if rel_path_hint else filepath
         for i, tex in enumerate(self.__model.textures):
-            if os.path.normcase(tex.path) == os.path.normcase(filepath):
-                return i
+            tex_source = getattr(tex, "src_filepath", tex.path)
+            if os.path.normcase(tex_source) == os.path.normcase(filepath):
+                if tex.path == target_pmx_path:
+                    return i
         t = pmx.Texture()
-        t.path = filepath
+        t.path = target_pmx_path
+        t.src_filepath = filepath
         self.__model.textures.append(t)
-        if not os.path.isfile(t.path):
-            logging.warning("  The texture file does not exist: %s", t.path)
+        if not os.path.isfile(t.src_filepath):
+            logging.warning("  The texture file does not exist: %s", t.src_filepath)
         return len(self.__model.textures) - 1
 
     def __copy_textures(self, output_dir, base_folder="", copy_textures_mode="NONE"):
-        # Step 0: Store original paths for Step 2
-        original_paths = {texture: texture.path for texture in self.__model.textures}
-
         # Step 1: Set PMX texture relative paths
-        tex_dir_preference = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
-
-        def __calculate_parent_dirname(current_path):
-            abs_path = os.path.abspath(current_path)
-            dirname = os.path.dirname(abs_path)
-            return os.path.basename(dirname)
-
         for texture in self.__model.textures:
-            current_path = original_paths[texture]
-
-            # dst_rel_path: The final relative path intended for the PMX model (e.g., "clothes/shirt.png")
-            dst_rel_path = ""
-
-            # 1. Attempt to calculate the relative path using 'base_folder' or 'tex_dir_preference'
-            if base_folder:
-                dst_rel_path = saferelpath(current_path, base_folder, strategy="outside")
-                if dst_rel_path.startswith(".."):
-                    if tex_dir_preference:
-                        dst_rel_path = saferelpath(current_path, tex_dir_preference, strategy="outside")
-
-                    # If both fail (path starts with ".."), reset to empty to trigger the fallback logic below
-                    if dst_rel_path.startswith(".."):
-                        logging.warning("The texture %s is not inside the base texture folder", current_path)
-                        dst_rel_path = ""
-
-            # 2. Fallback: Use the parent folder name
-            # Logic: C:\Users\user\Desktop\clothes\test.png -> clothes/test.png
-            # Logic: C:\test.png -> test.png (parent_dirname is empty)
-            if not dst_rel_path:
-                filename = os.path.basename(current_path)
-                parent_dir = __calculate_parent_dirname(current_path)
-                dst_rel_path = os.path.join(parent_dir, filename)
-
-            # 3. Determine the final PMX relative path
-            texture.path = dst_rel_path.replace("\\", "/")
+            if not os.path.isabs(texture.path):
+                texture.path = texture.path.replace("\\", "/")
+                continue
 
         # Step 2: Copy textures
         if copy_textures_mode in {"SKIP_EXISTING", "OVERWRITE"}:
             for texture in self.__model.textures:
-                src_path = original_paths[texture]
-                dest_relative_path = texture.path
+                src_path = getattr(texture, "src_filepath", texture.path)
+                dest_rel_path = texture.path
                 # Reconstruct the absolute destination path from the PMX's new relative path
-                full_dest_path = os.path.abspath(os.path.join(output_dir, dest_relative_path))
+                full_dest_path = os.path.abspath(os.path.join(output_dir, dest_rel_path))
 
                 if os.path.exists(full_dest_path) and copy_textures_mode == "SKIP_EXISTING":
                     logging.info("Skipping copy for existing texture: '%s'", full_dest_path)
@@ -322,6 +291,50 @@ class __PmxExporter:
         p_mat = pmx.Material()
         mmd_mat = material.mmd_material
 
+        def sync_filename(rel_path_hint, current_filepath):
+            rel_path_hint = rel_path_hint.strip()
+            current_filepath = current_filepath.strip()
+            if not current_filepath:
+                return rel_path_hint
+
+            # Use bpy.path.basename to avoid misdetecting "//001.png" as a UNC path on Windows
+            curr_name = bpy.path.basename(current_filepath)
+
+            # Check if rel_path_hint is empty
+            if not rel_path_hint:
+                if current_filepath.startswith("//"):
+                    # Blender relative path
+                    stripped_path = current_filepath[2:]
+                    parent_dir = os.path.dirname(stripped_path)
+                    if parent_dir:
+                        new_path = os.path.join(parent_dir, curr_name).replace("\\", "/")
+                    else:
+                        new_path = curr_name
+                else:
+                    # Absolute path
+                    abs_path = os.path.abspath(current_filepath)
+                    dirname = os.path.dirname(abs_path)
+                    parent_dir_name = os.path.basename(dirname)
+                    if parent_dir_name:
+                        new_path = os.path.join(parent_dir_name, curr_name).replace("\\", "/")
+                    else:
+                        new_path = curr_name
+                logging.info("Auto-syncing texture relative path: '' -> '%s'", new_path)
+                return new_path
+
+            # Check if filename changed
+            hint_name = os.path.basename(rel_path_hint)
+            if hint_name != curr_name:
+                hint_dir = os.path.dirname(rel_path_hint)
+                if hint_dir:
+                    new_path = os.path.join(hint_dir, curr_name).replace("\\", "/")
+                else:
+                    new_path = curr_name
+                logging.info("Auto-syncing texture relative path: '%s' -> '%s'", rel_path_hint, new_path)
+                return new_path
+
+            return rel_path_hint
+
         p_mat.name = mmd_mat.name_j or material.name
         p_mat.name_e = mmd_mat.name_e
         p_mat.diffuse = list(mmd_mat.diffuse_color) + [mmd_mat.alpha]
@@ -343,19 +356,29 @@ class __PmxExporter:
         p_mat.vertex_count = num_faces * 3
         fnMat = FnMaterial(material)
         tex = fnMat.get_texture()
-        if tex and tex.type == "IMAGE" and tex.image:  # Ensure the texture is an image
-            index = self.__exportTexture(tex.image.filepath)
+        if tex and tex.type == "IMAGE" and tex.image:
+            synced_path = sync_filename(mmd_mat.texture_rel_path, tex.image.filepath)
+            if synced_path != mmd_mat.texture_rel_path:
+                mmd_mat.texture_rel_path = synced_path
+            index = self.__exportTexture(tex.image.filepath, rel_path_hint=synced_path)
             p_mat.texture = index
+
         tex = fnMat.get_sphere_texture()
-        if tex and tex.type == "IMAGE" and tex.image:  # Ensure the texture is an image
-            index = self.__exportTexture(tex.image.filepath)
+        if tex and tex.type == "IMAGE" and tex.image:
+            synced_path = sync_filename(mmd_mat.sphere_texture_rel_path, tex.image.filepath)
+            if synced_path != mmd_mat.sphere_texture_rel_path:
+                mmd_mat.sphere_texture_rel_path = synced_path
+            index = self.__exportTexture(tex.image.filepath, rel_path_hint=synced_path)
             p_mat.sphere_texture = index
 
         if mmd_mat.is_shared_toon_texture:
             p_mat.toon_texture = mmd_mat.shared_toon_texture
             p_mat.is_shared_toon_texture = True
         else:
-            p_mat.toon_texture = self.__exportTexture(mmd_mat.toon_texture)
+            synced_path = sync_filename(mmd_mat.toon_texture_rel_path, mmd_mat.toon_texture)
+            if synced_path != mmd_mat.toon_texture_rel_path:
+                mmd_mat.toon_texture_rel_path = synced_path
+            p_mat.toon_texture = self.__exportTexture(mmd_mat.toon_texture, rel_path_hint=synced_path)
             p_mat.is_shared_toon_texture = False
 
         self.__material_name_table.append(material.name)
@@ -1460,9 +1483,8 @@ class __PmxExporter:
         self.__exportJoints(joints, rigid_map)
 
         output_dir = os.path.dirname(filepath)
-        import_folder = root.get("import_folder", "") if root else ""
         base_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
-        self.__copy_textures(output_dir, import_folder or base_folder, copy_textures_mode=args.get("copy_textures_mode", "NONE"))
+        self.__copy_textures(output_dir, base_folder, copy_textures_mode=args.get("copy_textures_mode", "NONE"))
 
         # Output Changes in Vertex and Face Count
         original_vertex_count = 0

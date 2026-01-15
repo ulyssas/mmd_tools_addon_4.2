@@ -91,8 +91,6 @@ class PMXImporter:
         self.__root = root
         self.__armObj = self.__rig.armature()
 
-        root["import_folder"] = os.path.dirname(pmxModel.filepath)
-
         txt = bpy.data.texts.new(obj_name)
         txt.from_string(pmxModel.comment.replace("\r", ""))
         mmd_root.comment_text = txt.name
@@ -540,6 +538,15 @@ class PMXImporter:
 
         pmxModel = self.__model
 
+        pmx_folder = os.path.dirname(os.path.abspath(pmxModel.filepath))
+
+        def get_pmx_rel_path(abs_path):
+            try:
+                rel_path = os.path.relpath(abs_path, start=pmx_folder)
+                return rel_path.replace("\\", "/")
+            except ValueError:
+                return abs_path
+
         self.__materialFaceCountTable = []
         for i in pmxModel.materials:
             mat = bpy.data.materials.new(name=self.__safe_name(i.name, max_length=50))
@@ -568,6 +575,8 @@ class PMXImporter:
                 texture_slot = fnMat.create_texture(self.__textureTable[i.texture])
                 texture_slot.texture.use_mipmap = self.__use_mipmap
                 self.__imageTable[len(self.__materialTable) - 1] = texture_slot.texture.image
+                tex_abs_path = self.__textureTable[i.texture]
+                mmd_mat.texture_rel_path = get_pmx_rel_path(tex_abs_path)
 
             if i.is_shared_toon_texture:
                 mmd_mat.is_shared_toon_texture = True
@@ -576,6 +585,9 @@ class PMXImporter:
                 mmd_mat.is_shared_toon_texture = False
                 if i.toon_texture >= 0:
                     mmd_mat.toon_texture = self.__textureTable[i.toon_texture]
+
+                    toon_abs_path = self.__textureTable[i.toon_texture]
+                    mmd_mat.toon_texture_rel_path = get_pmx_rel_path(toon_abs_path)
 
             if i.sphere_texture_mode == 2:
                 amount = self.__spa_blend_factor
@@ -586,6 +598,8 @@ class PMXImporter:
                 texture_slot.diffuse_color_factor = amount
                 if i.sphere_texture_mode == 3 and getattr(pmxModel.header, "additional_uvs", 0):
                     texture_slot.uv_layer = "UV1"  # for SubTexture
+                sphere_abs_path = self.__textureTable[i.sphere_texture]
+                mmd_mat.sphere_texture_rel_path = get_pmx_rel_path(sphere_abs_path)
             mmd_mat.sphere_texture_type = str(i.sphere_texture_mode)
 
     def __importFaces(self):

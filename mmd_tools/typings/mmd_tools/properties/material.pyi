@@ -41,6 +41,10 @@ class MMDMaterial(bpy.types.PropertyGroup):
 
     shared_toon_texture: int
 
+    texture_path: str
+    sphere_texture_path: str
+    toon_texture_path: str
+
     comment: int
 
     def is_id_unique(self) -> bool: ...
