@@ -525,11 +525,9 @@ class EdgePreviewSetup(Operator):
         ng.new_node("NodeGroupOutput", (3, 0))
 
         ############################################################################
-        node_color = ng.new_node("ShaderNodeMixRGB", (-1, -1.5))
-        node_color.mute = True
-
-        ng.new_input_socket("Color", node_color.inputs["Color1"])
-
+        node_color = ng.new_node("ShaderNodeGamma", (-1, -1.5))
+        node_color.inputs["Gamma"].default_value = 2.2
+        ng.new_input_socket("Color", node_color.inputs["Color"])
         ############################################################################
         node_ray = ng.new_node("ShaderNodeLightPath", (-3, 1.5))
         node_geo = ng.new_node("ShaderNodeNewGeometry", (-3, 0))
