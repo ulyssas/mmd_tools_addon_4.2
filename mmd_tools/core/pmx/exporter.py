@@ -5,6 +5,7 @@ import copy
 import logging
 import math
 import os
+import re
 import shutil
 import time
 from collections import OrderedDict
@@ -292,7 +293,12 @@ class __PmxExporter:
         mmd_mat = material.mmd_material
 
         def sync_filename(rel_path_hint, current_filepath):
+            old_rel_path_hint = rel_path_hint
             rel_path_hint = rel_path_hint.strip()
+            if rel_path_hint:
+                rel_path_hint = re.sub(r'[:*?"<>|]', "", rel_path_hint)
+                rel_path_hint = os.path.normpath(rel_path_hint)
+                rel_path_hint = rel_path_hint.replace("\\", "/")
             current_filepath = current_filepath.strip()
             if not current_filepath:
                 return rel_path_hint
@@ -330,9 +336,11 @@ class __PmxExporter:
                     new_path = os.path.join(hint_dir, curr_name).replace("\\", "/")
                 else:
                     new_path = curr_name
-                logging.info("Auto-syncing texture relative path: '%s' -> '%s'", rel_path_hint, new_path)
+                logging.info("Auto-syncing texture relative path: '%s' -> '%s'", old_rel_path_hint, new_path)
                 return new_path
 
+            if old_rel_path_hint != rel_path_hint:
+                logging.info("Auto-syncing texture relative path: '%s' -> '%s'", old_rel_path_hint, rel_path_hint)
             return rel_path_hint
 
         p_mat.name = mmd_mat.name_j or material.name
