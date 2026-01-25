@@ -264,6 +264,7 @@ msgstr "为选中的骨骼设置固定坐标轴"
 
 #. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup.type
 #. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup.type
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type
 #. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type
 msgid "Select type"
@@ -770,6 +771,32 @@ msgstr "移除显示项目帧"
 msgid "Remove active display item frame from the list"
 msgstr "从列表中移除活动的表示枠"
 
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock
+msgctxt "Operator"
+msgid "Unlock Display Item Frame"
+msgstr "解锁表示枠"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'UNLOCK'
+msgid "Unlock display item frame to change its name"
+msgstr "解锁显示项目帧以编辑名称"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.index
+msgid "Index of the frame to unlock"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'UNLOCK'
+msgid "Unlock Display Frame"
+msgstr "解锁表示枠"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'LOCK'
+msgid "Lock Display Frame"
+msgstr "锁定表示枠"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'LOCK'
+msgid "Lock display item frame"
+msgstr "锁定显示项目帧"
+
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_move
 msgctxt "Operator"
 msgid "Move Display Item"
@@ -1248,6 +1275,15 @@ msgstr "重新对齐骨骼 ID"
 
 #. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order
 msgid "Realign bone IDs to be sequential without gaps. Sorted primarily by hierarchy depth (ensuring parents have lower IDs than children), then by bone_id (valid ones prioritized), then by bone name. Apply additional transforms afterward (Assembly -> Bone button)."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_fix_model_issues
+msgctxt "Operator"
+msgid "Fix Model Issues"
+msgstr "修复模型问题"
+
+#. :src: bpy.types.MMD_TOOLS_OT_fix_model_issues
+msgid "Fix model name encoding issues automatically"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_fix_morph_issues
@@ -2336,6 +2372,15 @@ msgstr ""
 msgid "Check MMD model bones for encoding issues and name length limits"
 msgstr ""
 
+#. :src: bpy.types.MMD_TOOLS_OT_validate_model
+msgctxt "Operator"
+msgid "Validate Model Name"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_validate_model
+msgid "Check MMD model name and english name for encoding issues"
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_validate_morphs
 msgctxt "Operator"
 msgid "Validate Morphs"
@@ -2915,6 +2960,16 @@ msgstr "反射高光的锐度"
 msgid "Specular color"
 msgstr "高光色"
 
+#. :src: bpy.types.MMDMaterial.sphere_texture_rel_path
+msgid "Sphere Texture Relative Path"
+msgstr "球体纹理相对路径"
+
+#. :src: bpy.types.MMDMaterial.sphere_texture_rel_path
+#. :src: bpy.types.MMDMaterial.texture_rel_path
+#. :src: bpy.types.MMDMaterial.toon_texture_rel_path
+msgid "The relative path used for PMX export."
+msgstr ""
+
 #. :src: bpy.types.MMDMaterial.sphere_texture_type
 msgid "Sphere Map Type"
 msgstr "球面纹理类型"
@@ -2927,6 +2982,10 @@ msgstr "选择球面纹理的混合类型"
 msgid "SubTexture"
 msgstr "次纹理"
 
+#. :src: bpy.types.MMDMaterial.texture_rel_path
+msgid "Texture Relative Path"
+msgstr "纹理相对路径"
+
 #. :src: bpy.types.MMDMaterial.toon_texture
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:148
 msgid "Toon Texture"
@@ -2935,6 +2994,10 @@ msgstr "卡通纹理"
 #. :src: bpy.types.MMDMaterial.toon_texture
 msgid "The file path of custom toon texture"
 msgstr "自定义卡通纹理的文件路径"
+
+#. :src: bpy.types.MMDMaterial.toon_texture_rel_path
+msgid "Toon Texture Relative Path"
+msgstr "卡通纹理相对路径"
 
 #. :src: bpy.types.MMDRigidBody.size
 msgid "Size of the object"
@@ -3494,17 +3557,19 @@ msgstr "找不到模型的骨架"
 msgid "Active object is not an armature object"
 msgstr "选中的物体不是骨架物体"
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:70
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:125
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:77
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:115
 #: extensions/blender_org/mmd_tools/operators/model_validation.py:170
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:258
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:367
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:462
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:215
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:329
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:369
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:479
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:575
 msgid "No MMD model selected"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:76
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:264
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:121
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:375
 msgid "No armature found in model"
 msgstr ""
 
@@ -3801,18 +3866,18 @@ msgstr "阴影:"
 msgid "Texture:"
 msgstr "纹理:"
 
-#: extensions/blender_org/mmd_tools/panels/prop_material.py:104
+#: extensions/blender_org/mmd_tools/panels/prop_material.py:105
 msgid "Sphere Texture:"
 msgstr "球体纹理:"
 
-#: extensions/blender_org/mmd_tools/panels/prop_material.py:101
-#: extensions/blender_org/mmd_tools/panels/prop_material.py:115
+#: extensions/blender_org/mmd_tools/panels/prop_material.py:102
+#: extensions/blender_org/mmd_tools/panels/prop_material.py:117
 msgctxt "Operator"
 msgid "Add"
 msgstr "添加"
 
 #: extensions/blender_org/mmd_tools/panels/prop_material.py:98
-#: extensions/blender_org/mmd_tools/panels/prop_material.py:112
+#: extensions/blender_org/mmd_tools/panels/prop_material.py:113
 msgctxt "Operator"
 msgid "Remove"
 msgstr "移除"
@@ -3943,8 +4008,8 @@ msgctxt "Operator"
 msgid "Morph"
 msgstr "变形"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:175
-#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:187
+#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:183
+#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:195
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:69
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:365
 #: extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:81
@@ -3952,8 +4017,8 @@ msgctxt "Operator"
 msgid "Move To Top"
 msgstr "移至顶部"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:176
-#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:188
+#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:184
+#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:196
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:70
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:366
 #: extensions/blender_org/mmd_tools/panels/sidebar/rigid_bodies.py:82
@@ -3961,7 +4026,7 @@ msgctxt "Operator"
 msgid "Move To Bottom"
 msgstr "移至底部"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:185
+#: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:193
 #: extensions/blender_org/mmd_tools/panels/sidebar/morph_tools.py:356
 msgctxt "Operator"
 msgid "Delete All"
@@ -3980,20 +4045,25 @@ msgstr "选择一个网格物体"
 msgid "Model Validation:"
 msgstr "模型检测:"
 
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:28
+msgctxt "Operator"
+msgid "Check Model"
+msgstr "检测模型"
+
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:29
+msgctxt "Operator"
+msgid "Check Textures"
+msgstr "检测贴图"
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:30
 msgctxt "Operator"
 msgid "Check Bones"
 msgstr "检测骨骼"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:30
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:31
 msgctxt "Operator"
 msgid "Check Morphs"
 msgstr "检测变形"
-
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:31
-msgctxt "Operator"
-msgid "Check Textures"
-msgstr "检测贴图"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:35
 msgid "Validation Results:"
@@ -4005,6 +4075,16 @@ msgstr "快速修复:"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:53
 msgctxt "Operator"
+msgid "Fix Model"
+msgstr "修复模型"
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:54
+msgctxt "Operator"
+msgid "Fix Textures"
+msgstr "修复贴图"
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:55
+msgctxt "Operator"
 msgid "Fix Bones"
 msgstr "修复骨骼"
 
@@ -4012,11 +4092,6 @@ msgstr "修复骨骼"
 msgctxt "Operator"
 msgid "Fix Morphs"
 msgstr "修复变形"
-
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:59
-msgctxt "Operator"
-msgid "Fix Textures"
-msgstr "修复贴图"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:44
 msgid "Run validation to see results"

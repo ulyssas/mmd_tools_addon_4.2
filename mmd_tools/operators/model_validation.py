@@ -56,6 +56,51 @@ def log_message(prefix, message, level="INFO"):
         logger.setLevel(original_level)
 
 
+def force_ui_update(context):
+    """Force all areas in all windows to redraw."""
+    for window in context.window_manager.windows:
+        for area in window.screen.areas:
+            area.tag_redraw()
+
+
+class MMDModelValidateModel(Operator):
+    """Check MMD model name for encoding issues"""
+
+    bl_idname = "mmd_tools.validate_model"
+    bl_label = "Validate Model Name"
+    bl_description = "Check MMD model name and english name for encoding issues"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.active_object)
+        if root is None:
+            self.report({"ERROR"}, "No MMD model selected")
+            log_message("MMD Validation", "No MMD model selected", "ERROR")
+            return {"CANCELLED"}
+
+        issues = []
+        mmd_root = root.mmd_root
+
+        # Check Name
+        try:
+            mmd_root.name.encode("cp932")
+        except UnicodeEncodeError:
+            issues.append(f"Model Name '{mmd_root.name}' contains characters that cannot be encoded in cp932")
+
+        # Check Name (English)
+        try:
+            mmd_root.name_e.encode("cp932")
+        except UnicodeEncodeError:
+            issues.append(f"Model English Name '{mmd_root.name_e}' contains characters that cannot be encoded in cp932")
+
+        results = "\n".join(issues) or "No model issues found"
+        context.scene.mmd_validation_results = results
+        log_level = "WARNING" if issues else "INFO"
+        log_message("MMD Model Name Validation", results, log_level)
+
+        return {"FINISHED"}
+
+
 class MMDModelValidateBones(Operator):
     """Check MMD model bones for encoding issues and name length limits"""
 
@@ -244,6 +289,72 @@ class MMDModelValidateTextures(Operator):
 
 
 # Fix operators
+class MMDModelFixModelIssues(Operator):
+    """Automatically fix model name encoding issues"""
+
+    bl_idname = "mmd_tools.fix_model_issues"
+    bl_label = "Fix Model Issues"
+    bl_description = "Fix model name encoding issues automatically"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def _fix_text(self, text, default_text="New MMD Model"):
+        # Check if needs fixing
+        try:
+            text.encode("cp932")
+            return text, False
+        except UnicodeEncodeError:
+            pass
+
+        # Convert/remove non-Japanese characters
+        converted_name = cc_s2t.convert(text)
+        converted_name = cc_t2jp.convert(converted_name)
+
+        new_name = ""
+        for char in converted_name:
+            try:
+                char.encode("cp932")
+                new_name += char
+            except UnicodeEncodeError:
+                continue
+
+        # If name becomes empty after filtering, use default
+        if not new_name:
+            new_name = default_text
+
+        return new_name, True
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.active_object)
+        if root is None:
+            self.report({"ERROR"}, "No MMD model selected")
+            log_message("MMD Fix", "No MMD model selected", "ERROR")
+            return {"CANCELLED"}
+
+        fixed = []
+        mmd_root = root.mmd_root
+
+        # Fix Name
+        new_name, was_fixed = self._fix_text(mmd_root.name, "New MMD Model")
+        if was_fixed and new_name != mmd_root.name:
+            old_name = mmd_root.name
+            mmd_root.name = new_name
+            fixed.append(f"Fixed Model Name: '{old_name}' -> '{new_name}'")
+
+        # Fix English Name
+        new_name_e, was_fixed_e = self._fix_text(mmd_root.name_e, "New MMD Model")
+        if was_fixed_e and new_name_e != mmd_root.name_e:
+            old_name_e = mmd_root.name_e
+            mmd_root.name_e = new_name_e
+            fixed.append(f"Fixed Model English Name: '{old_name_e}' -> '{new_name_e}'")
+
+        results = "\n".join(fixed) if fixed else "No model issues to fix"
+        context.scene.mmd_validation_results = results
+        log_message("MMD Model Name Fix", results, "INFO")
+
+        force_ui_update(context)
+        return {"FINISHED"}
+
+
 class MMDModelFixBoneIssues(Operator):
     """Automatically fix bone name encoding and length issues"""
 
@@ -350,6 +461,7 @@ class MMDModelFixBoneIssues(Operator):
         context.scene.mmd_validation_results = results
         log_message("MMD Bone Fix", results, "INFO")
 
+        force_ui_update(context)
         return {"FINISHED"}
 
 
@@ -445,6 +557,7 @@ class MMDModelFixMorphIssues(Operator):
         context.scene.mmd_validation_results = results
         log_message("MMD Morph Fix", results, "INFO")
 
+        force_ui_update(context)
         return {"FINISHED"}
 
 
@@ -724,4 +837,5 @@ class MMDModelFixTextureIssues(Operator):
         context.scene.mmd_validation_results = results
         log_message("MMD Texture Fix", results, "INFO")
 
+        force_ui_update(context)
         return {"FINISHED"}

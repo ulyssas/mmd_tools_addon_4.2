@@ -24,11 +24,11 @@ class MMDModelDebugPanel(PT_ProductionPanelBase, bpy.types.Panel):
         col.enabled = root is not None
 
         # Validation buttons section
-        grid = col.grid_flow(row_major=True)
-        row = grid.row(align=True)
-        row.operator("mmd_tools.validate_bones", text="Check Bones", icon="BONE_DATA")
-        row.operator("mmd_tools.validate_morphs", text="Check Morphs", icon="SHAPEKEY_DATA")
-        row.operator("mmd_tools.validate_textures", text="Check Textures", icon="TEXTURE")
+        grid = col.grid_flow(row_major=True, columns=2, align=True, even_columns=True)
+        grid.operator("mmd_tools.validate_model", text="Check Model", icon="EMPTY_DATA")
+        grid.operator("mmd_tools.validate_textures", text="Check Textures", icon="TEXTURE")
+        grid.operator("mmd_tools.validate_bones", text="Check Bones", icon="BONE_DATA")
+        grid.operator("mmd_tools.validate_morphs", text="Check Morphs", icon="SHAPEKEY_DATA")
 
         # Results section
         box = layout.box()
@@ -49,11 +49,8 @@ class MMDModelDebugPanel(PT_ProductionPanelBase, bpy.types.Panel):
         col.enabled = root is not None
         grid = col.grid_flow(row_major=True, align=True)
 
-        row = grid.row(align=True)
-        row.operator("mmd_tools.fix_bone_issues", text="Fix Bones", icon="MODIFIER")
-
-        row = grid.row(align=True)
-        row.operator("mmd_tools.fix_morph_issues", text="Fix Morphs", icon="KEY_HLT")
-
-        row = grid.row(align=True)
-        row.operator("mmd_tools.fix_texture_issues", text="Fix Textures", icon="IMAGE_DATA")
+        grid = col.grid_flow(row_major=True, columns=2, align=True, even_columns=True)
+        grid.operator("mmd_tools.fix_model_issues", text="Fix Model", icon="OUTLINER_OB_EMPTY")
+        grid.operator("mmd_tools.fix_texture_issues", text="Fix Textures", icon="IMAGE_DATA")
+        grid.operator("mmd_tools.fix_bone_issues", text="Fix Bones", icon="MODIFIER")
+        grid.operator("mmd_tools.fix_morph_issues", text="Fix Morphs", icon="KEY_HLT")
