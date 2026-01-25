@@ -117,7 +117,9 @@ class MMDTexturePanel(Panel):
             r.operator("mmd_tools.material_open_sphere_texture", text="Add", icon="FILE_FOLDER")
         col.row(align=True).prop(mmd_material, "sphere_texture_type", expand=True)
 
+        layout.separator(factor=0.25)
         col = layout.column()
+        # col.label(text="Toon Texture:")
         row = col.row()
         row.prop(mmd_material, "is_shared_toon_texture")
         r = row.row()
