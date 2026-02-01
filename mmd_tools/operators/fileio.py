@@ -10,7 +10,7 @@ import traceback
 
 import bpy
 from bpy.types import Operator, OperatorFileListElement
-from bpy_extras.io_utils import ExportHelper, ImportHelper
+from bpy_extras.io_utils import ExportHelper, ImportHelper, poll_file_object_drop
 
 from .. import auto_scene_setup
 from ..core.camera import MMDCamera
@@ -345,11 +345,13 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             self.__translator = DictionaryEnum.get_translator(self.dictionary)
             if self.directory:
                 for f in self.files:
-                    self.filepath = os.path.join(self.directory, f.name)
-                    self.filepath = bpy.path.abspath(self.filepath)  # Handle Blender relative path (e.g. "//a.pmx")
+                    n = f.name
+                    if n.startswith("//"):
+                        # Blender relative path (e.g. "//a.pmx")
+                        n = n[2:]
+                    self.filepath = os.path.join(self.directory, n)
                     self._do_execute(context)
             elif self.filepath:
-                self.filepath = bpy.path.abspath(self.filepath)
                 self._do_execute(context)
         except Exception:
             logging.exception("Error occurred")
@@ -568,8 +570,11 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
             for f in self.files:
                 start_time = time.time()
-                self.filepath = os.path.join(self.directory, f.name)
-                self.filepath = bpy.path.abspath(self.filepath)
+                n = f.name
+                if n.startswith("//"):
+                    # Blender relative path (e.g. "//a.vmd")
+                    n = n[2:]
+                self.filepath = os.path.join(self.directory, n)
                 importer = vmd_importer.VMDImporter(
                     filepath=self.filepath,
                     scale=self.scale,
@@ -762,8 +767,11 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
             ).init
 
         for f in self.files:
-            self.filepath = os.path.join(self.directory, f.name)
-            self.filepath = bpy.path.abspath(self.filepath)
+            n = f.name
+            if n.startswith("//"):
+                # Blender relative path (e.g. "//a.vpd")
+                n = n[2:]
+            self.filepath = os.path.join(self.directory, n)
             importer = vpd_importer.VPDImporter(
                 filepath=self.filepath,
                 scale=self.scale,
@@ -1209,12 +1217,10 @@ class MMD_FH_PMX(bpy.types.FileHandler):
     bl_label = "MMD PMX/PMD Model"
     bl_import_operator = "mmd_tools.import_model"
     bl_file_extensions = ".pmx;.pmd"
-    bl_file_filter = "*.pmx;*.pmd"
-    bl_description = "Import MMD PMX/PMD Model by dropping into Blender"
 
     @classmethod
     def poll_drop(cls, context):
-        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+        return poll_file_object_drop(context)
 
 
 class MMD_FH_VMD(bpy.types.FileHandler):
@@ -1222,12 +1228,10 @@ class MMD_FH_VMD(bpy.types.FileHandler):
     bl_label = "MMD VMD Animation"
     bl_import_operator = "mmd_tools.import_vmd"
     bl_file_extensions = ".vmd"
-    bl_file_filter = "*.vmd"
-    bl_description = "Import MMD VMD Animation by dropping into Blender"
 
     @classmethod
     def poll_drop(cls, context):
-        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+        return poll_file_object_drop(context)
 
 
 class MMD_FH_VPD(bpy.types.FileHandler):
@@ -1235,12 +1239,10 @@ class MMD_FH_VPD(bpy.types.FileHandler):
     bl_label = "MMD VPD Pose"
     bl_import_operator = "mmd_tools.import_vpd"
     bl_file_extensions = ".vpd"
-    bl_file_filter = "*.vpd"
-    bl_description = "Import MMD VPD Pose by dropping into Blender"
 
     @classmethod
     def poll_drop(cls, context):
-        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+        return poll_file_object_drop(context)
 
 
 # --- Keymap Registration ---

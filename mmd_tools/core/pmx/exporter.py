@@ -303,13 +303,13 @@ class __PmxExporter:
             if not current_filepath:
                 return rel_path_hint
 
-            # Use bpy.path.basename to avoid misdetecting "//001.png" as a UNC path on Windows
+            # Use bpy.path.basename instead of os.path.basename to handle Blender relative path correctly
             curr_name = bpy.path.basename(current_filepath)
 
             # Check if rel_path_hint is empty
             if not rel_path_hint:
                 if current_filepath.startswith("//"):
-                    # Blender relative path (e.g. "//001.png")
+                    # Blender relative path (e.g. "//a.png")
                     stripped_path = current_filepath[2:]
                     parent_dir = os.path.dirname(stripped_path)
                     if parent_dir:
