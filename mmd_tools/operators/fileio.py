@@ -346,8 +346,10 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             if self.directory:
                 for f in self.files:
                     self.filepath = os.path.join(self.directory, f.name)
+                    self.filepath = bpy.path.abspath(self.filepath)  # Handle Blender relative path (e.g. "//a.pmx")
                     self._do_execute(context)
             elif self.filepath:
+                self.filepath = bpy.path.abspath(self.filepath)
                 self._do_execute(context)
         except Exception:
             logging.exception("Error occurred")
@@ -564,10 +566,12 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     for obj in selected_objects:
                         self.__reset_all_animations(obj)
 
-            for file in self.files:
+            for f in self.files:
                 start_time = time.time()
+                self.filepath = os.path.join(self.directory, f.name)
+                self.filepath = bpy.path.abspath(self.filepath)
                 importer = vmd_importer.VMDImporter(
-                    filepath=os.path.join(self.directory, file.name),
+                    filepath=self.filepath,
                     scale=self.scale,
                     bone_mapper=bone_mapper,
                     use_pose_mode=self.use_pose_mode,
@@ -758,8 +762,10 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
             ).init
 
         for f in self.files:
+            self.filepath = os.path.join(self.directory, f.name)
+            self.filepath = bpy.path.abspath(self.filepath)
             importer = vpd_importer.VPDImporter(
-                filepath=os.path.join(self.directory, f.name),
+                filepath=self.filepath,
                 scale=self.scale,
                 bone_mapper=bone_mapper,
                 use_pose_mode=self.use_pose_mode,

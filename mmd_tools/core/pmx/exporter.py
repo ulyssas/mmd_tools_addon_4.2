@@ -309,7 +309,7 @@ class __PmxExporter:
             # Check if rel_path_hint is empty
             if not rel_path_hint:
                 if current_filepath.startswith("//"):
-                    # Blender relative path
+                    # Blender relative path (e.g. "//001.png")
                     stripped_path = current_filepath[2:]
                     parent_dir = os.path.dirname(stripped_path)
                     if parent_dir:
