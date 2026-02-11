@@ -354,7 +354,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
             elif self.filepath:
                 self._do_execute(context)
         except Exception:
-            logging.exception("Error occurred")
+            logging.exception("Error occurred during PMX import")
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
@@ -532,6 +532,66 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout.prop(self, "save_log")
 
     def execute(self, context):
+        bone_mapper = None
+        if self.bone_mapper == "PMX":
+            bone_mapper = makePmxBoneMap
+        elif self.bone_mapper == "RENAMED_BONES":
+            bone_mapper = vmd_importer.RenamedBoneMapper(
+                rename_LR_bones=self.rename_bones,
+                use_underscore=self.use_underscore,
+                translator=DictionaryEnum.get_translator(self.dictionary),
+            ).init
+
+        self.__bone_mapper_func = bone_mapper
+
+        selected_objects = set(context.selected_objects)
+        for i in frozenset(selected_objects):
+            root = FnModel.find_root_object(i)
+            if root == i:
+                rig = Model(root)
+                armature = rig.armature()
+                if armature is not None:
+                    selected_objects.add(armature)
+                placeholder = rig.morph_slider.placeholder()
+                if placeholder is not None:
+                    selected_objects.add(placeholder)
+                selected_objects |= set(rig.meshes())
+
+        self.__target_objects = selected_objects
+
+        if self.create_new_action:
+            for obj in self.__target_objects:
+                self.__reset_all_animations(obj)
+
+        try:
+            if self.directory and len(self.files) > 0:
+                for f in self.files:
+                    n = f.name
+                    if n.startswith("//"):
+                        # Blender relative path (e.g. "//a.vmd")
+                        n = n[2:]
+                    self.filepath = os.path.join(self.directory, n)
+                    self._do_execute(context)
+            elif self.filepath:
+                self._do_execute(context)
+            else:
+                self.report({"WARNING"}, "No file selected")
+                return {"CANCELLED"}
+
+            if self.update_scene_settings:
+                auto_scene_setup.setupFrameRanges()
+                auto_scene_setup.setupFps()
+            context.scene.frame_set(context.scene.frame_current)
+
+        except Exception:
+            logging.exception("Error occurred during VMD import")
+            err_msg = traceback.format_exc()
+            self.report({"ERROR"}, err_msg)
+            return {"CANCELLED"}
+
+        return {"FINISHED"}
+
+    def _do_execute(self, context):
         logger = logging.getLogger()
         logger.setLevel(self.log_level)
         handler = None
@@ -540,66 +600,29 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
             logger.addHandler(handler)
 
         try:
-            selected_objects = set(context.selected_objects)
-            for i in frozenset(selected_objects):
-                root = FnModel.find_root_object(i)
-                if root == i:
-                    rig = Model(root)
-                    armature = rig.armature()
-                    if armature is not None:
-                        selected_objects.add(armature)
-                    placeholder = rig.morph_slider.placeholder()
-                    if placeholder is not None:
-                        selected_objects.add(placeholder)
-                    selected_objects |= set(rig.meshes())
+            start_time = time.time()
 
-            bone_mapper = None
-            if self.bone_mapper == "PMX":
-                bone_mapper = makePmxBoneMap
-            elif self.bone_mapper == "RENAMED_BONES":
-                bone_mapper = vmd_importer.RenamedBoneMapper(
-                    rename_LR_bones=self.rename_bones,
-                    use_underscore=self.use_underscore,
-                    translator=DictionaryEnum.get_translator(self.dictionary),
-                ).init
+            importer = vmd_importer.VMDImporter(
+                filepath=self.filepath,
+                scale=self.scale,
+                bone_mapper=self.__bone_mapper_func,
+                use_pose_mode=self.use_pose_mode,
+                frame_margin=self.margin,
+                use_mirror=self.use_mirror,
+                use_nla=self.use_nla,
+                detect_camera_changes=self.detect_camera_changes,
+                detect_light_changes=self.detect_light_changes,
+            )
 
-            if self.files:
-                if self.create_new_action:
-                    for obj in selected_objects:
-                        self.__reset_all_animations(obj)
+            for obj in self.__target_objects:
+                importer.assign(obj)
 
-            for f in self.files:
-                start_time = time.time()
-                n = f.name
-                if n.startswith("//"):
-                    # Blender relative path (e.g. "//a.vmd")
-                    n = n[2:]
-                self.filepath = os.path.join(self.directory, n)
-                importer = vmd_importer.VMDImporter(
-                    filepath=self.filepath,
-                    scale=self.scale,
-                    bone_mapper=bone_mapper,
-                    use_pose_mode=self.use_pose_mode,
-                    frame_margin=self.margin,
-                    use_mirror=self.use_mirror,
-                    use_nla=self.use_nla,
-                    detect_camera_changes=self.detect_camera_changes,
-                    detect_light_changes=self.detect_light_changes,
-                )
-
-                for i in selected_objects:
-                    importer.assign(i)
-                logging.info(" Finished importing motion in %f seconds.", time.time() - start_time)
-
-            if self.update_scene_settings:
-                auto_scene_setup.setupFrameRanges()
-                auto_scene_setup.setupFps()
-            context.scene.frame_set(context.scene.frame_current)
+            logging.info(' Finished importing motion "%s" in %f seconds.', os.path.basename(self.filepath), time.time() - start_time)
+            self.report({"INFO"}, f'Imported VMD: "{os.path.basename(self.filepath)}"')
 
         except Exception:
-            logging.exception("Error occurred")
-            err_msg = traceback.format_exc()
-            self.report({"ERROR"}, err_msg)
+            logging.exception("Error occurred while processing file: %s", self.filepath)
+            raise
         finally:
             if handler:
                 logger.removeHandler(handler)
