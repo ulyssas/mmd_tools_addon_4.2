@@ -373,7 +373,7 @@ msgstr "装配物理时创建的额外非碰撞约束的距离比例"
 
 #. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor
 #: extensions/blender_org/mmd_tools/panels/prop_object.py:34
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:169
 msgctxt "Operator"
 msgid "Change MMD IK Loop Factor"
 msgstr "改变MMD IK循环系数"
@@ -875,6 +875,7 @@ msgid "Preview toon edge settings of active model using \"Solidify\" modifier"
 msgstr "预览利用\"实体化\"修改器为活动模型生成的卡通边缘设置"
 
 #. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup.action
+#. :src: bpy.types.MMD_TOOLS_OT_toggle_transparent_materials.action
 msgid "Select action"
 msgstr "选择行动"
 
@@ -2287,6 +2288,27 @@ msgstr "无光影 GLSL 视图"
 msgid "Use only toon shading"
 msgstr "仅使用卡通着色"
 
+#. :src: bpy.types.MMD_TOOLS_OT_toggle_transparent_materials
+msgctxt "Operator"
+msgid "Toggle Transparent Materials"
+msgstr "切换透明材质显示状态"
+
+#. :src: bpy.types.MMD_TOOLS_OT_toggle_transparent_materials
+msgid "Toggle transparent materials by setting alpha to 1.0 or restoring it from mmd_material"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_toggle_transparent_materials.action:'SHOW'
+msgid "Set alpha to 1.0"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_toggle_transparent_materials.action:'RESTORE'
+msgid "Restore"
+msgstr "恢复"
+
+#. :src: bpy.types.MMD_TOOLS_OT_toggle_transparent_materials.action:'RESTORE'
+msgid "Restore alpha from mmd_material"
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model
 msgctxt "Operator"
 msgid "Translate a MMD Model"
@@ -3473,61 +3495,74 @@ msgctxt "Operator"
 msgid "Select MMD Rigid Body"
 msgstr "选择MMD刚体"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:390
+#: extensions/blender_org/mmd_tools/operators/fileio.py:394
 #, fuzzy
 msgid "Imported MMD model from \"\""
 msgstr "已从\"%s\"导入 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:952
+#: extensions/blender_org/mmd_tools/operators/fileio.py:621
+msgid "Imported VMD: \"\""
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/fileio.py:989
 #, fuzzy
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr "[跳过] 找不到 MMD 模型\"%s\"的骨架数据"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:984
+#: extensions/blender_org/mmd_tools/operators/fileio.py:1021
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "已导出 MMD 模型\"%s\"至\"%s\""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:180
+#: extensions/blender_org/mmd_tools/operators/fileio.py:578
+msgid "No file selected"
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/material.py:181
 msgid "Object '': Merged  materials"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:120
+#: extensions/blender_org/mmd_tools/operators/material.py:441
+msgid " transparent materials"
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/material.py:121
 msgid "Object '' has no materials"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:146
+#: extensions/blender_org/mmd_tools/operators/material.py:147
 msgid "No materials to merge in object ''"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:184
+#: extensions/blender_org/mmd_tools/operators/material.py:185
 msgid "Same Texture '': Merged materials [] into ''"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:266
+#: extensions/blender_org/mmd_tools/operators/material.py:267
 msgid "Added  empty texture nodes."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:314
+#: extensions/blender_org/mmd_tools/operators/material.py:315
 msgid "Removed  texture nodes."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:417
+#: extensions/blender_org/mmd_tools/operators/material.py:416
+#: extensions/blender_org/mmd_tools/operators/material.py:466
 #: extensions/blender_org/mmd_tools/operators/misc.py:274
 #: extensions/blender_org/mmd_tools/operators/misc.py:320
 msgid "Select a MMD model"
 msgstr "选择 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/material.py:428
+#: extensions/blender_org/mmd_tools/operators/material.py:477
 msgid "Created  toon edge(s)"
 msgstr "已创建  条卡通边缘"
 
-#: extensions/blender_org/mmd_tools/operators/material.py:49
+#: extensions/blender_org/mmd_tools/operators/material.py:50
 msgid " * Failed to change to Cycles render engine."
 msgstr " * 未能改变至 Cycles 渲染引擎"
 
-#: extensions/blender_org/mmd_tools/operators/material.py:365
-#: extensions/blender_org/mmd_tools/operators/material.py:390
+#: extensions/blender_org/mmd_tools/operators/material.py:366
+#: extensions/blender_org/mmd_tools/operators/material.py:391
 msgid "Materials not found"
 msgstr "找不到材质"
 
@@ -3563,8 +3598,8 @@ msgstr "选中的物体不是骨架物体"
 #: extensions/blender_org/mmd_tools/operators/model_validation.py:215
 #: extensions/blender_org/mmd_tools/operators/model_validation.py:329
 #: extensions/blender_org/mmd_tools/operators/model_validation.py:369
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:479
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:575
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:475
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:567
 msgid "No MMD model selected"
 msgstr ""
 
@@ -3675,7 +3710,11 @@ msgstr "找不到 %s 的基础材质"
 msgid "The model root can't be found"
 msgstr "找不到模型的根部"
 
-#: extensions/blender_org/mmd_tools/operators/rigid_body.py:450
+#: extensions/blender_org/mmd_tools/operators/rigid_body.py:267
+msgid "Frame jumped to  for physics stability"
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/rigid_body.py:473
 msgid "Please select two or more mmd rigid objects"
 msgstr "选择两个或更多 MMD 刚体"
 
@@ -4069,33 +4108,41 @@ msgstr "检测变形"
 msgid "Validation Results:"
 msgstr "检测结果:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:48
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:54
 msgid "Quick Fixes:"
 msgstr "快速修复:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:53
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:59
 msgctxt "Operator"
 msgid "Fix Model"
 msgstr "修复模型"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:54
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:60
 msgctxt "Operator"
 msgid "Fix Textures"
 msgstr "修复贴图"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:55
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:61
 msgctxt "Operator"
 msgid "Fix Bones"
 msgstr "修复骨骼"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:56
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:62
 msgctxt "Operator"
 msgid "Fix Morphs"
 msgstr "修复变形"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:44
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:50
 msgid "Run validation to see results"
 msgstr "运行测试以查看结果"
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:46
+msgid "... and  more results."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:47
+msgid "Check System Console for full log."
+msgstr ""
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:22
 msgctxt "Operator"
@@ -4191,31 +4238,31 @@ msgstr "材质:"
 msgid "Sphere Texture"
 msgstr "球体纹理"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:154
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:157
 msgctxt "Operator"
 msgid "Convert to Blender"
 msgstr "转换给Blender"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:156
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
 msgctxt "Operator"
 msgid "Convert to MMD"
 msgstr "转换给MMD"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:158
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:161
 msgctxt "Operator"
 msgid "Setup Textures"
 msgstr "设置纹理节点"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:162
 msgctxt "Operator"
 msgid "Texture Cleanup"
 msgstr "清理纹理节点"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:163
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
 msgid "Misc:"
 msgstr "杂项:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:165
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:168
 msgctxt "Operator"
 msgid "(Experimental) Global Translation"
 msgstr "(实验性) 全局翻译"
@@ -4227,6 +4274,11 @@ msgid "Physics"
 msgstr "物理"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:151
+msgctxt "Operator"
+msgid "Show Transparent Material"
+msgstr "显示透明材质"
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:154
 msgctxt "Operator"
 msgid "Edge Preview"
 msgstr "边缘预览"
