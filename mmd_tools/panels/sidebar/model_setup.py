@@ -148,6 +148,9 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
         row.prop(mmd_root_object.mmd_root, "use_toon_texture", text="Toon Texture", toggle=True, icon="SHADING_RENDERED")
         row.prop(mmd_root_object.mmd_root, "use_sphere_texture", text="Sphere Texture", toggle=True, icon="MATSPHERE")
         row = grid.row(align=True)
+        row.operator("mmd_tools.toggle_transparent_materials", text="Show Transparent Material", icon="HIDE_OFF").action = "SHOW"
+        row.operator("mmd_tools.toggle_transparent_materials", text="", icon="FILE_REFRESH").action = "RESTORE"
+        row = grid.row(align=True)
         row.operator("mmd_tools.edge_preview_setup", text="Edge Preview", icon="ANTIALIASED").action = "CREATE"
         row.operator("mmd_tools.edge_preview_setup", text="", icon="TRASH").action = "CLEAN"
         row = grid.row(align=True)

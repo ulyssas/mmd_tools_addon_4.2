@@ -10,6 +10,7 @@ from bpy.types import Operator
 from .. import cycles_converter
 from ..core.exceptions import MaterialNotFoundError
 from ..core.material import FnMaterial
+from ..core.model import FnModel
 from ..core.shader import _NodeGroupUtils
 
 
@@ -390,6 +391,54 @@ class MoveMaterialDown(Operator):
             self.report({"ERROR"}, "Materials not found")
             return {"CANCELLED"}
         obj.active_material_index = next_index
+        return {"FINISHED"}
+
+
+class ToggleTransparentMaterials(Operator):
+    bl_idname = "mmd_tools.toggle_transparent_materials"
+    bl_label = "Toggle Transparent Materials"
+    bl_description = "Toggle transparent materials by setting alpha to 1.0 or restoring it from mmd_material"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+
+    action: bpy.props.EnumProperty(
+        name="Action",
+        description="Select action",
+        items=[
+            ("SHOW", "Show", "Set alpha to 1.0", 0),
+            ("RESTORE", "Restore", "Restore alpha from mmd_material", 1),
+        ],
+        default="SHOW",
+    )
+
+    def execute(self, context):
+        root = FnModel.find_root_object(context.active_object)
+        if root is None:
+            self.report({"ERROR"}, "Select a MMD model")
+            return {"CANCELLED"}
+
+        processed_mats = set()
+
+        # Iterate through all meshes and unique materials to update alpha
+        for obj in FnModel.iterate_mesh_objects(root):
+            for mat_slot in obj.material_slots:
+                mat = mat_slot.material
+                if not mat or not mat.use_nodes or mat in processed_mats:
+                    continue
+                processed_mats.add(mat)
+                if self.action == "SHOW":
+                    mmd_shader = mat.node_tree.nodes.get("mmd_shader")
+                    if mmd_shader and "Alpha" in mmd_shader.inputs:
+                        mmd_shader.inputs["Alpha"].default_value = 1.0
+                    if hasattr(mat, "alpha"):
+                        mat.alpha = 1.0
+                    elif len(mat.diffuse_color) > 3:
+                        mat.diffuse_color[3] = 1.0
+                elif self.action == "RESTORE":
+                    fn_mat = FnMaterial(mat)
+                    fn_mat.update_alpha()
+
+        action_name = "Showed" if self.action == "SHOW" else "Restored"
+        self.report({"INFO"}, f"{action_name} transparent materials")
         return {"FINISHED"}
 
 
