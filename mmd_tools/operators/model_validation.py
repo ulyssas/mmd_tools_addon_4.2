@@ -426,28 +426,24 @@ class MMDModelFixBoneIssues(Operator):
             if not new_name:
                 new_name = "bone"
 
-            # Then truncate from right if still too long
-            while new_name:
-                try:
-                    encoded = new_name.encode("cp932")
-                    if len(encoded) <= 13:  # Leave room for suffixes
-                        break
-                    new_name = new_name[:-1]
-                except UnicodeEncodeError:
-                    new_name = new_name[:-1]
-
-            # Now handle duplicate names
-            final_name = new_name
-            if new_name in processed_names:
-                for suffix in range(2, 100):
-                    test_name = f"{new_name}{suffix}"
+            # Generate a unique name within the 15-byte CP932 limit
+            suffix = 1
+            while True:
+                suffix_str = "" if suffix == 1 else str(suffix)
+                max_bytes = 15 - len(suffix_str)
+                temp_base = new_name
+                while temp_base:
                     try:
-                        encoded_test = test_name.encode("cp932")
-                        if len(encoded_test) <= 15 and test_name not in processed_names:
-                            final_name = test_name
+                        if len(temp_base.encode("cp932")) <= max_bytes:
                             break
+                        temp_base = temp_base[:-1]
                     except UnicodeEncodeError:
-                        continue
+                        temp_base = temp_base[:-1]
+                test_name = f"{temp_base}{suffix_str}"
+                if test_name not in processed_names:
+                    final_name = test_name
+                    break
+                suffix += 1
 
             # Apply the final name and update processed_names
             pose_bone.mmd_bone.name_j = final_name
@@ -522,28 +518,24 @@ class MMDModelFixMorphIssues(Operator):
                 if not new_name:
                     new_name = "morph"
 
-                # Then truncate from right if still too long
-                while new_name:
-                    try:
-                        encoded = new_name.encode("cp932")
-                        if len(encoded) <= 14:
-                            break
-                        new_name = new_name[:-1]
-                    except UnicodeEncodeError:
-                        new_name = new_name[:-1]
-
-                # Now check if the new name is unique or needs a suffix
-                final_name = new_name
-                if new_name in processed_names:
-                    for suffix in range(2, 10):  # Plenty of suffixes
-                        test_name = f"{new_name}{suffix}"
+                # Generate a unique name within the 15-byte CP932 limit
+                suffix = 1
+                while True:
+                    suffix_str = "" if suffix == 1 else str(suffix)
+                    max_bytes = 15 - len(suffix_str)
+                    temp_base = new_name
+                    while temp_base:
                         try:
-                            encoded_test = test_name.encode("cp932")
-                            if len(encoded_test) <= 15 and test_name not in processed_names:
-                                final_name = test_name
+                            if len(temp_base.encode("cp932")) <= max_bytes:
                                 break
+                            temp_base = temp_base[:-1]
                         except UnicodeEncodeError:
-                            continue
+                            temp_base = temp_base[:-1]
+                    test_name = f"{temp_base}{suffix_str}"
+                    if test_name not in processed_names:
+                        final_name = test_name
+                        break
+                    suffix += 1
 
                 # Apply the final name and update processed_names
                 morph.name = final_name
