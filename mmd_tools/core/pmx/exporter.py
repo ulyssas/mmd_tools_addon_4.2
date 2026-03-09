@@ -216,23 +216,26 @@ class __PmxExporter:
         if sort_vertices:
             self.__sortVertices()
 
-    def __exportTexture(self, filepath, rel_path_hint=""):
+    def __exportTexture(self, filepath, rel_path_hint="", image=None):
         if filepath.strip() == "":
             return -1
         # Use bpy.path to resolve '//' in .blend relative filepaths
-        filepath = bpy.path.abspath(filepath)
-        filepath = os.path.abspath(filepath)
+        filepath_abs = os.path.abspath(bpy.path.abspath(filepath))
         target_pmx_path = rel_path_hint if rel_path_hint else filepath
         for i, tex in enumerate(self.__model.textures):
             tex_source = getattr(tex, "src_filepath", tex.path)
-            if os.path.normcase(tex_source) == os.path.normcase(filepath):
+            if os.path.normcase(tex_source) == os.path.normcase(filepath_abs):
                 if tex.path == target_pmx_path:
+                    if image is not None and getattr(tex, "blender_image", None) is None:
+                        tex.blender_image = image
                     return i
         t = pmx.Texture()
         t.path = target_pmx_path
-        t.src_filepath = filepath
+        t.src_filepath = filepath_abs
+        if image is not None:
+            t.blender_image = image
         self.__model.textures.append(t)
-        if not os.path.isfile(t.src_filepath):
+        if not os.path.isfile(t.src_filepath) and (image is None or not getattr(image, "has_data", False)):
             logging.warning("  The texture file does not exist: %s", t.src_filepath)
         return len(self.__model.textures) - 1
 
@@ -258,11 +261,18 @@ class __PmxExporter:
                 os.makedirs(os.path.dirname(full_dest_path), exist_ok=True)
 
                 # Check if the source is a packed image
+                blender_image = getattr(texture, "blender_image", None)
                 packed_image = None
-                for image in bpy.data.images:
-                    if image.packed_file and (image.filepath == src_path or os.path.basename(image.filepath) == os.path.basename(src_path)):
-                        packed_image = image
-                        break
+
+                if blender_image:
+                    if getattr(blender_image, "packed_file", None) is not None:
+                        packed_image = blender_image
+                else:
+                    # Fallback for textures without blender_image
+                    for image in bpy.data.images:
+                        if getattr(image, "packed_file", None) is not None and (image.filepath == src_path or os.path.basename(image.filepath) == os.path.basename(src_path)):
+                            packed_image = image
+                            break
 
                 # Handle packed images first by extracting them
                 if packed_image:
@@ -363,12 +373,13 @@ class __PmxExporter:
 
         p_mat.vertex_count = num_faces * 3
         fnMat = FnMaterial(material)
+
         tex = fnMat.get_texture()
         if tex and tex.type == "IMAGE" and tex.image:
             synced_path = sync_filename(mmd_mat.texture_rel_path, tex.image.filepath)
             if synced_path != mmd_mat.texture_rel_path:
                 mmd_mat.texture_rel_path = synced_path
-            index = self.__exportTexture(tex.image.filepath, rel_path_hint=synced_path)
+            index = self.__exportTexture(tex.image.filepath, rel_path_hint=synced_path, image=tex.image)
             p_mat.texture = index
 
         tex = fnMat.get_sphere_texture()
@@ -376,17 +387,24 @@ class __PmxExporter:
             synced_path = sync_filename(mmd_mat.sphere_texture_rel_path, tex.image.filepath)
             if synced_path != mmd_mat.sphere_texture_rel_path:
                 mmd_mat.sphere_texture_rel_path = synced_path
-            index = self.__exportTexture(tex.image.filepath, rel_path_hint=synced_path)
+            index = self.__exportTexture(tex.image.filepath, rel_path_hint=synced_path, image=tex.image)
             p_mat.sphere_texture = index
 
         if mmd_mat.is_shared_toon_texture:
             p_mat.toon_texture = mmd_mat.shared_toon_texture
             p_mat.is_shared_toon_texture = True
         else:
-            synced_path = sync_filename(mmd_mat.toon_texture_rel_path, mmd_mat.toon_texture)
+            tex = fnMat.get_toon_texture()
+            blender_image = None
+            current_filepath = mmd_mat.toon_texture
+            if tex and tex.type == "IMAGE" and tex.image:
+                blender_image = tex.image
+                if blender_image.filepath:
+                    current_filepath = blender_image.filepath
+            synced_path = sync_filename(mmd_mat.toon_texture_rel_path, current_filepath)
             if synced_path != mmd_mat.toon_texture_rel_path:
                 mmd_mat.toon_texture_rel_path = synced_path
-            p_mat.toon_texture = self.__exportTexture(mmd_mat.toon_texture, rel_path_hint=synced_path)
+            p_mat.toon_texture = self.__exportTexture(current_filepath, rel_path_hint=synced_path, image=blender_image)
             p_mat.is_shared_toon_texture = False
 
         self.__material_name_table.append(material.name)
