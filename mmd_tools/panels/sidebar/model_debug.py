@@ -37,8 +37,14 @@ class MMDModelDebugPanel(PT_ProductionPanelBase, bpy.types.Panel):
         # Add this section to display the validation results
         if context.scene.mmd_validation_results:
             result_col = box.column(align=True)
-            for line in context.scene.mmd_validation_results.split("\n"):
+            lines = context.scene.mmd_validation_results.split("\n")
+            display_limit = 10
+            for line in lines[:display_limit]:
                 result_col.label(text=line)
+            if len(lines) > display_limit:
+                result_col.separator()
+                result_col.label(text=f"... and {len(lines) - display_limit} more results.", icon="LINENUMBERS_ON")
+                result_col.label(text="Check System Console for full log.", icon="CONSOLE")
         else:
             col = box.column(align=True)
             col.label(text="Run validation to see results")
