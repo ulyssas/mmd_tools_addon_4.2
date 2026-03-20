@@ -291,7 +291,7 @@ class MMDCamera:
                     kp.interpolation = "LINEAR"
 
         else:
-            mmd_cam_root.location = cameraObj.location
+            mmd_cam_root.location = cameraObj.matrix_world.translation
             mmd_cam_root.mmd_camera.angle = MMDCamera._lens_to_angle(cameraObj, factor)
             mmd_cam_root.mmd_camera.persp = cameraObj.data.type != "ORTHO"
 
