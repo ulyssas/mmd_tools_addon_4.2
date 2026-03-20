@@ -771,6 +771,37 @@ translations_tuple = (
         ("zh_HANS", "将相机动画烘培之新的MMD机架", (False, ())),
     ),
     (
+        ("*", "Disable baking camera animation to MMD camera"),
+        (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'NONE'",), ()),
+        ("ja_JP", "MMDカメラにカメラアニメーションをベイクしません", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Rotation Only"),
+        (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ROT'",), ()),
+        ("ja_JP", "回転のみ", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Copy animation curve and bake only the camera rotation.\nYou can use Decimate function in Graph Editor to reduce keyframes.\n\nWarning: You have to separate slots in Action Editor first if you made Focal Length animation in Blender 4.4 or later",
+        ),
+        (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ROT'",), ()),
+        (
+            "ja_JP",
+            "アニメーションカーブをコピーし、カメラの回転のみベイクします.\nグラフエディターで減量機能を使うとキーフレームを減らせます.\n\n警告: Blender 4.4以降で焦点距離をアニメーションした場合はまずアクションエディターでスロットを分離してください",
+            (False, ()),
+        ),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Bake everything by inserting keyframes for every frame.\nYou can use Decimate function in Graph Editor to reduce keyframes"),
+        (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ALL'",), ()),
+        ("ja_JP", "全フレームにキーフレームを入力し全てベイクします.\nグラフエディターで減量機能を使うとキーフレームを減らせます.", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Camera Source"),
         (("bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source",), ()),
         ("ja_JP", "カメラソース", (False, ())),
