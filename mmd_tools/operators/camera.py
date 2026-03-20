@@ -20,10 +20,20 @@ class ConvertToMMDCamera(Operator):
         default=0.08,
     )
 
-    bake_animation: BoolProperty(
+    bake_animation: EnumProperty(
         name="Bake Animation",
         description="Bake camera animation to a new MMD camera rig",
-        default=False,
+        items=[
+            ("NONE", "Disabled", "Disable baking camera animation to MMD camera", 0),
+            (
+                "ROT",
+                "Rotation Only",
+                "Copy animation curve and bake only the camera rotation.\nYou can use Decimate function in Graph Editor to reduce keyframes.\n\nWarning: You have to separate slots in Action Editor first if you made Focal Length animation in Blender 4.4 or later",
+                1,
+            ),
+            ("ALL", "All", "Bake everything by inserting keyframes for every frame.\nYou can use Decimate function in Graph Editor to reduce keyframes", 2),
+        ],
+        default="NONE",
         options={"SKIP_SAVE"},
     )
 
@@ -53,14 +63,14 @@ class ConvertToMMDCamera(Operator):
         return vm.invoke_props_dialog(self)
 
     def execute(self, context):
-        if self.bake_animation:
+        if self.bake_animation == "NONE":
+            MMDCamera.convertToMMDCamera(context.active_object, self.scale)
+        else:
             obj = context.active_object
             targets = [x for x in context.selected_objects if x != obj]
             target = targets[0] if len(targets) == 1 else None
             if self.camera_source == "SCENE":
                 obj = None
-            camera = MMDCamera.newMMDCameraAnimation(obj, target, self.scale, self.min_distance).camera()
+            camera = MMDCamera.newMMDCameraAnimation(obj, target, self.scale, self.min_distance, self.bake_animation).camera()
             FnContext.set_active_object(context, camera)
-        else:
-            MMDCamera.convertToMMDCamera(context.active_object, self.scale)
         return {"FINISHED"}

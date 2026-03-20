@@ -1,6 +1,7 @@
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
+import logging
 import math
 from typing import Optional
 
@@ -8,6 +9,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 from ..bpyutils import FnContext, Props
+from ..compat import action_compat
 
 
 class FnCamera:
@@ -120,12 +122,38 @@ class MMDCamera:
         FnCamera.remove_drivers(cameraObj)
 
     @staticmethod
-    def convertToMMDCamera(cameraObj: bpy.types.Object, scale=1.0):
+    def _lens_to_angle(cameraObj: bpy.types.Object, factor: float, lens_val: float = None) -> float:
+        """convert Focal Length to FOV (deg)"""
+
+        current_lens = lens_val if lens_val is not None else cameraObj.data.lens
+        if current_lens <= 0:
+            logging.warning("Invalid Focal Length. Falling back to 0.001")
+            current_lens = 0.001
+
+        tan_val = cameraObj.data.sensor_height / current_lens / 2
+        if cameraObj.data.sensor_fit != "VERTICAL":
+            ratio = cameraObj.data.sensor_width / cameraObj.data.sensor_height
+            if cameraObj.data.sensor_fit == "HORIZONTAL":
+                tan_val *= factor * ratio
+            else:  # cameraObj.data.sensor_fit == 'AUTO'
+                tan_val *= min(ratio, factor * ratio)
+        return 2 * math.atan(tan_val)
+
+    @staticmethod
+    def convertToMMDCamera(cameraObj: bpy.types.Object, scale=1.0, init_mmd=True):
         if FnCamera.is_mmd_camera(cameraObj):
             return MMDCamera(cameraObj)
 
+        scene = bpy.context.scene
         empty = bpy.data.objects.new(name="MMD_Camera", object_data=None)
         FnContext.link_object(FnContext.ensure_context(), empty)
+
+        render = scene.render
+        factor = (render.resolution_y * render.pixel_aspect_y) / (render.resolution_x * render.pixel_aspect_x)
+
+        if not init_mmd:
+            original_angle = MMDCamera._lens_to_angle(cameraObj, factor)
+            original_persp = cameraObj.data.type != "ORTHO"
 
         cameraObj.parent = empty
         cameraObj.data.sensor_fit = "VERTICAL"
@@ -147,16 +175,45 @@ class MMDCamera:
         setattr(empty, Props.empty_display_size, 5 * scale)
         empty.lock_scale = (True, True, True)
         empty.mmd_type = "CAMERA"
-        empty.mmd_camera.angle = math.radians(30)
-        empty.mmd_camera.persp = True
+        if init_mmd:
+            empty.mmd_camera.angle = math.radians(30)
+            empty.mmd_camera.persp = True
+        else:
+            cameraObj.location = (0, 0, 0)
+            empty.mmd_camera.angle = original_angle
+            empty.mmd_camera.persp = original_persp
+
         return MMDCamera(empty)
 
     @staticmethod
-    def newMMDCameraAnimation(cameraObj, cameraTarget=None, scale=1.0, min_distance=0.1):
+    def newMMDCameraAnimation(cameraObj, cameraTarget=None, scale=1.0, min_distance=0.1, bake_mode="ALL"):
+        def copy_fcurve(src_fcurve, dst_action, data_path, index=0, transform_func=None):
+            """create new fcurve with optional transform (e.g. lens -> fov)"""
+
+            dst_fcurve = dst_action.fcurves.find(data_path=data_path, index=index)
+            if not dst_fcurve:
+                dst_fcurve = dst_action.fcurves.new(data_path=data_path, index=index)
+
+            for src_key in src_fcurve.keyframe_points:
+                new_val = transform_func(src_key.co[1]) if transform_func else src_key.co[1]
+                dst_key = dst_fcurve.keyframe_points.insert(frame=src_key.co[0], value=new_val)
+
+                if transform_func:
+                    dst_key.handle_left = (src_key.handle_left[0], transform_func(src_key.handle_left[1]))
+                    dst_key.handle_right = (src_key.handle_right[0], transform_func(src_key.handle_right[1]))
+                else:
+                    dst_key.handle_left = src_key.handle_left
+                    dst_key.handle_right = src_key.handle_right
+
+                dst_key.interpolation = src_key.interpolation
+                dst_key.easing = src_key.easing
+                dst_key.handle_left_type = src_key.handle_left_type
+                dst_key.handle_right_type = src_key.handle_right_type
+
         scene = bpy.context.scene
         mmd_cam = bpy.data.objects.new(name="Camera", object_data=bpy.data.cameras.new("Camera"))
         FnContext.link_object(FnContext.ensure_context(), mmd_cam)
-        MMDCamera.convertToMMDCamera(mmd_cam, scale=scale)
+        MMDCamera.convertToMMDCamera(mmd_cam, scale=scale, init_mmd=False)
         mmd_cam_root = mmd_cam.parent
 
         _camera_override_func = None
@@ -164,13 +221,20 @@ class MMDCamera:
             if scene.camera is None:
                 scene.camera = mmd_cam
                 return MMDCamera(mmd_cam_root)
+
             def _camera_override_func():
                 return scene.camera
 
         _target_override_func = None
         if cameraTarget is None:
+
             def _target_override_func(camObj):
                 return camObj.data.dof.focus_object or camObj
+
+        cam_obj_anim = getattr(cameraObj, "animation_data", None)
+        cam_dat_anim = getattr(cameraObj.data, "animation_data", None)
+        if not ((cam_obj_anim and cam_obj_anim.action) or (cam_dat_anim and cam_dat_anim.action)):
+            return MMDCamera(mmd_cam_root)
 
         action_name = mmd_cam_root.name
         parent_action = bpy.data.actions.new(name=action_name)
@@ -185,56 +249,87 @@ class MMDCamera:
         frame_count = frame_end - frame_start
         frames = range(frame_start, frame_end)
 
-        fcurves = [parent_action.fcurves.new(data_path="location", index=i) for i in range(3)]  # x, y, z
-        fcurves.extend(parent_action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3))  # rx, ry, rz
-        fcurves.append(parent_action.fcurves.new(data_path="mmd_camera.angle"))  # fov
-        fcurves.append(parent_action.fcurves.new(data_path="mmd_camera.is_perspective"))  # persp
-        fcurves.append(distance_action.fcurves.new(data_path="location", index=1))  # dis
-        for c in fcurves:
-            c.keyframe_points.add(frame_count)
+        if bake_mode == "ALL":
+            baked_curves = [parent_action.fcurves.new(data_path="location", index=i) for i in range(3)]  # x, y, z
+            baked_curves.extend(parent_action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3))  # rx, ry, rz
+            baked_curves.append(parent_action.fcurves.new(data_path="mmd_camera.angle"))  # fov
+            baked_curves.append(parent_action.fcurves.new(data_path="mmd_camera.is_perspective"))  # persp
+            baked_curves.append(distance_action.fcurves.new(data_path="location", index=1))  # dis
 
-        for f, x, y, z, rx, ry, rz, fov, persp, dis in zip(frames, *(c.keyframe_points for c in fcurves), strict=False):
-            scene.frame_set(f)
-            if _camera_override_func:
-                cameraObj = _camera_override_func()
-            if _target_override_func:
-                cameraTarget = _target_override_func(cameraObj)
-            cam_matrix_world = cameraObj.matrix_world
-            cam_target_loc = cameraTarget.matrix_world.translation
-            cam_rotation = (cam_matrix_world @ matrix_rotation).to_euler(mmd_cam_root.rotation_mode)
-            cam_vec = cam_matrix_world.to_3x3() @ neg_z_vector
-            if cameraObj.data.type == "ORTHO":
-                cam_dis = -(9 / 5) * cameraObj.data.ortho_scale
-                if cameraObj.data.sensor_fit != "VERTICAL":
-                    if cameraObj.data.sensor_fit == "HORIZONTAL":
-                        cam_dis *= factor
-                    else:
-                        cam_dis *= min(1, factor)
-            else:
-                target_vec = cam_target_loc - cam_matrix_world.translation
-                cam_dis = -max(target_vec.length * cam_vec.dot(target_vec.normalized()), min_distance)
-            cam_target_loc = cam_matrix_world.translation - cam_vec * cam_dis
+            for c in baked_curves:
+                c.keyframe_points.add(frame_count)
 
-            tan_val = cameraObj.data.sensor_height / cameraObj.data.lens / 2
-            if cameraObj.data.sensor_fit != "VERTICAL":
-                ratio = cameraObj.data.sensor_width / cameraObj.data.sensor_height
-                if cameraObj.data.sensor_fit == "HORIZONTAL":
-                    tan_val *= factor * ratio
-                else:  # cameraObj.data.sensor_fit == 'AUTO'
-                    tan_val *= min(ratio, factor * ratio)
+            for f, x, y, z, rx, ry, rz, fov, persp, dis in zip(frames, *(c.keyframe_points for c in baked_curves), strict=False):
+                scene.frame_set(f)
+                if _camera_override_func:
+                    cameraObj = _camera_override_func()
+                if _target_override_func:
+                    cameraTarget = _target_override_func(cameraObj)
+                cam_matrix_world = cameraObj.matrix_world
+                cam_target_loc = cameraTarget.matrix_world.translation
+                cam_rotation = (cam_matrix_world @ matrix_rotation).to_euler(mmd_cam_root.rotation_mode)
+                cam_vec = cam_matrix_world.to_3x3() @ neg_z_vector
+                if cameraObj.data.type == "ORTHO":
+                    cam_dis = -(9 / 5) * cameraObj.data.ortho_scale
+                    if cameraObj.data.sensor_fit != "VERTICAL":
+                        if cameraObj.data.sensor_fit == "HORIZONTAL":
+                            cam_dis *= factor
+                        else:
+                            cam_dis *= min(1, factor)
+                else:
+                    target_vec = cam_target_loc - cam_matrix_world.translation
+                    cam_dis = -max(target_vec.length * cam_vec.dot(target_vec.normalized()), min_distance)
+                cam_target_loc = cam_matrix_world.translation - cam_vec * cam_dis
 
-            x.co, y.co, z.co = ((f, i) for i in cam_target_loc)
-            rx.co, ry.co, rz.co = ((f, i) for i in cam_rotation)
-            dis.co = (f, cam_dis)
-            fov.co = (f, 2 * math.atan(tan_val))
-            persp.co = (f, cameraObj.data.type != "ORTHO")
-            persp.interpolation = "CONSTANT"
-            for kp in (x, y, z, rx, ry, rz, fov, dis):
-                kp.interpolation = "LINEAR"
+                x.co, y.co, z.co = ((f, i) for i in cam_target_loc)
+                rx.co, ry.co, rz.co = ((f, i) for i in cam_rotation)
+                dis.co = (f, cam_dis)
+                fov.co = (f, MMDCamera._lens_to_angle(cameraObj, factor))
+                persp.co = (f, cameraObj.data.type != "ORTHO")
+                persp.interpolation = "CONSTANT"
+                for kp in (x, y, z, rx, ry, rz, fov, dis):
+                    kp.interpolation = "LINEAR"
+
+        else:
+            mmd_cam_root.location = cameraObj.matrix_world.translation
+            mmd_cam_root.mmd_camera.angle = MMDCamera._lens_to_angle(cameraObj, factor)
+            mmd_cam_root.mmd_camera.persp = cameraObj.data.type != "ORTHO"
+
+            baked_curves = [parent_action.fcurves.new(data_path="rotation_euler", index=i) for i in range(3)]  # rx, ry, rz
+
+            for c in baked_curves:
+                c.keyframe_points.add(frame_count)
+
+            for f, rx, ry, rz in zip(frames, *(c.keyframe_points for c in baked_curves), strict=False):
+                scene.frame_set(f)
+                if _camera_override_func:
+                    cameraObj = _camera_override_func()
+                cam_matrix_world = cameraObj.matrix_world
+                cam_rotation = (cam_matrix_world @ matrix_rotation).to_euler(mmd_cam_root.rotation_mode)
+
+                rx.co, ry.co, rz.co = ((f, i) for i in cam_rotation)
+                for kp in (rx, ry, rz):
+                    kp.interpolation = "LINEAR"
+
+            if cam_obj_anim and cam_obj_anim.action:
+                for fcurve in cam_obj_anim.action.fcurves:
+                    dp = fcurve.data_path
+                    idx = fcurve.array_index
+                    if dp == "location":
+                        copy_fcurve(fcurve, parent_action, "location", index=idx)
+
+            if cam_dat_anim and cam_dat_anim.action:
+                for fcurve in cam_dat_anim.action.fcurves:
+                    dp = fcurve.data_path
+                    idx = fcurve.array_index
+                    if dp == "lens":
+                        copy_fcurve(fcurve, parent_action, "mmd_camera.angle", transform_func=lambda v: MMDCamera._lens_to_angle(cameraObj, factor, lens_val=v))
+                    elif dp == "type":
+                        copy_fcurve(fcurve, parent_action, "mmd_camera.is_perspective", transform_func=lambda v: 0.0 if round(v) == 1 else 1.0)
 
         FnCamera.add_drivers(mmd_cam)
-        mmd_cam_root.animation_data_create().action = parent_action
-        mmd_cam.animation_data_create().action = distance_action
+        action_compat.assign_action_to_datablock(mmd_cam_root, parent_action)
+        action_compat.assign_action_to_datablock(mmd_cam, distance_action)
         scene.frame_set(frame_current)
         return MMDCamera(mmd_cam_root)
 
