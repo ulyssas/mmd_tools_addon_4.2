@@ -13,7 +13,7 @@ Use the MMD Tools version that matches your Blender version.
 
 | Blender Version | MMD Tools Version       | Branch                                                                         |
 |-----------------|-------------------------|--------------------------------------------------------------------------------|
-| Blender 4.2-5.0 | MMD Tools v4.x (latest) | [main](https://github.com/MMD-Blender/blender_mmd_tools)                       |
+| Blender 4.2-5.1 | MMD Tools v4.x (latest) | [main](https://github.com/MMD-Blender/blender_mmd_tools)                       |
 | Blender 3.6     | MMD Tools v2.x          | [blender-v3](https://github.com/MMD-Blender/blender_mmd_tools/tree/blender-v3) |
 
 We recommend using Blender 4.2+ with the latest MMD Tools.
