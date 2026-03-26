@@ -12,9 +12,22 @@ from bpy.types import Operator
 from ..core.material import FnMaterial
 from ..core.model import FnModel
 from ..externals.opencc import OpenCC
+from ..preferences import get_additional_unallowed_chars, get_replacement_char
 
 cc_s2t = OpenCC("s2t")
 cc_t2jp = OpenCC("t2jp")
+
+
+def _find_additional_unallowed_chars(name: str, unallowed: str) -> list[str]:
+    """Return sorted list of unallowed characters found in name (deduplicated)."""
+    return sorted({ch for ch in unallowed if ch in name})
+
+
+def _replace_additional_unallowed_chars(name: str, unallowed: str, replacement: str) -> str:
+    """Replace each unallowed character in name with replacement (or remove if empty)."""
+    for ch in unallowed:
+        name = name.replace(ch, replacement)
+    return name
 
 
 # Scene property to store validation results
@@ -93,6 +106,14 @@ class MMDModelValidateModel(Operator):
         except UnicodeEncodeError:
             issues.append(f"Model English Name '{mmd_root.name_e}' contains characters that cannot be encoded in cp932")
 
+        # Check additional unallowed characters
+        unallowed = get_additional_unallowed_chars("model")
+        if unallowed:
+            for field, value in (("Model Name", mmd_root.name), ("Model English Name", mmd_root.name_e)):
+                found = _find_additional_unallowed_chars(value, unallowed)
+                if found:
+                    issues.append(f"{field} '{value}' contains additional unallowed characters: {found}")
+
         results = "\n".join(issues) or "No model issues found"
         context.scene.mmd_validation_results = results
         log_level = "WARNING" if issues else "INFO"
@@ -148,6 +169,17 @@ class MMDModelValidateBones(Operator):
             except UnicodeEncodeError:
                 issues.append(f"Bone '{name_j}' contains characters that cannot be encoded in cp932")
 
+        # Check additional unallowed characters
+        unallowed = get_additional_unallowed_chars("bone")
+        if unallowed:
+            for pose_bone in armature.pose.bones:
+                if getattr(pose_bone, "is_mmd_shadow_bone", False):
+                    continue
+                name_j = pose_bone.mmd_bone.name_j
+                found = _find_additional_unallowed_chars(name_j, unallowed)
+                if found:
+                    issues.append(f"Bone '{name_j}' contains additional unallowed characters: {found}")
+
         results = "\n".join(issues) or "No bone issues found"
         context.scene.mmd_validation_results = results
         log_level = "WARNING" if issues else "INFO"
@@ -192,6 +224,17 @@ class MMDModelValidateMorphs(Operator):
                         issues.append(f"Morph '{morph.name}' name too long (exceeds 15 bytes in cp932)")
                 except UnicodeEncodeError:
                     issues.append(f"Morph '{morph.name}' contains characters that cannot be encoded in cp932")
+
+        # Check additional unallowed characters
+        unallowed = get_additional_unallowed_chars("morph")
+        if unallowed:
+            for morph_type in morph_types:
+                if not hasattr(root.mmd_root, morph_type):
+                    continue
+                for morph in getattr(root.mmd_root, morph_type):
+                    found = _find_additional_unallowed_chars(morph.name, unallowed)
+                    if found:
+                        issues.append(f"Morph '{morph.name}' contains additional unallowed characters: {found}")
 
         results = "\n".join(issues) or "No morph issues found"
         context.scene.mmd_validation_results = results
@@ -272,6 +315,27 @@ class MMDModelValidateTextures(Operator):
                     conflict_msg += f"  {idx + 1}. {path}"
             issues.append(conflict_msg)
 
+        # Check additional unallowed characters in texture filenames (disk path only, extension excluded)
+        unallowed = get_additional_unallowed_chars("texture")
+        if unallowed:
+            seen_filepaths = set()
+            for material in FnModel.iterate_unique_materials(root):
+                if not material.node_tree:
+                    continue
+                for node in material.node_tree.nodes:
+                    if node.type != "TEX_IMAGE" or not node.image or not node.image.filepath:
+                        continue
+                    img = node.image
+                    if img.filepath in seen_filepaths:
+                        continue
+                    seen_filepaths.add(img.filepath)
+
+                    basename = os.path.basename(bpy.path.abspath(img.filepath))
+                    stem, ext = os.path.splitext(basename)
+                    found = _find_additional_unallowed_chars(stem, unallowed)
+                    if found:
+                        issues.append(f"Texture '{basename}' stem contains additional unallowed characters: {', '.join(repr(c) for c in found)}")
+
         # Format missing file messages
         if missing_files:
             issues.append("MISSING TEXTURE FILES:")
@@ -346,6 +410,18 @@ class MMDModelFixModelIssues(Operator):
             old_name_e = mmd_root.name_e
             mmd_root.name_e = new_name_e
             fixed.append(f"Fixed Model English Name: '{old_name_e}' -> '{new_name_e}'")
+
+        # Fix additional unallowed characters
+        unallowed = get_additional_unallowed_chars("model")
+        if unallowed:
+            replacement = get_replacement_char()
+            for attr in ("name", "name_e"):
+                old_val = getattr(mmd_root, attr)
+                new_val = _replace_additional_unallowed_chars(old_val, unallowed, replacement)
+                if new_val != old_val:
+                    setattr(mmd_root, attr, new_val)
+                    label = "Model Name" if attr == "name" else "Model English Name"
+                    fixed.append(f"Fixed {label} additional unallowed chars: '{old_val}' -> '{new_val}'")
 
         results = "\n".join(fixed) if fixed else "No model issues to fix"
         context.scene.mmd_validation_results = results
@@ -453,6 +529,36 @@ class MMDModelFixBoneIssues(Operator):
             if original_name != final_name:
                 fixed.append(f"Fixed bone name: '{original_name}' -> '{final_name}'")
 
+        # Fix additional unallowed characters
+        unallowed = get_additional_unallowed_chars("bone")
+        if unallowed:
+            replacement = get_replacement_char()
+            # Collect names of bones that won't be modified, as the baseline for uniqueness check
+            additional_used_names = set()
+            for pb in armature.pose.bones:
+                if getattr(pb, "is_mmd_shadow_bone", False):
+                    continue
+                additional_used_names.add(pb.mmd_bone.name_j)
+
+            for pose_bone in armature.pose.bones:
+                if getattr(pose_bone, "is_mmd_shadow_bone", False):
+                    continue
+                old_name = pose_bone.mmd_bone.name_j
+                new_name = _replace_additional_unallowed_chars(old_name, unallowed, replacement)
+                if new_name == old_name:
+                    continue
+
+                # Resolve collision
+                additional_used_names.discard(old_name)
+                candidate = new_name
+                suffix = 2
+                while candidate in additional_used_names:
+                    candidate = f"{new_name}{suffix}"
+                    suffix += 1
+                pose_bone.mmd_bone.name_j = candidate
+                additional_used_names.add(candidate)
+                fixed.append(f"Fixed bone additional unallowed chars: '{old_name}' -> '{candidate}'")
+
         results = "\n".join(fixed) if fixed else "No bone issues to fix"
         context.scene.mmd_validation_results = results
         log_message("MMD Bone Fix", results, "INFO")
@@ -544,6 +650,35 @@ class MMDModelFixMorphIssues(Operator):
                 # Only add one message per morph, showing the original and final name
                 if original_name != final_name:
                     fixed.append(f"Fixed morph name: '{original_name}' -> '{final_name}'")
+
+        # Fix additional unallowed characters
+        unallowed = get_additional_unallowed_chars("morph")
+        if unallowed:
+            replacement = get_replacement_char()
+            # Collect all current morph names as baseline
+            additional_used_names = set()
+            for mt in morph_types:
+                if hasattr(root.mmd_root, mt):
+                    additional_used_names.update(m.name for m in getattr(root.mmd_root, mt))
+
+            for morph_type in morph_types:
+                if not hasattr(root.mmd_root, morph_type):
+                    continue
+                for morph in getattr(root.mmd_root, morph_type):
+                    old_name = morph.name
+                    new_name = _replace_additional_unallowed_chars(old_name, unallowed, replacement)
+                    if new_name == old_name:
+                        continue
+
+                    additional_used_names.discard(old_name)
+                    candidate = new_name
+                    suffix = 2
+                    while candidate in additional_used_names:
+                        candidate = f"{new_name}{suffix}"
+                        suffix += 1
+                    morph.name = candidate
+                    additional_used_names.add(candidate)
+                    fixed.append(f"Fixed morph additional unallowed chars: '{old_name}' -> '{candidate}'")
 
         results = "\n".join(fixed) if fixed else "No morph issues to fix"
         context.scene.mmd_validation_results = results
@@ -801,6 +936,57 @@ class MMDModelFixTextureIssues(Operator):
                     fixed.append("TEXTURE FILENAME CONFLICTS FIXED:")
                     filepath_conflicts_fixed = True
                 fixed.extend(conflict_fixed)
+
+        # Fix additional unallowed characters in texture filenames (disk path only, extension excluded)
+        unallowed = get_additional_unallowed_chars("texture")
+        if unallowed:
+            replacement = get_replacement_char()
+            seen_images = set()
+
+            for material in FnModel.iterate_unique_materials(root):
+                if not material.node_tree:
+                    continue
+                for node in material.node_tree.nodes:
+                    if node.type != "TEX_IMAGE" or not node.image or not node.image.filepath:
+                        continue
+                    img = node.image
+                    if img.filepath in seen_images:
+                        continue
+                    seen_images.add(img.filepath)
+
+                    abs_path = bpy.path.abspath(img.filepath)
+                    dir_path = os.path.dirname(abs_path)
+                    basename = os.path.basename(abs_path)
+                    stem, ext = os.path.splitext(basename)
+
+                    # Only process the stem, leave extension untouched
+                    new_stem = _replace_additional_unallowed_chars(stem, unallowed, replacement)
+                    if new_stem == stem:
+                        continue
+
+                    # Resolve filename collision on disk
+                    candidate_stem = new_stem
+                    suffix = 2
+                    while os.path.exists(os.path.join(dir_path, f"{candidate_stem}{ext}")):
+                        candidate_stem = f"{new_stem}{suffix}"
+                        suffix += 1
+
+                    new_abs_path = os.path.join(dir_path, f"{candidate_stem}{ext}")
+
+                    if not os.path.exists(abs_path):
+                        fixed.append(f"Warning: Source file not found, skipping: '{abs_path}'")
+                        continue
+
+                    try:
+                        shutil.copy2(abs_path, new_abs_path)
+                        # Update filepath in Blender (keep relative if original was relative)
+                        if img.filepath.startswith("//"):
+                            img.filepath = "//" + os.path.relpath(new_abs_path, bpy.path.abspath("//"))
+                        else:
+                            img.filepath = new_abs_path
+                        fixed.append(f"Fixed texture filename unallowed chars: '{basename}' -> '{candidate_stem}{ext}'")
+                    except Exception as e:
+                        fixed.append(f"Error renaming texture file '{basename}': {str(e)}")
 
         # Report remaining missing textures that couldn't be fixed
         remaining_missing = [(mat, img, path) for mat, img, path, node in missing_textures if (mat, img) not in fixed_material_image_pairs and node != "mmd_toon_tex"]

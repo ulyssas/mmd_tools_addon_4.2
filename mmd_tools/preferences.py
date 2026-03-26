@@ -43,6 +43,31 @@ def get_vpd_export_preset_items(self, context):
     return get_preset_items_for_operator("mmd_tools.export_vpd")
 
 
+def get_additional_unallowed_chars(prop_name: str) -> str:
+    """Get the additional unallowed characters string from addon preferences.
+
+    Args:
+        prop_name: One of 'model', 'texture', 'bone', 'morph'.
+
+    Returns:
+        The unallowed characters string, or empty string if not set.
+    """
+    try:
+        prefs = bpy.context.preferences.addons[__package__].preferences
+        return getattr(prefs, f"additional_unallowed_chars_{prop_name}", "")
+    except Exception:
+        return ""
+
+
+def get_replacement_char() -> str:
+    """Get the replacement character from addon preferences."""
+    try:
+        prefs = bpy.context.preferences.addons[__package__].preferences
+        return prefs.replacement_char
+    except Exception:
+        return "_"
+
+
 class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
 
@@ -106,6 +131,34 @@ class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
         default=0,
     )
 
+    # Additional unallowed character settings
+    additional_unallowed_chars_model: bpy.props.StringProperty(
+        name="Additional Unallowed Characters in Model Name",
+        description="Characters that are not allowed in model names. Each character in this string will be treated as unallowed",
+        default="",
+    )
+    additional_unallowed_chars_texture: bpy.props.StringProperty(
+        name="Additional Unallowed Characters in Texture Name",
+        description="Characters that are not allowed in texture names. Each character in this string will be treated as unallowed",
+        default="",
+    )
+    additional_unallowed_chars_bone: bpy.props.StringProperty(
+        name="Additional Unallowed Characters in Bone Name",
+        description="Characters that are not allowed in bone names. Each character in this string will be treated as unallowed",
+        default="",
+    )
+    additional_unallowed_chars_morph: bpy.props.StringProperty(
+        name="Additional Unallowed Characters in Morph Name",
+        description="Characters that are not allowed in morph names. Each character in this string will be treated as unallowed",
+        default="",
+    )
+    replacement_char: bpy.props.StringProperty(
+        name="Replacement Character",
+        description="Character used to replace unallowed characters. Leave empty to remove them instead",
+        default="_",
+        maxlen=1,
+    )
+
     def initialize_defaults(self):
         """Initialize default preset values, converting empty strings to default preset"""
         preset_configs = [
@@ -140,3 +193,11 @@ class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
         layout.prop(self, "default_vmd_export_preset", text="VMD Export")
         layout.prop(self, "default_vpd_import_preset", text="VPD Import")
         layout.prop(self, "default_vpd_export_preset", text="VPD Export")
+
+        layout.separator()
+        layout.label(text="Additional Unallowed Characters (Model Debug):", icon="TOOL_SETTINGS")
+        layout.prop(self, "additional_unallowed_chars_model", text="Model Name")
+        layout.prop(self, "additional_unallowed_chars_texture", text="Texture Filename")
+        layout.prop(self, "additional_unallowed_chars_bone", text="Bone Name")
+        layout.prop(self, "additional_unallowed_chars_morph", text="Morph Name")
+        layout.prop(self, "replacement_char", text="-> Replaced With")
