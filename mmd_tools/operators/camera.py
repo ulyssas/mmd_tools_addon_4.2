@@ -1,7 +1,7 @@
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
-from bpy.props import BoolProperty, EnumProperty, FloatProperty
+from bpy.props import EnumProperty, FloatProperty
 from bpy.types import Operator
 
 from ..bpyutils import FnContext

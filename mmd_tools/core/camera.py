@@ -123,8 +123,7 @@ class MMDCamera:
 
     @staticmethod
     def _lens_to_angle(cameraObj: bpy.types.Object, factor: float, lens_val: float = None) -> float:
-        """convert Focal Length to FOV (deg)"""
-
+        """Convert Focal Length to FOV (deg)"""
         current_lens = lens_val if lens_val is not None else cameraObj.data.lens
         if current_lens <= 0:
             logging.warning("Invalid Focal Length. Falling back to 0.001")
@@ -188,8 +187,7 @@ class MMDCamera:
     @staticmethod
     def newMMDCameraAnimation(cameraObj, cameraTarget=None, scale=1.0, min_distance=0.1, bake_mode="ALL"):
         def copy_fcurve(src_fcurve, dst_action, data_path, index=0, transform_func=None):
-            """create new fcurve with optional transform (e.g. lens -> fov)"""
-
+            """Create new fcurve with optional transform (e.g. lens -> fov)"""
             dst_fcurve = dst_action.fcurves.find(data_path=data_path, index=index)
             if not dst_fcurve:
                 dst_fcurve = dst_action.fcurves.new(data_path=data_path, index=index)
