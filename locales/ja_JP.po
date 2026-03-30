@@ -5,6 +5,38 @@
 msgid ""
 msgstr "Project-Id-Version: MMD Tools 4.5.9 (0)"
 
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_bone
+msgid "Additional Unallowed Characters in Bone Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_bone
+msgid "Characters that are not allowed in bone names. Each character in this string will be treated as unallowed"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_model
+msgid "Additional Unallowed Characters in Model Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_model
+msgid "Characters that are not allowed in model names. Each character in this string will be treated as unallowed"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_morph
+msgid "Additional Unallowed Characters in Morph Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_morph
+msgid "Characters that are not allowed in morph names. Each character in this string will be treated as unallowed"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_texture
+msgid "Additional Unallowed Characters in Texture Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_texture
+msgid "Characters that are not allowed in texture names. Each character in this string will be treated as unallowed"
+msgstr ""
+
 #. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
 msgid "Base Texture Folder"
 msgstr "ベーステクスチャフォルダ"
@@ -72,6 +104,14 @@ msgstr "CSV辞書を検索するためのパス"
 #. :src: bpy.types.MMDToolsAddonPreferences.enable_mmd_model_production_features
 msgid "Enable MMD Model Production Features"
 msgstr "MMDモデル製作機能を有効化"
+
+#. :src: bpy.types.MMDToolsAddonPreferences.replacement_char
+msgid "Replacement Character"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.replacement_char
+msgid "Character used to replace unallowed characters. Leave empty to remove them instead"
+msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.shared_toon_folder
 msgid "Shared Toon Texture Folder"
@@ -196,7 +236,7 @@ msgstr "ボーンモーフを適用"
 
 #. :src: bpy.types.MMD_TOOLS_OT_apply_bone_morph
 msgid "Apply current pose to active bone morph"
-msgstr "現在のポーズを選択中のボーンモーフに適用する"
+msgstr "現在のポーズを選択中のボーンモーフに適用します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset
 msgctxt "Operator"
@@ -205,7 +245,7 @@ msgstr "ボーンモーフオフセットを適用"
 
 #. :src: bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset
 msgid "Stores the current bone location and rotation into this offset"
-msgstr "このオフセットで現在の位置と回転を保持する"
+msgstr "このオフセットに現在の位置と回転を保存します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_apply_material_morph_offset
 msgctxt "Operator"
@@ -223,7 +263,7 @@ msgstr "UVモーフを適用"
 
 #. :src: bpy.types.MMD_TOOLS_OT_apply_uv_morph
 msgid "Calculate the UV offsets of selected vertices and apply to active UV morph"
-msgstr "選択中の頂点のUVオフセットを計算し、選択中のUVモーフに適用する"
+msgstr "選択された頂点のUVオフセットを計算し、選択中のUVモーフに適用します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_assemble_all
 msgctxt "Operator"
@@ -464,7 +504,7 @@ msgstr "UVモーフ表示を削除"
 
 #. :src: bpy.types.MMD_TOOLS_OT_clear_uv_morph_view
 msgid "Clear all temporary data of UV morphs"
-msgstr "全てのUVモーフの一時データを消去"
+msgstr "全てのUVモーフの一時データを消去します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_bone_morph_to_vertex_morph
 #. :src: bpy.types.MMD_TOOLS_OT_convert_group_morph_to_vertex_morph
@@ -479,6 +519,8 @@ msgid ""
 "Convert a bone morph into a single vertex morph by applying the bone transformations.\n"
 "If a corresponding vertex morph already exists, it will be updated."
 msgstr ""
+"ボーン変形を適用し、ボーンモーフを頂点モーフに変換します.\n"
+"対応する頂点モーフがすでにある場合は、それを更新します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_bsdf_materials
 msgctxt "Operator"
@@ -495,6 +537,8 @@ msgid ""
 "Convert a group morph into a single vertex morph by merging only the vertex morphs within the group.\n"
 "If a corresponding vertex morph already exists, it will be updated."
 msgstr ""
+"グループモーフ内の頂点モーフのみをマージし、グループモーフを頂点モーフに変換します.\n"
+"対応する頂点モーフがすでにある場合は、それを更新します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials
 msgctxt "Operator"
@@ -523,7 +567,7 @@ msgstr "プリンシプルBSDFへ変換"
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials.use_principled
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles.use_principled
 msgid "Convert MMD shader nodes to Principled BSDF as well if enabled"
-msgstr ""
+msgstr "MMDシェーダーノードをプリンシプルBSDFに変換します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles
 msgctxt "Operator"
@@ -532,24 +576,52 @@ msgstr "Cycles用にマテリアルを変換"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles
 msgid "Convert materials of selected objects for Cycles."
-msgstr ""
+msgstr "選択されたオブジェクトのマテリアルをCycles用に変換します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera
 msgctxt "Operator"
 msgid "Convert to MMD Camera"
-msgstr "MMDライトへ変換"
+msgstr "MMDカメラへ変換"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera
 msgid "Create a camera rig for MMD"
-msgstr ""
+msgstr "MMD用にカメラリグを作成します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation
 msgid "Bake Animation"
-msgstr ""
+msgstr "アニメーションをベイク"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation
 msgid "Bake camera animation to a new MMD camera rig"
+msgstr "カメラアニメーションを新しいMMDカメラリグにベイクします"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'NONE'
+msgid "Disable baking camera animation to MMD camera"
+msgstr "MMDカメラにカメラアニメーションをベイクしません"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ROT'
+msgid "Rotation Only"
+msgstr "回転のみ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ROT'
+msgid ""
+"Copy animation curve and bake only the camera rotation.\n"
+"You can use Decimate function in Graph Editor to reduce keyframes.\n"
+"\n"
+"Warning: You have to separate slots in Action Editor first if you made Focal Length animation in Blender 4.4 or later"
 msgstr ""
+"アニメーションカーブをコピーし、カメラの回転のみベイクします.\n"
+"グラフエディターで減量機能を使うとキーフレームを減らせます.\n"
+"\n"
+"警告: Blender 4.4以降で焦点距離をアニメーションした場合はまずアクションエディターでスロットを分離してください"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ALL'
+msgid ""
+"Bake everything by inserting keyframes for every frame.\n"
+"You can use Decimate function in Graph Editor to reduce keyframes"
+msgstr ""
+"全フレームにキーフレームを入力し全てベイクします.\n"
+"グラフエディターで減量機能を使うとキーフレームを減らせます."
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source
 msgid "Camera Source"
@@ -557,27 +629,27 @@ msgstr "カメラソース"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source
 msgid "Select camera source to bake animation (camera target is the selected or DoF object)"
-msgstr ""
+msgstr "アニメーションをベイクするカメラを選択 (カメラターゲットは選択またはDoFオブジェクト)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source:'CURRENT'
 msgid "Current active camera object"
-msgstr ""
+msgstr "現在のアクティブカメラ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source:'SCENE'
 msgid "Scene camera object"
-msgstr ""
+msgstr "シーンカメラ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.min_distance
 msgid "Min Distance"
-msgstr ""
+msgstr "最小距離"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.min_distance
 msgid "Minimum distance to camera target when baking animation"
-msgstr ""
+msgstr "アニメーションベイク時のカメラターゲットの最小距離"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.scale
 msgid "Scaling factor for initializing the camera"
-msgstr ""
+msgstr "カメラ初期化時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgctxt "Operator"
@@ -586,11 +658,11 @@ msgstr "MMDライトへ変換"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgid "Create a light rig for MMD"
-msgstr ""
+msgstr "MMD用にライトリグを作成します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light.scale
 msgid "Scaling factor for initializing the light"
-msgstr ""
+msgstr "ライト初期化時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model
 msgctxt "Operator"
@@ -603,11 +675,11 @@ msgstr "選択中のアーマチュアとメッシュをMMDモデルに変換し
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source
 msgid "Ambient Color Source"
-msgstr "アンビエントカラーソース"
+msgstr "環境色ソース"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source
 msgid "Select ambient color source"
-msgstr ""
+msgstr "環境色ソースを選択"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source:'DIFFUSE'
 #. :src: bpy.types.MMDMaterial.diffuse_color
@@ -617,7 +689,7 @@ msgstr "拡散色"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source:'MIRROR'
 msgid "Mirror color (if property \"mirror_color\" is available)"
-msgstr ""
+msgstr "ミラー (属性 \"mirror_color\" が存在する場合)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.convert_material_nodes
 msgid "Convert Material Nodes"
@@ -629,7 +701,7 @@ msgstr "最小輪郭アルファ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.edge_alpha_min
 msgid "Minimum alpha of MMD toon edge color"
-msgstr ""
+msgstr "MMDトゥーンエッジ色の透明度の最小値"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.edge_threshold
 msgid "Edge Threshold"
@@ -637,7 +709,7 @@ msgstr "輪郭しきい値"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.edge_threshold
 msgid "MMD toon edge will not be enabled if freestyle line color alpha less than this value"
-msgstr ""
+msgstr "freestyleラインカラーの透明度がこの値未満の場合、MMDトゥーンエッジは有効になりません"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.middle_joint_bones_lock
 msgid "Middle Joint Bones Lock"
@@ -645,11 +717,11 @@ msgstr "中間関節ボーンをロック"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.middle_joint_bones_lock
 msgid "Lock specific bones for backward compatibility."
-msgstr ""
+msgstr "後方互換性のために特定のボーンをロックします"
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.scale
 msgid "Scaling factor for converting the model"
-msgstr ""
+msgstr "モデル変換時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object
 msgctxt "Operator"
@@ -678,7 +750,7 @@ msgstr "名前(英語)"
 #. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object.name_e
 #. :src: bpy.types.MMDRoot.name_e
 msgid "The english name of the MMD model"
-msgstr ""
+msgstr "MMDモデルの英語名"
 
 #. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object.name_j
 #. :src: bpy.types.MMDRoot.name
@@ -692,7 +764,7 @@ msgstr "一時マテリアルを生成"
 
 #. :src: bpy.types.MMD_TOOLS_OT_create_work_material
 msgid "Creates a temporary material to edit this offset"
-msgstr ""
+msgstr "このオフセットを編集するために一時マテリアルを作成します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_disassemble_all
 msgctxt "Operator"
@@ -706,36 +778,36 @@ msgstr "表示項目を追加"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_add
 msgid "Add a display item to the list"
-msgstr ""
+msgstr "表示項目をリストに追加します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_find
 msgctxt "Operator"
 msgid "Find Display Item"
-msgstr ""
+msgstr "表示項目を検索"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_find
 msgid "Find the display item of active bone or morph"
-msgstr ""
+msgstr "選択中のボーンやモーフの表示項目を検索します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type
 msgid "Find type"
-msgstr ""
+msgstr "検索タイプ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'BONE'
 msgid "Find Bone Item"
-msgstr ""
+msgstr "ボーンを検索"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'BONE'
 msgid "Find active bone in Display Panel"
-msgstr ""
+msgstr "選択中のボーンの表示項目を検索します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'MORPH'
 msgid "Find Morph Item"
-msgstr ""
+msgstr "モーフを検索"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'MORPH'
 msgid "Find active morph of Morph Tools Panel in Display Panel"
-msgstr ""
+msgstr "選択中のモーフの表示項目を検索します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_add
 msgctxt "Operator"
@@ -744,7 +816,7 @@ msgstr "表示項目フレームを追加"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_add
 msgid "Add a display item frame to the list"
-msgstr ""
+msgstr "表示項目フレームをリストに追加します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_move
 msgctxt "Operator"
@@ -753,14 +825,14 @@ msgstr "表示項目フレームを移動"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_move
 msgid "Move active display item frame up/down in the list"
-msgstr ""
+msgstr "選択中の表示項目フレームを上下に移動します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_move.type
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_move.type
 #. :src: bpy.types.MMD_TOOLS_OT_morph_move.type
 #. :src: bpy.types.MMD_TOOLS_OT_object_move.type
 msgid "Move type"
-msgstr ""
+msgstr "移動タイプ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_remove
 msgctxt "Operator"
@@ -769,7 +841,7 @@ msgstr "表示項目フレームを削除"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_remove
 msgid "Remove active display item frame from the list"
-msgstr ""
+msgstr "選択中の表示項目フレームをリストから削除します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock
 msgctxt "Operator"
@@ -783,7 +855,7 @@ msgstr "表示項目フレームをアンロックして名称を変更する"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.index
 msgid "Index of the frame to unlock"
-msgstr ""
+msgstr "アンロックするフレームのインデックス"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_unlock.type:'UNLOCK'
 msgid "Unlock Display Frame"
@@ -804,12 +876,12 @@ msgstr "表示項目を移動"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_move
 msgid "Move active display item up/down in the list. This will also affect the morph order in exported PMX files."
-msgstr ""
+msgstr "選択中の表示項目を上下に移動します. エクスポートするPMXファイルのモーフ順序も変更されます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup
 msgctxt "Operator"
 msgid "Display Item Quick Setup"
-msgstr ""
+msgstr "表示項目のクイックセットアップ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup
 msgid "Quick setup display items"
@@ -817,7 +889,7 @@ msgstr "表示項目のクイックセットアップ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'RESET'
 msgid "Clear all items and frames, reset to default"
-msgstr ""
+msgstr "全ての項目とフレームを削除し、初期状態に戻します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'FACIAL'
 msgid "Load Facial Items"
@@ -825,7 +897,7 @@ msgstr "表情項目をロード"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'FACIAL'
 msgid "Load all morphs to faical frame"
-msgstr ""
+msgstr "全てのモーフを表情フレームに読み込む"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_LOAD'
 msgid "Sync from Bone Collections"
@@ -833,7 +905,7 @@ msgstr "ボーンコレクションから同期"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_LOAD'
 msgid "Sync armature's bone collections to display item frames"
-msgstr ""
+msgstr "アーマチュアのボーンコレクションを表示項目フレームに同期"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_APPLY'
 msgid "Sync to Bone Collections"
@@ -841,7 +913,7 @@ msgstr "ボーンコレクションへ同期"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_APPLY'
 msgid "Sync display item frames to armature's bone collections"
-msgstr ""
+msgstr "表示項目フレームをアーマチュアのボーンコレクションに同期"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_remove
 msgctxt "Operator"
@@ -850,20 +922,20 @@ msgstr "表示項目を削除"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_remove
 msgid "Remove display item(s) from the list"
-msgstr ""
+msgstr "リストから表示項目を削除します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_remove.all
 msgid "Delete all display items"
-msgstr ""
+msgstr "全ての表示項目を削除します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_select_current
 msgctxt "Operator"
 msgid "Select Current Display Item"
-msgstr ""
+msgstr "現在の表示項目を選択"
 
 #. :src: bpy.types.MMD_TOOLS_OT_display_item_select_current
 msgid "Select the bone or morph assigned to the display item"
-msgstr ""
+msgstr "表示項目に指定されているボーンまたはモーフを選択します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup
 msgctxt "Operator"
@@ -903,7 +975,7 @@ msgstr "関連ボーンを編集"
 
 #. :src: bpy.types.MMD_TOOLS_OT_edit_bone_morph_offset
 msgid "Applies the location and rotation of this offset to the bone"
-msgstr ""
+msgstr "このオフセットの位置と回転をボーンに適用します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_edit_uv_morph
 msgctxt "Operator"
@@ -912,12 +984,12 @@ msgstr "UVモーフを編集"
 
 #. :src: bpy.types.MMD_TOOLS_OT_edit_uv_morph
 msgid "Edit UV morph on a temporary UV layer (use UV Editor to edit the result)"
-msgstr ""
+msgstr "UVモーフを一時UVレイヤーで編集します (UVエディターで結果を編集)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_execute_translation_batch
 msgctxt "Operator"
 msgid "Execute Translation Batch"
-msgstr ""
+msgstr "一括翻訳を実行"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx
 msgctxt "Operator"
@@ -966,17 +1038,17 @@ msgstr "SPH/SPAを無効化"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.disable_specular
 msgid "Disables all the Specular Map textures. It is required for some MME Shaders."
-msgstr ""
+msgstr "全ての反射マップテクスチャを無効化します. 一部のMMEシェーダーでは必須です"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.export_vertex_colors_as_adduv2
 msgid "Export vertex colors as ADD UV2 data. This allows vertex color data to be preserved in the PMX file format. When enabled, existing ADD UV2 data on the model will be skipped during export."
-msgstr ""
+msgstr "頂点カラーを追加UV2として書き出します. PMXファイルに頂点カラーを保存するのに使えます. 有効にすると、モデルに既にある追加UV2データはエクスポート時に省かれます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.filepath
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.filepath
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.filepath
 msgid "Filepath used for exporting the file"
-msgstr ""
+msgstr "ファイルを書き出すのに使われるパス"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.fix_bone_order
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
@@ -985,7 +1057,7 @@ msgstr "ボーン順序を修正"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.fix_bone_order
 msgid "Automatically fix bone order before export. This ensures bones are ordered correctly for MMD compatibility."
-msgstr ""
+msgstr "エクスポート前に自動でボーン順序を直します. MMD互換性のためにボーンが正しい順序になっていることを保証します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits
 msgid "IK Angle Limits"
@@ -993,31 +1065,31 @@ msgstr "IK角度制限"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits
 msgid "Choose how to handle IK angle limits during export"
-msgstr ""
+msgstr "エクスポート時にIK角度制限をどうするか選ぶ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'EXPORT_ALL'
 msgid "Export All Limits"
-msgstr ""
+msgstr "全ての制限を書き出す"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'EXPORT_ALL'
 msgid "Export all existing IK angle limits using current priority system: mmd_ik_limit_override -> Blender IK limits -> other sources. If mmd_ik_limit_override disables an axis but Blender IK limits exist for that axis, the Blender limits will still be exported. This maintains backward compatibility with existing workflows"
-msgstr ""
+msgstr "存在する全てのIK角度制限を次の優先順位で書き出します: mmd_ik_limit_override -> Blender IK制限 -> その他. mmd_ik_limit_overrideで軸が無効になっていてもBlender IK制限がその軸で有効になっている場合はBlenderの制限も書き出されます. 既存のワークフローでの互換性を維持します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'IGNORE_ALL'
 msgid "Ignore All Limits"
-msgstr ""
+msgstr "全ての制限を無視"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'IGNORE_ALL'
 msgid "Completely ignore all IK angle limits from any source during export. No angle restrictions will be written to the PMX file, regardless of mmd_ik_limit_override, Blender IK limits, or other constraint settings. Useful when you want to rely entirely on MMD v9.19+ fixed axis feature instead"
-msgstr ""
+msgstr "エクスポート時に完全に全てのIK角度制限を無視します. 角度制限はmmd_ik_limit_override、Blender IK制限、または その他のコンストレイント設定にかかわらず一切PMXファイルに書き込まれません. MMD v9.19以降の軸制限のみ使う際に便利です"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'OVERRIDE_CONTROLLED'
 msgid "Override Controlled"
-msgstr ""
+msgstr "オーバーライド制御"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.ik_angle_limits:'OVERRIDE_CONTROLLED'
 msgid "Use mmd_ik_limit_override constraints as the sole authority for IK limits. When mmd_ik_limit_override exists: only its enabled axes export limits, disabled axes export no limits (ignoring Blender IK limits). When mmd_ik_limit_override doesn't exist: fall back to Blender IK limits. This makes mmd_ik_limit_override act as a true 'override' that completely controls whether limits are exported, enabling fine-grained per-bone control"
-msgstr ""
+msgstr "mmd_ik_limit_overrideのみをIK制限に使用します. mmd_ik_limit_overrideがある場合: mmd_ik_limit_overrideで有効になっている軸のみ制限が書き出され、無効になっている軸は制限されません (Blender IK制限は無視). mmd_ik_limit_overrideがない場合: Blender IK制限で代替されます. mmd_ik_limit_overrideが完全に軸制限の書き出しを '上書き' するため、ボーンごとの細かい制御ができます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level
@@ -1067,7 +1139,7 @@ msgstr "法線処理"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling
 msgid "Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals."
-msgstr ""
+msgstr "エクスポート時に法線をどうするか選びます. 頂点、辺を分離して分かれた法線を維持するので、頂点や辺の数、メッシュのトポロジーに影響がでます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
 msgid "Preserve All Normals"
@@ -1075,7 +1147,7 @@ msgstr "全ての法線を保存"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
 msgid "Export existing normals without any changes. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range. Avoid exporting an overly fragmented model."
-msgstr ""
+msgstr "既存の法線に変更を加えず書き出します. 頂点数が大幅に増えたり、合理的な範囲に収まっているか確かめてください. 過度に分離されたモデルを書き出さないようにしてください"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
 msgid "Smooth All Normals"
@@ -1083,7 +1155,7 @@ msgstr "全ての法線をスムーズ化"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
 msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count. When using this option, please verify whether the exported model is excessively smooth."
-msgstr ""
+msgstr "シャープを無視し、強制的に全ての法線をスムーズにします. 完全にスムーズシェーディングがなされ、頂点数が最も少なくなります. 使用時はモデルがスムーズすぎないか確かめてください"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
 msgid "Overwrite Bone Morphs"
@@ -1102,7 +1174,7 @@ msgstr "ログファイルを作成"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.scale
 msgid "Scaling factor for exporting the model"
-msgstr ""
+msgstr "モデルエクスポート時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
 msgid "Sort Materials"
@@ -1110,7 +1182,7 @@ msgstr "マテリアルをソート"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
 msgid "Sort materials for alpha blending. WARNING: Will not work if you have transparent meshes inside the model. E.g. blush meshes"
-msgstr ""
+msgstr "アルファブレンド用にマテリアルをソートします. 警告: モデル内に透明なメッシュがあると動作しません. 例: 照れメッシュ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices
 msgid "Sort Vertices"
@@ -1118,19 +1190,19 @@ msgstr "頂点をソート"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices
 msgid "Choose the method to sort vertices"
-msgstr ""
+msgstr "頂点を並び替える方法を選ぶ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices:'NONE'
 msgid "No sorting"
-msgstr ""
+msgstr "ソートなし"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices:'BLENDER'
 msgid "Use blender's internal vertex order"
-msgstr ""
+msgstr "Blender内部の頂点順序を使用します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices:'CUSTOM'
 msgid "Use custom vertex weight of vertex group \"mmd_vertex_order\""
-msgstr ""
+msgstr "頂点グループ \"mmd_vertex_order\" のカスタム頂点ウェイトを使用します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.translate_in_presets
 msgid "(Experimental) Translate in Presets"
@@ -1146,7 +1218,7 @@ msgstr "可視メッシュのみ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.visible_meshes_only
 msgid "Export visible meshes only"
-msgstr ""
+msgstr "可視メッシュのみ書き出します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_translation_csv
 msgctxt "Operator"
@@ -1182,15 +1254,15 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.preserve_curves
 msgid "Preserve Animation Curves"
-msgstr ""
+msgstr "アニメーションカーブを保持"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.preserve_curves
 msgid "Add additional keyframes to accurately preserve animation curves. Blender's bezier handles are more flexible than the VMD format. Complex handle settings will be lost during export unless additional keyframes are added to approximate the original curves."
-msgstr ""
+msgstr "キーフレームを追加しアニメーションカーブを正確に保存します. BlenderのベジエハンドルはVMDフォーマットより柔軟です. キーフレームを追加し、元の曲線を近似しないと複雑なハンドル設定が失われてしまいます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.scale
 msgid "Scaling factor for exporting the motion"
-msgstr ""
+msgstr "モーションエクスポート時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_frame_range
 msgid "Use Frame Range"
@@ -1198,7 +1270,7 @@ msgstr "フレーム範囲を使用"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_frame_range
 msgid "Export frames only in the frame range of context scene"
-msgstr ""
+msgstr "コンテクストシーンのフレーム範囲にあるフレームのみ書き出します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_pose_mode
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.use_pose_mode
@@ -1209,7 +1281,7 @@ msgstr "現在のポーズをレストポーズとして処理"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_pose_mode
 msgid "You can pose the model to export a motion data to different pose base, such as T-Pose or A-Pose"
-msgstr ""
+msgstr "モデルをポーズしてTポーズやAポーズといった、異なる初期ポーズ用にモーションデータをエクスポートできます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd
 msgctxt "Operator"
@@ -1236,7 +1308,7 @@ msgstr "ポーズタイプ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type
 msgid "Choose the pose type to export"
-msgstr ""
+msgstr "エクスポートするポーズタイプを選ぶ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'CURRENT'
 msgid "Current Pose"
@@ -1244,15 +1316,15 @@ msgstr "現在のポーズ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'CURRENT'
 msgid "Current pose of the rig"
-msgstr ""
+msgstr "リグの現在のポーズ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ACTIVE'
 msgid "Active Pose"
-msgstr "アクティブなポーズ"
+msgstr "選択中のポーズライブラリのポーズ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ACTIVE'
 msgid "Active pose of the rig's Action Pose"
-msgstr ""
+msgstr "リグのポーズライブラリの現在のポーズ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ALL'
 msgid "All Poses"
@@ -1260,15 +1332,15 @@ msgstr "全てのポーズ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ALL'
 msgid "All poses of the rig's Action Pose (the pose name will be the file name)"
-msgstr ""
+msgstr "リグのポーズライブラリの全てのポーズ (ファイル名はポーズ名になります)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.scale
 msgid "Scaling factor for exporting the pose"
-msgstr ""
+msgstr "ポーズエクスポート時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_vpd.use_pose_mode
 msgid "You can pose the model to export a pose data to different pose base, such as T-Pose or A-Pose"
-msgstr ""
+msgstr "モデルをポーズしてTポーズやAポーズといった、異なる初期ポーズ用にポーズデータをエクスポートできます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_fix_bone_issues
 msgctxt "Operator"
@@ -1282,7 +1354,7 @@ msgstr "ボーン名のエンコード問題を自動で修正します"
 #. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order
 msgctxt "Operator"
 msgid "Realign Bone IDs"
-msgstr ""
+msgstr "ボーンIDを再調整"
 
 #. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order
 msgid "Realign bone IDs to be sequential without gaps. Sorted primarily by hierarchy depth (ensuring parents have lower IDs than children), then by bone_id (valid ones prioritized), then by bone name. Apply additional transforms afterward (Assembly -> Bone button)."
@@ -1322,7 +1394,7 @@ msgstr "MMDポーズを反転"
 
 #. :src: bpy.types.MMD_TOOLS_OT_flip_pose
 msgid "Apply the current pose of selected bones to matching bone on opposite side of X-Axis."
-msgstr ""
+msgstr "選択したボーンのポーズをX軸の反対側にある一致するボーンに適用します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_global_translation_popup
 msgctxt "Operator"
@@ -1344,7 +1416,7 @@ msgstr "ボーン修正回転軸を適用"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis
 msgid "Apply bone's fixed axis to be blender suitable"
-msgstr ""
+msgstr "ボーンの軸制限を適用しBlenderに適応させます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.bone_disp_mode
 msgid "Bone Display Mode"
@@ -1360,7 +1432,7 @@ msgstr "モデルをクリーン"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.clean_model
 msgid "Remove unused vertices and duplicated/invalid faces"
-msgstr ""
+msgstr "未使用の頂点と重複/不正面を削除します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.dictionary
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.dictionary
@@ -1372,11 +1444,11 @@ msgstr "ボーンを英語にリネーム"
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.dictionary
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd.dictionary
 msgid "Translate bone names from Japanese to English using selected dictionary"
-msgstr ""
+msgstr "選択された辞書を使ってボーン名を日本語から英語に翻訳します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_bone_order
 msgid "Automatically fix bone order after import. This ensures bones are ordered correctly for MMD compatibility."
-msgstr ""
+msgstr "インポート後に自動でボーン順序を直します. MMD互換性のためにボーンが正しい順序になっていることを保証します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
 msgid "Fix IK Links"
@@ -1384,19 +1456,19 @@ msgstr "IKリンクを修正"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
 msgid "Fix IK links to be blender suitable. This aligns heads and tails across the bone chain."
-msgstr ""
+msgstr "IKリンクを修正しBlenderに適応させます. ボーンチェーン内のボーンのヘッドとテールを合わせます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.ik_loop_factor
 msgid "IK Loop Factor"
-msgstr ""
+msgstr "IK反復係数"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.import_adduv2_as_vertex_colors
 msgid "Import Vertex Colors"
-msgstr ""
+msgstr "頂点カラーをインポート"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.import_adduv2_as_vertex_colors
 msgid "Import ADD UV2 data as vertex colors. When enabled, the UV2 layer will still be created."
-msgstr ""
+msgstr "追加UV2を頂点カラーとしてインポートします. 有効にすると、UV2レイヤーも作成されます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.remove_doubles
 msgid "Remove Doubles"
@@ -1422,7 +1494,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.scale
 msgid "Scaling factor for importing the model"
-msgstr ""
+msgstr "モデルインポート時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.spa_blend_factor
 msgid "influence of .spa textures"
@@ -1507,7 +1579,7 @@ msgstr "英語名のみ更新"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_translation_csv.only_update_english_name
 msgid "(Enabled by default) Only update English name (name_e). otherwise, update all names when different"
-msgstr ""
+msgstr "(デフォルトで有効) 英語名 (name_e) のみ更新します. 無効時には変更された名前を全て更新します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd
 msgctxt "Operator"
@@ -1583,7 +1655,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.scale
 msgid "Scaling factor for importing the motion"
-msgstr ""
+msgstr "モーションインポート時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.update_scene_settings
 msgid "Update scene settings"
@@ -1611,7 +1683,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_pose_mode
 msgid "You can pose the model to fit the original pose of a motion data, such as T-Pose or A-Pose"
-msgstr ""
+msgstr "モデルをポーズしてTポーズやAポーズといった、モーションデータの元のポーズに合わせることができます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd
 msgctxt "Operator"
@@ -1634,15 +1706,15 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper:'RENAMED_BONES'
 msgid "Rename the bone of pose data to be blender suitable"
-msgstr ""
+msgstr "ポーズデータのボーン名を変更しBlenderに適応します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd.scale
 msgid "Scaling factor for importing the pose"
-msgstr ""
+msgstr "ポーズインポート時のスケール"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_vpd.use_pose_mode
 msgid "You can pose the model to fit the original pose of a pose data, such as T-Pose or A-Pose"
-msgstr ""
+msgstr "モデルをポーズしてTポーズやAポーズといった、ポーズデータの元のポーズに合わせることができます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_join_meshes
 msgctxt "Operator"
@@ -1668,67 +1740,67 @@ msgstr "ジョイントを追加"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add
 msgid "Add Joint(s) to selected rigidbody objects"
-msgstr ""
+msgstr "選択された剛体オブジェクトにジョイントを追加します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_lower
 msgid "Limit Angular Lower"
-msgstr ""
+msgstr "角度制限 下"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_lower
 msgid "Lower limit of rotation"
-msgstr ""
+msgstr "回転制限の最小値"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_upper
 msgid "Limit Angular Upper"
-msgstr ""
+msgstr "角度制限 上"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_upper
 msgid "Upper limit of rotation"
-msgstr ""
+msgstr "回転制限の最大値"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_lower
 msgid "Limit Linear Lower"
-msgstr ""
+msgstr "直線制限 下"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_lower
 msgid "Lower limit of translation"
-msgstr ""
+msgstr "移動制限の最小値"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_upper
 msgid "Limit Linear Upper"
-msgstr ""
+msgstr "直線制限 上"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_upper
 msgid "Upper limit of translation"
-msgstr ""
+msgstr "移動制限の最大値"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_angular
 #. :src: bpy.types.MMDJoint.spring_angular
 msgid "Spring(Angular)"
-msgstr "スプリング(角度)"
+msgstr "ばね(角度)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_angular
 #. :src: bpy.types.MMDJoint.spring_angular
 msgid "Spring constant of rotation"
-msgstr ""
+msgstr "ばねコンストレイントの回転係数"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_linear
 #. :src: bpy.types.MMDJoint.spring_linear
 msgid "Spring(Linear)"
-msgstr "スプリング(リニア)"
+msgstr "ばね(直線)"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_linear
 #. :src: bpy.types.MMDJoint.spring_linear
 msgid "Spring constant of movement"
-msgstr ""
+msgstr "ばねコンストレイントの移動係数"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.use_bone_rotation
 msgid "Use Bone Rotation"
-msgstr ""
+msgstr "ボーン回転を使用"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_add.use_bone_rotation
 msgid "Match joint orientation to bone orientation if enabled"
-msgstr ""
+msgstr "ジョイントの回転をボーンに揃えます"
 
 #. :src: bpy.types.MMD_TOOLS_OT_joint_remove
 msgctxt "Operator"
@@ -1742,7 +1814,7 @@ msgstr "選択中のジョイントを消去する"
 #. :src: bpy.types.MMD_TOOLS_OT_material_cleanup_texture
 msgctxt "Operator"
 msgid "Cleanup Texture"
-msgstr ""
+msgstr "テクスチャを除去"
 
 #. :src: bpy.types.MMD_TOOLS_OT_material_cleanup_texture
 msgid "Remove unused texture nodes."
@@ -1896,7 +1968,7 @@ msgstr "モーフを追加"
 
 #. :src: bpy.types.MMD_TOOLS_OT_morph_add
 msgid "Add a morph item to active morph list"
-msgstr ""
+msgstr "モーフを選択中のモーフリストに追加します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_morph_copy
 msgctxt "Operator"
@@ -1950,11 +2022,11 @@ msgstr "モーフを削除"
 
 #. :src: bpy.types.MMD_TOOLS_OT_morph_remove
 msgid "Remove morph item(s) from the list"
-msgstr ""
+msgstr "モーフをリストから削除します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_morph_remove.all
 msgid "Delete all morph items"
-msgstr ""
+msgstr "全てのモーフを削除します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup
 msgctxt "Operator"
@@ -1988,20 +2060,20 @@ msgstr "モーフスライダーを解除"
 #. :src: bpy.types.MMD_TOOLS_OT_move_material_down
 msgctxt "Operator"
 msgid "Move Material Down"
-msgstr "マテリアルを移動"
+msgstr "マテリアルを下に移動"
 
 #. :src: bpy.types.MMD_TOOLS_OT_move_material_down
 msgid "Moves the selected material one slot down"
-msgstr ""
+msgstr "選択されたマテリアルを一つ下に移動します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_move_material_up
 msgctxt "Operator"
 msgid "Move Material Up"
-msgstr "マテリアルを移動"
+msgstr "マテリアルを上に移動"
 
 #. :src: bpy.types.MMD_TOOLS_OT_move_material_up
 msgid "Moves selected material one slot up"
-msgstr ""
+msgstr "選択されたマテリアルを一つ上に移動します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_object_move
 msgctxt "Operator"
@@ -2010,7 +2082,7 @@ msgstr "オブジェクトを移動"
 
 #. :src: bpy.types.MMD_TOOLS_OT_object_move
 msgid "Move active object up/down in the list"
-msgstr ""
+msgstr "選択中のオブジェクトを上下に移動します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_object_select
 msgctxt "Operator"
@@ -2053,37 +2125,37 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_restore_mmd_translation_element_name
 msgctxt "Operator"
 msgid "Restore this Name"
-msgstr ""
+msgstr "この名前を復元する"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add
 msgid "Add Rigid Bodies to selected bones"
-msgstr ""
+msgstr "選択したボーンに剛体を追加します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_mask
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'collision_group_mask'
 #. :src: bpy.types.MMDRigidBody.collision_group_mask
 msgid "Collision Group Mask"
-msgstr "コリジョングループマスク"
+msgstr "衝突グループマスク"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_mask
 #. :src: bpy.types.MMDRigidBody.collision_group_mask
 msgid "The groups the object can not collide with"
-msgstr ""
+msgstr "物体が衝突できないグループ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_number
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'collision_group_number'
 #. :src: bpy.types.MMDRigidBody.collision_group_number
 msgid "Collision Group"
-msgstr "コリジョングループ"
+msgstr "衝突グループ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_number
 #. :src: bpy.types.MMDRigidBody.collision_group_number
 msgid "The collision group of the object"
-msgstr ""
+msgstr "物体の衝突グループ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.mass
 msgid "How much the object 'weights' irrespective of gravity"
-msgstr ""
+msgstr "重力に関係な物体の \"重さ\""
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.name_e
 msgid "The english name of rigid body ($name_e means use the english name of target bone)"
@@ -2164,7 +2236,7 @@ msgstr "衝突グループ"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'collision_group_mask'
 msgid "Collision group mask"
-msgstr ""
+msgstr "衝突グループマスク"
 
 #. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'type'
 msgid "Rigid type"
@@ -2255,7 +2327,7 @@ msgstr "関連ボーンを選択"
 
 #. :src: bpy.types.MMD_TOOLS_OT_select_bone_morph_offset_bone
 msgid "Select the bone assigned to this offset in the armature"
-msgstr ""
+msgstr "このオフセットに指定されているボーンをアーマチュアから選択します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
@@ -2373,7 +2445,7 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.modes
 msgid "Select translation mode"
-msgstr ""
+msgstr "翻訳モードを選択"
 
 #. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.modes:'MMD'
 msgid "MMD Names"
@@ -2424,7 +2496,7 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_validate_bones
 msgctxt "Operator"
 msgid "Validate Bone Limits"
-msgstr ""
+msgstr "ボーン制限検証"
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_bones
 msgid "Check MMD model bones for encoding issues and name length limits"
@@ -2433,7 +2505,7 @@ msgstr "MMDモデルのボーンのエンコード問題や名前長制限を確
 #. :src: bpy.types.MMD_TOOLS_OT_validate_model
 msgctxt "Operator"
 msgid "Validate Model Name"
-msgstr ""
+msgstr "モデル名検証"
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_model
 msgid "Check MMD model name and english name for encoding issues"
@@ -2442,7 +2514,7 @@ msgstr ""
 #. :src: bpy.types.MMD_TOOLS_OT_validate_morphs
 msgctxt "Operator"
 msgid "Validate Morphs"
-msgstr ""
+msgstr "モーフ検証"
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_morphs
 msgid "Check MMD model morphs for encoding issues, name length limits, and duplicate names"
@@ -2451,7 +2523,7 @@ msgstr "MMDモデルのモーフのエンコード問題や名前長制限、名
 #. :src: bpy.types.MMD_TOOLS_OT_validate_textures
 msgctxt "Operator"
 msgid "Validate Textures"
-msgstr ""
+msgstr "テクスチャ検証"
 
 #. :src: bpy.types.MMD_TOOLS_OT_validate_textures
 msgid "Check MMD model textures for missing files, path conflicts, and duplicate filenames"
@@ -2464,16 +2536,16 @@ msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_view_bone_morph
 msgid "View the result of active bone morph"
-msgstr ""
+msgstr "選択中のボーンモーフの結果を表示します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_view_uv_morph
 msgctxt "Operator"
 msgid "View UV Morph"
-msgstr ""
+msgstr "UVモーフを表示"
 
 #. :src: bpy.types.MMD_TOOLS_OT_view_uv_morph
 msgid "View the result of active UV morph on current mesh object"
-msgstr ""
+msgstr "現在のメッシュオブジェクトの選択中のUVモーフの結果を表示します"
 
 #. :src: bpy.types.BONE_PT_mmd_tools_bone
 msgid "MMD Bone Tools"
@@ -2503,7 +2575,7 @@ msgstr "MMDテクスチャ"
 #. :src: bpy.types.OBJECT_PT_mmd_tools_rigidbody_list
 #. :src: bpy.types.OBJECT_PT_mmd_tools_scene_setup
 msgid "MMD"
-msgstr ""
+msgstr "MMD"
 
 #. :src: bpy.types.OBJECT_PT_mmd_tools_bone_order
 msgid "Bone Order"
@@ -2621,7 +2693,7 @@ msgstr "口"
 #. :src: bpy.types.MaterialMorph.data
 #. :src: bpy.types.UVMorph.data
 msgid "Morph Data"
-msgstr ""
+msgstr "モーフデータ"
 
 #. :src: bpy.types.BoneMorph.name
 #. :src: bpy.types.GroupMorph.name
@@ -2651,11 +2723,11 @@ msgstr "英語名"
 #. :src: bpy.types.BoneMorphData.bone_id
 #. :src: bpy.types.MMDBone.bone_id
 msgid "Bone ID"
-msgstr ""
+msgstr "ボーンID"
 
 #. :src: bpy.types.BoneMorphData.rotation
 msgid "Rotation in quaternions"
-msgstr ""
+msgstr "クォータニオンでの回転"
 
 #. :src: bpy.types.GroupMorph
 msgid "Group Morph"
@@ -2663,11 +2735,11 @@ msgstr "グループモーフ"
 
 #. :src: bpy.types.GroupMorph.active_data
 msgid "Active Group Data"
-msgstr ""
+msgstr "アクティブなグループデータ"
 
 #. :src: bpy.types.GroupMorphOffset
 msgid "Group Morph Offset"
-msgstr ""
+msgstr "グループモーフオフセット"
 
 #. :src: bpy.types.GroupMorphOffset.morph_type
 #. :src: bpy.types.MMDDisplayItem.morph_type
@@ -2756,19 +2828,19 @@ msgstr ""
 
 #. :src: bpy.types.MMDBone.display_connection_type
 msgid "Display Connection Type"
-msgstr ""
+msgstr "表示先のタイプ"
 
 #. :src: bpy.types.MMDBone.display_connection_type
 msgid "Type of display connection"
-msgstr ""
+msgstr "表示先のタイプ"
 
 #. :src: bpy.types.MMDBone.display_connection_type:'BONE'
 msgid "Connected to a bone"
-msgstr ""
+msgstr "ボーンに接続"
 
 #. :src: bpy.types.MMDBone.display_connection_type:'OFFSET'
 msgid "Connected to an offset position"
-msgstr ""
+msgstr "オフセット位置に接続"
 
 #. :src: bpy.types.MMDBone.enabled_fixed_axis
 #. :src: bpy.types.MMDBone.fixed_axis
@@ -2793,7 +2865,7 @@ msgstr "軸制限"
 
 #. :src: bpy.types.MMDBone.has_additional_location
 msgid "Additional Location"
-msgstr ""
+msgstr "移動付与"
 
 #. :src: bpy.types.MMDBone.has_additional_location
 msgid "Additional location"
@@ -2801,7 +2873,7 @@ msgstr ""
 
 #. :src: bpy.types.MMDBone.has_additional_rotation
 msgid "Additional Rotation"
-msgstr ""
+msgstr "回転付与"
 
 #. :src: bpy.types.MMDBone.has_additional_rotation
 msgid "Additional rotation"
@@ -2813,7 +2885,7 @@ msgstr ""
 
 #. :src: bpy.types.MMDBone.ik_rotation_constraint
 msgid "The unit angle of IK"
-msgstr ""
+msgstr "IKの単位角"
 
 #. :src: bpy.types.MMDBone.is_controllable
 msgid "Controllable"
@@ -2837,7 +2909,7 @@ msgstr "ローカルX軸"
 
 #. :src: bpy.types.MMDBone.local_axis_x
 msgid "Local x-axis"
-msgstr ""
+msgstr "ローカルX軸"
 
 #. :src: bpy.types.MMDBone.local_axis_z
 msgid "Local Z-Axis"
@@ -2845,7 +2917,7 @@ msgstr "ローカルZ軸"
 
 #. :src: bpy.types.MMDBone.local_axis_z
 msgid "Local z-axis"
-msgstr ""
+msgstr "ローカルZ軸"
 
 #. :src: bpy.types.MMDBone.transform_after_dynamics
 msgid "After Dynamics"
@@ -2853,7 +2925,7 @@ msgstr "物理後"
 
 #. :src: bpy.types.MMDBone.transform_after_dynamics
 msgid "After physics"
-msgstr ""
+msgstr "物理の後に変形します"
 
 #. :src: bpy.types.MMDBone.transform_order
 msgid "Transform Order"
@@ -2861,7 +2933,7 @@ msgstr "変形階層"
 
 #. :src: bpy.types.MMDBone.transform_order
 msgid "Deformation tier"
-msgstr ""
+msgstr "変形する順番、大きい順に計算されます"
 
 #. :src: bpy.types.MMDCamera.is_perspective
 msgid "Is perspective"
@@ -2889,11 +2961,11 @@ msgstr ""
 
 #. :src: bpy.types.MMDDisplayItemFrame.active_item
 msgid "Active Display Item"
-msgstr ""
+msgstr "選択中の表示項目"
 
 #. :src: bpy.types.MMDDisplayItemFrame.data
 msgid "Display Items"
-msgstr ""
+msgstr "表示項目"
 
 #. :src: bpy.types.MMDDisplayItemFrame.is_special
 msgid "Special"
@@ -2901,11 +2973,11 @@ msgstr "特別"
 
 #. :src: bpy.types.MMDDisplayItemFrame.is_special
 msgid "Is special"
-msgstr ""
+msgstr "特別な表情枠かどうか"
 
 #. :src: bpy.types.MMDMaterial
 msgid "マテリアル"
-msgstr ""
+msgstr "マテリアル"
 
 #. :src: bpy.types.MMDMaterial.alpha
 msgid "Alpha transparency"
@@ -2923,24 +2995,24 @@ msgstr "エッジ色"
 
 #. :src: bpy.types.MMDMaterial.edge_color
 msgid "Toon edge color"
-msgstr ""
+msgstr "トゥーンエッジ色"
 
 #. :src: bpy.types.MMDMaterial.edge_weight
 #. :src: bpy.types.MaterialMorphData.edge_weight
 msgid "Edge Weight"
-msgstr ""
+msgstr "エッジウェイト"
 
 #. :src: bpy.types.MMDMaterial.edge_weight
 msgid "Toon edge size"
-msgstr ""
+msgstr "トゥーンエッジサイズ"
 
 #. :src: bpy.types.MMDMaterial.enabled_drop_shadow
 msgid "Ground Shadow"
-msgstr "地面シャドウ"
+msgstr "地面影"
 
 #. :src: bpy.types.MMDMaterial.enabled_drop_shadow
 msgid "Display ground shadow"
-msgstr ""
+msgstr "地面影を表示する"
 
 #. :src: bpy.types.MMDMaterial.enabled_self_shadow
 msgid "Self Shadow"
@@ -2948,7 +3020,7 @@ msgstr "セルフシャドウ"
 
 #. :src: bpy.types.MMDMaterial.enabled_self_shadow
 msgid "Object can cast shadows"
-msgstr ""
+msgstr "影を落とせるかどうか"
 
 #. :src: bpy.types.MMDMaterial.enabled_self_shadow_map
 msgid "Self Shadow Map"
@@ -2964,7 +3036,7 @@ msgstr "トゥーン輪郭"
 
 #. :src: bpy.types.MMDMaterial.enabled_toon_edge
 msgid "Use toon edge"
-msgstr ""
+msgstr "トゥーンエッジを使用"
 
 #. :src: bpy.types.MMDMaterial.is_double_sided
 msgid "Double Sided"
@@ -2985,7 +3057,7 @@ msgstr ""
 #. :src: bpy.types.MMDMaterial.material_id
 #. :src: bpy.types.MaterialMorphData.material_id
 msgid "Material ID"
-msgstr ""
+msgstr "マテリアルID"
 
 #. :src: bpy.types.MMDMaterial.material_id
 msgid "Unique ID for the reference of material morph"
@@ -3025,11 +3097,11 @@ msgstr ""
 
 #. :src: bpy.types.MMDMaterial.sphere_texture_type
 msgid "Sphere Map Type"
-msgstr ""
+msgstr "スフィアマップタイプ"
 
 #. :src: bpy.types.MMDMaterial.sphere_texture_type
 msgid "Choose sphere texture blend type"
-msgstr ""
+msgstr "スフィアテクスチャのブレンド方法を選ぶ"
 
 #. :src: bpy.types.MMDMaterial.sphere_texture_type:'3'
 msgid "SubTexture"
@@ -3054,7 +3126,7 @@ msgstr "トゥーンテクスチャの相対パス"
 
 #. :src: bpy.types.MMDRigidBody.size
 msgid "Size of the object"
-msgstr ""
+msgstr "オブジェクトのサイズ"
 
 #. :src: bpy.types.MMDRoot
 msgid ""
@@ -3210,27 +3282,27 @@ msgstr "SDEFを使用"
 
 #. :src: bpy.types.MMDRoot.use_sphere_texture
 msgid "Use Sphere Texture"
-msgstr ""
+msgstr "スフィアテクスチャを使用"
 
 #. :src: bpy.types.MMDRoot.use_sphere_texture
 msgid "Use sphere texture"
-msgstr ""
+msgstr "スフィアテクスチャを使用します"
 
 #. :src: bpy.types.MMDRoot.use_toon_texture
 msgid "Use Toon Texture"
-msgstr ""
+msgstr "トゥーンテクスチャを使用"
 
 #. :src: bpy.types.MMDRoot.use_toon_texture
 msgid "Use toon texture"
-msgstr ""
+msgstr "トゥーンテクスチャを使用します"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset
 msgid "Operation Script Preset"
-msgstr ""
+msgstr "操作スクリプトプリセット"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'CLEAR'
 msgid "\"\""
-msgstr ""
+msgstr "\"\""
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_ENGLISH'
 msgid "Translate to English"
@@ -3238,7 +3310,7 @@ msgstr "英語へ翻訳"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_ENGLISH'
 msgid "to_english(name)"
-msgstr ""
+msgstr "to_english(name)"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_MMD_LR'
 msgid "Blender L/R to MMD L/R"
@@ -3246,7 +3318,7 @@ msgstr "Blenderの左右をMMDの左右へ"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_MMD_LR'
 msgid "to_mmd_lr(name)"
-msgstr ""
+msgstr "to_mmd_lr(name)"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_BLENDER_LR'
 msgid "MMD L/R to Blender L/R"
@@ -3254,7 +3326,7 @@ msgstr "MMDの左右をBlenderの左右へ"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_BLENDER_LR'
 msgid "to_blender_lr(name_j)"
-msgstr ""
+msgstr "to_blender_lr(name_j)"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_BLENDER'
 msgid "Restore Blender Names"
@@ -3262,7 +3334,7 @@ msgstr "Blender名称を復元"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_BLENDER'
 msgid "org_name"
-msgstr ""
+msgstr "org_name"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_JAPANESE'
 msgid "Restore Japanese MMD Names"
@@ -3270,7 +3342,7 @@ msgstr "日本語MMD名称を復元"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_JAPANESE'
 msgid "org_name_j"
-msgstr ""
+msgstr "org_name_j"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_ENGLISH'
 msgid "Restore English MMD Names"
@@ -3278,7 +3350,7 @@ msgstr "英語MMD名称を復元"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_ENGLISH'
 msgid "org_name_e"
-msgstr ""
+msgstr "org_name_e"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'ENGLISH_IF_EMPTY_JAPANESE'
 msgid "Copy English MMD Names, if empty copy Japanese MMD Name"
@@ -3286,7 +3358,7 @@ msgstr "英語MMD名称をコピー、空なら日本語MMD名称をコピー"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'ENGLISH_IF_EMPTY_JAPANESE'
 msgid "name_e if name_e else name_j"
-msgstr ""
+msgstr "name_e if name_e else name_j"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'JAPANESE_IF_EMPTY_ENGLISH'
 msgid "Copy Japanese MMD Names, if empty copy English MMD Name"
@@ -3294,7 +3366,7 @@ msgstr "日本語MMD名称をコピー、空なら英語MMD名称をコピー"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'JAPANESE_IF_EMPTY_ENGLISH'
 msgid "name_j if name_j else name_e"
-msgstr ""
+msgstr "name_j if name_j else name_e"
 
 #. :src: bpy.types.MMDTranslation.batch_operation_target
 msgid "Operation Target"
@@ -3322,39 +3394,39 @@ msgstr "日本語空白"
 
 #. :src: bpy.types.MMDTranslation.filter_restorable
 msgid "Restorable"
-msgstr ""
+msgstr "復元可能"
 
 #. :src: bpy.types.MaterialMorph
 msgid "Material Morph"
-msgstr ""
+msgstr "マテリアルモーフ"
 
 #. :src: bpy.types.MaterialMorph.active_data
 msgid "Active Material Data"
-msgstr ""
+msgstr "選択中のマテリアルデータ"
 
 #. :src: bpy.types.MaterialMorphData.edge_color
 msgid "Edge color"
-msgstr ""
+msgstr "エッジ色"
 
 #. :src: bpy.types.MaterialMorphData.edge_weight
 msgid "Edge weight"
-msgstr ""
+msgstr "エッジウェイト"
 
 #. :src: bpy.types.MaterialMorphData.material
 msgid "Target material"
-msgstr ""
+msgstr "ターゲットマテリアル"
 
 #. :src: bpy.types.MaterialMorphData.material_data
 msgid "Material Data"
-msgstr ""
+msgstr "マテリアルデータ"
 
 #. :src: bpy.types.MaterialMorphData.offset_type
 msgid "Offset Type"
-msgstr ""
+msgstr "オフセットタイプ"
 
 #. :src: bpy.types.MaterialMorphData.offset_type
 msgid "Select offset type"
-msgstr ""
+msgstr "オフセットタイプを選択"
 
 #. :src: bpy.types.MaterialMorphData.related_mesh
 msgid "Related Mesh"
@@ -3362,7 +3434,7 @@ msgstr "関連するメッシュ"
 
 #. :src: bpy.types.MaterialMorphData.related_mesh
 msgid "Stores a reference to the mesh where this morph data belongs to"
-msgstr ""
+msgstr "このモーフが属するメッシュの参照を保持する"
 
 #. :src: bpy.types.MaterialMorphData.related_mesh_data
 msgid "Related Mesh Data"
@@ -3394,19 +3466,19 @@ msgstr "UVモーフ"
 
 #. :src: bpy.types.UVMorph.active_data
 msgid "Active UV Data"
-msgstr ""
+msgstr "選択中のUVデータ"
 
 #. :src: bpy.types.UVMorph.data_type
 msgid "Select data type"
-msgstr ""
+msgstr "データタイプを選択"
 
 #. :src: bpy.types.UVMorph.data_type:'DATA'
 msgid "Store offset data in root object (deprecated)"
-msgstr ""
+msgstr "オフセットデータをルートオブジェクトに保持 (非推奨)"
 
 #. :src: bpy.types.UVMorph.data_type:'VERTEX_GROUP'
 msgid "Store offset data in vertex groups"
-msgstr ""
+msgstr "オフセットデータを頂点グループに保持"
 
 #. :src: bpy.types.UVMorph.uv_index
 msgid "UV Index"
@@ -3422,7 +3494,7 @@ msgstr "頂点グループスケール"
 
 #. :src: bpy.types.UVMorph.vertex_group_scale
 msgid "The value scale of \"Vertex Group\" data type"
-msgstr ""
+msgstr "データタイプ \"頂点グループ\" の値の倍率"
 
 #. :src: bpy.types.UVMorphOffset
 msgid "UV Morph Offset"
@@ -3446,7 +3518,7 @@ msgstr "MMD名称"
 
 #. :src: bpy.types.MMD_ROOT_UL_display_items.mmd_name
 msgid "Show JP or EN name of MMD bone"
-msgstr ""
+msgstr "MMDボーンの日本語または英語名を表示する"
 
 #. :src: bpy.types.MMD_ROOT_UL_display_items.mmd_name:'name_j'
 msgid "JP"
@@ -3462,7 +3534,7 @@ msgstr "モーフフィルタ"
 
 #. :src: bpy.types.MMD_ROOT_UL_display_items.morph_filter
 msgid "Only show items matching this category"
-msgstr ""
+msgstr "カテゴリーに一致する項目のみ表示する"
 
 #. :src: bpy.types.MMD_TOOLS_UL_joints.model_filter
 #. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.model_filter
@@ -3472,7 +3544,7 @@ msgstr "モデルフィルタ"
 #. :src: bpy.types.MMD_TOOLS_UL_joints.model_filter
 #. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.model_filter
 msgid "Show items of active model or all models"
-msgstr ""
+msgstr "選択中または全てのモデルの項目を表示する"
 
 #. :src: bpy.types.MMD_TOOLS_UL_joints.model_filter:'ACTIVE'
 #. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.model_filter:'ACTIVE'
@@ -3527,13 +3599,12 @@ msgid "Select MMD Rigid Body"
 msgstr "MMD剛体選択"
 
 #: extensions/blender_org/mmd_tools/operators/fileio.py:394
-#, fuzzy
 msgid "Imported MMD model from \"\""
 msgstr "MMDモデルを \"%s\" からインポートしました"
 
 #: extensions/blender_org/mmd_tools/operators/fileio.py:621
 msgid "Imported VMD: \"\""
-msgstr ""
+msgstr "VMDをインポートしました: \"%s\""
 
 #: extensions/blender_org/mmd_tools/operators/fileio.py:989
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
@@ -3622,19 +3693,19 @@ msgstr "モデルのアーマチュアが見つかりません"
 msgid "Active object is not an armature object"
 msgstr "選択中のオブジェクトはアーマチュアではありません"
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:77
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:115
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:170
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:215
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:329
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:369
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:475
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:567
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:90
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:136
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:202
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:258
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:393
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:445
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:581
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:702
 msgid "No MMD model selected"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:121
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:375
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:142
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:451
 msgid "No armature found in model"
 msgstr ""
 
@@ -3699,7 +3770,7 @@ msgstr "無効なUVインデックス: "
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:608
 msgid "Failed to create a temporary uv layer"
-msgstr ""
+msgstr "一時UVレイヤーの作成に失敗しました"
 
 #: extensions/blender_org/mmd_tools/operators/morph.py:732
 #, fuzzy
@@ -3831,15 +3902,15 @@ msgstr "辞書の読み込みに失敗しました: %s"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:440
 msgid "Failed to write CSV: "
-msgstr ""
+msgstr "CSVの書き出しに失敗しました: %s"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:538
 msgid "Failed to read CSV: "
-msgstr ""
+msgstr "CSVの読み込みに失敗しました: %s"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:488
 msgid "Missing required headers in CSV: , "
-msgstr ""
+msgstr "必須ヘッダーがCSVに存在しません: , "
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:45
 #: extensions/blender_org/mmd_tools/panels/prop_material.py:30
@@ -3865,7 +3936,7 @@ msgstr "影響"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:94
 msgid "Display Connection (Bone Tail Location):"
-msgstr ""
+msgstr "表示先(ボーンテール位置):"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:95
 msgid "Type"
@@ -3896,7 +3967,7 @@ msgstr "対象ボーン"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:100
 msgid "Offset is auto-calculated during export."
-msgstr ""
+msgstr "オフセットはエクスポート時に自動計算されます"
 
 #: extensions/blender_org/mmd_tools/panels/prop_bone.py:26
 #, fuzzy
@@ -3952,7 +4023,7 @@ msgstr "削除"
 
 #: extensions/blender_org/mmd_tools/panels/prop_physics.py:72
 msgid "Collision Group Mask:"
-msgstr "コリジョングループマスク:"
+msgstr "衝突グループマスク:"
 
 #: extensions/blender_org/mmd_tools/panels/prop_physics.py:81
 msgid "Damping"
@@ -4038,11 +4109,11 @@ msgstr ""
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:328
 msgid "Successfully cleaned or removed  invalid bone reference(s)."
-msgstr ""
+msgstr "不正なボーン参照を  件削除しました"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:330
 msgid "No invalid bone references were found."
-msgstr ""
+msgstr "不正なボーン参照は見つかりませんでした"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:629
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22
@@ -4167,11 +4238,11 @@ msgstr "検証後結果が表示されます"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:46
 msgid "... and  more results."
-msgstr ""
+msgstr "...とさらに  件。"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_debug.py:47
 msgid "Check System Console for full log."
-msgstr ""
+msgstr "完全なログはシステムコンソールを確認してください"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:22
 msgctxt "Operator"
@@ -4461,33 +4532,57 @@ msgctxt "Operator"
 msgid "Bake"
 msgstr "ベイク"
 
-#: extensions/blender_org/mmd_tools/preferences.py:136
+#: extensions/blender_org/mmd_tools/preferences.py:189
 msgid "Default Operator Presets:"
 msgstr "既定のオペレータープリセット:"
 
-#: extensions/blender_org/mmd_tools/preferences.py:137
+#: extensions/blender_org/mmd_tools/preferences.py:190
 msgid "PMX Import"
 msgstr "PMXインポート"
 
-#: extensions/blender_org/mmd_tools/preferences.py:138
+#: extensions/blender_org/mmd_tools/preferences.py:191
 msgid "PMX Export"
 msgstr "PMXエクスポート"
 
-#: extensions/blender_org/mmd_tools/preferences.py:139
+#: extensions/blender_org/mmd_tools/preferences.py:192
 msgid "VMD Import"
 msgstr "VMDインポート"
 
-#: extensions/blender_org/mmd_tools/preferences.py:140
+#: extensions/blender_org/mmd_tools/preferences.py:193
 msgid "VMD Export"
 msgstr "VMDエクスポート"
 
-#: extensions/blender_org/mmd_tools/preferences.py:141
+#: extensions/blender_org/mmd_tools/preferences.py:194
 msgid "VPD Import"
 msgstr "VPDインポート"
 
-#: extensions/blender_org/mmd_tools/preferences.py:142
+#: extensions/blender_org/mmd_tools/preferences.py:195
 msgid "VPD Export"
 msgstr "VPDエクスポート"
+
+#: extensions/blender_org/mmd_tools/preferences.py:198
+msgid "Additional Unallowed Characters (Model Debug):"
+msgstr "追加の禁止文字(モデルデバッグ):"
+
+#: extensions/blender_org/mmd_tools/preferences.py:199
+msgid "Model Name"
+msgstr "モデル名"
+
+#: extensions/blender_org/mmd_tools/preferences.py:200
+msgid "Texture Filename"
+msgstr "テクスチャファイル名"
+
+#: extensions/blender_org/mmd_tools/preferences.py:201
+msgid "Bone Name"
+msgstr "ボーン名"
+
+#: extensions/blender_org/mmd_tools/preferences.py:202
+msgid "Morph Name"
+msgstr "モーフ名"
+
+#: extensions/blender_org/mmd_tools/preferences.py:203
+msgid "-> Replaced With"
+msgstr "-> 置換後"
 
 #: Add-on MMD Tools info: name
 msgid "MMD Tools"

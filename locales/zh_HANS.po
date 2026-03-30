@@ -5,6 +5,38 @@
 msgid ""
 msgstr "Project-Id-Version: MMD Tools 4.5.9 (0)"
 
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_bone
+msgid "Additional Unallowed Characters in Bone Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_bone
+msgid "Characters that are not allowed in bone names. Each character in this string will be treated as unallowed"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_model
+msgid "Additional Unallowed Characters in Model Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_model
+msgid "Characters that are not allowed in model names. Each character in this string will be treated as unallowed"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_morph
+msgid "Additional Unallowed Characters in Morph Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_morph
+msgid "Characters that are not allowed in morph names. Each character in this string will be treated as unallowed"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_texture
+msgid "Additional Unallowed Characters in Texture Name"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.additional_unallowed_chars_texture
+msgid "Characters that are not allowed in texture names. Each character in this string will be treated as unallowed"
+msgstr ""
+
 #. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
 msgid "Base Texture Folder"
 msgstr "基础纹理文件夹"
@@ -72,6 +104,14 @@ msgstr "搜索 CSV 词典的路径"
 #. :src: bpy.types.MMDToolsAddonPreferences.enable_mmd_model_production_features
 msgid "Enable MMD Model Production Features"
 msgstr "开启MMD模型制作功能"
+
+#. :src: bpy.types.MMDToolsAddonPreferences.replacement_char
+msgid "Replacement Character"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.replacement_char
+msgid "Character used to replace unallowed characters. Leave empty to remove them instead"
+msgstr ""
 
 #. :src: bpy.types.MMDToolsAddonPreferences.shared_toon_folder
 msgid "Shared Toon Texture Folder"
@@ -550,6 +590,28 @@ msgstr "烘焙动画"
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation
 msgid "Bake camera animation to a new MMD camera rig"
 msgstr "将相机动画烘培之新的MMD机架"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'NONE'
+msgid "Disable baking camera animation to MMD camera"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ROT'
+msgid "Rotation Only"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ROT'
+msgid ""
+"Copy animation curve and bake only the camera rotation.\n"
+"You can use Decimate function in Graph Editor to reduce keyframes.\n"
+"\n"
+"Warning: You have to separate slots in Action Editor first if you made Focal Length animation in Blender 4.4 or later"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation:'ALL'
+msgid ""
+"Bake everything by inserting keyframes for every frame.\n"
+"You can use Decimate function in Graph Editor to reduce keyframes"
+msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source
 msgid "Camera Source"
@@ -3592,19 +3654,19 @@ msgstr "找不到模型的骨架"
 msgid "Active object is not an armature object"
 msgstr "选中的物体不是骨架物体"
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:77
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:115
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:170
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:215
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:329
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:369
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:475
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:567
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:90
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:136
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:202
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:258
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:393
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:445
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:581
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:702
 msgid "No MMD model selected"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:121
-#: extensions/blender_org/mmd_tools/operators/model_validation.py:375
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:142
+#: extensions/blender_org/mmd_tools/operators/model_validation.py:451
 msgid "No armature found in model"
 msgstr ""
 
@@ -3769,7 +3831,7 @@ msgstr "替换"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:352
 msgid "CSV:"
-msgstr ""
+msgstr "CSV:"
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:354
 msgctxt "Operator"
@@ -4432,33 +4494,57 @@ msgctxt "Operator"
 msgid "Bake"
 msgstr "烘焙"
 
-#: extensions/blender_org/mmd_tools/preferences.py:136
+#: extensions/blender_org/mmd_tools/preferences.py:189
 msgid "Default Operator Presets:"
 msgstr "默认操作项预设:"
 
-#: extensions/blender_org/mmd_tools/preferences.py:137
+#: extensions/blender_org/mmd_tools/preferences.py:190
 msgid "PMX Import"
 msgstr "PMX 导入"
 
-#: extensions/blender_org/mmd_tools/preferences.py:138
+#: extensions/blender_org/mmd_tools/preferences.py:191
 msgid "PMX Export"
 msgstr "PMX 导出"
 
-#: extensions/blender_org/mmd_tools/preferences.py:139
+#: extensions/blender_org/mmd_tools/preferences.py:192
 msgid "VMD Import"
 msgstr "VMD 导入"
 
-#: extensions/blender_org/mmd_tools/preferences.py:140
+#: extensions/blender_org/mmd_tools/preferences.py:193
 msgid "VMD Export"
 msgstr "VMD 导出"
 
-#: extensions/blender_org/mmd_tools/preferences.py:141
+#: extensions/blender_org/mmd_tools/preferences.py:194
 msgid "VPD Import"
 msgstr "VPD 导入"
 
-#: extensions/blender_org/mmd_tools/preferences.py:142
+#: extensions/blender_org/mmd_tools/preferences.py:195
 msgid "VPD Export"
 msgstr "VPD 导出"
+
+#: extensions/blender_org/mmd_tools/preferences.py:198
+msgid "Additional Unallowed Characters (Model Debug):"
+msgstr "额外的禁止字符(模型调试):"
+
+#: extensions/blender_org/mmd_tools/preferences.py:199
+msgid "Model Name"
+msgstr "模型名称"
+
+#: extensions/blender_org/mmd_tools/preferences.py:200
+msgid "Texture Filename"
+msgstr "贴图文件名"
+
+#: extensions/blender_org/mmd_tools/preferences.py:201
+msgid "Bone Name"
+msgstr "骨骼名称"
+
+#: extensions/blender_org/mmd_tools/preferences.py:202
+msgid "Morph Name"
+msgstr "变形名称"
+
+#: extensions/blender_org/mmd_tools/preferences.py:203
+msgid "-> Replaced With"
+msgstr "-> 替换为"
 
 #: Add-on MMD Tools info: name
 msgid "MMD Tools"
