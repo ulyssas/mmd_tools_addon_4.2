@@ -413,7 +413,7 @@ msgstr "物理を設定する際に追加で非衝突コンストレイントを
 
 #. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor
 #: extensions/blender_org/mmd_tools/panels/prop_object.py:34
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:169
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:168
 msgctxt "Operator"
 msgid "Change MMD IK Loop Factor"
 msgstr "MMD IK反復係数を変更"
@@ -2330,43 +2330,29 @@ msgid "Select the bone assigned to this offset in the armature"
 msgstr "このオフセットに指定されているボーンをアーマチュアから選択します"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:138
 msgctxt "Operator"
-msgid "Sep by Mat(High Risk)"
-msgstr "マテリアルで分離 (高リスク)"
+msgid "Separate by Materials"
+msgstr "マテリアルで分離"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
 msgid ""
-"Separate by Materials (High Risk)\n"
 "Separate the mesh into multiple objects based on materials.\n"
-"HIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\n"
+"\n"
+"WARNING: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\n"
 "Known issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first."
 msgstr ""
-"マテリアルで分離 (高リスク)\n"
 "メッシュをマテリアルで複数オブジェクトに分離します.\n"
-"高リスク&不具合あり: 実行後元に戻すことができず、様々な問題の原因になります. 隣接するジオメトリを分離するため、マージしても共有される辺は再接続されません.\n"
+"\n"
+"警告: 実行後元に戻すことができず、様々な問題の原因になります. 隣接するジオメトリを分離するため、マージしても共有される辺は再接続されません.\n"
 "既知の不具合: メッシュの破損、UVマップの問題やその他予期せぬ挙動. バックアップを取り、慎重に扱ってください."
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys
-#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts.clean_shape_keys
 msgid "Clean Shape Keys"
 msgstr "シェイプキーを除去"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys
-#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts.clean_shape_keys
 msgid "Remove unused shape keys of separated objects"
-msgstr ""
-
-#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:138
-msgctxt "Operator"
-msgid "Sep by Parts"
-msgstr "部品で分離"
-
-#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts
-msgid ""
-"Separate by loose parts and join by materials.\n"
-"This preserves vertex count."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_set_frame_range
@@ -3112,7 +3098,7 @@ msgid "Texture Relative Path"
 msgstr "テクスチャの相対パス"
 
 #. :src: bpy.types.MMDMaterial.toon_texture
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:148
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:147
 msgid "Toon Texture"
 msgstr "トゥーンテクスチャ"
 
@@ -3649,8 +3635,8 @@ msgstr "テクスチャノードを  削除しました"
 
 #: extensions/blender_org/mmd_tools/operators/material.py:416
 #: extensions/blender_org/mmd_tools/operators/material.py:466
-#: extensions/blender_org/mmd_tools/operators/misc.py:274
-#: extensions/blender_org/mmd_tools/operators/misc.py:320
+#: extensions/blender_org/mmd_tools/operators/misc.py:209
+#: extensions/blender_org/mmd_tools/operators/misc.py:255
 msgid "Select a MMD model"
 msgstr "MMDモデルを選択する"
 
@@ -3667,11 +3653,11 @@ msgstr "Cycles に変更できませんでした"
 msgid "Materials not found"
 msgstr "マテリアルが見つかりません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:381
+#: extensions/blender_org/mmd_tools/operators/misc.py:316
 msgid "This operation will break existing f-curve/action."
 msgstr "この操作は既存のFカーブ/アクションを破壊します"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:382
+#: extensions/blender_org/mmd_tools/operators/misc.py:317
 msgid "Click [OK] to run the operation."
 msgstr "[OK]をクリックして操作を実行してください"
 
@@ -3680,11 +3666,11 @@ msgstr "[OK]をクリックして操作を実行してください"
 msgid "Can not move object \"\""
 msgstr "オブジェクト \"%s\" を移動できません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:284
+#: extensions/blender_org/mmd_tools/operators/misc.py:219
 msgid "The model does not have any meshes"
 msgstr "このモデルにはメッシュがありません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:325
+#: extensions/blender_org/mmd_tools/operators/misc.py:260
 msgid "Model Armature not found"
 msgstr "モデルのアーマチュアが見つかりません"
 
@@ -4279,7 +4265,7 @@ msgid "Peel"
 msgstr "はがす"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:62
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:140
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
 msgctxt "Operator"
 msgid "Join"
 msgstr "統合"
@@ -4327,42 +4313,42 @@ msgid "IK Toggle:"
 msgstr "IK切替え:"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:136
-msgid "Mesh:"
-msgstr "メッシュ:"
+msgid "Mesh (Experimental):"
+msgstr "メッシュ (実験的):"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:144
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:143
 msgid "Material:"
 msgstr "マテリアル:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:149
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:148
 msgid "Sphere Texture"
 msgstr "スフィアテクスチャ"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:157
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:156
 msgctxt "Operator"
 msgid "Convert to Blender"
 msgstr "Blender用に変換"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:158
 msgctxt "Operator"
 msgid "Convert to MMD"
 msgstr "MMD用に変換"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:161
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:160
 msgctxt "Operator"
 msgid "Setup Textures"
 msgstr "テクスチャ構成"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:162
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:161
 msgctxt "Operator"
 msgid "Texture Cleanup"
 msgstr "テクスチャ除去"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:165
 msgid "Misc:"
 msgstr "その他:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:168
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:167
 msgctxt "Operator"
 msgid "(Experimental) Global Translation"
 msgstr "(実験的) 全体翻訳"
@@ -4373,12 +4359,12 @@ msgctxt "Operator"
 msgid "Physics"
 msgstr "物理演算"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:151
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:150
 msgctxt "Operator"
 msgid "Show Transparent Material"
 msgstr "透過材質を表示"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:154
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:153
 msgctxt "Operator"
 msgid "Edge Preview"
 msgstr "輪郭プレビュー"

@@ -128,75 +128,10 @@ class CleanShapeKeys(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SeparateByParts(bpy.types.Operator):
-    bl_idname = "mmd_tools.separate_by_parts"
-    bl_label = "Sep by Parts"
-    bl_description = "Separate by loose parts and join by materials.\nThis preserves vertex count."
-    bl_options = {"REGISTER", "UNDO"}
-
-    clean_shape_keys: bpy.props.BoolProperty(
-        name="Clean Shape Keys",
-        description="Remove unused shape keys of separated objects",
-        default=True,
-    )
-
-    keep_normals: bpy.props.BoolProperty(
-        name="Keep Normals",
-        default=True,
-    )
-
-    @classmethod
-    def poll(cls, context):
-        obj = context.active_object
-        return obj is not None and obj.type == "MESH"
-
-    def __separate_by_parts(self, obj):
-        utils.separateByParts(obj, self.keep_normals)
-        if self.clean_shape_keys:
-            bpy.ops.mmd_tools.clean_shape_keys()
-
-    def execute(self, context):
-        obj = context.active_object
-        root = FnModel.find_root_object(obj)
-
-        # Sep by Parts crashes Blender if used after morph assembly
-        if root:
-            rig = Model(root)
-            rig.morph_slider.unbind()
-
-        if root is None:
-            self.__separate_by_parts(obj)
-        else:
-            bpy.ops.mmd_tools.clear_temp_materials()
-            bpy.ops.mmd_tools.clear_uv_morph_view()
-
-            # Store the current material names
-            rig = Model(root)
-            mat_names = [getattr(mat, "name", None) for mat in rig.materials()]
-
-            self.__separate_by_parts(obj)
-
-            for mesh in rig.meshes():
-                FnMorph.clean_uv_morph_vertex_groups(mesh)
-                if len(mesh.data.materials) > 0:
-                    mat = mesh.data.materials[0]
-                    # Restore object index based on material list order
-                    mat_name = getattr(mat, "name", None)
-                    if mat_name in mat_names:
-                        idx = mat_names.index(mat_name)
-                        MoveObject.set_index(mesh, idx)
-
-            for morph in root.mmd_root.material_morphs:
-                FnMorph(morph, rig).update_mat_related_mesh()
-
-        utils.clearUnusedMeshes()
-        return {"FINISHED"}
-
-
 class SeparateByMaterials(bpy.types.Operator):
     bl_idname = "mmd_tools.separate_by_materials"
-    bl_label = "Sep by Mat(High Risk)"
-    bl_description = "Separate by Materials (High Risk)\nSeparate the mesh into multiple objects based on materials.\nHIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nKnown issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first."
+    bl_label = "Separate by Materials"
+    bl_description = "Separate the mesh into multiple objects based on materials.\n\nWARNING: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nKnown issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first."
     bl_options = {"REGISTER", "UNDO"}
 
     clean_shape_keys: bpy.props.BoolProperty(
