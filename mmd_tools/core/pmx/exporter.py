@@ -1415,7 +1415,7 @@ class __PmxExporter:
         for m in meshObj.modifiers:
             if m.type != "ARMATURE" or m.object is None:
                 continue
-            if m.object.data.pose_position == "REST":
+            if getattr(m.object.data, "pose_position", None) == "REST":
                 muted_modifiers.append((m, m.show_viewport))
                 m.show_viewport = False
 
