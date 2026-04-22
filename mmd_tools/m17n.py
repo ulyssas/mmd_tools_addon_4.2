@@ -1382,6 +1382,21 @@ translations_tuple = (
         ("zh_HANS", "将选中的 MMD 模型导出至 PMX 文件 (.pmx)", (False, ())),
     ),
     (
+        ("*", "Auto Texture Relative Path Depth"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.auto_texture_rel_path_depth",), ()),
+        ("ja_JP", "テクスチャ相対パスの自動生成階層", (False, ())),
+        ("zh_HANS", "自动纹理相对路径深度", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Subfolder depth used when auto-generating a texture relative path (only applies when the material's texture relative path is empty). -1: unlimited (use the full existing folder structure), 0: no subfolders (filename only), 1: one subfolder, 2: two subfolders, and so on",
+        ),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.auto_texture_rel_path_depth",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Copy Textures"),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode",), ()),
         ("ja_JP", "テクスチャをコピー", (False, ())),
@@ -4974,13 +4989,13 @@ translations_tuple = (
     ),
     (
         ("*", '[Skipped] The armature object of MMD model "" can\'t be found'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:989",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:996",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", '[跳过] 找不到 MMD 模型"%s"的骨架数据', (True, ())),
     ),
     (
         ("*", 'Exported MMD model "" to ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:1021",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:1029",), ()),
         ("ja_JP", 'MMDモデル "%s" を "%s" にエクスポートしました', (True, ())),
         ("zh_HANS", '已导出 MMD 模型"%s"至"%s"', (True, ())),
     ),

@@ -830,6 +830,13 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         ],
         default="SKIP_EXISTING",
     )
+    auto_texture_rel_path_depth: bpy.props.IntProperty(
+        name="Auto Texture Relative Path Depth",
+        description="Subfolder depth used when auto-generating a texture relative path (only applies when the material's texture relative path is empty). -1: unlimited (use the full existing folder structure), 0: no subfolders (filename only), 1: one subfolder, 2: two subfolders, and so on",
+        default=1,
+        min=-1,
+        soft_max=2,
+    )
     sort_materials: bpy.props.BoolProperty(
         name="Sort Materials",
         description="Sort materials for alpha blending. WARNING: Will not work if you have transparent meshes inside the model. E.g. blush meshes",
@@ -1008,6 +1015,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 rigid_bodies=FnModel.iterate_rigid_body_objects(root),
                 joints=FnModel.iterate_joint_objects(root),
                 copy_textures_mode=self.copy_textures_mode,
+                auto_texture_rel_path_depth=self.auto_texture_rel_path_depth,
                 fix_bone_order=self.fix_bone_order,
                 overwrite_bone_morphs_from_action_pose=self.overwrite_bone_morphs_from_action_pose,
                 translate_in_presets=self.translate_in_presets,

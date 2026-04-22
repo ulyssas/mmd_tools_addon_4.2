@@ -9,6 +9,7 @@ import re
 import shutil
 import time
 from collections import OrderedDict
+from pathlib import Path
 
 import bmesh
 import bpy
@@ -318,23 +319,23 @@ class __PmxExporter:
 
             # Check if rel_path_hint is empty
             if not rel_path_hint:
+                depth = self.__auto_texture_rel_path_depth
                 if current_filepath.startswith("//"):
                     # Blender relative path (e.g. "//a.png")
-                    stripped_path = current_filepath[2:]
-                    parent_dir = os.path.dirname(stripped_path)
-                    if parent_dir:
-                        new_path = os.path.join(parent_dir, curr_name).replace("\\", "/")
-                    else:
-                        new_path = curr_name
+                    dir_path = Path(current_filepath[2:]).parent
                 else:
                     # Absolute path
-                    abs_path = os.path.abspath(current_filepath)
-                    dirname = os.path.dirname(abs_path)
-                    parent_dir_name = os.path.basename(dirname)
-                    if parent_dir_name:
-                        new_path = os.path.join(parent_dir_name, curr_name).replace("\\", "/")
-                    else:
-                        new_path = curr_name
+                    dir_path = Path(current_filepath).resolve().parent
+
+                # Strip the anchor (drive letter or root) so only relative parts remain
+                dir_parts = dir_path.relative_to(dir_path.anchor).parts if dir_path.anchor else dir_path.parts
+
+                if depth == 0 or not dir_parts:
+                    new_path = curr_name
+                else:
+                    if depth > 0:
+                        dir_parts = dir_parts[-depth:]
+                    new_path = "/".join(list(dir_parts) + [curr_name])
                 logging.info("Auto-syncing texture relative path: '' -> '%s'", new_path)
                 return new_path
 
@@ -1471,6 +1472,7 @@ class __PmxExporter:
 
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
+        self.__auto_texture_rel_path_depth = args.get("auto_texture_rel_path_depth", -1)
         self.__normal_handling = args.get("normal_handling", "PRESERVE_ALL_NORMALS")
         self.__export_vertex_colors_as_adduv2 = args.get("export_vertex_colors_as_adduv2", False)
         self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
