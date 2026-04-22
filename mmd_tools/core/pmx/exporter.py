@@ -259,8 +259,6 @@ class __PmxExporter:
                     logging.info("Skipping copy for existing texture: '%s'", full_dest_path)
                     continue
 
-                os.makedirs(os.path.dirname(full_dest_path), exist_ok=True)
-
                 # Check if the source is a packed image
                 blender_image = getattr(texture, "blender_image", None)
                 packed_image = None
@@ -279,6 +277,7 @@ class __PmxExporter:
                 if packed_image:
                     logging.info("Extracting packed texture '%s' -> '%s'", packed_image.name, full_dest_path)
                     try:
+                        os.makedirs(os.path.dirname(full_dest_path), exist_ok=True)
                         with open(full_dest_path, "wb") as f:
                             f.write(packed_image.packed_file.data)
                     except PermissionError:
@@ -291,6 +290,7 @@ class __PmxExporter:
                     if os.path.normcase(src_path) != os.path.normcase(full_dest_path):
                         logging.info("Copying external texture '%s' -> '%s'", src_path, full_dest_path)
                         try:
+                            os.makedirs(os.path.dirname(full_dest_path), exist_ok=True)
                             shutil.copy2(src_path, full_dest_path)
                         except PermissionError:
                             logging.warning("Permission denied. Could not copy texture to '%s'. Skipping.", full_dest_path)
