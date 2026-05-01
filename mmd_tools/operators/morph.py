@@ -11,7 +11,7 @@ from .. import bpyutils, utils
 from ..bpyutils import FnObject
 from ..core.exceptions import MaterialNotFoundError
 from ..core.material import FnMaterial
-from ..core.model import FnModel
+from ..core.model import FnModel, Model
 from ..core.morph import FnMorph
 from ..utils import ItemMoveOp, ItemOp
 
@@ -154,6 +154,81 @@ class CopyMorph(bpy.types.Operator):
         for k, v in morph.items():
             morph_new[k] = v if k != "name" else name_tmp
         morph_new.name = name_orig + "_copy"  # trigger name check
+        return {"FINISHED"}
+
+
+class RegisterMorph(bpy.types.Operator):
+    bl_idname = "mmd_tools.morph_register"
+    bl_label = "Register All Morphs"
+    bl_description = "Register keyframes for all morphs"
+    bl_options = {"REGISTER", "UNDO"}
+
+    skip_unchanged: bpy.props.BoolProperty(
+        name="Skip Unchanged",
+        description="Skip registering for unchanged morphs",
+        default=False,
+    )
+    tolerance: bpy.props.FloatProperty(
+        name="Tolerance",
+        description="How much change is considered unchanged",
+        min=1e-07,
+        max=1,
+        default=1e-07,
+        options={"SKIP_SAVE"},
+    )
+
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        root = FnModel.find_root_object(obj)
+        if not root:
+            return False
+
+        rig = Model(root)
+        return any(rig.morph_slider)
+
+    def draw(self, _context: bpy.types.Context):
+        layout = self.layout
+        layout.use_property_split = True
+
+        col = layout.column(align=True)
+        col.prop(self, "skip_unchanged")
+        col = layout.column(align=True)
+        col.prop(self, "tolerance")
+        col.active = self.skip_unchanged
+
+    def execute(self, context):
+        obj = context.active_object
+        root = FnModel.find_root_object(obj)
+        assert root is not None
+
+        rig = Model(root)
+        count = 0
+        frame = context.scene.frame_current
+        for s in rig.morph_slider:
+            if s.name in {"Basis", "--- morph sliders ---"}:
+                continue
+
+            insert_key = True
+            if self.skip_unchanged:
+                curve_val = 0
+                key: bpy.types.Key = s.id_data  # shapekey
+
+                if key.animation_data and key.animation_data.action:
+                    data_path = f'key_blocks["{s.name}"].value'
+                    fcurve = next((fc for fc in key.animation_data.action.fcurves if fc.data_path == data_path), None)
+
+                    if fcurve:
+                        curve_val = fcurve.evaluate(frame)
+
+                if abs(s.value - curve_val) < self.tolerance:
+                    insert_key = False
+
+            if insert_key:
+                s.keyframe_insert(data_path="value", frame=frame)
+                count += 1
+
+        self.report({"INFO"}, f"Registered {count} morphs.")
         return {"FINISHED"}
 
 
