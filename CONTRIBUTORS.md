@@ -1,14 +1,14 @@
 Original author
 - sugiany
 
-Former Maintainer
+Former Maintainers
 - powroupi
-
-Maintainer
 - UuuNyaa
 
-Contributors
+Maintainer
 - rintrint
+
+Contributors
 - mmmhj2
 - iRi-E
 - lordscales91
@@ -24,7 +24,6 @@ Contributors
 - Vwings
 - amirvincent64
 - tyron82MMD
-- fmnijk
 - ulyssas
 - r1cebank
 - ChennyBaBy
