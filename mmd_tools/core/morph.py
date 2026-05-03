@@ -321,6 +321,13 @@ class _MorphSlider:
     def __init__(self, model: "Model"):
         self.__rig = model
 
+    def __iter__(self):
+        obj = self.placeholder()
+        if obj is not None:
+            key_blocks = obj.data.shape_keys.key_blocks
+            if key_blocks and not key_blocks[0].mute:
+                yield from key_blocks
+
     def placeholder(self, create=False, binded=False):
         rig = self.__rig
         root = rig.rootObject()

@@ -47,6 +47,8 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
         tb1 = tb.column(align=True)
         tb1.operator("mmd_tools.morph_move", text="", icon="TRIA_UP").type = "UP"
         tb1.operator("mmd_tools.morph_move", text="", icon="TRIA_DOWN").type = "DOWN"
+        tb1 = tb.column(align=True)
+        tb1.operator("mmd_tools.morph_register", text="", icon="ACTION")
 
         morph = ItemOp.get_by_index(getattr(mmd_root, morph_type), mmd_root.active_morph)
         if morph:
