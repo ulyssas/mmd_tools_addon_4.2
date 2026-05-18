@@ -9,6 +9,7 @@ import re
 import shutil
 import time
 from collections import OrderedDict
+from contextlib import contextmanager
 from pathlib import Path
 
 import bmesh
@@ -1537,13 +1538,79 @@ class __PmxExporter:
         pmx.save(filepath, self.__model, add_uv_count=self.__add_uv_count)
 
 
+@contextmanager
+def _expose_to_viewport_depsgraph(objects):
+    # If any export-target object lives in a "Disable in Viewports" collection (or has the
+    # per-object Disable-in-viewports flag set), the viewport depsgraph skips evaluating that
+    # object entirely — to_mesh() then returns the un-evaluated original and any modifier
+    # (including the temporary Triangulate one) is silently ignored. Temporarily clear
+    # hide_viewport on those objects and on every ancestor collection so the depsgraph
+    # evaluates them; restore exactly what we touched on exit.
+    hidden_objects = []
+    hidden_collections = []
+    visited = set()
+
+    def _walk_up(coll):
+        if coll is None or coll.name in visited:
+            return
+        visited.add(coll.name)
+        if coll.hide_viewport:
+            hidden_collections.append(coll)
+            coll.hide_viewport = False
+        for parent in bpy.data.collections:
+            if coll.name in parent.children:
+                _walk_up(parent)
+
+    for obj in objects:
+        if obj is None:
+            continue
+        if obj.hide_viewport:
+            hidden_objects.append(obj)
+            obj.hide_viewport = False
+        for coll in obj.users_collection:
+            _walk_up(coll)
+
+    if hidden_objects or hidden_collections:
+        bpy.context.view_layer.update()
+
+    try:
+        yield
+    finally:
+        for coll in hidden_collections:
+            coll.hide_viewport = True
+        for obj in hidden_objects:
+            obj.hide_viewport = True
+        if hidden_objects or hidden_collections:
+            bpy.context.view_layer.update()
+
+
+def _collect_export_targets(kwargs):
+    # Materialize generators/iterators so they can be reused.
+    for k in ("meshes", "rigid_bodies", "joints"):
+        v = kwargs.get(k)
+        if v is not None and not isinstance(v, list):
+            kwargs[k] = list(v)
+
+    objects = []
+    for k in ("root", "armature"):
+        obj = kwargs.get(k)
+        if obj is not None:
+            objects.append(obj)
+    for k in ("meshes", "rigid_bodies", "joints"):
+        objects.extend(kwargs.get(k) or [])
+    return objects
+
+
 def export(filepath, **kwargs):
     logging.info("****************************************")
     logging.info(" %s module", __name__)
     logging.info("----------------------------------------")
     start_time = time.time()
-    exporter = __PmxExporter()
-    exporter.execute(filepath, **kwargs)
+
+    with _expose_to_viewport_depsgraph(_collect_export_targets(kwargs)):
+        exporter = __PmxExporter()
+        exporter.execute(filepath, **kwargs)
+
     logging.info(" Finished exporting the model in %f seconds.", time.time() - start_time)
     logging.info("----------------------------------------")
     logging.info(" %s module", __name__)
