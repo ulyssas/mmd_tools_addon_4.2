@@ -832,7 +832,13 @@ class FnModel:
                     if replace_value is not None:
                         value = replace_value
 
-                if overwrite or destination_rna_properties[name].default == getattr(destination, name) if is_attr else destination[name]:
+                if is_attr:
+                    rna_prop = destination_rna_properties.get(name)
+                    destination_is_default = rna_prop is not None and getattr(rna_prop, "default", None) == getattr(destination, name)
+                else:
+                    destination_is_default = name not in destination.keys() or not destination[name]
+
+                if overwrite or destination_is_default:
                     if is_attr:
                         setattr(destination, name, value)
                     else:
