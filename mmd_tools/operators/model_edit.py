@@ -324,6 +324,9 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             },
         )
 
+        empty_source_mesh_objects = [mesh_obj for mesh_obj in mmd_model_mesh_objects if len(mesh_obj.data.vertices) == 0]
+        self._remove_mesh_objects(empty_source_mesh_objects)
+
         # Apply additional transform
         FnContext.set_active_and_select_single_object(context, mmd_root_object)
         bpy.ops.mmd_tools.apply_additional_transform()
@@ -336,6 +339,15 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         # End state
         FnContext.set_active_and_select_single_object(context, separate_root_object)
+
+    def _remove_mesh_objects(self, mesh_objects: List[bpy.types.Object]) -> None:
+        for mesh_object in mesh_objects:
+            if mesh_object.name not in bpy.data.objects:
+                continue
+            mesh_data = mesh_object.data
+            bpy.data.objects.remove(mesh_object, do_unlink=True)
+            if mesh_data and mesh_data.users == 0:
+                bpy.data.meshes.remove(mesh_data)
 
     def _select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
         mesh2selected_vertex_count: Dict[bpy.types.Object, int] = {}
